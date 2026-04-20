@@ -14,7 +14,7 @@ Things done and things left to do. Update this when finishing branches; use `roa
 
 ## Pending (by priority)
 - [ ] **MVP Sprint 1 — Base + Auth nativa Rails 8**
-  - [ ] Auth nativa (login por email, logout, sesiones seguras) + `Current.user` + `authenticate!`
+  - [ ] Authentication (sign up, login, logout, sessions), gem "authentication-zero"
   - [ ] Reset password (MVP; confirmación de email queda para v1)
   - [ ] Perfil público: `username` único (email privado), cambio con cooldown
   - [ ] Bloquear usuarios (bloqueo gana: corta acceso inmediato incluso si había amistad/share/link)
