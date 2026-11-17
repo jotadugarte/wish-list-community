@@ -12,9 +12,20 @@ Things done and things left to do. Update this when finishing branches; use `roa
 ## In Progress
 *(No items currently in progress)*
 
+## Technical decisions
+- Backend and web: Ruby on Rails 8 + PostgreSQL (server-rendered HTML + Hotwire)
+- Mobile (iOS and Android): Flutter, consuming the `/api/v1` API
+- JS built into the framework (Hotwire: Turbo + Stimulus) is accepted; no custom JS except for rare cases
+- Business logic and permissions live only on the server; web and Flutter are clients
+- Admin panel is web only (Rails), no mobile version
+- 
 ## Pending (by priority)
-- [ ] **MVP Sprint 1 — Base + Auth nativa Rails 8**
-  - [ ] Authentication (sign up, login, logout, sessions), gem "authentication-zero"
+- [ ] **MVP Sprint 1 — Base + Auth + API**
+  - [ ] Rails 8 + PostgreSQL project, Solid Queue, Hotwire (importmap)
+  - [ ] Versioned API `/api/v1` with token authentication (web uses cookie sessions)
+  - [ ] Central permissions layer (Pundit or custom policies): blocking, friendship, privacy, secret link, reservations
+  - [ ] Initial Flutter project + shared design system (colors, typography, icons, spacing)  
+  - [ ] Authentication (sign up, login, logout, sessions) using the native Rails 8 generator; tokens for the API
   - [ ] Reset password (MVP; confirmación de email queda para v1)
   - [ ] Perfil público: `username` único (email privado), cambio con cooldown
   - [ ] Bloquear usuarios (bloqueo gana: corta acceso inmediato incluso si había amistad/share/link)
@@ -23,6 +34,7 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [ ] Buscar usuarios por `username`
   - [ ] Solicitudes de amistad + aceptar/declinar + lista de amigos (solo amigos en MVP)
   - [ ] Reportar usuario (MVP: solo reportes; moderación completa en Sprint 8)
+  - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 3 — Wishlists (privacidad + compartir)**
   - [ ] CRUD wishlist
   - [ ] Privacidad por wishlist:
@@ -31,18 +43,22 @@ Things done and things left to do. Update this when finishing branches; use `roa
     - [ ] Compartida: solo amigos específicos + link secreto
   - [ ] Link secreto (no caduca); al pasar a “privada” se invalida automáticamente
   - [ ] Invitado puede ver wishlists públicas (Discover y por link); no puede reservar/regalar
+  - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 4 — Items + media**
   - [ ] CRUD items con notas (talla/color) y múltiples links por item
   - [ ] Hasta 3 imágenes por item:
     - [ ] Máx 2MB c/u, máx 1600px lado mayor
     - [ ] Compresión en cliente opcional (UX)
     - [ ] Servidor obligatorio: resize + re-encode (WebP cuando sea posible; PNG permitido y convertir a WebP cuando aplique)
+    - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 5 — Reservas (privadas)**
   - [ ] Reservar item (solo usuarios logueados con acceso) con concurrencia “primer reservado gana”
   - [ ] Una reserva activa por item
+  - [ ] Enforced by a partial unique index in PostgreSQL (one active reservation per item)
   - [ ] Nota privada del reservador (nadie más la ve)
   - [ ] Fecha estimada privada del reservador (receptor nunca ve reservas)
   - [ ] Si fecha expira: notificar reservador “Fecha expiró”; reservador decide extender fecha o quitar reserva (no auto-liberar)
+  - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 6 — Regalado + anonimato + resolución de conflicto**
   - [ ] Marcar item como “regalado” (dueño o regalador), incluso si nadie reservó
   - [ ] Anónimo para usuarios; admin puede auditar
@@ -50,6 +66,7 @@ Things done and things left to do. Update this when finishing branches; use `roa
     - [ ] Cancelar reserva activa/expirada si existe
     - [ ] Notificar al reservador “Ya fue entregado; reserva removida”
   - [ ] Guardar referencia del link usado en regalo “online” (solo visible para admin)
+  - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 7 — Discover + anti-spam + reportes**
   - [ ] Discover (usuarios públicos + wishlists públicas), sin follow/like
   - [ ] Rate limits (anti-spam) + reportar wishlist
@@ -58,14 +75,15 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [ ] Panel admin: cola de reportes + acciones (bloquear)
   - [ ] Admin puede ver historial interno (reservas/regalos/cambios) y revertir por error/abuso
   - [ ] Admin ve identidad de regaladores (para auditoría) y link usado en online-gift
-- [ ] **MVP Sprint 9 — iOS + Android (Turbo Native)**
-  - [ ] Apps Turbo Native con paridad MVP web
-  - [ ] Deep links: perfil público, wishlist pública, link secreto
-  - [ ] Upload de imágenes desde móvil respetando límites
-  - [ ] Push notifications: opcional (email + in-app son requeridos)
+- [ ] **MVP Sprint 9 — Mobile wrap-up (Flutter iOS + Android)**
+  - [ ] Full MVP parity with the web app in the Flutter apps
+  - [ ] Deep links (Universal Links on iOS, App Links on Android): public profile, public wishlist, secret link
+  - [ ] Image upload from mobile: in-app compression respecting limits (2MB, 1600px, max 3)
+  - [ ] Push notifications via Firebase Cloud Messaging (optional in MVP; email + in-app are required)
+  - [ ] Publication on the App Store and Google Play
 - [ ] **Notificaciones (MVP) — in-app + email (configurable por usuario)**
   - [ ] Preferencias por evento (in-app/email toggles)
-  - [ ] Dispatcher único para crear in-app + encolar email
+  - [ ] Single dispatcher to create in-app + enqueue email (+ push when available; device tokens table)
   - [ ] Eventos mínimos:
     - [ ] Solicitud de amistad recibida
     - [ ] Amistad aceptada
