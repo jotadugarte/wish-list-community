@@ -1,0 +1,4 @@
+
+# agentic:guild Transient Memory
+.agenticguild/*
+!.agenticguild/.gitkeep
