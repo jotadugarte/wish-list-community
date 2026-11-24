@@ -14,20 +14,20 @@ Things done and things left to do. Update this when finishing branches; use `roa
 - **Admin panel**: Web only (Rails), backed by an immutable `audit_events` table
 
 ## Done
-*(No completed items yet)*
+- [x] **MVP Sprint 1 (Backend Foundation) — Base + Auth + API + Core Policies** — 2026-11-24
+  - [x] Monorepo setup: `backend/` (Rails 8 + PostgreSQL + Solid Queue + Hotwire/Tailwind CSS + RSpec + Pundit) and `mobile/` skeleton (`REQ-ARCH-001`) — 2026-11-24
+  - [x] Versioned API `/api/v1` with SHA-256 `api_tokens` authentication and `RecordNotUnique` idempotency handling; web uses cookie sessions (`REQ-AUTH-001`, `REQ-ARCH-003`) — 2026-11-24
+  - [x] Authentication (sign up with `terms_accepted_at`, login, logout, sessions), anti-enumeration password reset (always generic `200 OK`), and Rails 8 `rate_limit` on auth endpoints (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`) — 2026-11-24
+  - [x] Public profile: unique `@username` (email stays strictly private), 30-day change cooldown + 30-day quarantine on previous `@username`, preferred `locale` (`es`/`en`), and `time_zone` (`REQ-USER-001`, `REQ-USER-002`, `REQ-USER-003`, `REQ-USER-004`) — 2026-11-24
+  - [x] Central Pundit permissions layer (*default-deny*) + Block users ("block wins": immediately cuts access and transactionally destroys friendship, shares, and active reservations) + immutable `AuditEvent` foundation (`REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-24
+  - [x] Soft-delete + restore (30-day account restoration window before PII purge; wishlist restore cascades to items and leaves zero "ghost reservations") (`REQ-LIFE-001`, `REQ-LIFE-002`) — 2026-11-24
 
 ## In Progress
 *(No items currently in progress)*
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 1 — Base + Auth + API + Core Policies**
-  - [ ] Monorepo setup: `backend/` (Rails 8 + PostgreSQL + Solid Queue + Hotwire/Tailwind CSS + RSpec + Pundit) and `mobile/` skeleton (`REQ-ARCH-001`)
-  - [ ] Versioned API `/api/v1` with SHA-256 `api_tokens` authentication and `RecordNotUnique` idempotency handling; web uses cookie sessions (`REQ-AUTH-001`, `REQ-ARCH-003`)
-  - [ ] Authentication (sign up with `terms_accepted_at`, login, logout, sessions), anti-enumeration password reset (always generic `200 OK`), and Rails 8 `rate_limit` on auth endpoints (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`)
-  - [ ] Public profile: unique `@username` (email stays strictly private), 30-day change cooldown + 30-day quarantine on previous `@username`, preferred `locale` (`es`/`en`), and `time_zone` (`REQ-USER-001`, `REQ-USER-002`, `REQ-USER-003`, `REQ-USER-004`)
-  - [ ] Central Pundit permissions layer (*default-deny*) + Block users ("block wins": immediately cuts access and transactionally destroys friendship, shares, and active reservations) + immutable `AuditEvent` foundation (`REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`)
-  - [ ] Soft-delete + restore (30-day account restoration window before PII purge; wishlist restore cascades to items and leaves zero "ghost reservations") (`REQ-LIFE-001`, `REQ-LIFE-002`)
-  - [ ] Initial Flutter project + shared design system (colors, typography, icons, spacing) (`REQ-ARCH-001`)
+- [ ] **MVP Sprint 1 (Mobile Foundation) — Flutter Base + Design System**
+  - [ ] Initial Flutter project + shared design system (colors, typography, icons, spacing) + `/api/v1` auth integration (`REQ-ARCH-001`, `REQ-AUTH-001`)
 - [ ] **MVP Sprint 2 — Social & Anti-Stalking Profile Search**
   - [ ] Search users by `@username` (anti-stalking: non-friends only see `@username` and *"Send Friend Request"* button, never personal wishlists) (`REQ-SOC-001`, `REQ-WISH-001`)
   - [ ] Friend requests + accept/decline + friends list (enforced by unordered unique pair index in PostgreSQL) (`REQ-SOC-001`)

@@ -5,8 +5,8 @@
   </active_task_pointer>
 
   <execution_context>
-    <active_skill>finish-branch (harvest-rules)</active_skill>
-    <current_phase>Phase 4: Final Spackle & PR (harvest-rules Knowledge Commit)</current_phase>
-    <current_step>Step 4.2 (harvest-rules Step 2.1)</current_step>
+    <active_skill>finish-branch (pr-description)</active_skill>
+    <current_phase>Phase 4: Final Spackle & PR (Roadmap & PR Description)</current_phase>
+    <current_step>Step 4.3 (pr-description Step 1.1)</current_step>
   </execution_context>
 </agent_state>
