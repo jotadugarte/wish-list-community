@@ -60,7 +60,17 @@ RSpec.describe "API v1 User Blocks, Anti-Stalking Profile Lookup & RecordNotUniq
            as: :json
 
       expect(response).to have_http_status(:conflict)
-      expect(response.parsed_body["error"]).to match(/conflict|duplicate/i)
+      expect(response.parsed_body["error"]).to match(/conflicto|duplicada|conflict|duplicate/i)
+    end
+
+    it "returns 404 Not Found localized in user.locale when blocking a non-existent or invalid username [REQ-USER-002] [REQ-BLOCK-001]" do
+      post "/api/v1/user_blocks",
+           params: { blocked_username: "non_existent_user" },
+           headers: { "Authorization" => "Bearer #{alice_token}" },
+           as: :json
+
+      expect(response).to have_http_status(:not_found)
+      expect(response.parsed_body["error"]).to eq("No encontrado")
     end
   end
 end

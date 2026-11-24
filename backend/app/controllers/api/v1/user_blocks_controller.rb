@@ -14,6 +14,8 @@ module Api
         UserBlock.block!(blocker: current_user, blocked: target_user)
 
         render json: { blocked_username: target_user.username }, status: :created
+      rescue ArgumentError
+        raise ActiveRecord::RecordNotFound
       end
     end
   end
