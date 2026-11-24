@@ -63,3 +63,34 @@ FOREIGN KEY ("api_token_id")
   [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m
   [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO public /*application='Backend'*/[0m
   [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5073945470573576205) /*application='Backend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backend'*/[0m
+Migrating to CreateUserBlocksAndAuditEvents (20261124133000)
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN /*application='Backend'*/[0m
+  [1m[35m (5.5ms)[0m  [1m[35mCREATE TABLE "user_blocks" ("id" bigserial primary key, "blocker_id" bigint NOT NULL, "blocked_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_d1bf232861"
+FOREIGN KEY ("blocker_id")
+  REFERENCES "users" ("id")
+ ON DELETE CASCADE, CONSTRAINT "fk_rails_9457ce6a10"
+FOREIGN KEY ("blocked_id")
+  REFERENCES "users" ("id")
+ ON DELETE CASCADE) /*application='Backend'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_user_blocks_on_blocker_id" ON "user_blocks" ("blocker_id") /*application='Backend'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_user_blocks_on_blocked_id" ON "user_blocks" ("blocked_id") /*application='Backend'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_user_blocks_on_blocker_id_and_blocked_id" ON "user_blocks" ("blocker_id", "blocked_id") /*application='Backend'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_user_blocks_on_blocked_id_and_blocker_id" ON "user_blocks" ("blocked_id", "blocker_id") /*application='Backend'*/[0m
+  [1m[35m (1.9ms)[0m  [1m[35mCREATE TABLE "audit_events" ("id" bigserial primary key, "actor_id" bigint, "action" character varying NOT NULL, "auditable_type" character varying NOT NULL, "auditable_id" bigint NOT NULL, "metadata" jsonb DEFAULT '{}' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_dd1f3a471a"
+FOREIGN KEY ("actor_id")
+  REFERENCES "users" ("id")
+ ON DELETE SET NULL) /*application='Backend'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_actor_id" ON "audit_events" ("actor_id") /*application='Backend'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_auditable_type_and_auditable_id" ON "audit_events" ("auditable_type", "auditable_id") /*application='Backend'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_audit_events_on_action" ON "audit_events" ("action") /*application='Backend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20261124133000') RETURNING "version" /*application='Backend'*/[0m
+  [1m[36mTRANSACTION (10.6ms)[0m  [1m[35mCOMMIT /*application='Backend'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT pg_advisory_unlock(5073945470573576205) /*application='Backend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backend'*/[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO public /*application='Backend'*/[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO public /*application='Backend'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m

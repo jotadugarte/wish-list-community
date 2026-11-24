@@ -9,6 +9,7 @@ module Api
       GENERIC_RESET_MESSAGE = "If that email address is in our system, we have sent password reset instructions."
 
       skip_before_action :authenticate_api_token!, only: :create
+      skip_after_action :verify_authorized
       rate_limit to: 5, within: 3.minutes, only: :create
 
       # [REQ-AUTH-003] Never reveals whether an email address is registered.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_132000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_133000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -25,6 +25,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_132000) do
     t.datetime "updated_at", null: false
     t.index ["token_digest"], name: "index_api_tokens_on_token_digest", unique: true
     t.index ["user_id"], name: "index_api_tokens_on_user_id"
+  end
+
+  create_table "audit_events", force: :cascade do |t|
+    t.bigint "actor_id"
+    t.string "action", null: false
+    t.string "auditable_type", null: false
+    t.bigint "auditable_id", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action"], name: "index_audit_events_on_action"
+    t.index ["actor_id"], name: "index_audit_events_on_actor_id"
+    t.index ["auditable_type", "auditable_id"], name: "index_audit_events_on_auditable_type_and_auditable_id"
   end
 
   create_table "device_tokens", force: :cascade do |t|
@@ -46,6 +59,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_132000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "user_blocks", force: :cascade do |t|
+    t.bigint "blocker_id", null: false
+    t.bigint "blocked_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blocked_id", "blocker_id"], name: "index_user_blocks_on_blocked_id_and_blocker_id"
+    t.index ["blocked_id"], name: "index_user_blocks_on_blocked_id"
+    t.index ["blocker_id", "blocked_id"], name: "index_user_blocks_on_blocker_id_and_blocked_id", unique: true
+    t.index ["blocker_id"], name: "index_user_blocks_on_blocker_id"
   end
 
   create_table "username_reservations", force: :cascade do |t|
@@ -77,8 +101,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_132000) do
   end
 
   add_foreign_key "api_tokens", "users", on_delete: :cascade
+  add_foreign_key "audit_events", "users", column: "actor_id", on_delete: :nullify
   add_foreign_key "device_tokens", "api_tokens", on_delete: :cascade
   add_foreign_key "device_tokens", "users", on_delete: :cascade
   add_foreign_key "sessions", "users", on_delete: :cascade
+  add_foreign_key "user_blocks", "users", column: "blocked_id", on_delete: :cascade
+  add_foreign_key "user_blocks", "users", column: "blocker_id", on_delete: :cascade
   add_foreign_key "username_reservations", "users", column: "previous_user_id", on_delete: :cascade
 end

@@ -7,6 +7,7 @@ module Api
     class ProfilesController < BaseController
       # [REQ-AUTH-001] Returns current user profile.
       def show
+        authorize current_user, :show?
         render json: current_user.public_profile_json, status: :ok
       end
     end

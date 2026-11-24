@@ -6,6 +6,7 @@ module Api
     # Traceability: [REQ-AUTH-001], [REQ-AUTH-003], [REQ-NOTIF-002]
     class SessionsController < BaseController
       skip_before_action :authenticate_api_token!, only: :create
+      skip_after_action :verify_authorized
       rate_limit to: 10, within: 3.minutes, only: :create
 
       # [REQ-AUTH-001] [REQ-NOTIF-002] Authenticates user and returns raw bearer token once.
