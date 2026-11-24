@@ -8,3 +8,216 @@ Processing by Rails::HealthController#show as HTML
   Rendered html template (Duration: 0.0ms | GC: 0.0ms)
 Completed 200 OK in 16ms (Views: 9.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
   [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO public[0m
+  [1m[35m (136.6ms)[0m  [1m[35mDROP DATABASE IF EXISTS "backend_test"[0m
+  [1m[35m (65.8ms)[0m  [1m[35mCREATE DATABASE "backend_test" ENCODING = 'unicode'[0m
+  [1m[35mSQL (9.0ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql" SCHEMA pg_catalog[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "username_reservations" CASCADE[0m
+  [1m[35m (6.1ms)[0m  [1m[35mCREATE TABLE "username_reservations" ("id" bigserial primary key, "username" character varying NOT NULL, "previous_user_id" bigint NOT NULL, "expires_at" timestamp(6) NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (2.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "idx_username_reservations_on_lower_username" ON "username_reservations" (lower((username)::text))[0m
+  [1m[35m (2.6ms)[0m  [1m[35mCREATE INDEX "index_username_reservations_on_expires_at" ON "username_reservations" ("expires_at")[0m
+  [1m[35m (2.3ms)[0m  [1m[35mCREATE INDEX "index_username_reservations_on_previous_user_id" ON "username_reservations" ("previous_user_id")[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE IF EXISTS "users" CASCADE[0m
+  [1m[35m (4.4ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email_address" character varying NOT NULL, "username" character varying NOT NULL, "password_digest" character varying NOT NULL, "role" character varying DEFAULT 'user' NOT NULL, "locale" character varying DEFAULT 'es' NOT NULL, "time_zone" character varying DEFAULT 'UTC' NOT NULL, "username_changed_at" timestamp(6), "terms_accepted_at" timestamp(6) NOT NULL, "discarded_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "idx_users_on_lower_email_address" ON "users" (lower((email_address)::text))[0m
+  [1m[35m (2.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "idx_users_on_lower_username" ON "users" (lower((username)::text))[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE INDEX "index_users_on_discarded_at" ON "users" ("discarded_at")[0m
+  [1m[35m (3.1ms)[0m  [1m[35mALTER TABLE "username_reservations" ADD CONSTRAINT "fk_rails_7536992406"
+FOREIGN KEY ("previous_user_id")
+  REFERENCES "users" ("id")
+ ON DELETE CASCADE[0m
+  [1m[35m (2.9ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (2.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20261124131000)[0m
+  [1m[35m (2.9ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (1.9ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-11-24 19:11:29.560041', '2026-11-24 19:11:29.560043') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (2.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '3d53cc18ce9469086514dc645b3d0ba17a60dfd9', '2026-11-24 19:11:29.564876', '2026-11-24 19:11:29.564881') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+Started GET "/up" for 127.0.0.1 at 2026-11-24 13:11:29 -0600
+Processing by Rails::HealthController#show as HTML
+  Rendering html template
+  Rendered html template (Duration: 0.0ms | GC: 0.0ms)
+Completed 200 OK in 3ms (Views: 1.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:11:29.697003"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.5ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_dev"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:11:29.659177"], ["discarded_at", nil], ["created_at", "2026-11-24 19:11:29.699269"], ["updated_at", "2026-11-24 19:11:29.699269"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:11:29.706631"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:11:29.719782"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:11:29.724761"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_dev"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:11:29.722037"], ["discarded_at", nil], ["created_at", "2026-11-24 19:11:29.725279"], ["updated_at", "2026-11-24 19:11:29.725279"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:11:29"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_dev"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:11:29"], ["discarded_at", nil], ["created_at", "2026-11-24 19:11:29"], ["updated_at", "2026-11-24 19:11:29"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUsernameReservation Delete All (0.3ms)[0m  [1m[31mDELETE FROM "username_reservations" WHERE (LOWER(username) = $1)[0m  [[nil, "jader_dev"]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE LOWER("username_reservations"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Create (0.6ms)[0m  [1m[32mINSERT INTO "username_reservations" ("username", "previous_user_id", "expires_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["username", "jader_dev"], ["previous_user_id", 3], ["expires_at", "2026-12-24 19:11:29"], ["created_at", "2026-11-24 19:11:29"], ["updated_at", "2026-11-24 19:11:29"]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 3], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "jader_new"], ["id", 3], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:11:29"], [nil, "jader_new"], ["previous_user_id", 3], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "username" = $1, "username_changed_at" = $2 WHERE "users"."id" = $3[0m  [["username", "jader_new"], ["username_changed_at", "2026-11-24 19:11:29"], ["id", 3]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:11:29"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "ceci_nata"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:11:29"], ["discarded_at", nil], ["created_at", "2026-11-24 19:11:29"], ["updated_at", "2026-11-24 19:11:29"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUsernameReservation Delete All (0.5ms)[0m  [1m[31mDELETE FROM "username_reservations" WHERE (LOWER(username) = $1)[0m  [[nil, "ceci_nata"]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE LOWER("username_reservations"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Create (0.3ms)[0m  [1m[32mINSERT INTO "username_reservations" ("username", "previous_user_id", "expires_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["username", "ceci_nata"], ["previous_user_id", 4], ["expires_at", "2026-12-24 19:11:29"], ["created_at", "2026-11-24 19:11:29"], ["updated_at", "2026-11-24 19:11:29"]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 4], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "ceci_pinilla"], ["id", 4], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:11:29"], [nil, "ceci_pinilla"], ["previous_user_id", 4], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "username" = $1, "username_changed_at" = $2 WHERE "users"."id" = $3[0m  [["username", "ceci_pinilla"], ["username_changed_at", "2026-11-24 19:11:29"], ["id", 4]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.8ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+Started GET "/up" for 127.0.0.1 at 2026-11-24 13:13:00 -0600
+Processing by Rails::HealthController#show as HTML
+  Rendering html template
+  Rendered html template (Duration: 0.0ms | GC: 0.0ms)
+Completed 200 OK in 5ms (Views: 2.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:13:00.087532"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.6ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_dev"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:13:00.049022"], ["discarded_at", nil], ["created_at", "2026-11-24 19:13:00.093094"], ["updated_at", "2026-11-24 19:13:00.093094"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:13:00.105306"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:13:00.114074"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:13:00.119747"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_dev"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:13:00.116403"], ["discarded_at", nil], ["created_at", "2026-11-24 19:13:00.120355"], ["updated_at", "2026-11-24 19:13:00.120355"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:13:00"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_dev"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:13:00"], ["discarded_at", nil], ["created_at", "2026-11-24 19:13:00"], ["updated_at", "2026-11-24 19:13:00"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUsernameReservation Delete All (0.2ms)[0m  [1m[31mDELETE FROM "username_reservations" WHERE (LOWER(username) = $1)[0m  [[nil, "jader_dev"]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE LOWER("username_reservations"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Create (0.6ms)[0m  [1m[32mINSERT INTO "username_reservations" ("username", "previous_user_id", "expires_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["username", "jader_dev"], ["previous_user_id", 7], ["expires_at", "2026-12-24 19:13:00"], ["created_at", "2026-11-24 19:13:00"], ["updated_at", "2026-11-24 19:13:00"]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 7], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "jader_new"], ["id", 7], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:13:00"], [nil, "jader_new"], ["previous_user_id", 7], ["LIMIT", 1]]
+  [1m[36mUser Update (0.5ms)[0m  [1m[33mUPDATE "users" SET "username" = $1, "username_changed_at" = $2 WHERE "users"."id" = $3[0m  [["username", "jader_new"], ["username_changed_at", "2026-11-24 19:13:00"], ["id", 7]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUsernameReservation Delete All (0.6ms)[0m  [1m[31mDELETE FROM "username_reservations" WHERE (LOWER(username) = $1)[0m  [[nil, "jader_new"]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE LOWER("username_reservations"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_new"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Create (0.3ms)[0m  [1m[32mINSERT INTO "username_reservations" ("username", "previous_user_id", "expires_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["username", "jader_new"], ["previous_user_id", 7], ["expires_at", "2027-01-24 19:13:00"], ["created_at", "2026-12-25 19:13:00"], ["updated_at", "2026-12-25 19:13:00"]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 7], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "jader_third"], ["id", 7], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-12-25 19:13:00"], [nil, "jader_third"], ["previous_user_id", 7], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "username" = $1, "username_changed_at" = $2, "updated_at" = $3 WHERE "users"."id" = $4[0m  [["username", "jader_third"], ["username_changed_at", "2026-12-25 19:13:00"], ["updated_at", "2026-12-25 19:13:00"], ["id", 7]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:13:00"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "ceci_nata"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:13:00"], ["discarded_at", nil], ["created_at", "2026-11-24 19:13:00"], ["updated_at", "2026-11-24 19:13:00"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUsernameReservation Delete All (0.5ms)[0m  [1m[31mDELETE FROM "username_reservations" WHERE (LOWER(username) = $1)[0m  [[nil, "ceci_nata"]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE LOWER("username_reservations"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Create (0.4ms)[0m  [1m[32mINSERT INTO "username_reservations" ("username", "previous_user_id", "expires_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["username", "ceci_nata"], ["previous_user_id", 8], ["expires_at", "2026-12-24 19:13:00"], ["created_at", "2026-11-24 19:13:00"], ["updated_at", "2026-11-24 19:13:00"]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 8], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "ceci_pinilla"], ["id", 8], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:13:00"], [nil, "ceci_pinilla"], ["previous_user_id", 8], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "username" = $1, "username_changed_at" = $2 WHERE "users"."id" = $3[0m  [["username", "ceci_pinilla"], ["username_changed_at", "2026-11-24 19:13:00"], ["id", 8]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-29 19:13:00"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-12-25 19:13:00"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m

@@ -2,3 +2,19 @@
 # agentic:guild Transient Memory
 .agenticguild/*
 !.agenticguild/.gitkeep
+
+# Rails backend ignores
+/backend/log/*
+!/backend/log/.keep
+/backend/tmp/*
+!/backend/tmp/.keep
+!/backend/tmp/pids
+/backend/tmp/pids/*
+!/backend/tmp/pids/.keep
+/backend/storage/*
+!/backend/storage/.keep
+/backend/config/master.key
+/backend/config/credentials/*.key
+/backend/node_modules
+/backend/vendor/bundle
+*:Zone.Identifier

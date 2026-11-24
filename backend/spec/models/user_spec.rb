@@ -53,56 +53,52 @@ RSpec.describe User, type: :model do
   end
 
   describe "30-day username change cooldown & 30-day old-username quarantine [REQ-USER-001] [REQ-USER-004]" do
+    after { travel_back }
+
     it "allows the first username change after sign-up and enforces a 30-day cooldown before changing again [REQ-USER-001]" do
-      freeze_time do
-        user = described_class.create!(valid_attributes)
+      freeze_time
+      user = described_class.create!(valid_attributes)
 
-        # First change after creation succeeds and starts the 30-day cooldown
-        expect(user.change_username!("jader_new")).to be(true)
-        expect(user.reload.username).to eq("jader_new")
+      # First change after creation succeeds and starts the 30-day cooldown
+      expect(user.change_username!("jader_new")).to be(true)
+      expect(user.reload.username).to eq("jader_new")
 
-        # Attempting another change 10 days later fails due to 30-day cooldown
-        travel 10.days do
-          expect(user.change_username!("jader_third")).to be(false)
-          expect(user.errors[:username].join).to match(/30 days|cooldown/i)
-        end
+      # Attempting another change 10 days later fails due to 30-day cooldown
+      travel 10.days
+      expect(user.change_username!("jader_third")).to be(false)
+      expect(user.errors[:username].join).to match(/30 days|cooldown/i)
 
-        # After 31 days total (21 more days), the user can change their username again
-        travel 31.days do
-          expect(user.change_username!("jader_third")).to be(true)
-          expect(user.reload.username).to eq("jader_third")
-        end
-      end
+      # After 21 more days (31 days total), the user can change their username again
+      travel 21.days
+      expect(user.change_username!("jader_third")).to be(true)
+      expect(user.reload.username).to eq("jader_third")
     end
 
     it "quarantines the old username for 30 days so another user cannot claim it to impersonate them [REQ-USER-004]" do
-      freeze_time do
-        user1 = described_class.create!(valid_attributes.merge(username: "ceci_nata"))
-        user1.change_username!("ceci_pinilla")
+      freeze_time
+      user1 = described_class.create!(valid_attributes.merge(username: "ceci_nata"))
+      user1.change_username!("ceci_pinilla")
 
-        # Another user tries to register or switch to 'ceci_nata' 5 days later -> blocked by quarantine
-        travel 5.days do
-          impersonator = described_class.new(
-            valid_attributes.merge(
-              email_address: "other@example.com",
-              username: "ceci_nata"
-            )
-          )
-          expect(impersonator).not_to be_valid
-          expect(impersonator.errors[:username].join).to match(/quarantine|unavailable|taken/i)
-        end
+      # Another user tries to register or switch to 'ceci_nata' 5 days later -> blocked by quarantine
+      travel 5.days
+      impersonator = described_class.new(
+        valid_attributes.merge(
+          email_address: "other@example.com",
+          username: "ceci_nata"
+        )
+      )
+      expect(impersonator).not_to be_valid
+      expect(impersonator.errors[:username].join).to match(/quarantine|unavailable|taken/i)
 
-        # After 31 days, the quarantine on 'ceci_nata' expires and it becomes available
-        travel 31.days do
-          new_user = described_class.new(
-            valid_attributes.merge(
-              email_address: "other@example.com",
-              username: "ceci_nata"
-            )
-          )
-          expect(new_user).to be_valid
-        end
-      end
+      # After 26 more days (31 days total), the quarantine on 'ceci_nata' expires and it becomes available
+      travel 26.days
+      new_user = described_class.new(
+        valid_attributes.merge(
+          email_address: "other@example.com",
+          username: "ceci_nata"
+        )
+      )
+      expect(new_user).to be_valid
     end
   end
 end
