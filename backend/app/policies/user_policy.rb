@@ -12,4 +12,9 @@ class UserPolicy < ApplicationPolicy
 
     true
   end
+
+  # [REQ-LIFE-002] Permits a user to soft-delete their own account.
+  def destroy?
+    user.present? && record.is_a?(User) && user.id == record.id
+  end
 end

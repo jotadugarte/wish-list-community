@@ -5,6 +5,8 @@
 # and App Store / Google Play UGC terms acceptance.
 # Traceability: [REQ-USER-001], [REQ-USER-002], [REQ-USER-003], [REQ-USER-004], [REQ-AUTH-002]
 class User < ApplicationRecord
+  include SoftDeletable
+
   SUPPORTED_LOCALES = %w[es en].freeze
   SUPPORTED_ROLES = %w[user admin].freeze
   USERNAME_COOLDOWN_DURATION = 30.days
@@ -16,6 +18,12 @@ class User < ApplicationRecord
   has_many :api_tokens, dependent: :destroy
   has_many :device_tokens, dependent: :destroy
 
+  register_soft_delete_hook(:revoke_all_user_credentials) do |user_record|
+    user_record.device_tokens.delete_all
+    user_record.api_tokens.delete_all
+    user_record.sessions.delete_all
+  end
+
   # [REQ-AUTH-001] Authenticates an active (non-discarded) user by normalized email and password.
   def self.authenticate_active(raw_email, raw_password)
     vo = EmailAddress.new(raw_email)
@@ -23,6 +31,31 @@ class User < ApplicationRecord
     candidate&.authenticate(raw_password) || nil
   rescue ArgumentError
     nil
+  end
+
+  # [REQ-LIFE-002] Authenticates a discarded user by email and password for account restoration.
+  def self.authenticate_discarded(raw_email, raw_password)
+    vo = EmailAddress.new(raw_email)
+    candidate = discarded.find_by("LOWER(email_address) = ?", vo.value)
+    candidate&.authenticate(raw_password) || nil
+  rescue ArgumentError
+    nil
+  end
+
+  # [REQ-LIFE-002] Permanently anonymizes PII after the 30-day soft-delete grace window expires.
+  def anonymize_pii!
+    raise ArgumentError, "Pre-condition failed: user must be discarded > 30 days" if !discarded? || restorable?
+
+    purged_slug = "purged_#{id}_#{SecureRandom.hex(4)}"
+    update_columns(
+      email_address: "#{purged_slug}@purged.invalid",
+      username: purged_slug.first(30),
+      updated_at: Time.current
+    )
+
+    raise "Post-condition failed: PII must be anonymized" unless email_address.start_with?("purged_")
+
+    true
   end
 
   before_validation :normalize_identity_fields

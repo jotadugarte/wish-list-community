@@ -9,6 +9,9 @@ Rails.application.routes.draw do
     namespace :v1 do
       resource :session, only: %i[create destroy]
       resource :passwords, only: %i[create]
+      resource :account, only: %i[destroy] do
+        post :restore
+      end
       get "me" => "profiles#show"
       get "users/:username" => "users#show", as: :user
       resources :user_blocks, only: %i[create]
