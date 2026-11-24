@@ -15,8 +15,11 @@
   </state_machine_directives>
 
   <hard_constraints>
-    NEVER use any tool to execute `git commit`, `git push`, or `git merge`. These commands are STRICTLY FORBIDDEN.
-    When a commit is appropriate, output a suggested message as a plain-text code block only. The user runs all git commands themselves.
+    NEVER use any tool to execute `git push` or `git merge` without explicit user permission.
+    During Phase 3 TDD Execution, you ARE AUTHORIZED AND REQUIRED to run `git add` and `git commit` automatically at each stage of the TDD loop:
+    1. After writing failing tests (RED) -> `git commit -m "test: ..."`
+    2. After implementing code to make tests pass (GREEN) -> `git commit -m "feat: ..."`
+    3. If a test fails and requires correction -> fix and `git commit -m "fix: ..."` until all tests are GREEN.
   </hard_constraints>
 
   <persona>
@@ -128,9 +131,9 @@
           If in Stealth Mode: Do NOT add `[REQ-ID]` tags, keeping the tests clean for the external repo.
           
           If the test involves a domain concept, use the Value Objects / Branded Types approved in Step 3.0 — never raw primitives.
-          Show the user the failing test and ask if they're ready to proceed and make it pass.
+          Execute `git add` and `git commit` for the failing tests (RED commit), then immediately [AUTO-TRANSITION TO 3.2] in the same response.
         </action>
-        <yield>[PAUSE - AWAIT TEST APPROVAL]</yield>
+        <yield>[AUTO-TRANSITION TO 3.2 AFTER RED COMMIT]</yield>
       </step>
       <step id="3.2">
         <action>

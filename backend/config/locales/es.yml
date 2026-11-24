@@ -1,0 +1,11 @@
+es:
+  hello: "Hola mundo"
+  api:
+    v1:
+      errors:
+        unauthorized: "No autorizado"
+        conflict: "Conflicto de recurso o solicitud duplicada"
+        not_found: "No encontrado"
+        invalid_credentials: "Correo electrónico o contraseña inválidos"
+      passwords:
+        reset_sent: "Si ese correo electrónico está en nuestro sistema, hemos enviado las instrucciones para restablecer la contraseña."

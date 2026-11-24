@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "feat/**"
+      - "feature/**"
+      - "fix/**"
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  scan_ruby:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          working-directory: backend
+          bundler-cache: true
+
+      - name: Scan for common Rails security vulnerabilities (Brakeman)
+        run: bin/brakeman --no-pager
+
+      - name: Scan for known gem security vulnerabilities (Bundler Audit)
+        run: bin/bundler-audit
+
+  scan_js:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          working-directory: backend
+          bundler-cache: true
+
+      - name: Scan for JavaScript dependency vulnerabilities (Importmap)
+        run: bin/importmap audit
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          working-directory: backend
+          bundler-cache: true
+
+      - name: Lint code with RuboCop
+        run: bin/rubocop -f github
+
+  rspec:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres_ci_password
+          POSTGRES_DB: backend_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres_ci_password@localhost:5432/backend_test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies (libvips & libpq)
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev libpq-dev
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          working-directory: backend
+          bundler-cache: true
+
+      - name: Prepare test database
+        run: bin/rails db:schema:load
+
+      - name: Run RSpec test suite
+        run: bundle exec rspec

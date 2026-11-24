@@ -17,5 +17,5 @@
 
 ## 3. Mocking, Time & Concurrency Rules
 * **External Network & Store Scraping (`OpenGraph`):** MUST be mocked/stubbed in tests (e.g., WebMock). Tests must never make live HTTP calls to Amazon or external stores, and SSRF tests must verify rejection of private IP ranges (`127.0.0.1`, `10.0.0.0/8`, `169.254.169.254`).
-* **Time, Cooldowns & Timezones:** MUST be frozen or traveled deterministically using `ActiveSupport::Testing::TimeHelpers` (`freeze_time`, `travel_to`) to test the 30-day username cooldown/quarantine, 30-day account restoration window, and 72-hour timezone-aware reservation grace expiration.
+* **Time, Cooldowns & Timezones:** MUST be frozen or traveled deterministically using `ActiveSupport::Testing::TimeHelpers` (`freeze_time`, `travel`). **Rails 8.1 Gotcha:** Never nest `travel ... do` or `travel_to ... do` blocks inside a `freeze_time do` block (Rails 8.1 raises `RuntimeError`). Instead, call `freeze_time` without a block, advance time sequentially with `travel N.days`, and always reset in `after { travel_back }`.
 * **Randomness (Secret Santa Draw):** Random number generators in draw algorithms MUST accept an explicit deterministic seed in tests to verify single Hamiltonian cycle invariants without flakiness.
