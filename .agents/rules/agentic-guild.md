@@ -27,8 +27,8 @@ trigger: always_on
 
   <project_config>
     Projects fill in project-specific paths here. Skills that need these paths will read them.
-    Schema path: [e.g. db/schema.rb, prisma/schema.prisma, db/schema.ts]
-    Roadmap path: [optional, default docs/ROADMAP.md]
+    Schema path: backend/db/schema.rb
+    Roadmap path: docs/ROADMAP.md
   </project_config>
 
   <architectural_anchors>

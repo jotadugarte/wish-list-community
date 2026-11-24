@@ -7,11 +7,11 @@ Things done and things left to do. Update this when finishing branches; use `roa
 ---
 
 ## Technical decisions
-- Backend and web: Ruby on Rails 8 + PostgreSQL (server-rendered HTML + Hotwire)
-- Mobile (iOS and Android): Flutter, consuming the `/api/v1` API
-- JS built into the framework (Hotwire: Turbo + Stimulus) is accepted; no custom JS except for rare cases
-- Business logic and permissions live only on the server; web and Flutter are clients
-- Admin panel is web only (Rails), no mobile version
+- **Monorepo structure**: `backend/` (Ruby on Rails 8 + PostgreSQL + Solid Queue + Hotwire + Tailwind CSS + Pundit + RSpec) and `mobile/` (Flutter iOS + Android consuming `/api/v1`)
+- **JS policy**: Hotwire (Turbo + Stimulus via `importmap`) only; no heavy frontend SPA frameworks
+- **Server authority**: 100% of business logic, permissions, anti-stalking privacy, and reservation rules live on the server; Web and Flutter are clients
+- **Authentication security**: Web uses CSRF-protected cookie sessions; `/api/v1` uses a dedicated `api_tokens` table storing only SHA-256 `token_digest` (never raw tokens in DB), with FCM `device_token` unbinding on logout
+- **Admin panel**: Web only (Rails), backed by an immutable `audit_events` table
 
 ## Done
 *(No completed items yet)*
@@ -20,99 +20,94 @@ Things done and things left to do. Update this when finishing branches; use `roa
 *(No items currently in progress)*
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 1 — Base + Auth + API**
-  - [ ] Rails 8 + PostgreSQL project, Solid Queue, Hotwire (importmap)
-  - [ ] Versioned API `/api/v1` with token authentication (web uses cookie sessions)
-  - [ ] Central permissions layer (Pundit or custom policies): blocking, friendship, privacy, secret link, reservations
-  - [ ] Initial Flutter project + shared design system (colors, typography, icons, spacing)
-  - [ ] Authentication (sign up, login, logout, sessions) using the native Rails 8 generator; tokens for the API
-  - [ ] Reset password (MVP; email confirmation is left for v1)
-  - [ ] Public profile: unique `username` (email stays private), change with cooldown
-  - [ ] Block users (block wins: immediately cuts access even if there was a friendship/share/link)
-  - [ ] Soft-delete + restore (wishlist restores its items; restoring leaves no "ghost reservations")
-- [ ] **MVP Sprint 2 — Social**
-  - [ ] Search users by `username`
-  - [ ] Friend requests + accept/decline + friends list (friends only in MVP)
-  - [ ] Report user (MVP: reports only; full moderation in Sprint 8)
+- [ ] **MVP Sprint 1 — Base + Auth + API + Core Policies**
+  - [ ] Monorepo setup: `backend/` (Rails 8 + PostgreSQL + Solid Queue + Hotwire/Tailwind CSS + RSpec + Pundit) and `mobile/` skeleton (`REQ-ARCH-001`)
+  - [ ] Versioned API `/api/v1` with SHA-256 `api_tokens` authentication and `RecordNotUnique` idempotency handling; web uses cookie sessions (`REQ-AUTH-001`, `REQ-ARCH-003`)
+  - [ ] Authentication (sign up with `terms_accepted_at`, login, logout, sessions), anti-enumeration password reset (always generic `200 OK`), and Rails 8 `rate_limit` on auth endpoints (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`)
+  - [ ] Public profile: unique `@username` (email stays strictly private), 30-day change cooldown + 30-day quarantine on previous `@username`, preferred `locale` (`es`/`en`), and `time_zone` (`REQ-USER-001`, `REQ-USER-002`, `REQ-USER-003`, `REQ-USER-004`)
+  - [ ] Central Pundit permissions layer (*default-deny*) + Block users ("block wins": immediately cuts access and transactionally destroys friendship, shares, and active reservations) + immutable `AuditEvent` foundation (`REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`)
+  - [ ] Soft-delete + restore (30-day account restoration window before PII purge; wishlist restore cascades to items and leaves zero "ghost reservations") (`REQ-LIFE-001`, `REQ-LIFE-002`)
+  - [ ] Initial Flutter project + shared design system (colors, typography, icons, spacing) (`REQ-ARCH-001`)
+- [ ] **MVP Sprint 2 — Social & Anti-Stalking Profile Search**
+  - [ ] Search users by `@username` (anti-stalking: non-friends only see `@username` and *"Send Friend Request"* button, never personal wishlists) (`REQ-SOC-001`, `REQ-WISH-001`)
+  - [ ] Friend requests + accept/decline + friends list (enforced by unordered unique pair index in PostgreSQL) (`REQ-SOC-001`)
+  - [ ] Report user (MVP: reports queue; full moderation in Sprint 8) (`REQ-SOC-001`)
   - [ ] API v1 endpoints + Flutter screens for this sprint
-- [ ] **MVP Sprint 3 — Wishlists (privacy + sharing)**
-  - [ ] Wishlist CRUD
-  - [ ] Privacy per wishlist:
-    - [ ] Public: visible in Discover and by link
-    - [ ] Private: visible to friends only
-    - [ ] Shared: specific friends only + secret link
-  - [ ] Secret link (does not expire); automatically invalidated when the wishlist becomes "private"
-  - [ ] Guests can view public wishlists (Discover and by link); they cannot reserve/gift
+- [ ] **MVP Sprint 3 — Wishlists (Anti-Stalking Privacy + Secret Links)**
+  - [ ] Wishlist CRUD with optional `event_date`, immutable URLs (`/wishlists/:id` and `/s/:share_token` independent of `@username`), and v1-ready nullable `activity_id` (`REQ-WISH-004`, `REQ-WISH-006`, `REQ-ARCH-002`)
+  - [ ] Anti-stalking privacy per personal wishlist (`REQ-WISH-001`, `REQ-WISH-002`, `REQ-WISH-003`):
+    - [ ] `friends`: visible to accepted friends only (never exposed to strangers searching `@username`)
+    - [ ] `shared`: visible to specific selected friends + anyone opening the Secret Link (`share_token`)
+  - [ ] Secret link lifecycle: automatically invalidated when switched to `friends`-only; renders safe OpenGraph invitation preview on WhatsApp without leaking items to bots; preserves `return_to` across login/sign-up; auto-saves to *"Shared with me"* for logged-in viewers (`REQ-WISH-002`, `REQ-WISH-003`, `REQ-WISH-005`)
+  - [ ] Guests can view an explicitly shared link preview/activity link as permitted, but must log in to reserve/gift (`REQ-WISH-001`, `REQ-WISH-002`)
   - [ ] API v1 endpoints + Flutter screens for this sprint
-- [ ] **MVP Sprint 4 — Items + media**
-  - [ ] Item CRUD with notes (size/color) and multiple links per item
-  - [ ] Up to 3 images per item:
+- [ ] **MVP Sprint 4 — Items + Media + Automatic Store Image Extraction**
+  - [ ] Item CRUD (`1 item = 1 unit`), prominent `specifications` note below the image (for exact color/size/variant clarifications), `priority` desire levels (`low`, `medium`, `high`, `must_have`), multiple `http/https` purchase links (`ItemLink`), and v1-ready nullable `price_cents`/`currency` (`REQ-ITEM-001`, `REQ-ITEM-003`, `REQ-ITEM-005`, `REQ-ARCH-002`)
+  - [ ] Automatic best-effort extraction of product image and title (`og:image`, `og:title` with SSRF protection) when pasting or sharing a store link (e.g., Amazon, MercadoLibre) (`REQ-ITEM-006`)
+  - [ ] Up to 3 images per item (`REQ-ITEM-002`):
     - [ ] Max 2MB each, max 1600px on the longest side
     - [ ] Optional client-side compression (UX)
-    - [ ] Mandatory server-side resize + re-encode (WebP when possible; PNG allowed and converted to WebP when applicable)
+    - [ ] Mandatory server-side resize + WebP re-encode + full EXIF/GPS metadata stripping via `libvips`
   - [ ] API v1 endpoints + Flutter screens for this sprint
-- [ ] **MVP Sprint 5 — Reservations (private)**
-  - [ ] Reserve an item (logged-in users with access only) with "first to reserve wins" concurrency
-  - [ ] One active reservation per item
-    - [ ] Enforced by a partial unique index in PostgreSQL (one active reservation per item)
-  - [ ] Private note from the reserver (nobody else sees it)
-  - [ ] Private estimated date from the reserver (the recipient never sees reservations)
-  - [ ] If the date expires: notify the reserver "Date expired"; the reserver decides to extend the date or remove the reservation (no auto-release)
+- [ ] **MVP Sprint 5 — Secret Reservations (72h Grace Auto-Release & Context-Aware Limits)**
+  - [ ] Reserve an item (logged-in users with access only) with "first to reserve wins" concurrency enforced by a PostgreSQL partial unique index (`WHERE status IN ('active', 'expired_grace')`) (`REQ-RES-001`)
+  - [ ] Zero spoilers for recipient: owner never sees reservation state, and reservation mutations never update `items.updated_at` (`REQ-RES-002`)
+  - [ ] Context-aware reservation limits: personal wishlists default to unlimited per friend (or owner-configurable limit); group activities default to 1 per participant (`REQ-RES-005`)
+  - [ ] Private note and timezone-aware private `estimated_date` from the reserver (`REQ-RES-001`, `REQ-USER-003`)
+  - [ ] 72-hour expiration grace window: when `estimated_date` expires, notify reserver and grant 72 hours (3 days) to extend or mark purchased; if ignored after 72 hours, automatically release the reservation (`REQ-RES-006`)
+  - [ ] Dedicated *"My Reservations"* screen/endpoint (`/api/v1/my_reservations`) + instant notification to reserver if owner edits critical details or deletes a reserved item (`REQ-RES-003`, `REQ-RES-004`)
   - [ ] API v1 endpoints + Flutter screens for this sprint
-- [ ] **MVP Sprint 6 — Gifted + anonymity + conflict resolution**
-  - [ ] Mark an item as "gifted" (owner or gifter), even if nobody reserved it
-  - [ ] Anonymous for users; admin can audit
-  - [ ] When marking as "gifted":
-    - [ ] Cancel the active/expired reservation if one exists
-    - [ ] Notify the reserver "Already delivered; reservation removed"
-  - [ ] Store a reference to the link used for an "online" gift (visible to admin only)
+- [ ] **MVP Sprint 6 — Dual-Path Gift Fulfillment + Anonymous Thank-You Note**
+  - [ ] Unified `"Reserved / Unavailable"` status shown to other friends for both reserved and secretly purchased items; third-party friends cannot override another friend's active reservation (`REQ-GIFT-002`)
+  - [ ] Dual-path fulfillment (`REQ-GIFT-001`, `REQ-GIFT-003`):
+    - [ ] Path 1 (Gifter-initiated): Reserver marks `purchased_secret` (hidden from owner) -> marks `delivered_pending_confirmation` (sends anonymous prompt to owner) -> owner confirms `received_confirmed`
+    - [ ] Path 2 (Owner 1-step): Owner directly marks any item as `received_confirmed` in 1 step (closing any active reservation and notifying the reserver)
+  - [ ] Visual separation of `received_confirmed` items into a *"Received Gifts"* section at the bottom of the wishlist (`REQ-ITEM-004`)
+  - [ ] Optional anonymous *"Thank You"* note from owner upon confirming receipt, delivered privately to the gifter without revealing the gifter's identity (`REQ-GIFT-004`)
+  - [ ] Store reference to the purchase link used for an online gift (visible to admin audit only) (`REQ-ADM-001`)
   - [ ] API v1 endpoints + Flutter screens for this sprint
-- [ ] **MVP Sprint 7 — Discover + anti-spam + reports**
-  - [ ] Discover (public users + public wishlists), no follow/like
-  - [ ] Rate limits (anti-spam; Rails 8 includes a built-in `rate_limit`) + report wishlist
-  - [ ] Sensitive content: handled through reports only (no automatic review in MVP)
+- [ ] **MVP Sprint 7 — Anti-Spam, Rate Limits & Wishlist Reports**
+  - [ ] Rails 8 `rate_limit` anti-spam protection across mutation and report endpoints + report wishlist (`REQ-DISC-001`)
+  - [ ] Sensitive content handled through reports queue (`REQ-DISC-001`)
   - [ ] API v1 endpoints + Flutter screens for this sprint
-- [ ] **MVP Sprint 8 — Admin/Moderation (web only)**
-  - [ ] Admin panel: report queue + actions (block)
-  - [ ] Admin can view internal history (reservations/gifts/changes) and revert for error/abuse
-  - [ ] Admin sees the identity of gifters (for auditing) and the link used in an online gift
-- [ ] **MVP Sprint 9 — Mobile wrap-up (Flutter iOS + Android)**
-  - [ ] Full MVP parity with the web app in the Flutter apps
-  - [ ] Deep links (Universal Links on iOS, App Links on Android): public profile, public wishlist, secret link
-  - [ ] Image upload from mobile: in-app compression respecting limits (2MB, 1600px, max 3)
-  - [ ] Push notifications via Firebase Cloud Messaging (optional in MVP; email + in-app are required)
-  - [ ] Publication on the App Store and Google Play
-- [ ] **Notifications (MVP) — in-app + email (configurable per user)**
-  - [ ] Preferences per event (in-app/email toggles)
-  - [ ] Single dispatcher to create in-app + enqueue email (+ push when available; device tokens table)
-  - [ ] Minimum events:
-    - [ ] Friend request received
-    - [ ] Friend request accepted
-    - [ ] Reservation date expired (reserver only)
-    - [ ] Reservation canceled because the gift was delivered (reserver only)
+- [ ] **MVP Sprint 8 — Admin/Moderation (Web Only)**
+  - [ ] Admin panel: report queue + moderation actions (block/suspend) (`REQ-ADM-001`)
+  - [ ] Admin audit log viewer (`AuditEvent` history of reservations/gifts/changes) with 1-click revert for error/abuse (`REQ-ADM-001`)
+  - [ ] Admin auditing of gifter identity and online gift purchase link (`REQ-ADM-001`)
+- [ ] **MVP Sprint 9 — Mobile Wrap-Up & Native "Share to App" Sheet (Flutter iOS + Android)**
+  - [ ] Full MVP parity with the web app in the Flutter apps (`REQ-MOB-001`)
+  - [ ] Native OS *"Share to App"* sheet extension (iOS & Android) with smart parsing of mixed text + URL from store apps (Amazon, MercadoLibre) + automatic store image preview directly into *"Add Item to Wishlist"* (`REQ-MOB-001`, `REQ-MOB-002`, `REQ-ITEM-006`)
+  - [ ] Deep links (Universal Links on iOS, App Links on Android): friend profile, secret link, activity link (`REQ-MOB-001`)
+  - [ ] Image upload from mobile: in-app compression respecting limits (2MB, 1600px, max 3) (`REQ-MOB-001`)
+  - [ ] Push notifications via Firebase Cloud Messaging with automatic `device_token` unbinding on logout (`REQ-NOTIF-001`, `REQ-NOTIF-002`)
+  - [ ] Publication readiness for App Store and Google Play (including in-app account deletion & UGC EULA compliance) (`REQ-LIFE-002`, `REQ-AUTH-002`)
+- [ ] **Notifications (MVP) — In-App + Email + Push (Configurable per User)**
+  - [ ] Preferences per event (in-app/email/push toggles) (`REQ-NOTIF-001`)
+  - [ ] Single localized dispatcher to create in-app + enqueue email + push (`device_tokens` bound to `api_token_id`) (`REQ-NOTIF-001`, `REQ-NOTIF-002`, `REQ-USER-002`)
+  - [ ] Events covered:
+    - [ ] Friend request received & accepted
+    - [ ] Reservation date expired (72h grace warning to reserver) & auto-released
+    - [ ] Reserved item edited or deleted by owner (reserver/gifter only)
+    - [ ] Gift marked as delivered (anonymous confirmation prompt to owner) & owner anonymous thank-you note (to gifter)
+    - [ ] Reservation closed because owner marked gift as received
 
 ## Backlog
-- [ ] **v1 Sprint A — Activities (configurable system)**
-  - [ ] Create a group activity (owner, name, dates, single currency, budget per individual gift)
-  - [ ] Settings when creating an activity:
-    - [ ] `assignment_mode`: `secret_santa` (1→1) / `open_gifting` (everyone to everyone)
+- [ ] **v1 Sprint A — Activities (Configurable System + Exclusions + Blind Dropout Bridge)**
+  - [ ] Create a group activity (owner, name, dates, single currency, external activity link scoped strictly to that activity's info) (`REQ-ACT-001`)
+  - [ ] 5 configurable budget modes per activity (`budget_mode`: `none`, `fixed`, `min_only`, `max_only`, `range`) (`REQ-ACT-005`)
+  - [ ] Settings when creating an activity (`REQ-ACT-001`):
+    - [ ] `assignment_mode`: `secret_santa` (1->1) / `open_gifting` (everyone to everyone)
     - [ ] `visibility_mode`: `recipient_only` / `all_participants`
     - [ ] `reservation_visibility`: `hidden_from_recipient` / `visible_to_recipient`
-  - [ ] Invite friends / accept participants (blocks prevent participation)
-  - [ ] Draw for `secret_santa`
-- [ ] **v1 Sprint B — Activities (lists + reservations + budget)**
-  - [ ] Each user adds their activity items (manual price + currency)
-  - [ ] Reservations within an activity (`open_gifting` allows reserving for multiple people)
-  - [ ] Budget validation: do not allow reserving an item with a price above the budget (per individual gift)
+  - [ ] Invite friends / accept participants (blocks prevent participation; minimum 3 `accepted` participants required to draw) (`REQ-ACT-001`)
+  - [ ] Pair Exclusions (`ActivityExclusion`: Participant A cannot draw Participant B) with bounded deterministic solvability validation and single Hamiltonian cycle draw (`REQ-ACT-002`, `REQ-ACT-004`)
+  - [ ] Post-draw participant dropout recovery: creator chooses between **Blind Auto-Bridge** (server bridges `A -> C` without ever revealing to the creator who gifts whom) or **Full Redraw** (`REQ-ACT-003`, `REQ-ACT-004`)
+- [ ] **v1 Sprint B — Activities (Lists + Reservations + Budget Enforcement)**
+  - [ ] Each user adds their activity items (manual price + currency) (`REQ-ACT-005`)
+  - [ ] Reservations within an activity (default 1 active reservation per participant in `secret_santa`; configurable in `open_gifting`) (`REQ-RES-005`)
+  - [ ] Budget validation enforcing the activity's chosen `budget_mode` (`fixed`, `min_only`, `max_only`, `range`) (`REQ-ACT-005`)
+- [ ] **v1 — Group Co-Gifting ("Cooperacha")**
+  - [ ] Allow a reserver of an expensive item to invite 1 or more friends to chip in and share that reservation
 - [ ] **v1 — Email confirmation**
-- [ ] **v1 — Share with non-friends**
-  - [ ] Share with any user (non-friend) + anti-abuse hardening
 - [ ] **Backlog v1 — Activities: "don't repeat last year's gift" (optional)**
 - [ ] **Backlog — Validate price against link (best-effort)**
-
-<!--
-Example formats:
-- [x] Auth & sessions (REQ-AUTH-001) — 2026-02-15
-- [ ] User dashboard (REQ-DASH-001) — Branch: feature/dashboard
-1. [ ] Export to CSV (REQ-EXPORT-001)
--->

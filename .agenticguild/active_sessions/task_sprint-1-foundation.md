@@ -106,6 +106,25 @@
 - **Backlog Addition — Group Co-Gifting ("Cooperacha")**:
   - Added to Backlog v1 so multiple friends can optionally chip in on a single expensive item reservation in the future.
 
+## Phase 8 Discovery: Co-Founder Review Feedback from Ceci Pinilla ("Ñata") — APPROVED IN ROUND 2 (5/5 Approved — "Todo cool!")
+*Sources: `docs/references/revision_diseno_nata_completada.html` (Round 1) & `docs/references/revision_onda_2_nata_completada.html` (Round 2: 5/5 Approved)*
+
+1. **Ajuste 01 (Bloques 04 & 09) — Anti-Stalking Privacy & Complete Visibility Scenario Matrix (`REQ-WISH-001`, `REQ-DISC-001` — APPROVED)**:
+   - Searching a user's `@username` NEVER exposes their personal wishlists to strangers (only shows `@username` and *"Send Friend Request"*). No public stalking catalog of personal wishlists.
+   - Personal wishlists are accessible only to **accepted friends** (`friends`) or **selected friends + explicit Secret Link** (`shared`).
+   - Group Activity links can be shared with external guests outside the app, exposing **exclusively** the information and items of that specific activity without exposing personal profiles or other lists.
+2. **Ajuste 02 (Bloque 05) — Automatic Store Image/Title Extraction in MVP + Specification Notes (`REQ-ITEM-006` — APPROVED)**:
+   - Promoted **Automatic Store Image & Title Extraction (`og:image`, `og:title`)** from Backlog into **MVP (Sprint 4 / Sprint 9)** when pasting or sharing a link from Amazon/MercadoLibre/stores (with manual upload of up to 3 photos also supported).
+   - Dedicated, prominent **`specifications` / variant note** field right below the item photo so the owner can clarify exact color/size/model when the store's default preview image shows a different variant.
+3. **Ajuste 03 (Bloque 06) — 72-Hour Auto-Release Grace Window on Expired Reservations & Context-Aware Reservation Limits (`REQ-RES-005`, `REQ-RES-006` — APPROVED)**:
+   - **72-Hour Auto-Release**: When `estimated_date` expires, notify the reserver and grant a **72-hour (3-day) grace window** to extend (with max extension cap) or mark as purchased; if ignored after 72 hours, **automatically release** the reservation so the item is never stuck for years.
+   - **Context-Aware Reservation Limits**: Personal wishlists default to **no per-person cap** (or owner-configurable limit) so partners/family can reserve multiple gifts in Christmas/Birthdays; Group Activities (`secret_santa`) default to **1 active reservation per participant** (or organizer-configured limit).
+4. **Ajuste 04 (Bloque 07) — Unified "Reserved / Unavailable" Status for Other Friends & Strict Reserver Ownership (`REQ-GIFT-002`, `REQ-GIFT-003` — APPROVED)**:
+   - While an item is reserved or purchased in secret, all other friends simply see a single unified state: **`"Reserved / Unavailable"`** (no need to expose `"Gifted"` to third parties before delivery).
+   - **No Third-Party Conflict**: Another friend cannot mark an already-reserved item as gifted or override someone else's active reservation. Only the active reserver can mark it purchased/delivered, OR the **wishlist owner** can mark *"I already received this"* (e.g., gifted offline), which cancels the reservation and notifies the reserver.
+5. **Ajuste 05 (Bloque 08) — 5 Flexible Budget Modes in Group Activities (`REQ-ACT-005` — APPROVED)**:
+   - When creating a Group Activity, the organizer chooses from 5 budget rules (`budget_mode`): `fixed` (exact amount), `min_only` (minimum), `max_only` (maximum), `range` (min and max), or `none` (unrestricted).
+
 ## Domain Model (Project-Wide Overview)
 
 ### 1. `User` (Sprint 1)
@@ -122,34 +141,35 @@
   - Unique unordered pair index on `friendships` (`LEAST(requester_id, addressee_id), GREATEST(requester_id, addressee_id)`) prevents duplicate inverse friend requests.
 
 ### 3. `Wishlist` & `WishlistShare` (Sprint 3)
-- **Responsibility**: Container of desired items with configurable privacy (`public`, `private`, `shared`), optional `event_date`, and optional secret link (`share_token`).
+- **Responsibility**: Container of desired items with anti-stalking privacy (`friends` for all accepted friends, `shared` for specific friends + optional `share_token` Secret Link), optional `event_date`, and configurable `max_reservations_per_user` (nullable/unlimited by default for personal wishlists).
 - **Invariants**:
-  - `share_token` is present only when `privacy == 'shared'`; changing to `private` immediately invalidates `share_token`.
+  - Strangers searching `@username` never see personal wishlists.
+  - Switching a `shared` wishlist to private friends-only immediately invalidates `share_token`.
   - Soft-deleting a `Wishlist` cascades soft-delete to its `Items` and permanently cancels active `Reservations` (no ghost reservations on restore).
 
 ### 4. `Item` & `ItemLink` (Sprint 4)
-- **Responsibility**: A single giftable unit inside a `Wishlist`, with `priority` (`low`, `medium`, `high`, `must_have`), notes (size/color), nullable `price_cents`/`currency` (for v1 Activities), multiple external purchase URLs (`ItemLink`), and up to 3 processed WebP images.
+- **Responsibility**: A single giftable unit inside a `Wishlist`, with `priority` (`low`, `medium`, `high`, `must_have`), prominent `specifications` note (exact color/size/variant clarification), nullable `price_cents`/`currency` (for v1 Activities), multiple external purchase URLs (`ItemLink`), automatic store image/title extraction (`og:image`, `og:title`), and up to 3 processed WebP images.
 - **Invariants**:
   - Max 3 images per item; each <= 2MB and <= 1600px longest side; all EXIF/GPS stripped via `libvips`.
   - Reservation/Gift mutations must never touch `Item#updated_at` (prevents timing side-channel leaks to the item owner).
-- **Value Objects**: `ExternalUrl` (strict `http/https` validation), `ImageDimensions`.
+- **Value Objects**: `ExternalUrl` (strict `http/https` validation + SSRF-safe metadata preview), `ImageDimensions`.
 
 ### 5. `Reservation` & `GiftRecord` (Sprints 5–6)
-- **Responsibility**: Tracks item reservations (`active`, `expired`, `canceled`, `completed_by_gift`) and dual-path gift fulfillment (`purchased_secret`, `delivered_pending_confirmation`, `received_confirmed`) with optional anonymous thank-you note.
+- **Responsibility**: Tracks item reservations (`active`, `expired_grace`, `auto_released`, `canceled`, `completed_by_gift`) with a 72-hour auto-release grace window after `estimated_date`, and dual-path gift fulfillment (`purchased_secret`, `delivered_pending_confirmation`, `received_confirmed`) with optional anonymous thank-you note.
 - **Invariants**:
-  - Enforced by PostgreSQL partial unique index: `CREATE UNIQUE INDEX idx_unique_active_reservation ON reservations (item_id) WHERE status IN ('active', 'expired')`.
-  - Anti-hoarding limit: Max 3 active reservations simultaneously per user within the same wishlist (no global limit).
+  - Enforced by PostgreSQL partial unique index: `CREATE UNIQUE INDEX idx_unique_active_reservation ON reservations (item_id) WHERE status IN ('active', 'expired_grace')`.
+  - Other friends only see unified `"Reserved / Unavailable"` status; third parties cannot override another friend's active reservation (only the reserver or the wishlist owner confirming receipt can complete/close it).
   - Invisible to the wishlist owner until `delivered_pending_confirmation` or `received_confirmed`.
 
 ### 6. `Activity`, `ActivityParticipant` & `ActivityExclusion` (v1 Sprints A–B)
-- **Responsibility**: Group gifting (`secret_santa` 1->1 single Hamiltonian cycle draw or `open_gifting`), participant status, pair exclusions, blind dropout bridging, and per-gift budget validation.
+- **Responsibility**: Group gifting (`secret_santa` 1->1 single Hamiltonian cycle draw or `open_gifting`), external activity link access (scoped strictly to that activity's info), 5 budget modes (`none`, `fixed`, `min_only`, `max_only`, `range`), default 1 reservation limit per participant in Secret Santa, pair exclusions, and blind dropout bridging.
 
 ### 7. `Report`, `AuditEvent`, `NotificationPreference` & `DeviceToken` (Sprints 2, 7, 8 & Notifications)
 - **Responsibility**: Abuse reporting (`Report` polymorphic on `User`/`Wishlist`), immutable admin audit trail (`AuditEvent`), localized notifications (`in_app`, `email`, `push`), and `api_token`-bound `DeviceToken` (auto-unbound on logout).
   </working_notes>
 
   <implementation_plan>
-    <step id="1" status="pending">Synchronize all project governance and architecture anchor documents (`docs/ROADMAP.md`, `docs/core/SYSTEM_ARCHITECTURE.md`, `docs/core/SPEC.md`, `docs/core/DATA_FLOW_MAP.md`, `docs/core/TESTING_STRATEGY_MATRIX.md`, `.cursorrules`, and `.agents/rules/agentic-guild.md`) with our complete holistic architecture, domain glossary, business rules, and `[REQ-ID]` traceability codes.</step>
+    <step id="1" status="done">Synchronize all project governance and architecture anchor documents (`docs/ROADMAP.md`, `docs/core/SYSTEM_ARCHITECTURE.md`, `docs/core/SPEC.md`, `docs/core/DATA_FLOW_MAP.md`, `docs/core/TESTING_STRATEGY_MATRIX.md`, `.cursorrules`, and `.agents/rules/agentic-guild.md`) with our complete holistic architecture, domain glossary, business rules, and `[REQ-ID]` traceability codes.</step>
     <step id="2" status="pending">Bootstrap the monorepo foundation (`backend/` with Ruby on Rails 8 + PostgreSQL + Solid Queue + Hotwire/Tailwind CSS + RSpec + Pundit, and `mobile/` directory structure for Flutter) and run a smoke test to verify a green test runner baseline.</step>
     <step id="3" status="pending">Write failing RSpec unit and model specs (`[REQ-USER-001]`, `[REQ-USER-002]`, `[REQ-USER-003]`, `[REQ-USER-004]`, `[REQ-AUTH-002]`) for `User` (private normalized email, unique `@username`, 30-day username change cooldown + 30-day old-username quarantine, `locale`, `time_zone`, `terms_accepted_at`), then implement `User`, value objects (`EmailAddress`, `Username`), and migrations to make the tests pass.</step>
     <step id="4" status="pending">Write failing RSpec request and model specs (`[REQ-AUTH-001]`, `[REQ-AUTH-003]`, `[REQ-NOTIF-002]`) for Web Cookie Sessions and `/api/v1` Token Authentication (`ApiToken` with SHA-256 `token_digest`, expiration, revocation, `device_token` unbinding on logout, generic `200 OK` password reset anti-enumeration, and Rails 8 `rate_limit`), then implement the controllers and authentication services to make the tests pass.</step>

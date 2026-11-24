@@ -5,8 +5,8 @@
   </active_task_pointer>
 
   <execution_context>
-    <active_skill>explore-task</active_skill>
-    <current_phase>Phase 2: The Handoff (Finalize & Kickoff)</current_phase>
-    <current_step>Step 2.1</current_step>
+    <active_skill>sync-docs</active_skill>
+    <current_phase>Phase 3: Apply Updates</current_phase>
+    <current_step>Step 3.1</current_step>
   </execution_context>
 </agent_state>

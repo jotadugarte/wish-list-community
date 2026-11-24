@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documento de Diseño y Revisión — Wish List Community (Para Ceci / Ñata)</title>
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --surface-alt: #f0eee8;
+      --text: #1c1b18;
+      --text-muted: #5c5952;
+      --border: #dfdcd3;
+      --border-strong: #c5c0b4;
+      --accent: #1e3a2f;
+      --accent-light: #e9f0ed;
+      --approve: #1b5e3c;
+      --approve-bg: #eaf4ee;
+      --approve-border: #9bc9b0;
+      --changes: #8a5300;
+      --changes-bg: #fdf5e6;
+      --changes-border: #e5c384;
+      --reject: #8c2323;
+      --reject-bg: #fbecec;
+      --reject-border: #dfa3a3;
+      --radius: 10px;
+      --shadow: 0 2px 8px rgba(28, 27, 24, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding-bottom: 110px;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    header.hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    header.hero h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    header.hero p.lead {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .instructions-box {
+      background: var(--surface-alt);
+      border-left: 4px solid var(--accent);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      font-size: 14px;
+    }
+
+    .instructions-box strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .instructions-box ol {
+      padding-left: 20px;
+      color: var(--text-muted);
+    }
+
+    .instructions-box li {
+      margin-bottom: 4px;
+    }
+
+    .reviewer-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .reviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .reviewer-info label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .reviewer-info input {
+      font-size: 15px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text);
+      min-width: 220px;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      background: var(--surface-alt);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s ease;
+    }
+
+    .section-card[data-status="approved"] {
+      border-left: 5px solid var(--approve);
+    }
+
+    .section-card[data-status="changes"] {
+      border-left: 5px solid var(--changes);
+    }
+
+    .section-card[data-status="rejected"] {
+      border-left: 5px solid var(--reject);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .section-num {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .status-badge {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 5px 10px;
+      border-radius: 4px;
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .section-card[data-status="approved"] .status-badge {
+      background: var(--approve-bg);
+      color: var(--approve);
+    }
+
+    .section-card[data-status="changes"] .status-badge {
+      background: var(--changes-bg);
+      color: var(--changes);
+    }
+
+    .section-card[data-status="rejected"] .status-badge {
+      background: var(--reject-bg);
+      color: var(--reject);
+    }
+
+    .section-summary {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .detail-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .detail-item h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .detail-item p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .decision-controls {
+      background: var(--surface-alt);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .decision-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .decision-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .decision-btn {
+      flex: 1;
+      min-width: 160px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .decision-btn:hover {
+      border-color: var(--text);
+    }
+
+    .decision-btn.active-approved {
+      background: var(--approve-bg);
+      border-color: var(--approve);
+      color: var(--approve);
+      font-weight: 700;
+    }
+
+    .decision-btn.active-changes {
+      background: var(--changes-bg);
+      border-color: var(--changes);
+      color: var(--changes);
+      font-weight: 700;
+    }
+
+    .decision-btn.active-rejected {
+      background: var(--reject-bg);
+      border-color: var(--reject);
+      color: var(--reject);
+      font-weight: 700;
+    }
+
+    .comment-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .comment-field textarea {
+      width: 100%;
+      min-height: 74px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+    }
+
+    .comment-field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border-strong);
+      padding: 14px 20px;
+      box-shadow: 0 -4px 16px rgba(28, 27, 24, 0.08);
+      z-index: 100;
+    }
+
+    .sticky-footer-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .progress-summary {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .progress-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: block;
+      font-weight: 400;
+    }
+
+    .export-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.92;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      background: var(--text);
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 200;
+    }
+
+    .toast.visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 640px) {
+      header.hero {
+        padding: 22px;
+      }
+      .section-card {
+        padding: 20px;
+      }
+      .sticky-footer-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .export-actions {
+        width: 100%;
+      }
+      .btn-primary, .btn-secondary {
+        flex: 1;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header class="hero">
+      <span class="eyebrow">Documento de Definición de Producto</span>
+      <h1>Diseño Completo de la App — Wish List Community</h1>
+      <p class="lead">
+        Hola Ceci (Ñata). Este documento reúne todas las decisiones de diseño, funciones, reglas de privacidad y flujos de nuestra aplicación de listas de deseos y regalos sociales antes de empezar a programarla.
+      </p>
+      <div class="instructions-box">
+        <strong>Cómo revisar este documento:</strong>
+        <ol>
+          <li>Lee cada uno de los 10 bloques funcionales de la aplicación.</li>
+          <li>En cada bloque, marca si estás de acuerdo (<strong>Aprobado</strong>), si te gusta pero quieres ajustar algo (<strong>Aprobado con ajustes</strong>) o si prefieres cambiarlo (<strong>Cambiar / Rechazar</strong>), y escribe tus notas.</li>
+          <li>Al terminar, haz un solo clic en el botón inferior <strong>"Guardar y Descargar HTML con mis respuestas"</strong> y envíame el archivo que se descargue.</li>
+        </ol>
+      </div>
+    </header>
+
+    <div class="reviewer-bar">
+      <div class="reviewer-info">
+        <label for="reviewer-name">Revisado por:</label>
+        <input type="text" id="reviewer-name" value="Ceci Pinilla (Ñata)">
+      </div>
+      <div class="quick-actions">
+        <button type="button" class="btn-secondary" id="btn-approve-pending">
+          Marcar pendientes como Aprobados
+        </button>
+        <button type="button" class="btn-secondary" id="btn-reset-all">
+          Limpiar respuestas
+        </button>
+      </div>
+    </div>
+
+    <div id="sections-container"><section class="section-card" id="sec-1-vision-plataformas" data-status="approved">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 01</span>
+              <h2 class="section-title">Concepto General y Plataformas (Web + App Móvil iOS y Android)</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-1-vision-plataformas">Aprobado</span>
+          </div>
+          <p class="section-summary">Una plataforma social para crear listas de deseos, compartirlas con amigos o familiares, reservar regalos en secreto sin arruinar la sorpresa y organizar intercambios de regalos (como Amigo Secreto).</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>Aplicación Web y Aplicaciones Móviles Nativas</h4>
+              <p>Tendremos versión Web rápida (construida en Ruby on Rails 8 con Hotwire y Tailwind CSS) y aplicaciones móviles para iPhone (iOS) y Android (construidas en Flutter).</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Cerebro único en el servidor</h4>
+              <p>Toda la lógica de privacidad, permisos y reservas vive centralizada en el servidor. Así tanto la Web como la app de iPhone y Android se comportan exactamente igual y con la máxima seguridad.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Soporte de Idioma y Zona Horaria</h4>
+              <p>La plataforma estará preparada desde el inicio para Español e Inglés, respetando la zona horaria de cada usuario para fechas de eventos y recordatorios.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn active-approved" data-sec="sec-1-vision-plataformas" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-1-vision-plataformas" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-1-vision-plataformas" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-1-vision-plataformas">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-1-vision-plataformas" data-sec="sec-1-vision-plataformas" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto..."></textarea>
+            </div>
+          </div>
+        </section><section class="section-card" id="sec-2-perfil-privacidad" data-status="approved">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 02</span>
+              <h2 class="section-title">Cuentas de Usuario, Perfil Público y Privacidad del Correo</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-2-perfil-privacidad">Aprobado</span>
+          </div>
+          <p class="section-summary">El correo electrónico de cada persona es estrictamente privado. La identidad pública dentro de la aplicación funciona únicamente mediante un nombre de usuario único (@username).</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>Email 100% Privado</h4>
+              <p>Nadie puede ver tu correo electrónico ni buscar cuentas por correo. Incluso el formulario de 'Olvidé mi contraseña' responde siempre con un mensaje genérico para que nadie pueda averiguar si un correo está registrado.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Cambio de @username con regla de 30 días</h4>
+              <p>Cada usuario elige su @username único. Si decide cambiarlo, debe esperar 30 días antes de volver a cambiarlo. Además, su @username anterior queda en cuarentena durante 30 días para que ningún desconocido pueda tomarlo inmediatamente y hacerse pasar por él.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Eliminación y Restauración de Cuenta (Requisito de App Store y Google Play)</h4>
+              <p>Si un usuario elimina su cuenta, se desactiva de inmediato (borrado lógico) pero tiene una ventana de 30 días por si se arrepiente y desea restaurarla al iniciar sesión. Pasados los 30 días, sus datos personales se purgan definitivamente.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn active-approved" data-sec="sec-2-perfil-privacidad" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-2-perfil-privacidad" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-2-perfil-privacidad" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-2-perfil-privacidad">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-2-perfil-privacidad" data-sec="sec-2-perfil-privacidad" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto..."></textarea>
+            </div>
+          </div>
+        </section><section class="section-card" id="sec-3-amigos-bloqueos" data-status="approved">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 03</span>
+              <h2 class="section-title">Amigos, Buscador y Regla de Bloqueo Total</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-3-amigos-bloqueos">Aprobado</span>
+          </div>
+          <p class="section-summary">Los usuarios pueden buscar a sus conocidos por su @username, enviar solicitudes de amistad y gestionar bloqueos con corte inmediato de acceso.</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>Solicitudes de Amistad</h4>
+              <p>Flujo directo: buscar por @username, enviar solicitud y que la otra persona acepte o rechace. Cuando te envían o aceptan una solicitud, recibes notificación.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>El Bloqueo Gana Siempre (Block Wins)</h4>
+              <p>Si bloqueas a alguien (o alguien te bloquea), el corte es total e inmediato: no puede ver tu perfil, ni tus listas públicas, ni abrir tus links secretos.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Limpieza automática al bloquear</h4>
+              <p>Al bloquear a un usuario, se elimina definitivamente la amistad si existía (si luego lo desbloqueas no vuelven a ser amigos automáticamente), se le revoca el acceso a listas compartidas y se cancela silenciosamente cualquier reserva activa entre ambos.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn active-approved" data-sec="sec-3-amigos-bloqueos" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-3-amigos-bloqueos" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-3-amigos-bloqueos" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-3-amigos-bloqueos">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-3-amigos-bloqueos" data-sec="sec-3-amigos-bloqueos" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto..."></textarea>
+            </div>
+          </div>
+        </section><section class="section-card" id="sec-4-wishlists-links" data-status="changes">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 04</span>
+              <h2 class="section-title">Listas de Deseos (Wishlists), Privacidad y Links Secretos</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-4-wishlists-links">Aprobado con ajustes</span>
+          </div>
+          <p class="section-summary">Cada usuario puede crear múltiples listas de deseos (con fecha opcional del evento, como 'Mi Cumpleaños - 24 de Noviembre') y elegir quién puede verlas.</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>3 Modos de Privacidad por Lista</h4>
+              <p>1) Pública: visible en la sección Explorar (Discover) y por link. Invitados sin cuenta pueden verla, pero para reservar deben iniciar sesión. 2) Privada: visible únicamente para tus amigos aceptados. 3) Compartida: visible solo para amigos específicos que tú elijas y para quienes tengan el Link Secreto.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Cómo funciona el Link Secreto (Ideal para WhatsApp)</h4>
+              <p>El Link Secreto permite compartir una lista por WhatsApp con familiares o compañeros que quizá no están en tu lista de amigos dentro de la app. Cualquier usuario registrado (no bloqueado) que abra ese Link Secreto puede ver la lista, reservar regalos y la lista queda guardada en su pestaña 'Compartidas conmigo'.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Invalidación automática y enlaces permanentes</h4>
+              <p>Si cambias una lista de 'Compartida' a 'Privada', el Link Secreto anterior se invalida automáticamente para que nadie más entre con el link viejo. Además, los links de las listas no dependen de tu @username, así que nunca se rompen aunque cambies tu nombre de usuario.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Vista previa segura en WhatsApp</h4>
+              <p>Cuando pegas un Link Secreto en WhatsApp, la tarjetita de vista previa muestra una invitación limpia ('Lista de deseos de @usuario') sin filtrar los regalos privados a bots.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn" data-sec="sec-4-wishlists-links" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn active-changes" data-sec="sec-4-wishlists-links" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-4-wishlists-links" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-4-wishlists-links">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-4-wishlists-links" data-sec="sec-4-wishlists-links" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto...">Hagamos todos los escenarios posibles para ver cómo van a funcionar realmente, solo como ejercicio. </textarea>
+            </div>
+          </div>
+        </section><section class="section-card" id="sec-5-items-fotos-share" data-status="changes">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 05</span>
+              <h2 class="section-title">Ítems (Regalos), Nivel de Deseo, Fotos Seguras y Compartir desde Tiendas</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-5-items-fotos-share">Aprobado con ajustes</span>
+          </div>
+          <p class="section-summary">Dentro de cada lista se agregan los regalos deseados con todos los detalles necesarios para que quien regale no se equivoque de talla, color o modelo.</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>Detalles del Ítem y Nivel de Deseo (Prioridad)</h4>
+              <p>Cada ítem tiene título, notas (talla, color, versión), múltiples links de tiendas donde comprarlo y un Nivel de Deseo ('Bajo', 'Medio', 'Alto', 'Lo quiero muchísimo') para que tus amigos sepan qué te hace más ilusión.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Hasta 3 Fotos por Ítem con Limpieza de GPS</h4>
+              <p>Se pueden subir hasta 3 imágenes por regalo (máx. 2MB y 1600px). El servidor las optimiza automáticamente a formato WebP ultraligero y elimina los metadatos ocultos de la cámara (EXIF / coordenadas GPS) para que nadie filtre por accidente la ubicación de su casa al tomar una foto.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Compartir directo desde Amazon o MercadoLibre hacia nuestra App (Móvil)</h4>
+              <p>En el celular (iOS y Android), cuando estés viendo un producto en la app de Amazon, Zara o MercadoLibre, podrás tocar el botón nativo 'Compartir' del teléfono y elegir nuestra app. La app separará automáticamente el link y el nombre sugerido del producto para guardarlo en tu lista en un toque.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn" data-sec="sec-5-items-fotos-share" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn active-changes" data-sec="sec-5-items-fotos-share" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-5-items-fotos-share" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-5-items-fotos-share">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-5-items-fotos-share" data-sec="sec-5-items-fotos-share" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto...">De la misma app (ej. Armazón) se extrae la imagen del item? Tal vez si la app solo tiene la foto en un color o características, poder poner permitir colocar algun tipo de comentario sobre la especificación de lo que uno quiere no sé. </textarea>
+            </div>
+          </div>
+        </section><section class="section-card" id="sec-6-reservas-secretas" data-status="changes">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 06</span>
+              <h2 class="section-title">Reservas Secretas (Cero Spoilers y Anti-Acaparamiento)</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-6-reservas-secretas">Aprobado con ajustes</span>
+          </div>
+          <p class="section-summary">Para evitar regalos repetidos sin arruinar el factor sorpresa, los amigos pueden reservar qué ítem piensan regalar.</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>Secreto absoluto para el dueño de la lista</h4>
+              <p>El dueño de la lista jamás ve qué ítems están reservados ni quién los reservó. Los demás amigos que entren a la lista solo verán que el ítem dice 'Reservado' (de forma anónima, sin decir quién lo reservó) para que no compren lo mismo.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Un solo reservador por ítem, nota privada y fecha estimada</h4>
+              <p>El primero que pulsa 'Reservar' gana la reserva. Quien reserva puede anotar un recordatorio privado (que nadie más ve) y una fecha estimada de compra/entrega. Si la fecha estimada se vence, la reserva NO se borra sola: el sistema le envía una notificación privada para que decida si extiende la fecha o libera el ítem.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Límite Anti-Acaparamiento (Máximo 3 reservas por lista)</h4>
+              <p>Para evitar que una sola persona indecisa o malintencionada reserve todos los regalos de una lista y bloquee a los demás amigos, cada usuario puede tener máximo 3 reservas activas al mismo tiempo dentro de una misma lista (sin límite global entre distintas listas).</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Avisos si el dueño edita o borra un ítem reservado</h4>
+              <p>Como el dueño no sabe que un ítem está reservado, si el dueño cambia la talla/detalles o borra ese ítem de su lista, el sistema le avisa inmediatamente al amigo que lo tenía reservado. Además, cada usuario tiene una pantalla 'Mis Reservas' para gestionar todo lo que ha prometido regalar.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Borrado y Restauración sin 'Reservas Fantasma'</h4>
+              <p>Si el dueño borra una lista entera, las reservas activas se cancelan. Si semanas después restaura la lista, los ítems vuelven limpios sin 'reservas fantasma' viejas.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn" data-sec="sec-6-reservas-secretas" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn active-changes" data-sec="sec-6-reservas-secretas" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-6-reservas-secretas" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-6-reservas-secretas">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-6-reservas-secretas" data-sec="sec-6-reservas-secretas" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto...">En el punto 2 (fecha estimada) me parece que hay que colocar algún tipo fe límite, porque puede que alguien quiera regalar eso y se le olvide o ya pase mucho tiempo y quede como un correo no leído por años... 
+
+En el anti acaparamiento, me parece que deberia depender del tipo de actividad. Si es navidad y es para tu pareja seguro vas a querer dar mas de 3 pero si es un amigo secreto lo ideal es que sea 1 por participante y así. </textarea>
+            </div>
+          </div>
+        </section><section class="section-card" id="sec-7-regalos-agradecimiento" data-status="changes">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 07</span>
+              <h2 class="section-title">Flujo de Regalo Entregado (Doble Camino) y Nota de Gracias Anónima</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-7-regalos-agradecimiento">Aprobado con ajustes</span>
+          </div>
+          <p class="section-summary">Diseñamos un sistema flexible que protege la sorpresa cuando alguien compra un regalo por adelantado y cierra el ciclo cuando el dueño lo recibe.</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>Camino 1: Iniciado por el amigo que regala (Compra secreta -&gt; Entrega -&gt; Confirmación)</h4>
+              <p>Paso A: Cuando el amigo compra el regalo (por ejemplo en línea), lo marca como 'Ya comprado'. El dueño sigue sin ver nada para no arruinar la sorpresa mientras llega el paquete, pero los demás amigos ya lo ven como 'Regalado'. Paso B: Cuando el amigo ya lo entregó, pulsa 'Ya entregado' y al dueño le llega un aviso anónimo para confirmar en un toque que lo recibió.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Camino 2: Confirmación en 1 solo paso por el dueño</h4>
+              <p>Si el dueño recibe el regalo en su fiesta o cumpleaños sin que el amigo haya marcado 'Ya entregado', el dueño puede pulsar directamente 'Ya lo recibí' sobre su ítem en un solo paso.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Resolución de conflictos y sección de 'Regalos Recibidos'</h4>
+              <p>Si alguien marca un ítem como regalado y otra persona lo tenía reservado, se cancela esa reserva y se le avisa: 'Ya fue entregado por alguien más'. Los ítems confirmados como recibidos pasan al final de la lista en una sección separada para dejar arriba solo los disponibles.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Nota de 'Gracias' Anónima</h4>
+              <p>Al confirmar un regalo como recibido, el dueño puede escribir una nota corta de agradecimiento (ej. 'Me encantó, muchísimas gracias'). El sistema se la entrega en privado a la persona que se lo regaló, sin revelarle al dueño quién fue.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn" data-sec="sec-7-regalos-agradecimiento" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn active-changes" data-sec="sec-7-regalos-agradecimiento" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-7-regalos-agradecimiento" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-7-regalos-agradecimiento">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-7-regalos-agradecimiento" data-sec="sec-7-regalos-agradecimiento" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto...">En el camino 1 no es necesario que los demás amigos vean el item como "regalado". 
+
+En resolución de conflictos, si solo la primera persona que reserva el item es quien puede regalarlo porqué al dar "regalado" no deberia tener conflictos con "otra" persona que lo reservó. </textarea>
+            </div>
+          </div>
+        </section><section class="section-card" id="sec-8-actividades-amigo-secreto" data-status="changes">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 08</span>
+              <h2 class="section-title">Actividades Grupales y Amigo Secreto (Fase v1)</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-8-actividades-amigo-secreto">Aprobado con ajustes</span>
+          </div>
+          <p class="section-summary">Sistema configurable para organizar intercambios de regalos en grupo (Navidad, familia, oficina) con presupuesto y reglas de sorteo inteligentes.</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>Configuración del Grupo y Presupuesto</h4>
+              <p>El creador define nombre, fechas, una moneda única y un presupuesto máximo por regalo. Cada participante agrega sus deseos para esa actividad con su precio manual; el sistema impide reservar regalos que superen el presupuesto del grupo.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Modos de Juego y Visibilidad</h4>
+              <p>Se puede elegir entre 'Amigo Secreto' (sorteo 1 a 1) o 'Regalos Abiertos' (todos pueden regalar a todos). Requiere mínimo 3 participantes aceptados para ejecutar el sorteo.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Exclusiones de Sorteo (Para Parejas o Familiares)</h4>
+              <p>Antes de sortear, el organizador puede configurar exclusiones (ej. 'Que a Juan no le toque su esposa María'). El sistema valida matemáticamente que las exclusiones permitan un sorteo válido y genera un único anillo cerrado donde nadie queda suelto.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Salida de un Participante después del Sorteo (Puenteo Ciego vs. Re-sorteo)</h4>
+              <p>Si alguien cancela su participación después de hecho el sorteo (ej. Ana -&gt; Beto -&gt; Carla, y Beto se sale), el creador puede elegir entre: 1) Puenteo automático ciego (el servidor reasigna en secreto para que Ana le regale a Carla sin revelarle jamás al creador quién le regala a quién), o 2) Reiniciar todo el sorteo.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn" data-sec="sec-8-actividades-amigo-secreto" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn active-changes" data-sec="sec-8-actividades-amigo-secreto" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-8-actividades-amigo-secreto" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-8-actividades-amigo-secreto">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-8-actividades-amigo-secreto" data-sec="sec-8-actividades-amigo-secreto" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto...">En la configuración del presupuesto pienso que deberia depender del tipo de actividad, es decir, que al momento de crearla puedas elegir entre monto fijo, monto minimo o maximo, rango, etc. </textarea>
+            </div>
+          </div>
+        </section><section class="section-card" id="sec-9-discover-notificaciones-admin" data-status="changes">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 09</span>
+              <h2 class="section-title">Explorar (Discover), Notificaciones y Moderación</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-9-discover-notificaciones-admin">Aprobado con ajustes</span>
+          </div>
+          <p class="section-summary">Comunidad limpia de spam, notificaciones configurables por cada usuario y herramientas de auditoría para administración.</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>Vitrina Pública 'Explorar' (Discover) Limpia</h4>
+              <p>En Explorar solo aparecen listas públicas que tengan al menos 1 regalo activo, y solo se muestran perfiles de usuarios que tengan al menos una lista pública activa. Quienes solo usen la app para listas privadas con su familia nunca son expuestos en la vitrina pública.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Notificaciones Configurables y Seguras en Dispositivos Compartidos</h4>
+              <p>Notificaciones dentro de la app, por correo y push en el celular, con interruptores para que cada usuario elija qué avisos quiere recibir. Además, al cerrar sesión en un celular, el dispositivo se desvincula automáticamente para que nunca lleguen notificaciones con spoilers si otra persona usa ese teléfono.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Reportes, Anti-Spam y Panel de Administración Web</h4>
+              <p>Los usuarios pueden reportar cuentas o listas con contenido inapropiado. El panel de administración (solo web) permite revisar reportes, bloquear cuentas abusivas, auditar el historial interno y revertir acciones en caso de error o abuso.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn" data-sec="sec-9-discover-notificaciones-admin" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn active-changes" data-sec="sec-9-discover-notificaciones-admin" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-9-discover-notificaciones-admin" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-9-discover-notificaciones-admin">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-9-discover-notificaciones-admin" data-sec="sec-9-discover-notificaciones-admin" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto...">Ahora que lo pienso, cuando habla de públicas hay que definir qué tan públicas, yo no quisiera que por ejemplo un acosador descubra mi username y pueda ver mi lista de regalos pública, creo que deberia ser solo para mis contactos aceptados y bueno las listas en sí de las actividades si podrían ser públicas para usuarios que no estan dentro de la app. Pero solo info de esa actividad. </textarea>
+            </div>
+          </div>
+        </section><section class="section-card" id="sec-10-backlog-futuro" data-status="approved">
+          <div class="section-header">
+            <div>
+              <span class="section-num">Bloque 10</span>
+              <h2 class="section-title">Mejoras Programadas para el Futuro (Backlog)</h2>
+            </div>
+            <span class="status-badge" id="badge-sec-10-backlog-futuro">Aprobado</span>
+          </div>
+          <p class="section-summary">Funciones adicionales que ya dejamos previstas en la arquitectura para sumar después del lanzamiento inicial.</p>
+          <div class="detail-grid">
+            
+            <div class="detail-item">
+              <h4>Regalos Grupales ('Cooperacha')</h4>
+              <p>Permitir que quien reserve un regalo costoso pueda invitar a uno o más amigos a sumarse a esa reserva para dividir el gasto.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>Autocompletado de Título y Foto al Pegar un Link</h4>
+              <p>Cuando el usuario pegue el link de una tienda manualmente, intentar extraer de forma automática el nombre y la fotografía del producto desde la página web.</p>
+            </div>
+          
+            <div class="detail-item">
+              <h4>No repetir regalo del año pasado en Actividades</h4>
+              <p>Opción en Amigo Secreto para que en el sorteo de este año no te toque exactamente la misma persona que te tocó el año anterior.</p>
+            </div>
+          
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn active-approved" data-sec="sec-10-backlog-futuro" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-10-backlog-futuro" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn" data-sec="sec-10-backlog-futuro" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-sec-10-backlog-futuro">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-sec-10-backlog-futuro" data-sec="sec-10-backlog-futuro" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto...">Yaayyy me gustaaa 🎉🎉</textarea>
+            </div>
+          </div>
+        </section></div>
+
+    <section class="section-card" id="general-feedback-card">
+      <div class="section-header">
+        <div>
+          <span class="section-num">Sección Final</span>
+          <h2 class="section-title">Nuevas Ideas, Dudas o Comentarios Generales de Ñata</h2>
+        </div>
+      </div>
+      <p class="section-summary">
+        Si se te ocurre alguna función adicional, algún detalle de diseño visual, nombres para secciones o cualquier cosa que quieras agregar o quitar del proyecto general, escríbelo aquí:
+      </p>
+      <div class="comment-field">
+        <label for="general-notes">Comentarios o ideas adicionales:</label>
+        <textarea id="general-notes" placeholder="Escribe aquí cualquier idea nueva, cambio general o comentario sobre la app...">De momento ya dejé muchos jajjajaa no se me ocurren más </textarea>
+      </div>
+    </section>
+  </div>
+
+  <div class="sticky-footer">
+    <div class="sticky-footer-inner">
+      <div>
+        <div class="progress-summary" id="progress-text">10 de 10 secciones revisadas (4 aprobadas, 6 con ajustes, 0 por cambiar)</div>
+        <span class="progress-sub">Tus cambios se guardan automáticamente en este navegador mientras escribes.</span>
+      </div>
+      <div class="export-actions">
+        <button type="button" class="btn-secondary" id="btn-copy-text">
+          Copiar resumen en texto
+        </button>
+        <button type="button" class="btn-primary" id="btn-download-html">
+          Guardar y Descargar HTML con mis respuestas
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast-msg">Acción completada</div>
+
+  <script id="embedded-review-state" type="application/json">
+{
+  "isExported": true,
+  "updatedAt": "2026-11-20T21:26:17.537Z",
+  "reviewerName": "Ceci Pinilla (Ñata)",
+  "generalNotes": "De momento ya dejé muchos jajjajaa no se me ocurren más ",
+  "decisions": {
+    "sec-1-vision-plataformas": {
+      "status": "approved",
+      "comment": ""
+    },
+    "sec-2-perfil-privacidad": {
+      "status": "approved",
+      "comment": ""
+    },
+    "sec-3-amigos-bloqueos": {
+      "status": "approved",
+      "comment": ""
+    },
+    "sec-4-wishlists-links": {
+      "status": "changes",
+      "comment": "Hagamos todos los escenarios posibles para ver cómo van a funcionar realmente, solo como ejercicio. "
+    },
+    "sec-5-items-fotos-share": {
+      "status": "changes",
+      "comment": "De la misma app (ej. Armazón) se extrae la imagen del item? Tal vez si la app solo tiene la foto en un color o características, poder poner permitir colocar algun tipo de comentario sobre la especificación de lo que uno quiere no sé. "
+    },
+    "sec-6-reservas-secretas": {
+      "status": "changes",
+      "comment": "En el punto 2 (fecha estimada) me parece que hay que colocar algún tipo fe límite, porque puede que alguien quiera regalar eso y se le olvide o ya pase mucho tiempo y quede como un correo no leído por años... \n\nEn el anti acaparamiento, me parece que deberia depender del tipo de actividad. Si es navidad y es para tu pareja seguro vas a querer dar mas de 3 pero si es un amigo secreto lo ideal es que sea 1 por participante y así. "
+    },
+    "sec-7-regalos-agradecimiento": {
+      "status": "changes",
+      "comment": "En el camino 1 no es necesario que los demás amigos vean el item como \"regalado\". \n\nEn resolución de conflictos, si solo la primera persona que reserva el item es quien puede regalarlo porqué al dar \"regalado\" no deberia tener conflictos con \"otra\" persona que lo reservó. "
+    },
+    "sec-8-actividades-amigo-secreto": {
+      "status": "changes",
+      "comment": "En la configuración del presupuesto pienso que deberia depender del tipo de actividad, es decir, que al momento de crearla puedas elegir entre monto fijo, monto minimo o maximo, rango, etc. "
+    },
+    "sec-9-discover-notificaciones-admin": {
+      "status": "changes",
+      "comment": "Ahora que lo pienso, cuando habla de públicas hay que definir qué tan públicas, yo no quisiera que por ejemplo un acosador descubra mi username y pueda ver mi lista de regalos pública, creo que deberia ser solo para mis contactos aceptados y bueno las listas en sí de las actividades si podrían ser públicas para usuarios que no estan dentro de la app. Pero solo info de esa actividad. "
+    },
+    "sec-10-backlog-futuro": {
+      "status": "approved",
+      "comment": "Yaayyy me gustaaa 🎉🎉"
+    }
+  }
+}
+  </script>
+
+  <script>
+    const SECTIONS_DATA = [
+      {
+        id: "sec-1-vision-plataformas",
+        number: "Bloque 01",
+        title: "Concepto General y Plataformas (Web + App Móvil iOS y Android)",
+        summary: "Una plataforma social para crear listas de deseos, compartirlas con amigos o familiares, reservar regalos en secreto sin arruinar la sorpresa y organizar intercambios de regalos (como Amigo Secreto).",
+        details: [
+          {
+            title: "Aplicación Web y Aplicaciones Móviles Nativas",
+            text: "Tendremos versión Web rápida (construida en Ruby on Rails 8 con Hotwire y Tailwind CSS) y aplicaciones móviles para iPhone (iOS) y Android (construidas en Flutter)."
+          },
+          {
+            title: "Cerebro único en el servidor",
+            text: "Toda la lógica de privacidad, permisos y reservas vive centralizada en el servidor. Así tanto la Web como la app de iPhone y Android se comportan exactamente igual y con la máxima seguridad."
+          },
+          {
+            title: "Soporte de Idioma y Zona Horaria",
+            text: "La plataforma estará preparada desde el inicio para Español e Inglés, respetando la zona horaria de cada usuario para fechas de eventos y recordatorios."
+          }
+        ]
+      },
+      {
+        id: "sec-2-perfil-privacidad",
+        number: "Bloque 02",
+        title: "Cuentas de Usuario, Perfil Público y Privacidad del Correo",
+        summary: "El correo electrónico de cada persona es estrictamente privado. La identidad pública dentro de la aplicación funciona únicamente mediante un nombre de usuario único (@username).",
+        details: [
+          {
+            title: "Email 100% Privado",
+            text: "Nadie puede ver tu correo electrónico ni buscar cuentas por correo. Incluso el formulario de 'Olvidé mi contraseña' responde siempre con un mensaje genérico para que nadie pueda averiguar si un correo está registrado."
+          },
+          {
+            title: "Cambio de @username con regla de 30 días",
+            text: "Cada usuario elige su @username único. Si decide cambiarlo, debe esperar 30 días antes de volver a cambiarlo. Además, su @username anterior queda en cuarentena durante 30 días para que ningún desconocido pueda tomarlo inmediatamente y hacerse pasar por él."
+          },
+          {
+            title: "Eliminación y Restauración de Cuenta (Requisito de App Store y Google Play)",
+            text: "Si un usuario elimina su cuenta, se desactiva de inmediato (borrado lógico) pero tiene una ventana de 30 días por si se arrepiente y desea restaurarla al iniciar sesión. Pasados los 30 días, sus datos personales se purgan definitivamente."
+          }
+        ]
+      },
+      {
+        id: "sec-3-amigos-bloqueos",
+        number: "Bloque 03",
+        title: "Amigos, Buscador y Regla de Bloqueo Total",
+        summary: "Los usuarios pueden buscar a sus conocidos por su @username, enviar solicitudes de amistad y gestionar bloqueos con corte inmediato de acceso.",
+        details: [
+          {
+            title: "Solicitudes de Amistad",
+            text: "Flujo directo: buscar por @username, enviar solicitud y que la otra persona acepte o rechace. Cuando te envían o aceptan una solicitud, recibes notificación."
+          },
+          {
+            title: "El Bloqueo Gana Siempre (Block Wins)",
+            text: "Si bloqueas a alguien (o alguien te bloquea), el corte es total e inmediato: no puede ver tu perfil, ni tus listas públicas, ni abrir tus links secretos."
+          },
+          {
+            title: "Limpieza automática al bloquear",
+            text: "Al bloquear a un usuario, se elimina definitivamente la amistad si existía (si luego lo desbloqueas no vuelven a ser amigos automáticamente), se le revoca el acceso a listas compartidas y se cancela silenciosamente cualquier reserva activa entre ambos."
+          }
+        ]
+      },
+      {
+        id: "sec-4-wishlists-links",
+        number: "Bloque 04",
+        title: "Listas de Deseos (Wishlists), Privacidad y Links Secretos",
+        summary: "Cada usuario puede crear múltiples listas de deseos (con fecha opcional del evento, como 'Mi Cumpleaños - 24 de Noviembre') y elegir quién puede verlas.",
+        details: [
+          {
+            title: "3 Modos de Privacidad por Lista",
+            text: "1) Pública: visible en la sección Explorar (Discover) y por link. Invitados sin cuenta pueden verla, pero para reservar deben iniciar sesión. 2) Privada: visible únicamente para tus amigos aceptados. 3) Compartida: visible solo para amigos específicos que tú elijas y para quienes tengan el Link Secreto."
+          },
+          {
+            title: "Cómo funciona el Link Secreto (Ideal para WhatsApp)",
+            text: "El Link Secreto permite compartir una lista por WhatsApp con familiares o compañeros que quizá no están en tu lista de amigos dentro de la app. Cualquier usuario registrado (no bloqueado) que abra ese Link Secreto puede ver la lista, reservar regalos y la lista queda guardada en su pestaña 'Compartidas conmigo'."
+          },
+          {
+            title: "Invalidación automática y enlaces permanentes",
+            text: "Si cambias una lista de 'Compartida' a 'Privada', el Link Secreto anterior se invalida automáticamente para que nadie más entre con el link viejo. Además, los links de las listas no dependen de tu @username, así que nunca se rompen aunque cambies tu nombre de usuario."
+          },
+          {
+            title: "Vista previa segura en WhatsApp",
+            text: "Cuando pegas un Link Secreto en WhatsApp, la tarjetita de vista previa muestra una invitación limpia ('Lista de deseos de @usuario') sin filtrar los regalos privados a bots."
+          }
+        ]
+      },
+      {
+        id: "sec-5-items-fotos-share",
+        number: "Bloque 05",
+        title: "Ítems (Regalos), Nivel de Deseo, Fotos Seguras y Compartir desde Tiendas",
+        summary: "Dentro de cada lista se agregan los regalos deseados con todos los detalles necesarios para que quien regale no se equivoque de talla, color o modelo.",
+        details: [
+          {
+            title: "Detalles del Ítem y Nivel de Deseo (Prioridad)",
+            text: "Cada ítem tiene título, notas (talla, color, versión), múltiples links de tiendas donde comprarlo y un Nivel de Deseo ('Bajo', 'Medio', 'Alto', 'Lo quiero muchísimo') para que tus amigos sepan qué te hace más ilusión."
+          },
+          {
+            title: "Hasta 3 Fotos por Ítem con Limpieza de GPS",
+            text: "Se pueden subir hasta 3 imágenes por regalo (máx. 2MB y 1600px). El servidor las optimiza automáticamente a formato WebP ultraligero y elimina los metadatos ocultos de la cámara (EXIF / coordenadas GPS) para que nadie filtre por accidente la ubicación de su casa al tomar una foto."
+          },
+          {
+            title: "Compartir directo desde Amazon o MercadoLibre hacia nuestra App (Móvil)",
+            text: "En el celular (iOS y Android), cuando estés viendo un producto en la app de Amazon, Zara o MercadoLibre, podrás tocar el botón nativo 'Compartir' del teléfono y elegir nuestra app. La app separará automáticamente el link y el nombre sugerido del producto para guardarlo en tu lista en un toque."
+          }
+        ]
+      },
+      {
+        id: "sec-6-reservas-secretas",
+        number: "Bloque 06",
+        title: "Reservas Secretas (Cero Spoilers y Anti-Acaparamiento)",
+        summary: "Para evitar regalos repetidos sin arruinar el factor sorpresa, los amigos pueden reservar qué ítem piensan regalar.",
+        details: [
+          {
+            title: "Secreto absoluto para el dueño de la lista",
+            text: "El dueño de la lista jamás ve qué ítems están reservados ni quién los reservó. Los demás amigos que entren a la lista solo verán que el ítem dice 'Reservado' (de forma anónima, sin decir quién lo reservó) para que no compren lo mismo."
+          },
+          {
+            title: "Un solo reservador por ítem, nota privada y fecha estimada",
+            text: "El primero que pulsa 'Reservar' gana la reserva. Quien reserva puede anotar un recordatorio privado (que nadie más ve) y una fecha estimada de compra/entrega. Si la fecha estimada se vence, la reserva NO se borra sola: el sistema le envía una notificación privada para que decida si extiende la fecha o libera el ítem."
+          },
+          {
+            title: "Límite Anti-Acaparamiento (Máximo 3 reservas por lista)",
+            text: "Para evitar que una sola persona indecisa o malintencionada reserve todos los regalos de una lista y bloquee a los demás amigos, cada usuario puede tener máximo 3 reservas activas al mismo tiempo dentro de una misma lista (sin límite global entre distintas listas)."
+          },
+          {
+            title: "Avisos si el dueño edita o borra un ítem reservado",
+            text: "Como el dueño no sabe que un ítem está reservado, si el dueño cambia la talla/detalles o borra ese ítem de su lista, el sistema le avisa inmediatamente al amigo que lo tenía reservado. Además, cada usuario tiene una pantalla 'Mis Reservas' para gestionar todo lo que ha prometido regalar."
+          },
+          {
+            title: "Borrado y Restauración sin 'Reservas Fantasma'",
+            text: "Si el dueño borra una lista entera, las reservas activas se cancelan. Si semanas después restaura la lista, los ítems vuelven limpios sin 'reservas fantasma' viejas."
+          }
+        ]
+      },
+      {
+        id: "sec-7-regalos-agradecimiento",
+        number: "Bloque 07",
+        title: "Flujo de Regalo Entregado (Doble Camino) y Nota de Gracias Anónima",
+        summary: "Diseñamos un sistema flexible que protege la sorpresa cuando alguien compra un regalo por adelantado y cierra el ciclo cuando el dueño lo recibe.",
+        details: [
+          {
+            title: "Camino 1: Iniciado por el amigo que regala (Compra secreta -> Entrega -> Confirmación)",
+            text: "Paso A: Cuando el amigo compra el regalo (por ejemplo en línea), lo marca como 'Ya comprado'. El dueño sigue sin ver nada para no arruinar la sorpresa mientras llega el paquete, pero los demás amigos ya lo ven como 'Regalado'. Paso B: Cuando el amigo ya lo entregó, pulsa 'Ya entregado' y al dueño le llega un aviso anónimo para confirmar en un toque que lo recibió."
+          },
+          {
+            title: "Camino 2: Confirmación en 1 solo paso por el dueño",
+            text: "Si el dueño recibe el regalo en su fiesta o cumpleaños sin que el amigo haya marcado 'Ya entregado', el dueño puede pulsar directamente 'Ya lo recibí' sobre su ítem en un solo paso."
+          },
+          {
+            title: "Resolución de conflictos y sección de 'Regalos Recibidos'",
+            text: "Si alguien marca un ítem como regalado y otra persona lo tenía reservado, se cancela esa reserva y se le avisa: 'Ya fue entregado por alguien más'. Los ítems confirmados como recibidos pasan al final de la lista en una sección separada para dejar arriba solo los disponibles."
+          },
+          {
+            title: "Nota de 'Gracias' Anónima",
+            text: "Al confirmar un regalo como recibido, el dueño puede escribir una nota corta de agradecimiento (ej. 'Me encantó, muchísimas gracias'). El sistema se la entrega en privado a la persona que se lo regaló, sin revelarle al dueño quién fue."
+          }
+        ]
+      },
+      {
+        id: "sec-8-actividades-amigo-secreto",
+        number: "Bloque 08",
+        title: "Actividades Grupales y Amigo Secreto (Fase v1)",
+        summary: "Sistema configurable para organizar intercambios de regalos en grupo (Navidad, familia, oficina) con presupuesto y reglas de sorteo inteligentes.",
+        details: [
+          {
+            title: "Configuración del Grupo y Presupuesto",
+            text: "El creador define nombre, fechas, una moneda única y un presupuesto máximo por regalo. Cada participante agrega sus deseos para esa actividad con su precio manual; el sistema impide reservar regalos que superen el presupuesto del grupo."
+          },
+          {
+            title: "Modos de Juego y Visibilidad",
+            text: "Se puede elegir entre 'Amigo Secreto' (sorteo 1 a 1) o 'Regalos Abiertos' (todos pueden regalar a todos). Requiere mínimo 3 participantes aceptados para ejecutar el sorteo."
+          },
+          {
+            title: "Exclusiones de Sorteo (Para Parejas o Familiares)",
+            text: "Antes de sortear, el organizador puede configurar exclusiones (ej. 'Que a Juan no le toque su esposa María'). El sistema valida matemáticamente que las exclusiones permitan un sorteo válido y genera un único anillo cerrado donde nadie queda suelto."
+          },
+          {
+            title: "Salida de un Participante después del Sorteo (Puenteo Ciego vs. Re-sorteo)",
+            text: "Si alguien cancela su participación después de hecho el sorteo (ej. Ana -> Beto -> Carla, y Beto se sale), el creador puede elegir entre: 1) Puenteo automático ciego (el servidor reasigna en secreto para que Ana le regale a Carla sin revelarle jamás al creador quién le regala a quién), o 2) Reiniciar todo el sorteo."
+          }
+        ]
+      },
+      {
+        id: "sec-9-discover-notificaciones-admin",
+        number: "Bloque 09",
+        title: "Explorar (Discover), Notificaciones y Moderación",
+        summary: "Comunidad limpia de spam, notificaciones configurables por cada usuario y herramientas de auditoría para administración.",
+        details: [
+          {
+            title: "Vitrina Pública 'Explorar' (Discover) Limpia",
+            text: "En Explorar solo aparecen listas públicas que tengan al menos 1 regalo activo, y solo se muestran perfiles de usuarios que tengan al menos una lista pública activa. Quienes solo usen la app para listas privadas con su familia nunca son expuestos en la vitrina pública."
+          },
+          {
+            title: "Notificaciones Configurables y Seguras en Dispositivos Compartidos",
+            text: "Notificaciones dentro de la app, por correo y push en el celular, con interruptores para que cada usuario elija qué avisos quiere recibir. Además, al cerrar sesión en un celular, el dispositivo se desvincula automáticamente para que nunca lleguen notificaciones con spoilers si otra persona usa ese teléfono."
+          },
+          {
+            title: "Reportes, Anti-Spam y Panel de Administración Web",
+            text: "Los usuarios pueden reportar cuentas o listas con contenido inapropiado. El panel de administración (solo web) permite revisar reportes, bloquear cuentas abusivas, auditar el historial interno y revertir acciones en caso de error o abuso."
+          }
+        ]
+      },
+      {
+        id: "sec-10-backlog-futuro",
+        number: "Bloque 10",
+        title: "Mejoras Programadas para el Futuro (Backlog)",
+        summary: "Funciones adicionales que ya dejamos previstas en la arquitectura para sumar después del lanzamiento inicial.",
+        details: [
+          {
+            title: "Regalos Grupales ('Cooperacha')",
+            text: "Permitir que quien reserve un regalo costoso pueda invitar a uno o más amigos a sumarse a esa reserva para dividir el gasto."
+          },
+          {
+            title: "Autocompletado de Título y Foto al Pegar un Link",
+            text: "Cuando el usuario pegue el link de una tienda manualmente, intentar extraer de forma automática el nombre y la fotografía del producto desde la página web."
+          },
+          {
+            title: "No repetir regalo del año pasado en Actividades",
+            text: "Opción en Amigo Secreto para que en el sorteo de este año no te toque exactamente la misma persona que te tocó el año anterior."
+          }
+        ]
+      }
+    ];
+
+    const STORAGE_KEY = "wishlist_community_review_nata_v1";
+
+    function loadInitialState() {
+      const embeddedEl = document.getElementById("embedded-review-state");
+      let embeddedState = null;
+      try {
+        embeddedState = JSON.parse(embeddedEl.textContent);
+      } catch (e) {
+        embeddedState = null;
+      }
+
+      if (embeddedState && embeddedState.isExported) {
+        return embeddedState;
+      }
+
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (e) {
+        // Ignore storage errors
+      }
+
+      const defaultDecisions = {};
+      SECTIONS_DATA.forEach((sec) => {
+        defaultDecisions[sec.id] = {
+          status: "pending",
+          comment: ""
+        };
+      });
+
+      return {
+        isExported: false,
+        updatedAt: null,
+        reviewerName: "Ceci Pinilla (Ñata)",
+        generalNotes: "",
+        decisions: defaultDecisions
+      };
+    }
+
+    let appState = loadInitialState();
+
+    function ensureAllSectionsInState() {
+      if (!appState.decisions) appState.decisions = {};
+      SECTIONS_DATA.forEach((sec) => {
+        if (!appState.decisions[sec.id]) {
+          appState.decisions[sec.id] = { status: "pending", comment: "" };
+        }
+      });
+    }
+
+    ensureAllSectionsInState();
+
+    function saveState() {
+      appState.updatedAt = new Date().toISOString();
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        // Ignore storage errors
+      }
+      updateProgressUI();
+    }
+
+    function getStatusLabel(status) {
+      switch (status) {
+        case "approved":
+          return "Aprobado";
+        case "changes":
+          return "Aprobado con ajustes";
+        case "rejected":
+          return "Cambiar / Rechazado";
+        default:
+          return "Pendiente de revisión";
+      }
+    }
+
+    function renderSections() {
+      const container = document.getElementById("sections-container");
+      container.innerHTML = "";
+
+      SECTIONS_DATA.forEach((sec) => {
+        const dec = appState.decisions[sec.id] || { status: "pending", comment: "" };
+        const card = document.createElement("section");
+        card.className = "section-card";
+        card.id = sec.id;
+        card.setAttribute("data-status", dec.status);
+
+        const detailsHtml = sec.details
+          .map(
+            (d) => `
+            <div class="detail-item">
+              <h4>${d.title}</h4>
+              <p>${d.text}</p>
+            </div>
+          `
+          )
+          .join("");
+
+        card.innerHTML = `
+          <div class="section-header">
+            <div>
+              <span class="section-num">${sec.number}</span>
+              <h2 class="section-title">${sec.title}</h2>
+            </div>
+            <span class="status-badge" id="badge-${sec.id}">${getStatusLabel(dec.status)}</span>
+          </div>
+          <p class="section-summary">${sec.summary}</p>
+          <div class="detail-grid">
+            ${detailsHtml}
+          </div>
+          <div class="decision-controls">
+            <span class="decision-label">Decisión de Ñata sobre este bloque:</span>
+            <div class="decision-buttons">
+              <button type="button" class="decision-btn ${dec.status === "approved" ? "active-approved" : ""}" data-sec="${sec.id}" data-val="approved">
+                Aprobado
+              </button>
+              <button type="button" class="decision-btn ${dec.status === "changes" ? "active-changes" : ""}" data-sec="${sec.id}" data-val="changes">
+                Aprobado con ajustes
+              </button>
+              <button type="button" class="decision-btn ${dec.status === "rejected" ? "active-rejected" : ""}" data-sec="${sec.id}" data-val="rejected">
+                Cambiar / No me convence
+              </button>
+            </div>
+            <div class="comment-field">
+              <label for="comment-${sec.id}">Comentarios o cambios propuestos en este bloque (opcional):</label>
+              <textarea id="comment-${sec.id}" data-sec="${sec.id}" placeholder="Escribe aquí si quieres cambiar, ajustar o preguntar algo de este punto...">${dec.comment || ""}</textarea>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      document.getElementById("reviewer-name").value = appState.reviewerName || "Ceci Pinilla (Ñata)";
+      document.getElementById("general-notes").value = appState.generalNotes || "";
+
+      attachEvents();
+      updateProgressUI();
+    }
+
+    function attachEvents() {
+      document.querySelectorAll(".decision-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const secId = btn.getAttribute("data-sec");
+          const val = btn.getAttribute("data-val");
+          appState.decisions[secId].status = val;
+
+          const card = document.getElementById(secId);
+          card.setAttribute("data-status", val);
+          document.getElementById(`badge-${secId}`).textContent = getStatusLabel(val);
+
+          card.querySelectorAll(".decision-btn").forEach((b) => {
+            b.classList.remove("active-approved", "active-changes", "active-rejected");
+          });
+          btn.classList.add(`active-${val}`);
+
+          saveState();
+        });
+      });
+
+      document.querySelectorAll(".comment-field textarea[data-sec]").forEach((ta) => {
+        ta.addEventListener("input", () => {
+          const secId = ta.getAttribute("data-sec");
+          appState.decisions[secId].comment = ta.value;
+          ta.textContent = ta.value;
+          saveState();
+        });
+      });
+    }
+
+    document.getElementById("reviewer-name").addEventListener("input", (e) => {
+      appState.reviewerName = e.target.value;
+      e.target.setAttribute("value", e.target.value);
+      saveState();
+    });
+
+    document.getElementById("general-notes").addEventListener("input", (e) => {
+      appState.generalNotes = e.target.value;
+      e.target.textContent = e.target.value;
+      saveState();
+    });
+
+    document.getElementById("btn-approve-pending").addEventListener("click", () => {
+      SECTIONS_DATA.forEach((sec) => {
+        if (!appState.decisions[sec.id] || appState.decisions[sec.id].status === "pending") {
+          appState.decisions[sec.id] = {
+            status: "approved",
+            comment: appState.decisions[sec.id] ? appState.decisions[sec.id].comment : ""
+          };
+        }
+      });
+      saveState();
+      renderSections();
+      showToast("Se marcaron las secciones pendientes como Aprobadas");
+    });
+
+    document.getElementById("btn-reset-all").addEventListener("click", () => {
+      if (!confirm("¿Estás segura de que quieres limpiar todas las respuestas marcadas?")) return;
+      SECTIONS_DATA.forEach((sec) => {
+        appState.decisions[sec.id] = { status: "pending", comment: "" };
+      });
+      appState.generalNotes = "";
+      saveState();
+      renderSections();
+      showToast("Respuestas reiniciadas");
+    });
+
+    function updateProgressUI() {
+      const total = SECTIONS_DATA.length;
+      let reviewed = 0;
+      let approved = 0;
+      let changes = 0;
+      let rejected = 0;
+
+      SECTIONS_DATA.forEach((sec) => {
+        const st = appState.decisions[sec.id]?.status || "pending";
+        if (st !== "pending") reviewed++;
+        if (st === "approved") approved++;
+        if (st === "changes") changes++;
+        if (st === "rejected") rejected++;
+      });
+
+      const progressEl = document.getElementById("progress-text");
+      progressEl.textContent = `${reviewed} de ${total} secciones revisadas (${approved} aprobadas, ${changes} con ajustes, ${rejected} por cambiar)`;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast-msg");
+      toast.textContent = msg;
+      toast.classList.add("visible");
+      setTimeout(() => {
+        toast.classList.remove("visible");
+      }, 3200);
+    }
+
+    function buildTextSummary() {
+      const lines = [];
+      lines.push("RESUMEN DE REVISION DE DISENO — WISH LIST COMMUNITY");
+      lines.push(`Revisado por: ${appState.reviewerName || "Ceci Pinilla (Ñata)"}`);
+      lines.push(`Fecha: ${new Date().toLocaleString("es-CO")}`);
+      lines.push("--------------------------------------------------");
+
+      SECTIONS_DATA.forEach((sec) => {
+        const dec = appState.decisions[sec.id] || { status: "pending", comment: "" };
+        lines.push(`${sec.number} - ${sec.title}`);
+        lines.push(`Estado: ${getStatusLabel(dec.status).toUpperCase()}`);
+        if (dec.comment && dec.comment.trim() !== "") {
+          lines.push(`Comentario: ${dec.comment.trim()}`);
+        }
+        lines.push("");
+      });
+
+      if (appState.generalNotes && appState.generalNotes.trim() !== "") {
+        lines.push("--------------------------------------------------");
+        lines.push("COMENTARIOS O IDEAS GENERALES:");
+        lines.push(appState.generalNotes.trim());
+      }
+
+      return lines.join("\n");
+    }
+
+    document.getElementById("btn-copy-text").addEventListener("click", async () => {
+      const summary = buildTextSummary();
+      try {
+        await navigator.clipboard.writeText(summary);
+        showToast("Resumen copiado al portapapeles");
+      } catch (e) {
+        const temp = document.createElement("textarea");
+        temp.value = summary;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+        showToast("Resumen copiado al portapapeles");
+      }
+    });
+
+    document.getElementById("btn-download-html").addEventListener("click", () => {
+      appState.isExported = true;
+      appState.updatedAt = new Date().toISOString();
+
+      const embeddedEl = document.getElementById("embedded-review-state");
+      embeddedEl.textContent = "\n" + JSON.stringify(appState, null, 2) + "\n  ";
+
+      document.getElementById("reviewer-name").setAttribute("value", appState.reviewerName || "");
+      const genNotesEl = document.getElementById("general-notes");
+      genNotesEl.textContent = appState.generalNotes || "";
+
+      SECTIONS_DATA.forEach((sec) => {
+        const ta = document.getElementById(`comment-${sec.id}`);
+        if (ta) {
+          ta.textContent = appState.decisions[sec.id]?.comment || "";
+        }
+      });
+
+      const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([fullHtml], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "revision_diseno_nata_completada.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast("Archivo HTML descargado con todas tus respuestas");
+    });
+
+    renderSections();
+  </script>
+
+
+</body></html>
