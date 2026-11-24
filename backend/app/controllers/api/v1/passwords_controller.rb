@@ -14,7 +14,7 @@ module Api
 
       # [REQ-AUTH-003] Never reveals whether an email address is registered.
       def create
-        render json: { message: GENERIC_RESET_MESSAGE }, status: :ok
+        render json: { message: I18n.t("api.v1.passwords.reset_sent") }, status: :ok
       end
     end
   end

@@ -19,7 +19,7 @@ module Api
       # [REQ-LIFE-002] Restores a soft-deleted account within the 30-day grace window.
       def restore
         user = User.authenticate_discarded(params[:email_address], params[:password])
-        return render json: { error: "Invalid credentials" }, status: :unauthorized if user.nil?
+        return render json: { error: I18n.t("api.v1.errors.invalid_credentials") }, status: :unauthorized if user.nil?
 
         if user.restore!(actor: user)
           _api_token, raw_token = ApiToken.issue_for!(user, device_name: params[:device_name])

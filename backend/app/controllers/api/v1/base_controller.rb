@@ -26,17 +26,17 @@ module Api
           @current_user = @current_api_token&.user
         end
 
-        render json: { error: "Unauthorized" }, status: :unauthorized unless @current_user
+        render json: { error: I18n.t("api.v1.errors.unauthorized") }, status: :unauthorized unless @current_user
       end
 
       # [REQ-ARCH-003] Prevents 500 errors on concurrent mobile double-taps.
       def handle_record_not_unique
-        render json: { error: "Resource conflict or duplicate request" }, status: :conflict
+        render json: { error: I18n.t("api.v1.errors.conflict") }, status: :conflict
       end
 
       # [REQ-BLOCK-001] Returns 404 Not Found on unauthorized/blocked resources to prevent existence leaks.
       def handle_not_authorized
-        render json: { error: "Not found" }, status: :not_found
+        render json: { error: I18n.t("api.v1.errors.not_found") }, status: :not_found
       end
     end
   end

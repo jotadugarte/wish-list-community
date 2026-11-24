@@ -10,13 +10,13 @@ module Api
       def show
         handle_vo = Username.new(params[:username])
         target_user = User.find_by("LOWER(username) = ?", handle_vo.value)
-        return render json: { error: "Not found" }, status: :not_found if target_user.nil?
+        return render json: { error: I18n.t("api.v1.errors.not_found") }, status: :not_found if target_user.nil?
 
         authorize target_user, :show?
         render json: target_user.public_profile_json, status: :ok
       rescue ArgumentError
         skip_authorization
-        render json: { error: "Not found" }, status: :not_found
+        render json: { error: I18n.t("api.v1.errors.not_found") }, status: :not_found
       end
     end
   end

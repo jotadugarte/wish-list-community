@@ -1726,3 +1726,653 @@ Completed 409 Conflict in 3ms (Views: 0.1ms | ActiveRecord: 0.7ms (3 queries, 0 
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.9ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+Started GET "/up" for 127.0.0.1 at 2026-11-24 13:46:50 -0600
+Processing by Rails::HealthController#show as HTML
+  Rendering html template
+  Rendered html template (Duration: 0.0ms | GC: 0.0ms)
+Completed 200 OK in 10ms (Views: 6.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (1.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:50.909924"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.7ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "ceci_nata"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:50.871200"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:50.915050"], ["updated_at", "2026-11-24 19:46:50.915050"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.6ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 58], ["token_digest", "[FILTERED]"], ["device_name", "Ceci iPhone 16"], ["last_used_at", "2026-11-24 19:46:50.919371"], ["expires_at", "2027-02-22 19:46:50.919259"], ["revoked_at", nil], ["created_at", "2026-11-24 19:46:50.949551"], ["updated_at", "2026-11-24 19:46:50.949551"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mApiToken Load (0.6ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:50.954640"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 58]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:50"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.4ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "ceci_nata"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:50"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:50"], ["updated_at", "2026-11-24 19:46:50"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.4ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 59], ["token_digest", "[FILTERED]"], ["device_name", nil], ["last_used_at", "2026-11-24 19:46:50"], ["expires_at", "2026-12-01 19:46:50"], ["revoked_at", nil], ["created_at", "2026-11-24 19:46:50"], ["updated_at", "2026-11-24 19:46:50"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mApiToken Load (0.3ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-12-02 19:46:50"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mDeviceToken Load (0.6ms)[0m  [1m[34mSELECT "device_tokens".* FROM "device_tokens" WHERE "device_tokens"."api_token_id" = $1[0m  [["api_token_id", "[FILTERED]"]]
+  [1m[36mApiToken Update (1.4ms)[0m  [1m[33mUPDATE "api_tokens" SET "revoked_at" = $1, "updated_at" = $2 WHERE "api_tokens"."id" = $3[0m  [["revoked_at", "2026-11-24 19:46:51.008233"], ["updated_at", "2026-11-24 19:46:51.012096"], ["id", 19]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mApiToken Load (0.4ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.015922"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.021640"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.4ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "ceci_nata"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.018609"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.022485"], ["updated_at", "2026-11-24 19:46:51.022485"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.6ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 60], ["token_digest", "[FILTERED]"], ["device_name", "Shared iPad"], ["last_used_at", "2026-11-24 19:46:51.024237"], ["expires_at", "2027-02-22 19:46:51.024171"], ["revoked_at", nil], ["created_at", "2026-11-24 19:46:51.025886"], ["updated_at", "2026-11-24 19:46:51.025886"]]
+  [1m[36mDeviceToken Delete All (0.5ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."token" = $1[0m  [["token", "[FILTERED]"]]
+  [1m[36mDeviceToken Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "device_tokens" WHERE "device_tokens"."token" = $1 LIMIT $2[0m  [["token", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mDeviceToken Create (0.7ms)[0m  [1m[32mINSERT INTO "device_tokens" ("user_id", "api_token_id", "token", "platform", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["user_id", 60], ["api_token_id", "[FILTERED]"], ["token", "[FILTERED]"], ["platform", "unknown"], ["created_at", "2026-11-24 19:46:51.034622"], ["updated_at", "2026-11-24 19:46:51.034622"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mDeviceToken Count (0.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "device_tokens" WHERE "device_tokens"."api_token_id" = $1[0m  [["api_token_id", "[FILTERED]"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mDeviceToken Load (0.6ms)[0m  [1m[34mSELECT "device_tokens".* FROM "device_tokens" WHERE "device_tokens"."api_token_id" = $1[0m  [["api_token_id", "[FILTERED]"]]
+  [1m[36mDeviceToken Destroy (0.4ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."id" = $1[0m  [["id", 7]]
+  [1m[36mApiToken Update (0.3ms)[0m  [1m[33mUPDATE "api_tokens" SET "revoked_at" = $1, "updated_at" = $2 WHERE "api_tokens"."id" = $3[0m  [["revoked_at", "2026-11-24 19:46:51.041397"], ["updated_at", "2026-11-24 19:46:51.041734"], ["id", 20]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mApiToken Load (0.4ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."id" = $1 LIMIT $2[0m  [["id", 20], ["LIMIT", 1]]
+  [1m[36mDeviceToken Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "device_tokens" WHERE "device_tokens"."api_token_id" = $1[0m  [["api_token_id", "[FILTERED]"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "actor_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.050103"], [nil, "actor_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "actor_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.047012"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.050728"], ["updated_at", "2026-11-24 19:46:51.050728"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuditEvent Create (1.0ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 61], ["action", "user.profile_updated"], ["auditable_type", "User"], ["auditable_id", 61], ["metadata", "{\"old_username\":\"old_handle\"}"], ["created_at", "2026-11-24 19:46:51.058705"], ["updated_at", "2026-11-24 19:46:51.058705"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "actor_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.067103"], [nil, "actor_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "actor_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.064039"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.067820"], ["updated_at", "2026-11-24 19:46:51.067820"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuditEvent Create (0.6ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 62], ["action", "user.profile_updated"], ["auditable_type", "User"], ["auditable_id", 62], ["metadata", "{}"], ["created_at", "2026-11-24 19:46:51.069364"], ["updated_at", "2026-11-24 19:46:51.069364"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "lifecycle_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.077846"], [nil, "lifecycle_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.5ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "lifecycle_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.074130"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.079021"], ["updated_at", "2026-11-24 19:46:51.079021"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.5ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 63], ["token_digest", "[FILTERED]"], ["device_name", nil], ["last_used_at", "2026-11-24 19:46:51.081345"], ["expires_at", "2027-02-22 19:46:51.081272"], ["revoked_at", nil], ["created_at", "2026-11-24 19:46:51.082856"], ["updated_at", "2026-11-24 19:46:51.082856"]]
+  [1m[36mDeviceToken Delete All (0.4ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."token" = $1[0m  [["token", "[FILTERED]"]]
+  [1m[36mDeviceToken Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "device_tokens" WHERE "device_tokens"."token" = $1 LIMIT $2[0m  [["token", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mDeviceToken Create (0.4ms)[0m  [1m[32mINSERT INTO "device_tokens" ("user_id", "api_token_id", "token", "platform", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["user_id", 63], ["api_token_id", "[FILTERED]"], ["token", "[FILTERED]"], ["platform", "unknown"], ["created_at", "2026-11-24 19:46:51.086747"], ["updated_at", "2026-11-24 19:46:51.086747"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mSession Create (1.5ms)[0m  [1m[32mINSERT INTO "sessions" ("user_id", "ip_address", "user_agent", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["user_id", 63], ["ip_address", "127.0.0.1"], ["user_agent", nil], ["created_at", "2026-11-24 19:46:51.094679"], ["updated_at", "2026-11-24 19:46:51.094679"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 63], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "lifecycle_user"], ["id", 63], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:46:51.100061"], [nil, "lifecycle_user"], ["previous_user_id", 63], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "discarded_at" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["discarded_at", "2026-11-24 19:46:51.097768"], ["updated_at", "2026-11-24 19:46:51.100845"], ["id", 63]]
+  [1m[36mDeviceToken Delete All (0.3ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."user_id" = $1[0m  [["user_id", 63]]
+  [1m[36mApiToken Delete All (0.3ms)[0m  [1m[31mDELETE FROM "api_tokens" WHERE "api_tokens"."user_id" = $1[0m  [["user_id", 63]]
+  [1m[36mSession Delete All (0.3ms)[0m  [1m[31mDELETE FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 63]]
+  [1m[36mAuditEvent Create (0.4ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 63], ["action", "user.soft_deleted"], ["auditable_type", "User"], ["auditable_id", 63], ["metadata", "{}"], ["created_at", "2026-11-24 19:46:51.105175"], ["updated_at", "2026-11-24 19:46:51.105175"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mApiToken Load (0.3ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.107393"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mDeviceToken Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "device_tokens" WHERE "device_tokens"."user_id" = $1[0m  [["user_id", 63]]
+  [1m[36mSession Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 63]]
+  [1m[36mAuditEvent Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "audit_events" WHERE "audit_events"."action" = $1 AND "audit_events"."auditable_type" = $2 AND "audit_events"."auditable_id" = $3[0m  [["action", "user.soft_deleted"], ["auditable_type", "User"], ["auditable_id", 63]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "lifecycle_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51"], [nil, "lifecycle_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "lifecycle_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 64], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "lifecycle_user"], ["id", 64], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:46:51"], [nil, "lifecycle_user"], ["previous_user_id", 64], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "discarded_at" = $1 WHERE "users"."id" = $2[0m  [["discarded_at", "2026-11-24 19:46:51"], ["id", 64]]
+  [1m[36mDeviceToken Delete All (0.3ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."user_id" = $1[0m  [["user_id", 64]]
+  [1m[36mApiToken Delete All (0.2ms)[0m  [1m[31mDELETE FROM "api_tokens" WHERE "api_tokens"."user_id" = $1[0m  [["user_id", 64]]
+  [1m[36mSession Delete All (0.2ms)[0m  [1m[31mDELETE FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 64]]
+  [1m[36mAuditEvent Create (0.3ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 64], ["action", "user.soft_deleted"], ["auditable_type", "User"], ["auditable_id", 64], ["metadata", "{}"], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 64], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "lifecycle_user"], ["id", 64], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-12-09 19:46:51"], [nil, "lifecycle_user"], ["previous_user_id", 64], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "discarded_at" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["discarded_at", nil], ["updated_at", "2026-12-09 19:46:51"], ["id", 64]]
+  [1m[36mAuditEvent Create (0.4ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 64], ["action", "user.restored"], ["auditable_type", "User"], ["auditable_id", 64], ["metadata", "{}"], ["created_at", "2026-12-09 19:46:51"], ["updated_at", "2026-12-09 19:46:51"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAuditEvent Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "audit_events" WHERE "audit_events"."action" = $1 AND "audit_events"."auditable_type" = $2 AND "audit_events"."auditable_id" = $3[0m  [["action", "user.restored"], ["auditable_type", "User"], ["auditable_id", 64]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "lifecycle_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51"], [nil, "lifecycle_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "lifecycle_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 65], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "lifecycle_user"], ["id", 65], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:46:51"], [nil, "lifecycle_user"], ["previous_user_id", 65], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "discarded_at" = $1 WHERE "users"."id" = $2[0m  [["discarded_at", "2026-11-24 19:46:51"], ["id", 65]]
+  [1m[36mDeviceToken Delete All (0.2ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."user_id" = $1[0m  [["user_id", 65]]
+  [1m[36mApiToken Delete All (0.4ms)[0m  [1m[31mDELETE FROM "api_tokens" WHERE "api_tokens"."user_id" = $1[0m  [["user_id", 65]]
+  [1m[36mSession Delete All (0.3ms)[0m  [1m[31mDELETE FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 65]]
+  [1m[36mAuditEvent Create (0.4ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 65], ["action", "user.soft_deleted"], ["auditable_type", "User"], ["auditable_id", 65], ["metadata", "{}"], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "lifecycle_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51"], [nil, "lifecycle_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "lifecycle_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 66], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "lifecycle_user"], ["id", 66], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:46:51"], [nil, "lifecycle_user"], ["previous_user_id", 66], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "discarded_at" = $1 WHERE "users"."id" = $2[0m  [["discarded_at", "2026-11-24 19:46:51"], ["id", 66]]
+  [1m[36mDeviceToken Delete All (0.2ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."user_id" = $1[0m  [["user_id", 66]]
+  [1m[36mApiToken Delete All (0.2ms)[0m  [1m[31mDELETE FROM "api_tokens" WHERE "api_tokens"."user_id" = $1[0m  [["user_id", 66]]
+  [1m[36mSession Delete All (0.3ms)[0m  [1m[31mDELETE FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 66]]
+  [1m[36mAuditEvent Create (0.5ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 66], ["action", "user.soft_deleted"], ["auditable_type", "User"], ["auditable_id", 66], ["metadata", "{}"], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "recent_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51"], [nil, "recent_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.4ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "recent_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 67], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "recent_user"], ["id", 67], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-12-14 19:46:51"], [nil, "recent_user"], ["previous_user_id", 67], ["LIMIT", 1]]
+  [1m[36mUser Update (0.4ms)[0m  [1m[33mUPDATE "users" SET "discarded_at" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["discarded_at", "2026-12-14 19:46:51"], ["updated_at", "2026-12-14 19:46:51"], ["id", 67]]
+  [1m[36mDeviceToken Delete All (0.3ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."user_id" = $1[0m  [["user_id", 67]]
+  [1m[36mApiToken Delete All (0.3ms)[0m  [1m[31mDELETE FROM "api_tokens" WHERE "api_tokens"."user_id" = $1[0m  [["user_id", 67]]
+  [1m[36mSession Delete All (0.2ms)[0m  [1m[31mDELETE FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 67]]
+  [1m[36mAuditEvent Create (0.5ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 67], ["action", "user.soft_deleted"], ["auditable_type", "User"], ["auditable_id", 67], ["metadata", "{}"], ["created_at", "2026-12-14 19:46:51"], ["updated_at", "2026-12-14 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[ActiveJob] [PiiPurgeJob] [09ed9847-d907-4cae-9e30-a9d3d51901a6] Performing PiiPurgeJob (Job ID: 09ed9847-d907-4cae-9e30-a9d3d51901a6) from Test(default)
+[ActiveJob] [PiiPurgeJob] [09ed9847-d907-4cae-9e30-a9d3d51901a6]   [1m[36mUser Load (0.7ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."discarded_at" IS NOT NULL AND (discarded_at < $1) AND NOT ((email_address LIKE $2)) LIMIT $3[0m  [[nil, "2026-11-26 19:46:51"], [nil, "purged_%"], ["LIMIT", 500]]
+[ActiveJob] [PiiPurgeJob] [09ed9847-d907-4cae-9e30-a9d3d51901a6]   [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "email_address" = $1, "username" = $2, "updated_at" = $3 WHERE "users"."id" = $4[0m  [["email_address", "[FILTERED]"], ["username", "purged_66_2fa5eb23"], ["updated_at", "2026-12-26 19:46:51"], ["id", 66]]
+[ActiveJob] [PiiPurgeJob] [09ed9847-d907-4cae-9e30-a9d3d51901a6] Performed PiiPurgeJob (Job ID: 09ed9847-d907-4cae-9e30-a9d3d51901a6) from Test(default) in 2.61ms
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 66], ["LIMIT", 1]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 67], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "alice_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.202276"], [nil, "alice_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.5ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "alice_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.191329"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.203353"], ["updated_at", "2026-11-24 19:46:51.203353"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Load (1.0ms)[0m  [1m[34mSELECT "user_blocks".* FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 68], ["blocked_id", 68], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (7.5ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 68], ["blocked_id", 68], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "alice_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.249873"], [nil, "alice_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "alice_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.246773"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.250523"], ["updated_at", "2026-11-24 19:46:51.250523"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "bob_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.254232"], [nil, "bob_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "bob_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.251749"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.254812"], ["updated_at", "2026-11-24 19:46:51.254812"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 69], ["blocked_id", 70], ["blocker_id", 70], ["blocked_id", 69], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Load (0.4ms)[0m  [1m[34mSELECT "user_blocks".* FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 69], ["blocked_id", 70], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 69], ["blocked_id", 70], ["LIMIT", 1]]
+  [1m[36mUserBlock Create (0.5ms)[0m  [1m[32mINSERT INTO "user_blocks" ("blocker_id", "blocked_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["blocker_id", 69], ["blocked_id", 70], ["created_at", "2026-11-24 19:46:51.258441"], ["updated_at", "2026-11-24 19:46:51.258441"]]
+  [1m[36mAuditEvent Create (0.3ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 69], ["action", "user.blocked"], ["auditable_type", "UserBlock"], ["auditable_id", 9], ["metadata", "{\"blocked_user_id\":70}"], ["created_at", "2026-11-24 19:46:51.259721"], ["updated_at", "2026-11-24 19:46:51.259721"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 69], ["blocked_id", 70], ["blocker_id", 70], ["blocked_id", 69], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 69], ["blocked_id", 70], ["blocker_id", 70], ["blocked_id", 69], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 70], ["blocked_id", 69], ["blocker_id", 69], ["blocked_id", 70], ["LIMIT", 1]]
+  [1m[36mAuditEvent Load (0.4ms)[0m  [1m[34mSELECT "audit_events".* FROM "audit_events" WHERE "audit_events"."action" = $1 AND "audit_events"."auditable_type" = $2 AND "audit_events"."auditable_id" = $3 LIMIT $4[0m  [["action", "user.blocked"], ["auditable_type", "UserBlock"], ["auditable_id", 9], ["LIMIT", 1]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 69], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "alice_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.271433"], [nil, "alice_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "alice_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.268352"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.272047"], ["updated_at", "2026-11-24 19:46:51.272047"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "bob_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.275806"], [nil, "bob_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "bob_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.273203"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.276438"], ["updated_at", "2026-11-24 19:46:51.276438"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Load (0.8ms)[0m  [1m[34mSELECT "user_blocks".* FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 71], ["blocked_id", 72], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 71], ["blocked_id", 72], ["LIMIT", 1]]
+  [1m[36mUserBlock Create (0.4ms)[0m  [1m[32mINSERT INTO "user_blocks" ("blocker_id", "blocked_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["blocker_id", 71], ["blocked_id", 72], ["created_at", "2026-11-24 19:46:51.280852"], ["updated_at", "2026-11-24 19:46:51.280852"]]
+  [1m[36mAuditEvent Create (0.3ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 71], ["action", "user.blocked"], ["auditable_type", "UserBlock"], ["auditable_id", 10], ["metadata", "{\"blocked_user_id\":72}"], ["created_at", "2026-11-24 19:46:51.282227"], ["updated_at", "2026-11-24 19:46:51.282227"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 71], ["blocked_id", 72], ["blocker_id", 72], ["blocked_id", 71], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.288549"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_dev"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.285742"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.289120"], ["updated_at", "2026-11-24 19:46:51.289120"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.297357"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.302746"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.307951"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_dev"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.305235"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.308523"], ["updated_at", "2026-11-24 19:46:51.308523"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51"], [nil, "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.6ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_dev"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUsernameReservation Delete All (0.3ms)[0m  [1m[31mDELETE FROM "username_reservations" WHERE (LOWER(username) = $1)[0m  [[nil, "jader_dev"]]
+  [1m[36mUsernameReservation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE LOWER("username_reservations"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_dev"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Create (0.6ms)[0m  [1m[32mINSERT INTO "username_reservations" ("username", "previous_user_id", "expires_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["username", "jader_dev"], ["previous_user_id", 75], ["expires_at", "2026-12-24 19:46:51"], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 75], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "jader_new"], ["id", 75], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:46:51"], [nil, "jader_new"], ["previous_user_id", 75], ["LIMIT", 1]]
+  [1m[36mUser Update (0.6ms)[0m  [1m[33mUPDATE "users" SET "username" = $1, "username_changed_at" = $2 WHERE "users"."id" = $3[0m  [["username", "jader_new"], ["username_changed_at", "2026-11-24 19:46:51"], ["id", 75]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 75], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUsernameReservation Delete All (0.6ms)[0m  [1m[31mDELETE FROM "username_reservations" WHERE (LOWER(username) = $1)[0m  [[nil, "jader_new"]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE LOWER("username_reservations"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_new"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Create (0.3ms)[0m  [1m[32mINSERT INTO "username_reservations" ("username", "previous_user_id", "expires_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["username", "jader_new"], ["previous_user_id", 75], ["expires_at", "2027-01-24 19:46:51"], ["created_at", "2026-12-25 19:46:51"], ["updated_at", "2026-12-25 19:46:51"]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 75], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "jader_third"], ["id", 75], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-12-25 19:46:51"], [nil, "jader_third"], ["previous_user_id", 75], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "username" = $1, "username_changed_at" = $2, "updated_at" = $3 WHERE "users"."id" = $4[0m  [["username", "jader_third"], ["username_changed_at", "2026-12-25 19:46:51"], ["updated_at", "2026-12-25 19:46:51"], ["id", 75]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 75], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.5ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "ceci_nata"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUsernameReservation Delete All (0.8ms)[0m  [1m[31mDELETE FROM "username_reservations" WHERE (LOWER(username) = $1)[0m  [[nil, "ceci_nata"]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE LOWER("username_reservations"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Create (0.3ms)[0m  [1m[32mINSERT INTO "username_reservations" ("username", "previous_user_id", "expires_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["username", "ceci_nata"], ["previous_user_id", 76], ["expires_at", "2026-12-24 19:46:51"], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 76], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "ceci_pinilla"], ["id", 76], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:46:51"], [nil, "ceci_pinilla"], ["previous_user_id", 76], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "username" = $1, "username_changed_at" = $2 WHERE "users"."id" = $3[0m  [["username", "ceci_pinilla"], ["username_changed_at", "2026-11-24 19:46:51"], ["id", 76]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-29 19:46:51"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-12-25 19:46:51"], [nil, "ceci_nata"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "alice_policy"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.388653"], [nil, "alice_policy"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "alice_policy"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.383692"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.389408"], ["updated_at", "2026-11-24 19:46:51.389408"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "bob_policy"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.393330"], [nil, "bob_policy"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.6ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "bob_policy"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.390633"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.394071"], ["updated_at", "2026-11-24 19:46:51.394071"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "alice_policy"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.401847"], [nil, "alice_policy"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.4ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "alice_policy"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.398625"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.402714"], ["updated_at", "2026-11-24 19:46:51.402714"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "bob_policy"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.407272"], [nil, "bob_policy"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "bob_policy"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.404182"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.407870"], ["updated_at", "2026-11-24 19:46:51.407870"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 79], ["blocked_id", 80], ["blocker_id", 80], ["blocked_id", 79], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 80], ["blocked_id", 79], ["blocker_id", 79], ["blocked_id", 80], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Load (0.7ms)[0m  [1m[34mSELECT "user_blocks".* FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 79], ["blocked_id", 80], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 79], ["blocked_id", 80], ["LIMIT", 1]]
+  [1m[36mUserBlock Create (0.4ms)[0m  [1m[32mINSERT INTO "user_blocks" ("blocker_id", "blocked_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["blocker_id", 79], ["blocked_id", 80], ["created_at", "2026-11-24 19:46:51.413214"], ["updated_at", "2026-11-24 19:46:51.413214"]]
+  [1m[36mAuditEvent Create (0.3ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 79], ["action", "user.blocked"], ["auditable_type", "UserBlock"], ["auditable_id", 11], ["metadata", "{\"blocked_user_id\":80}"], ["created_at", "2026-11-24 19:46:51.414695"], ["updated_at", "2026-11-24 19:46:51.414695"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 79], ["blocked_id", 80], ["blocker_id", 80], ["blocked_id", 79], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 79], ["blocked_id", 80], ["blocker_id", 80], ["blocked_id", 79], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 80], ["blocked_id", 79], ["blocker_id", 79], ["blocked_id", 80], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "nata_account"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.422300"], [nil, "nata_account"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "nata_account"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.419689"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.422860"], ["updated_at", "2026-11-24 19:46:51.422860"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.3ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 81], ["token_digest", "[FILTERED]"], ["device_name", nil], ["last_used_at", "2026-11-24 19:46:51"], ["expires_at", "2027-02-22 19:46:51"], ["revoked_at", nil], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mDeviceToken Delete All (0.2ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."token" = $1[0m  [["token", "[FILTERED]"]]
+  [1m[36mDeviceToken Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "device_tokens" WHERE "device_tokens"."token" = $1 LIMIT $2[0m  [["token", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mDeviceToken Create (0.8ms)[0m  [1m[32mINSERT INTO "device_tokens" ("user_id", "api_token_id", "token", "platform", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["user_id", 81], ["api_token_id", "[FILTERED]"], ["token", "[FILTERED]"], ["platform", "unknown"], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started DELETE "/api/v1/account" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::AccountsController#destroy as HTML
+  [1m[36mApiToken Load (0.4ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 81]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 81], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "nata_account"], ["id", 81], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:46:51"], [nil, "nata_account"], ["previous_user_id", 81], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "discarded_at" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["discarded_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"], ["id", 81]]
+  [1m[36mDeviceToken Delete All (0.2ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."user_id" = $1[0m  [["user_id", 81]]
+  [1m[36mApiToken Delete All (0.3ms)[0m  [1m[31mDELETE FROM "api_tokens" WHERE "api_tokens"."user_id" = $1[0m  [["user_id", 81]]
+  [1m[36mSession Delete All (0.2ms)[0m  [1m[31mDELETE FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 81]]
+  [1m[36mAuditEvent Create (0.3ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 81], ["action", "user.soft_deleted"], ["auditable_type", "User"], ["auditable_id", 81], ["metadata", "{}"], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 204 No Content in 10ms (ActiveRecord: 3.4ms (10 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 81], ["LIMIT", 1]]
+Started GET "/api/v1/me" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::ProfilesController#show as HTML
+  [1m[36mApiToken Load (0.3ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+Filter chain halted as :authenticate_api_token! rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+Started POST "/api/v1/account/restore" for 127.0.0.1 at 2026-12-04 13:46:51 -0600
+Processing by Api::V1::AccountsController#restore as JSON
+  Parameters: {"email_address" => "[FILTERED]", "password" => "[FILTERED]", "account" => {"email_address" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."discarded_at" IS NOT NULL AND (LOWER(email_address) = $1) LIMIT $2[0m  [[nil, "nata_acc@example.com"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 81], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "nata_account"], ["id", 81], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-12-04 19:46:51"], [nil, "nata_account"], ["previous_user_id", 81], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "discarded_at" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["discarded_at", nil], ["updated_at", "2026-12-04 19:46:51"], ["id", 81]]
+  [1m[36mAuditEvent Create (0.4ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 81], ["action", "user.restored"], ["auditable_type", "User"], ["auditable_id", 81], ["metadata", "{}"], ["created_at", "2026-12-04 19:46:51"], ["updated_at", "2026-12-04 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.3ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 81], ["token_digest", "[FILTERED]"], ["device_name", nil], ["last_used_at", "2026-12-04 19:46:51"], ["expires_at", "2027-03-04 19:46:51"], ["revoked_at", nil], ["created_at", "2026-12-04 19:46:51"], ["updated_at", "2026-12-04 19:46:51"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 200 OK in 11ms (Views: 0.1ms | ActiveRecord: 3.7ms (8 queries, 0 cached) | GC: 0.1ms)
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 81], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "nata_account"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.484451"], [nil, "nata_account"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "nata_account"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.481326"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.485157"], ["updated_at", "2026-11-24 19:46:51.485157"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["email_address", "[FILTERED]"], ["id", 82], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) AND "users"."id" != $2 LIMIT $3[0m  [["username", "nata_account"], ["id", 82], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) AND "username_reservations"."previous_user_id" != $3 LIMIT $4[0m  [[nil, "2026-11-24 19:46:51"], [nil, "nata_account"], ["previous_user_id", 82], ["LIMIT", 1]]
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "discarded_at" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["discarded_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"], ["id", 82]]
+  [1m[36mDeviceToken Delete All (0.2ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."user_id" = $1[0m  [["user_id", 82]]
+  [1m[36mApiToken Delete All (0.2ms)[0m  [1m[31mDELETE FROM "api_tokens" WHERE "api_tokens"."user_id" = $1[0m  [["user_id", 82]]
+  [1m[36mSession Delete All (0.2ms)[0m  [1m[31mDELETE FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 82]]
+  [1m[36mAuditEvent Create (0.3ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 82], ["action", "user.soft_deleted"], ["auditable_type", "User"], ["auditable_id", 82], ["metadata", "{}"], ["created_at", "2026-11-24 19:46:51"], ["updated_at", "2026-11-24 19:46:51"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started POST "/api/v1/account/restore" for 127.0.0.1 at 2026-12-25 13:46:51 -0600
+Processing by Api::V1::AccountsController#restore as JSON
+  Parameters: {"email_address" => "[FILTERED]", "password" => "[FILTERED]", "account" => {"email_address" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."discarded_at" IS NOT NULL AND (LOWER(email_address) = $1) LIMIT $2[0m  [[nil, "nata_acc@example.com"], ["LIMIT", 1]]
+Completed 422 Unprocessable Content in 2ms (Views: 0.1ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 82], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.502791"], [nil, "jader_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.499245"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.503541"], ["updated_at", "2026-11-24 19:46:51.503541"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started POST "/api/v1/session" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::SessionsController#create as JSON
+  Parameters: {"email_address" => "[FILTERED]", "password" => "[FILTERED]", "device_name" => "Pixel 9 Pro", "fcm_token" => "[FILTERED]", "session" => {}}
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."discarded_at" IS NULL AND (LOWER(email_address) = $1) LIMIT $2[0m  [[nil, "jader@example.com"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.4ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 83], ["token_digest", "[FILTERED]"], ["device_name", "Pixel 9 Pro"], ["last_used_at", "2026-11-24 19:46:51.510330"], ["expires_at", "2027-02-22 19:46:51.510266"], ["revoked_at", nil], ["created_at", "2026-11-24 19:46:51.512494"], ["updated_at", "2026-11-24 19:46:51.512494"]]
+  [1m[36mDeviceToken Delete All (0.2ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."token" = $1[0m  [["token", "[FILTERED]"]]
+  [1m[36mDeviceToken Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "device_tokens" WHERE "device_tokens"."token" = $1 LIMIT $2[0m  [["token", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mDeviceToken Create (0.4ms)[0m  [1m[32mINSERT INTO "device_tokens" ("user_id", "api_token_id", "token", "platform", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["user_id", 83], ["api_token_id", "[FILTERED]"], ["token", "[FILTERED]"], ["platform", "unknown"], ["created_at", "2026-11-24 19:46:51.515175"], ["updated_at", "2026-11-24 19:46:51.515175"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 201 Created in 9ms (Views: 0.1ms | ActiveRecord: 3.2ms (6 queries, 0 cached) | GC: 0.2ms)
+  [1m[36mDeviceToken Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "device_tokens"[0m
+Started GET "/api/v1/me" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::ProfilesController#show as HTML
+  [1m[36mApiToken Load (0.2ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.519473"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 83]]
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 83], ["blocked_id", 83], ["LIMIT", 1]]
+Completed 200 OK in 3ms (Views: 0.1ms | ActiveRecord: 0.7ms (3 queries, 0 cached) | GC: 0.0ms)
+Started DELETE "/api/v1/session" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::SessionsController#destroy as HTML
+  [1m[36mApiToken Load (0.2ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.523778"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 83]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mDeviceToken Load (0.4ms)[0m  [1m[34mSELECT "device_tokens".* FROM "device_tokens" WHERE "device_tokens"."api_token_id" = $1[0m  [["api_token_id", "[FILTERED]"]]
+  [1m[36mDeviceToken Destroy (0.2ms)[0m  [1m[31mDELETE FROM "device_tokens" WHERE "device_tokens"."id" = $1[0m  [["id", 10]]
+  [1m[36mApiToken Update (0.6ms)[0m  [1m[33mUPDATE "api_tokens" SET "revoked_at" = $1, "updated_at" = $2 WHERE "api_tokens"."id" = $3[0m  [["revoked_at", "2026-11-24 19:46:51.527004"], ["updated_at", "2026-11-24 19:46:51.527497"], ["id", 24]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 204 No Content in 6ms (ActiveRecord: 2.0ms (5 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mDeviceToken Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "device_tokens"[0m
+Started GET "/api/v1/me" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::ProfilesController#show as HTML
+  [1m[36mApiToken Load (0.2ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.531801"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+Filter chain halted as :authenticate_api_token! rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.538531"], [nil, "jader_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.535399"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.539148"], ["updated_at", "2026-11-24 19:46:51.539148"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started POST "/session" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by SessionsController#create as HTML
+  Parameters: {"email_address" => "[FILTERED]", "password" => "[FILTERED]"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."discarded_at" IS NULL AND (LOWER(email_address) = $1) LIMIT $2[0m  [[nil, "jader@example.com"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mSession Create (0.6ms)[0m  [1m[32mINSERT INTO "sessions" ("user_id", "ip_address", "user_agent", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["user_id", 84], ["ip_address", "127.0.0.1"], ["user_agent", nil], ["created_at", "2026-11-24 19:46:51.566390"], ["updated_at", "2026-11-24 19:46:51.566390"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/
+Completed 302 Found in 25ms (ActiveRecord: 1.3ms (2 queries, 0 cached) | GC: 0.4ms)
+  [1m[36mSession Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 84]]
+Started DELETE "/session" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by SessionsController#destroy as HTML
+  [1m[36mSession Load (0.5ms)[0m  [1m[34mSELECT "sessions".* FROM "sessions" WHERE "sessions"."id" = $1[0m  [["id", 5]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mSession Destroy (0.5ms)[0m  [1m[31mDELETE FROM "sessions" WHERE "sessions"."id" = $1[0m  [["id", 5]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Redirected to http://www.example.com/
+Completed 302 Found in 11ms (ActiveRecord: 1.2ms (2 queries, 0 cached) | GC: 0.2ms)
+  [1m[36mSession Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "sessions" WHERE "sessions"."user_id" = $1[0m  [["user_id", 84]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "jader_user"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.589013"], [nil, "jader_user"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "jader_user"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "America/Bogota"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.586213"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.589598"], ["updated_at", "2026-11-24 19:46:51.589598"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started POST "/api/v1/passwords" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::PasswordsController#create as JSON
+  Parameters: {"email_address" => "[FILTERED]", "password" => {"email_address" => "[FILTERED]"}}
+Completed 200 OK in 0ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+Started POST "/api/v1/passwords" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::PasswordsController#create as JSON
+  Parameters: {"email_address" => "[FILTERED]", "password" => {"email_address" => "[FILTERED]"}}
+Completed 200 OK in 0ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "alice_req"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.601651"], [nil, "alice_req"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "alice_req"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.598910"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.602200"], ["updated_at", "2026-11-24 19:46:51.602200"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "bob_req"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.605719"], [nil, "bob_req"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.2ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "bob_req"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.603333"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.606238"], ["updated_at", "2026-11-24 19:46:51.606238"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.3ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 86], ["token_digest", "[FILTERED]"], ["device_name", nil], ["last_used_at", "2026-11-24 19:46:51.607424"], ["expires_at", "2027-02-22 19:46:51.607379"], ["revoked_at", nil], ["created_at", "2026-11-24 19:46:51.608442"], ["updated_at", "2026-11-24 19:46:51.608442"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started GET "/api/v1/users/bob_req" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::UsersController#show as HTML
+  Parameters: {"username" => "bob_req"}
+  [1m[36mApiToken Load (0.3ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.613523"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 86]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE (LOWER(username) = $1) LIMIT $2[0m  [[nil, "bob_req"], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 86], ["blocked_id", 87], ["blocker_id", 87], ["blocked_id", 86], ["LIMIT", 1]]
+Completed 200 OK in 4ms (Views: 0.1ms | ActiveRecord: 1.2ms (4 queries, 0 cached) | GC: 0.0ms)
+Started POST "/api/v1/user_blocks" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::UserBlocksController#create as JSON
+  Parameters: {"blocked_username" => "bob_req", "user_block" => {}}
+  [1m[36mApiToken Load (0.2ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.619753"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 86]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."discarded_at" IS NULL AND (LOWER(username) = $1) LIMIT $2[0m  [[nil, "bob_req"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Load (0.7ms)[0m  [1m[34mSELECT "user_blocks".* FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 86], ["blocked_id", 87], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE "user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 LIMIT $3[0m  [["blocker_id", 86], ["blocked_id", 87], ["LIMIT", 1]]
+  [1m[36mUserBlock Create (0.5ms)[0m  [1m[32mINSERT INTO "user_blocks" ("blocker_id", "blocked_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["blocker_id", 86], ["blocked_id", 87], ["created_at", "2026-11-24 19:46:51.626038"], ["updated_at", "2026-11-24 19:46:51.626038"]]
+  [1m[36mAuditEvent Create (0.6ms)[0m  [1m[32mINSERT INTO "audit_events" ("actor_id", "action", "auditable_type", "auditable_id", "metadata", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["actor_id", 86], ["action", "user.blocked"], ["auditable_type", "UserBlock"], ["auditable_id", 12], ["metadata", "{\"blocked_user_id\":87}"], ["created_at", "2026-11-24 19:46:51.627920"], ["updated_at", "2026-11-24 19:46:51.627920"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 86], ["blocked_id", 87], ["blocker_id", 87], ["blocked_id", 86], ["LIMIT", 1]]
+Completed 201 Created in 12ms (Views: 0.2ms | ActiveRecord: 3.7ms (8 queries, 0 cached) | GC: 0.0ms)
+Started GET "/api/v1/users/bob_req" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::UsersController#show as HTML
+  Parameters: {"username" => "bob_req"}
+  [1m[36mApiToken Load (0.3ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.633327"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 86]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE (LOWER(username) = $1) LIMIT $2[0m  [[nil, "bob_req"], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 86], ["blocked_id", 87], ["blocker_id", 87], ["blocked_id", 86], ["LIMIT", 1]]
+rescue_from handled Pundit::NotAuthorizedError (not allowed to UserPolicy#show? this User) - /home/jader/.local/share/mise/installs/ruby/3.4.12/lib/ruby/gems/3.4.0/gems/pundit-2.5.2/lib/pundit/context.rb:70:in 'Pundit::Context#authorize'
+Completed 404 Not Found in 6ms (Views: 0.1ms | ActiveRecord: 1.0ms (4 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.3ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 87], ["token_digest", "[FILTERED]"], ["device_name", nil], ["last_used_at", "2026-11-24 19:46:51.639953"], ["expires_at", "2027-02-22 19:46:51.639882"], ["revoked_at", nil], ["created_at", "2026-11-24 19:46:51.641014"], ["updated_at", "2026-11-24 19:46:51.641014"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started GET "/api/v1/users/alice_req" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::UsersController#show as HTML
+  Parameters: {"username" => "alice_req"}
+  [1m[36mApiToken Load (0.2ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.642984"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 87]]
+  [1m[36mUser Load (0.8ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE (LOWER(username) = $1) LIMIT $2[0m  [[nil, "alice_req"], ["LIMIT", 1]]
+  [1m[36mUserBlock Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "user_blocks" WHERE ("user_blocks"."blocker_id" = $1 AND "user_blocks"."blocked_id" = $2 OR "user_blocks"."blocker_id" = $3 AND "user_blocks"."blocked_id" = $4) LIMIT $5[0m  [["blocker_id", 87], ["blocked_id", 86], ["blocker_id", 86], ["blocked_id", 87], ["LIMIT", 1]]
+rescue_from handled Pundit::NotAuthorizedError (not allowed to UserPolicy#show? this User) - /home/jader/.local/share/mise/installs/ruby/3.4.12/lib/ruby/gems/3.4.0/gems/pundit-2.5.2/lib/pundit/context.rb:70:in 'Pundit::Context#authorize'
+Completed 404 Not Found in 6ms (Views: 0.1ms | ActiveRecord: 1.6ms (4 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "alice_req"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.653994"], [nil, "alice_req"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.4ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "alice_req"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.651085"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.654701"], ["updated_at", "2026-11-24 19:46:51.654701"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email_address") = LOWER($1) LIMIT $2[0m  [["email_address", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."username") = LOWER($1) LIMIT $2[0m  [["username", "bob_req"], ["LIMIT", 1]]
+  [1m[36mUsernameReservation Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "username_reservations" WHERE (expires_at > $1) AND (LOWER(username) = $2) LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.658583"], [nil, "bob_req"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email_address", "username", "password_digest", "role", "locale", "time_zone", "username_changed_at", "terms_accepted_at", "discarded_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING "id"[0m  [["email_address", "[FILTERED]"], ["username", "bob_req"], ["password_digest", "[FILTERED]"], ["role", "user"], ["locale", "es"], ["time_zone", "UTC"], ["username_changed_at", nil], ["terms_accepted_at", "2026-11-24 19:46:51.656108"], ["discarded_at", nil], ["created_at", "2026-11-24 19:46:51.659135"], ["updated_at", "2026-11-24 19:46:51.659135"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mApiToken Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "api_tokens" WHERE "api_tokens"."token_digest" = $1 LIMIT $2[0m  [["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mApiToken Create (0.4ms)[0m  [1m[32mINSERT INTO "api_tokens" ("user_id", "token_digest", "device_name", "last_used_at", "expires_at", "revoked_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["user_id", 88], ["token_digest", "[FILTERED]"], ["device_name", nil], ["last_used_at", "2026-11-24 19:46:51.677837"], ["expires_at", "2027-02-22 19:46:51.677702"], ["revoked_at", nil], ["created_at", "2026-11-24 19:46:51.679835"], ["updated_at", "2026-11-24 19:46:51.679835"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Started POST "/api/v1/user_blocks" for 127.0.0.1 at 2026-11-24 13:46:51 -0600
+Processing by Api::V1::UserBlocksController#create as JSON
+  Parameters: {"blocked_username" => "bob_req", "user_block" => {}}
+  [1m[36mApiToken Load (0.2ms)[0m  [1m[34mSELECT "api_tokens".* FROM "api_tokens" WHERE "api_tokens"."revoked_at" IS NULL AND (expires_at > $1) AND "api_tokens"."token_digest" = $2 LIMIT $3[0m  [[nil, "2026-11-24 19:46:51.682555"], ["token_digest", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 88]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."discarded_at" IS NULL AND (LOWER(username) = $1) LIMIT $2[0m  [[nil, "bob_req"], ["LIMIT", 1]]
+rescue_from handled ActiveRecord::RecordNotUnique (duplicate key) - /home/jader/.local/share/mise/installs/ruby/3.4.12/lib/ruby/gems/3.4.0/gems/rspec-mocks-3.13.9/lib/rspec/mocks/message_expectation.rb:190:in 'block in RSpec::Mocks::MessageExpectation#and_raise'
+Completed 409 Conflict in 3ms (Views: 0.1ms | ActiveRecord: 0.7ms (3 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m

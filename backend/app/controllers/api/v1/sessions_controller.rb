@@ -13,7 +13,7 @@ module Api
       def create
         user = User.authenticate_active(params[:email_address], params[:password])
         unless user
-          return render json: { error: "Invalid email or password" }, status: :unauthorized
+          return render json: { error: I18n.t("api.v1.errors.invalid_credentials") }, status: :unauthorized
         end
 
         _api_token, raw_token = ApiToken.issue_for!(
