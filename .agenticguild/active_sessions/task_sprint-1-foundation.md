@@ -127,12 +127,15 @@
 
 ## Domain Model (Project-Wide Overview)
 
-### 1. `User` (Sprint 1)
+### 1. `User` (Sprint 1 — Approved Value Objects)
 - **Responsibility**: Identity, auth credentials, public profile (`username`), role (`user` / `admin`), localization (`locale`, `time_zone`), terms compliance (`terms_accepted_at`), and soft-delete lifecycle (`discarded_at`).
 - **Invariants**:
   - `email_address` is private and never serialized in public/friend endpoints.
   - `username` is unique (case-insensitive), subject to a 30-day change cooldown (`username_changed_at`), and old usernames enter a 30-day quarantine (`UsernameReservation`) upon change.
-- **Value Objects**: `EmailAddress`, `Username`, `AuthToken`.
+- **Approved Value Objects (Step 3.0 Gate — Confirmed)**:
+  - `EmailAddress`: Wraps String; normalizes (`strip.downcase`) and validates strict email format (`REQ-USER-001`, `REQ-AUTH-001`).
+  - `Username`: Wraps String; normalizes lowercase, enforces `3..30` length, `/\A[a-z0-9_]+\z/` format, and rejects system reserved words (`REQ-USER-001`, `REQ-USER-004`).
+  - `AuthToken`: Wraps raw token generation (`SecureRandom.base58(32)`) and deterministic SHA-256 `token_digest` calculation (`REQ-AUTH-001`).
 
 ### 2. `UserBlock` & `Friendship` (Sprints 1–2)
 - **Responsibility**: Directional blocks (`blocker_id`, `blocked_id`) and bidirectional friendships (`requester_id`, `addressee_id`, `status`).
@@ -170,7 +173,7 @@
 
   <implementation_plan>
     <step id="1" status="done">Synchronize all project governance and architecture anchor documents (`docs/ROADMAP.md`, `docs/core/SYSTEM_ARCHITECTURE.md`, `docs/core/SPEC.md`, `docs/core/DATA_FLOW_MAP.md`, `docs/core/TESTING_STRATEGY_MATRIX.md`, `.cursorrules`, and `.agents/rules/agentic-guild.md`) with our complete holistic architecture, domain glossary, business rules, and `[REQ-ID]` traceability codes.</step>
-    <step id="2" status="pending">Bootstrap the monorepo foundation (`backend/` with Ruby on Rails 8 + PostgreSQL + Solid Queue + Hotwire/Tailwind CSS + RSpec + Pundit, and `mobile/` directory structure for Flutter) and run a smoke test to verify a green test runner baseline.</step>
+    <step id="2" status="complete">Bootstrap the monorepo foundation (`backend/` with Ruby on Rails 8 + PostgreSQL + Solid Queue + Hotwire/Tailwind CSS + RSpec + Pundit, and `mobile/` directory structure for Flutter) and run a smoke test to verify a green test runner baseline.</step>
     <step id="3" status="pending">Write failing RSpec unit and model specs (`[REQ-USER-001]`, `[REQ-USER-002]`, `[REQ-USER-003]`, `[REQ-USER-004]`, `[REQ-AUTH-002]`) for `User` (private normalized email, unique `@username`, 30-day username change cooldown + 30-day old-username quarantine, `locale`, `time_zone`, `terms_accepted_at`), then implement `User`, value objects (`EmailAddress`, `Username`), and migrations to make the tests pass.</step>
     <step id="4" status="pending">Write failing RSpec request and model specs (`[REQ-AUTH-001]`, `[REQ-AUTH-003]`, `[REQ-NOTIF-002]`) for Web Cookie Sessions and `/api/v1` Token Authentication (`ApiToken` with SHA-256 `token_digest`, expiration, revocation, `device_token` unbinding on logout, generic `200 OK` password reset anti-enumeration, and Rails 8 `rate_limit`), then implement the controllers and authentication services to make the tests pass.</step>
     <step id="5" status="pending">Write failing RSpec policy and model specs (`[REQ-BLOCK-001]`, `[REQ-BLOCK-002]`, `[REQ-ADM-001]`, `[REQ-ARCH-003]`) for Pundit default-deny authorization, `UserBlock` ("block wins" invariant + cascading cleanup hooks), immutable `AuditEvent` logging, and `RecordNotUnique` idempotency handling, then implement `ApplicationPolicy`, `UserBlock`, and `AuditEvent` to make the tests pass.</step>

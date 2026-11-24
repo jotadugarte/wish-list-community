@@ -5,8 +5,8 @@
   </active_task_pointer>
 
   <execution_context>
-    <active_skill>sync-docs</active_skill>
-    <current_phase>Phase 3: Apply Updates</current_phase>
-    <current_step>Step 3.1</current_step>
+    <active_skill>start-task</active_skill>
+    <current_phase>Phase 3: Execution (Iterative TDD)</current_phase>
+    <current_step>Step 3.2</current_step>
   </execution_context>
 </agent_state>
