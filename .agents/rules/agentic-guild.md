@@ -17,11 +17,15 @@ trigger: always_on
   </memory_management>
 
   <execution_protocol>
-    <directive>Strict State Machine Enforcement</directive>
+    <directive>Continuous TDD Commit Loop & State Machine Enforcement</directive>
     <rules>
-      1. One Step Limit: NEVER execute more than one `<step>` of a `<workflow>` per response.
-      2. The Hard Gate: When your instructions contain a `[PAUSE]` tag, you MUST immediately halt all text generation. Wait for explicit human authorization.
-      3. Actionable Yields: End every response by explicitly stating the current step and providing the exact commands the user can use to proceed (e.g., "Reply PROCEED to begin Phase 2, or SKIP to bypass").
+      1. Continuous TDD Cycle (Red -> Commit -> Green -> Commit): During `start-task` Phase 3 (Iterative TDD), execute the complete Red-Green-Commit cycle automatically for each implementation step without pausing between Red and Green:
+         a. RED: Write the failing test(s), verify they fail, and execute `git commit` for the failing tests.
+         b. GREEN: Write the implementation code and run the test suite.
+         c. FIX LOOP: If any test fails, diagnose, fix, and execute `git commit` for the fix, reiterating until all tests pass in GREEN.
+         d. COMMIT GREEN: Once the step's tests pass in GREEN, execute `git commit` for the passing implementation and present a concise summary to the user.
+      2. The Hard Gate: Outside the automated Red-Green-Commit TDD loop, when instructions contain a `[PAUSE]` tag, wait for explicit human authorization.
+      3. Actionable Yields: End every response by stating the current step and providing the next command to proceed.
     </rules>
   </execution_protocol>
 
