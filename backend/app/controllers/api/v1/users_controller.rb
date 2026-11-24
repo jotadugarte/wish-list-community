@@ -9,14 +9,12 @@ module Api
       # [REQ-USER-001] [REQ-BLOCK-001] Looks up a user by @username Value Object and enforces UserPolicy.
       def show
         handle_vo = Username.new(params[:username])
-        target_user = User.find_by("LOWER(username) = ?", handle_vo.value)
-        return render json: { error: I18n.t("api.v1.errors.not_found") }, status: :not_found if target_user.nil?
+        target_user = User.find_by!("LOWER(username) = ?", handle_vo.value)
 
         authorize target_user, :show?
         render json: target_user.public_profile_json, status: :ok
       rescue ArgumentError
-        skip_authorization
-        render json: { error: I18n.t("api.v1.errors.not_found") }, status: :not_found
+        raise ActiveRecord::RecordNotFound
       end
     end
   end

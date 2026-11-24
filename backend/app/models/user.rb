@@ -26,21 +26,22 @@ class User < ApplicationRecord
 
   # [REQ-AUTH-001] Authenticates an active (non-discarded) user by normalized email and password.
   def self.authenticate_active(raw_email, raw_password)
-    vo = EmailAddress.new(raw_email)
-    candidate = where(discarded_at: nil).find_by("LOWER(email_address) = ?", vo.value)
-    candidate&.authenticate(raw_password) || nil
-  rescue ArgumentError
-    nil
+    authenticate_within_scope(kept, raw_email, raw_password)
   end
 
   # [REQ-LIFE-002] Authenticates a discarded user by email and password for account restoration.
   def self.authenticate_discarded(raw_email, raw_password)
+    authenticate_within_scope(discarded, raw_email, raw_password)
+  end
+
+  def self.authenticate_within_scope(scope, raw_email, raw_password)
     vo = EmailAddress.new(raw_email)
-    candidate = discarded.find_by("LOWER(email_address) = ?", vo.value)
+    candidate = scope.find_by("LOWER(email_address) = ?", vo.value)
     candidate&.authenticate(raw_password) || nil
   rescue ArgumentError
     nil
   end
+  private_class_method :authenticate_within_scope
 
   # [REQ-LIFE-002] Permanently anonymizes PII after the 30-day soft-delete grace window expires.
   def anonymize_pii!
