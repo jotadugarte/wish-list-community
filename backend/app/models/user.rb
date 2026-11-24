@@ -12,6 +12,18 @@ class User < ApplicationRecord
   has_secure_password
 
   has_many :username_reservations, foreign_key: :previous_user_id, dependent: :destroy
+  has_many :sessions, dependent: :destroy
+  has_many :api_tokens, dependent: :destroy
+  has_many :device_tokens, dependent: :destroy
+
+  # [REQ-AUTH-001] Authenticates an active (non-discarded) user by normalized email and password.
+  def self.authenticate_active(raw_email, raw_password)
+    vo = EmailAddress.new(raw_email)
+    candidate = where(discarded_at: nil).find_by("LOWER(email_address) = ?", vo.value)
+    candidate&.authenticate(raw_password) || nil
+  rescue ArgumentError
+    nil
+  end
 
   before_validation :normalize_identity_fields
 

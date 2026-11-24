@@ -2,6 +2,9 @@
 # agentic:guild Transient Memory
 .agenticguild/*
 !.agenticguild/.gitkeep
+!.agenticguild/current_state.md
+!.agenticguild/active_sessions/
+!.agenticguild/active_sessions/**
 
 # Rails backend ignores
 /backend/log/*
