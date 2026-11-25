@@ -1,12 +1,12 @@
 <agent_state>
   <!-- When multiple task_*.md files exist in active_sessions/, set this to the active session filename (e.g. task_foo.md) for cross-IDE and status-check consistency. -->
   <active_task_pointer>
-    task_sprint-1-mobile-design-system.md
+    task_sprint-2-backend-social.md
   </active_task_pointer>
 
   <execution_context>
-    <active_skill>explore-task</active_skill>
-    <current_phase>Phase 1: The Whiteboard (Discovery Loop)</current_phase>
-    <current_step>Step 1.2</current_step>
+    <active_skill>start-task</active_skill>
+    <current_phase>Phase 3: Execution (Iterative TDD)</current_phase>
+    <current_step>Step 3.1</current_step>
   </execution_context>
 </agent_state>
