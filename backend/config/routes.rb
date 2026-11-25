@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       get "users/search" => "users#search", as: :search_users
       get "users/:username" => "users#show", as: :user
       resources :friendships, only: %i[index create update destroy]
+      resources :reports, only: %i[create]
       resources :user_blocks, only: %i[create]
     end
   end
