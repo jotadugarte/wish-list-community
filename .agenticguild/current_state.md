@@ -6,7 +6,7 @@
 
   <execution_context>
     <active_skill>finish-branch</active_skill>
-    <current_phase>Phase 4: Final Spackle & PR (sync-docs Phase 3)</current_phase>
-    <current_step>Step 4.1 (sync-docs Step 3.1 Complete)</current_step>
+    <current_phase>Phase 4: Final Spackle & PR (harvest-rules Phase 2)</current_phase>
+    <current_step>Step 4.2 (harvest-rules Step 2.1 Complete)</current_step>
   </execution_context>
 </agent_state>

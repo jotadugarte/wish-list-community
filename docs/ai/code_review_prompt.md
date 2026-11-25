@@ -15,8 +15,8 @@ This is a **strict self-review** of our pull request for the **Wish List Communi
 * Enforce `docs/core/SYSTEM_ARCHITECTURE.md`, `docs/core/SPEC.md`, and `docs/core/deterministic_coding_standards.md`:
   1. Cyclomatic complexity <= 10 and function length <= 60 lines.
   2. Explicit Pre-condition and Post-condition assertions on critical state mutations.
-  3. Value Objects (`EmailAddress`, `Username`, `AuthToken`) instead of raw primitives.
-  4. Internationalization (`I18n.t`) for user-facing messages (`es` / `en`).
+  3. Value Objects (`EmailAddress`, `Username`, `AuthToken`, `SearchQuery`, `ReportReason`) instead of raw primitives.
+  4. Internationalization (`I18n.t`) for user-facing messages (`es` / `en`) and Rack 3.1+ `:unprocessable_content` (`422`) status symbol instead of deprecated `:unprocessable_entity`.
   5. Strict `[REQ-ID]` traceability on all RSpec examples.
 
 ### Output Format
