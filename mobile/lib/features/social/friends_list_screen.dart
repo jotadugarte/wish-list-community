@@ -24,6 +24,7 @@ class FriendsListScreen extends StatefulWidget {
 
 class _FriendsListScreenState extends State<FriendsListScreen> {
   FriendshipsSummary? _summary;
+  String? _error;
   bool _isLoading = true;
 
   @override
@@ -33,15 +34,33 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
   }
 
   Future<void> _loadFriendships() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final res = await widget.socialRepository.fetchFriendships();
       if (mounted) {
         setState(() => _summary = res);
       }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _error = e.toString());
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _runFriendAction(Future<void> Function() action) async {
+    try {
+      await action();
+      await _loadFriendships();
+    } catch (e) {
+      if (mounted) {
+        setState(() => _error = e.toString());
       }
     }
   }
@@ -60,6 +79,10 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        if (_error != null) ...[
+          Text(_error!, style: const TextStyle(color: Color(0xFFD9383A))),
+          const SizedBox(height: 8),
+        ],
         if (summary.incomingRequests.isNotEmpty) ...[
           Text(
             s.incomingRequestsTitle,
@@ -92,21 +115,19 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
           children: [
             IconButton(
               icon: const Icon(Icons.check),
-              onPressed: () async {
+              onPressed: () => _runFriendAction(() async {
                 await widget.socialRepository.acceptFriendRequest(
                   friendshipId: item.id,
                 );
-                await _loadFriendships();
-              },
+              }),
             ),
             IconButton(
               icon: const Icon(Icons.close),
-              onPressed: () async {
+              onPressed: () => _runFriendAction(() async {
                 await widget.socialRepository.removeFriendship(
                   friendshipId: item.id,
                 );
-                await _loadFriendships();
-              },
+              }),
             ),
           ],
         ),
@@ -128,23 +149,22 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
               key: Key('block_friend_${item.friend.id}'),
               tooltip: s.blockUserAction,
               icon: const Icon(Icons.block),
-              onPressed: () async {
+              onPressed: () => _runFriendAction(() async {
                 await widget.socialRepository.blockUser(
                   blockedUserId: item.friend.id,
                 );
-                await _loadFriendships();
-              },
+              }),
             ),
             IconButton(
               key: Key('report_friend_${item.friend.id}'),
               tooltip: s.reportUserAction,
               icon: const Icon(Icons.flag_outlined),
-              onPressed: () async {
+              onPressed: () => _runFriendAction(() async {
                 await widget.socialRepository.reportUser(
                   targetUserId: item.friend.id,
                   rawReason: 'spam',
                 );
-              },
+              }),
             ),
           ],
         ),

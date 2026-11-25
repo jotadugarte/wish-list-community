@@ -12,6 +12,8 @@ class AppNavDestination {
 // from Ceci ("Ñata")'s Design Studio.
 // Traceability: [REQ-ARCH-001]
 class AppNavigationShell extends StatelessWidget {
+  static const int maxNavDestinations = 8;
+
   final DesignTokens tokens;
   final int currentIndex;
   final ValueChanged<int> onDestinationSelected;
@@ -64,7 +66,9 @@ class AppNavigationShell extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(items.length, (index) {
+        children: List.generate(
+          items.length.clamp(0, maxNavDestinations),
+          (index) {
           final item = items[index];
           final selected = index == currentIndex;
           return InkWell(

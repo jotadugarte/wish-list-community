@@ -50,6 +50,17 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
     }
   }
 
+  Future<void> _runSocialAction(Future<void> Function() action) async {
+    setState(() => _error = null);
+    try {
+      await action();
+    } catch (e) {
+      if (mounted) {
+        setState(() => _error = e.toString());
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = widget.strings;
@@ -110,11 +121,11 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
             if (card.friendshipStatus == 'none')
               ElevatedButton(
                 key: Key('send_friend_request_${card.id}'),
-                onPressed: () async {
+                onPressed: () => _runSocialAction(() async {
                   await widget.socialRepository.sendFriendRequest(
                     addresseeId: card.id,
                   );
-                },
+                }),
                 child: Text(s.addFriendButton),
               )
             else
@@ -123,20 +134,20 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
               key: Key('block_user_${card.id}'),
               tooltip: s.blockUserAction,
               icon: const Icon(Icons.block),
-              onPressed: () async {
+              onPressed: () => _runSocialAction(() async {
                 await widget.socialRepository.blockUser(blockedUserId: card.id);
-              },
+              }),
             ),
             IconButton(
               key: Key('report_user_${card.id}'),
               tooltip: s.reportUserAction,
               icon: const Icon(Icons.flag_outlined),
-              onPressed: () async {
+              onPressed: () => _runSocialAction(() async {
                 await widget.socialRepository.reportUser(
                   targetUserId: card.id,
                   rawReason: 'harassment',
                 );
-              },
+              }),
             ),
           ],
         ),
