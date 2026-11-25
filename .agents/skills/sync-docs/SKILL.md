@@ -17,8 +17,8 @@ description: >-
   </state_machine_directives>
 
   <hard_constraints>
-    NEVER use any tool to execute `git commit`, `git push`, or `git merge`. These commands are STRICTLY FORBIDDEN.
-    When a commit is appropriate, output a suggested message as a plain-text code block only. The user runs all git commands themselves.
+    NEVER use any tool to execute `git push` or `git merge` without explicit user permission.
+    You ARE AUTHORIZED AND REQUIRED to run `git add` and `git commit` automatically after syncing documentation.
   </hard_constraints>
 
   <persona>

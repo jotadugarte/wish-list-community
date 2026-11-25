@@ -12,8 +12,8 @@
   </state_machine_directives>
 
   <hard_constraints>
-    NEVER use any tool to execute `git commit`, `git push`, or `git merge`. These commands are STRICTLY FORBIDDEN.
-    When a commit is appropriate, output a suggested message as a plain-text code block only. The user runs all git commands themselves.
+    NEVER use any tool to execute `git push` or `git merge` without explicit user permission.
+    You ARE AUTHORIZED AND REQUIRED to run `git add` and `git commit` automatically after each review pass where fixes are applied and verified.
   </hard_constraints>
 
   <persona>
@@ -48,10 +48,11 @@
           Parse the user's numeric selection.
           Implement only the requested fixes.
           Run the local test suite and linter. If `docs/ai/code_review_prompt.md` exists, run the commands it specifies (e.g. Quality or Pre-Flight section).
+          Once verified clean, automatically run `git add` and `git commit` for the applied fixes.
         </action>
         <yield>
           [PAUSE - AWAIT VERIFICATION]
-          Tell the user the changes are applied and verified clean. Output a suggested commit message as a plain-text code block (e.g. `git commit -m "..."`). Do NOT propose or run any git command — the user runs it themselves.
+          Tell the user the changes are applied, verified clean, and committed automatically. Ask if they'd like another code review pass or to proceed.
         </yield>
       </step>
       <step id="2.2">
