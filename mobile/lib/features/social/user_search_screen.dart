@@ -45,7 +45,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _error = e.toString());
+        setState(() => _error = widget.strings.errorMessage(e));
       }
     }
   }
@@ -56,7 +56,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
       await action();
     } catch (e) {
       if (mounted) {
-        setState(() => _error = e.toString());
+        setState(() => _error = widget.strings.errorMessage(e));
       }
     }
   }

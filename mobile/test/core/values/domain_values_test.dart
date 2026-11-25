@@ -13,7 +13,10 @@ void main() {
     test('rejects malformed or empty emails [REQ-AUTH-001]', () {
       expect(() => EmailAddressVo(''), throwsArgumentError);
       expect(() => EmailAddressVo('not-an-email'), throwsArgumentError);
-      expect(() => EmailAddressVo('${'a' * 250}@example.com'), throwsArgumentError);
+      expect(
+        () => EmailAddressVo('${'a' * 250}@example.com'),
+        throwsArgumentError,
+      );
     });
   });
 
@@ -25,13 +28,16 @@ void main() {
       expect(username, equals(UsernameVo('ceci_nata24')));
     });
 
-    test('rejects short, long, invalid format, or reserved words [REQ-USER-001]', () {
-      expect(() => UsernameVo('ab'), throwsArgumentError);
-      expect(() => UsernameVo('a' * 31), throwsArgumentError);
-      expect(() => UsernameVo('bad-handle!'), throwsArgumentError);
-      expect(() => UsernameVo('admin'), throwsArgumentError);
-      expect(() => UsernameVo('api'), throwsArgumentError);
-    });
+    test(
+      'rejects short, long, invalid format, or reserved words [REQ-USER-001]',
+      () {
+        expect(() => UsernameVo('ab'), throwsArgumentError);
+        expect(() => UsernameVo('a' * 31), throwsArgumentError);
+        expect(() => UsernameVo('bad-handle!'), throwsArgumentError);
+        expect(() => UsernameVo('admin'), throwsArgumentError);
+        expect(() => UsernameVo('api'), throwsArgumentError);
+      },
+    );
   });
 
   group('SearchQueryVo [REQ-SOC-001] [REQ-WISH-001]', () {
@@ -51,19 +57,22 @@ void main() {
   });
 
   group('ReportReasonVo [REQ-SOC-001] [REQ-DISC-001]', () {
-    test('normalizes and accepts all 5 allowed report reasons [REQ-DISC-001]', () {
-      for (final raw in [
-        'spam',
-        'harassment',
-        'impersonation',
-        'inappropriate_content',
-        'scam',
-      ]) {
-        final vo = ReportReasonVo('  ${raw.toUpperCase()}  ');
-        expect(vo.value, equals(raw));
-        expect(vo.toString(), equals(raw));
-      }
-    });
+    test(
+      'normalizes and accepts all 5 allowed report reasons [REQ-DISC-001]',
+      () {
+        for (final raw in [
+          'spam',
+          'harassment',
+          'impersonation',
+          'inappropriate_content',
+          'scam',
+        ]) {
+          final vo = ReportReasonVo('  ${raw.toUpperCase()}  ');
+          expect(vo.value, equals(raw));
+          expect(vo.toString(), equals(raw));
+        }
+      },
+    );
 
     test('rejects unknown report reasons [REQ-DISC-001]', () {
       expect(() => ReportReasonVo(''), throwsArgumentError);

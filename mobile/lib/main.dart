@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/network/api_client.dart';
-import 'package:wish_list_mobile/core/network/token_storage.dart';
+import 'package:wish_list_mobile/core/network/api_config.dart';
+import 'package:wish_list_mobile/core/network/secure_token_storage.dart';
 import 'package:wish_list_mobile/core/theme/app_navigation_shell.dart';
 import 'package:wish_list_mobile/core/theme/app_theme.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
@@ -13,11 +15,18 @@ import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/social/user_search_screen.dart';
 
 // Entry point for Wish List Community mobile app (iOS & Android).
+// Run with: flutter run --dart-define=API_BASE_URL=https://your-server
 // Traceability: [REQ-ARCH-001], [REQ-AUTH-001], [REQ-SOC-001], [REQ-USER-002]
 void main() {
-  final tokenStorage = InMemoryTokenStorage();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final tokenStorage = SecureTokenStorage(store: FlutterKeyValueStore());
   final apiClient = ApiClient(
-    baseUrl: 'http://localhost:3000',
+    baseUrl: resolveApiBaseUrl(
+      override: const String.fromEnvironment('API_BASE_URL'),
+      platform: defaultTargetPlatform,
+      isRelease: kReleaseMode,
+    ),
     tokenStorage: tokenStorage,
   );
   final authRepo = AuthRepository(
@@ -54,6 +63,48 @@ class WishListApp extends StatefulWidget {
 class _WishListAppState extends State<WishListApp> {
   UserProfile? _currentUser;
   int _selectedIndex = 0;
+  bool _restoring = true;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.authRepository.apiClient.onUnauthorized = _handleSessionExpired;
+    _restoreSession();
+  }
+
+  @override
+  void dispose() {
+    widget.authRepository.apiClient.onUnauthorized = null;
+    super.dispose();
+  }
+
+  // [REQ-AUTH-001] A 401 from the server means the token expired or was revoked:
+  // return the user to the login screen (the client already cleared the token).
+  void _handleSessionExpired() {
+    if (!mounted) return;
+    setState(() {
+      _currentUser = null;
+      _selectedIndex = 0;
+    });
+  }
+
+  // [REQ-AUTH-001] Restores the persisted session on app start via GET /api/v1/me.
+  Future<void> _restoreSession() async {
+    UserProfile? restored;
+    try {
+      final token = await widget.authRepository.tokenStorage.readToken();
+      if (token != null) {
+        restored = await widget.authRepository.fetchCurrentProfile();
+      }
+    } catch (_) {
+      restored = null;
+    }
+    if (!mounted) return;
+    setState(() {
+      _currentUser = restored;
+      _restoring = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,33 +115,33 @@ class _WishListAppState extends State<WishListApp> {
       title: t.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.build(t),
-      home: _currentUser == null
-          ? LoginScreen(
-              tokens: t,
-              strings: s,
-              authRepository: widget.authRepository,
-              onAuthenticated: (profile) =>
-                  setState(() => _currentUser = profile),
-            )
-          : AppNavigationShell(
-              tokens: t,
-              currentIndex: _selectedIndex,
-              onDestinationSelected: (idx) =>
-                  setState(() => _selectedIndex = idx),
-              appBar: AppBar(title: Text(t.appName)),
-              items: [
-                AppNavDestination(
-                  icon: Icons.people_outline,
-                  label: s.navFriends,
-                ),
-                AppNavDestination(icon: Icons.search, label: s.navSearch),
-                AppNavDestination(
-                  icon: Icons.person_outline,
-                  label: s.navProfile,
-                ),
-              ],
-              body: _buildActiveScreen(s),
-            ),
+      home: _buildHome(t, s),
+    );
+  }
+
+  Widget _buildHome(DesignTokens t, AppStrings s) {
+    if (_restoring) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_currentUser == null) {
+      return LoginScreen(
+        tokens: t,
+        strings: s,
+        authRepository: widget.authRepository,
+        onAuthenticated: (profile) => setState(() => _currentUser = profile),
+      );
+    }
+    return AppNavigationShell(
+      tokens: t,
+      currentIndex: _selectedIndex,
+      onDestinationSelected: (idx) => setState(() => _selectedIndex = idx),
+      appBar: AppBar(title: Text(t.appName)),
+      items: [
+        AppNavDestination(icon: Icons.people_outline, label: s.navFriends),
+        AppNavDestination(icon: Icons.search, label: s.navSearch),
+        AppNavDestination(icon: Icons.person_outline, label: s.navProfile),
+      ],
+      body: _buildActiveScreen(s),
     );
   }
 

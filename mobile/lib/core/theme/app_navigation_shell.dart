@@ -61,14 +61,16 @@ class AppNavigationShell extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       decoration: BoxDecoration(
         color: tokens.surface,
-        borderRadius: isFloating ? BorderRadius.circular(999) : BorderRadius.zero,
+        borderRadius: isFloating
+            ? BorderRadius.circular(999)
+            : BorderRadius.zero,
         border: Border.all(color: tokens.border),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(
-          items.length.clamp(0, maxNavDestinations),
-          (index) {
+        children: List.generate(items.length.clamp(0, maxNavDestinations), (
+          index,
+        ) {
           final item = items[index];
           final selected = index == currentIndex;
           return InkWell(

@@ -22,6 +22,21 @@ class ProfileSettingsScreen extends StatelessWidget {
     required this.onSignedOut,
   });
 
+  // Runs a session-ending action; on failure keeps the user signed in and shows a
+  // friendly localized message instead of an unhandled async exception.
+  Future<void> _run(
+    BuildContext context,
+    Future<void> Function() action,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await action();
+      onSignedOut();
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(strings.errorMessage(e))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -31,25 +46,22 @@ class ProfileSettingsScreen extends StatelessWidget {
           child: ListTile(
             leading: AppIconBadge(icon: Icons.person, tokens: tokens),
             title: Text('@${user.username.value}'),
-            subtitle: Text('Idioma: ${user.locale} • Zona: ${user.timeZone}'),
+            subtitle: Text(
+              '${strings.languageLabel}: ${user.locale} • '
+              '${strings.timeZoneLabel}: ${user.timeZone}',
+            ),
           ),
         ),
         const SizedBox(height: 16),
         ElevatedButton(
           key: const Key('logout_button'),
-          onPressed: () async {
-            await authRepository.logout();
-            onSignedOut();
-          },
+          onPressed: () => _run(context, authRepository.logout),
           child: Text(strings.signOutButton),
         ),
         const SizedBox(height: 12),
         OutlinedButton(
           key: const Key('soft_delete_account_button'),
-          onPressed: () async {
-            await authRepository.softDeleteAccount();
-            onSignedOut();
-          },
+          onPressed: () => _run(context, authRepository.softDeleteAccount),
           child: Text(strings.softDeleteAccountButton),
         ),
       ],

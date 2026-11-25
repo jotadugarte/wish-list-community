@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/network/api_client.dart';
 import 'package:wish_list_mobile/core/network/token_storage.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
@@ -7,115 +8,133 @@ import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/main.dart';
 
+typedef _Responder = ApiResponse Function(RecordedApiRequest req);
+
+const _friendJson = {
+  'id': 2,
+  'username': 'ceci_nata',
+  'created_at': '2026-11-25T10:00:00Z',
+};
+
+ApiResponse _defaultResponder(RecordedApiRequest req) {
+  if (req.path == '/api/v1/session' && req.method == 'POST') {
+    return const ApiResponse(
+      statusCode: 201,
+      body: {
+        'token': 'mobile_session_token',
+        'user': {
+          'id': 1,
+          'username': 'jader_dev',
+          'created_at': '2026-11-25T10:00:00Z',
+        },
+      },
+    );
+  }
+  if (req.path == '/api/v1/me') {
+    return const ApiResponse(
+      statusCode: 200,
+      body: {
+        'id': 1,
+        'username': 'jader_dev',
+        'email_address': 'jader@example.com',
+        'locale': 'en',
+        'time_zone': 'UTC',
+      },
+    );
+  }
+  if (req.path == '/api/v1/friendships' && req.method == 'GET') {
+    return const ApiResponse(
+      statusCode: 200,
+      body: {
+        'friends': [
+          {
+            'id': 10,
+            'status': 'accepted',
+            'direction': 'outgoing',
+            'friend': _friendJson,
+          },
+        ],
+        'incoming_requests': [
+          {
+            'id': 11,
+            'status': 'pending',
+            'direction': 'incoming',
+            'friend': {
+              'id': 3,
+              'username': 'carlos_friend',
+              'created_at': '2026-11-25T10:00:00Z',
+            },
+          },
+        ],
+        'outgoing_requests': [],
+      },
+    );
+  }
+  if (req.path == '/api/v1/users/search' && req.method == 'GET') {
+    return const ApiResponse(
+      statusCode: 200,
+      body: {
+        'users': [
+          {
+            'id': 8,
+            'username': 'stranger_handle',
+            'friendship_status': 'none',
+            'created_at': '2026-11-25T10:00:00Z',
+          },
+        ],
+      },
+    );
+  }
+  if (req.path == '/api/v1/friendships' && req.method == 'POST') {
+    return const ApiResponse(
+      statusCode: 201,
+      body: {
+        'friendship': {
+          'id': 99,
+          'status': 'pending',
+          'direction': 'outgoing',
+          'friend': {
+            'id': 8,
+            'username': 'stranger_handle',
+            'created_at': '2026-11-25T10:00:00Z',
+          },
+        },
+      },
+    );
+  }
+  return const ApiResponse(statusCode: 204, body: {});
+}
+
 void main() {
   group('Sprint 1 & Sprint 2 Mobile Screens [REQ-AUTH-001] [REQ-SOC-001] [REQ-WISH-001] [REQ-BLOCK-001]', () {
     late InMemoryTokenStorage tokenStorage;
-    late ApiClient mockClient;
-    late AuthRepository authRepo;
-    late SocialRepository socialRepo;
+    late List<RecordedApiRequest> log;
 
     setUp(() {
       tokenStorage = InMemoryTokenStorage();
-      mockClient = ApiClient(
+      log = [];
+    });
+
+    Widget buildApp(_Responder responder) {
+      final client = ApiClient(
         baseUrl: 'https://api.wishlist.test',
         tokenStorage: tokenStorage,
         transport: (req) async {
-          if (req.path == '/api/v1/session' && req.method == 'POST') {
-            return const ApiResponse(
-              statusCode: 201,
-              body: {
-                'token': 'mobile_session_token',
-                'user': {
-                  'id': 1,
-                  'username': 'jader_dev',
-                  'created_at': '2026-11-25T10:00:00Z',
-                },
-              },
-            );
-          }
-          if (req.path == '/api/v1/friendships' && req.method == 'GET') {
-            return const ApiResponse(
-              statusCode: 200,
-              body: {
-                'friends': [
-                  {
-                    'id': 10,
-                    'status': 'accepted',
-                    'direction': 'outgoing',
-                    'friend': {
-                      'id': 2,
-                      'username': 'ceci_nata',
-                      'created_at': '2026-11-25T10:00:00Z',
-                    },
-                  },
-                ],
-                'incoming_requests': [
-                  {
-                    'id': 11,
-                    'status': 'pending',
-                    'direction': 'incoming',
-                    'friend': {
-                      'id': 3,
-                      'username': 'carlos_friend',
-                      'created_at': '2026-11-25T10:00:00Z',
-                    },
-                  },
-                ],
-                'outgoing_requests': [],
-              },
-            );
-          }
-          if (req.path == '/api/v1/users/search' && req.method == 'GET') {
-            return const ApiResponse(
-              statusCode: 200,
-              body: {
-                'users': [
-                  {
-                    'id': 8,
-                    'username': 'stranger_handle',
-                    'friendship_status': 'none',
-                    'created_at': '2026-11-25T10:00:00Z',
-                  },
-                ],
-              },
-            );
-          }
-          if (req.path == '/api/v1/friendships' && req.method == 'POST') {
-            return const ApiResponse(
-              statusCode: 201,
-              body: {
-                'friendship': {
-                  'id': 99,
-                  'status': 'pending',
-                  'direction': 'outgoing',
-                  'friend': {
-                    'id': 8,
-                    'username': 'stranger_handle',
-                    'created_at': '2026-11-25T10:00:00Z',
-                  },
-                },
-              },
-            );
-          }
-          return const ApiResponse(statusCode: 204, body: {});
+          log.add(req);
+          return responder(req);
         },
       );
-      authRepo = AuthRepository(apiClient: mockClient, tokenStorage: tokenStorage);
-      socialRepo = SocialRepository(apiClient: mockClient);
-    });
-
-    testWidgets('authenticates via LoginScreen and navigates between Friends, Search, and Profile [REQ-AUTH-001] [REQ-SOC-001] [REQ-WISH-001]', (tester) async {
-      final tokens = DesignTokens.forConfiguration();
-
-      await tester.pumpWidget(
-        WishListApp(
-          tokens: tokens,
-          authRepository: authRepo,
-          socialRepository: socialRepo,
+      return WishListApp(
+        tokens: DesignTokens.forConfiguration(),
+        authRepository: AuthRepository(
+          apiClient: client,
+          tokenStorage: tokenStorage,
         ),
+        socialRepository: SocialRepository(apiClient: client),
       );
+    }
 
-      expect(find.byKey(const Key('login_email_field')), findsOneWidget);
+    Future<void> login(WidgetTester tester) async {
       await tester.enterText(
         find.byKey(const Key('login_email_field')),
         'jader@example.com',
@@ -126,26 +145,122 @@ void main() {
       );
       await tester.tap(find.byKey(const Key('login_submit_button')));
       await tester.pumpAndSettle();
+    }
 
-      // After login, FriendsListScreen loads accepted friends and incoming requests
-      expect(find.text('@ceci_nata'), findsOneWidget);
-      expect(find.text('@carlos_friend'), findsOneWidget);
-
-      // Navigate to Search tab and search for @stranger_handle (anti-stalking: only handle + request button)
+    Future<void> openSearchAndFind(WidgetTester tester) async {
       await tester.tap(find.text('Buscar'));
       await tester.pumpAndSettle();
-
       await tester.enterText(
         find.byKey(const Key('search_username_field')),
         '@stranger',
       );
       await tester.tap(find.byKey(const Key('search_submit_button')));
       await tester.pumpAndSettle();
+    }
 
-      expect(find.text('@stranger_handle'), findsOneWidget);
-      expect(find.byKey(const Key('send_friend_request_8')), findsOneWidget);
-      expect(find.byKey(const Key('block_user_8')), findsOneWidget);
-      expect(find.byKey(const Key('report_user_8')), findsOneWidget);
-    });
+    testWidgets(
+      'authenticates via LoginScreen and navigates between Friends, Search, and Profile [REQ-AUTH-001] [REQ-SOC-001] [REQ-WISH-001]',
+      (tester) async {
+        await tester.pumpWidget(buildApp(_defaultResponder));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('login_email_field')), findsOneWidget);
+        await login(tester);
+
+        expect(find.text('@ceci_nata'), findsOneWidget);
+        expect(find.text('@carlos_friend'), findsOneWidget);
+
+        await openSearchAndFind(tester);
+        expect(find.text('@stranger_handle'), findsOneWidget);
+        expect(find.byKey(const Key('send_friend_request_8')), findsOneWidget);
+        expect(find.byKey(const Key('block_user_8')), findsOneWidget);
+        expect(find.byKey(const Key('report_user_8')), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'block and report buttons call /api/v1/user_blocks and /api/v1/reports [REQ-BLOCK-001] [REQ-DISC-001]',
+      (tester) async {
+        await tester.pumpWidget(buildApp(_defaultResponder));
+        await tester.pumpAndSettle();
+        await login(tester);
+        await openSearchAndFind(tester);
+
+        await tester.tap(find.byKey(const Key('block_user_8')));
+        await tester.pumpAndSettle();
+        final block = log.lastWhere((r) => r.path == '/api/v1/user_blocks');
+        expect(block.method, equals('POST'));
+        expect(block.body?['blocked_id'], equals(8));
+
+        await tester.tap(find.byKey(const Key('report_user_8')));
+        await tester.pumpAndSettle();
+        final report = log.lastWhere((r) => r.path == '/api/v1/reports');
+        expect(report.body?['reportable_id'], equals(8));
+        expect(report.body?['reason'], equals('harassment'));
+      },
+    );
+
+    testWidgets(
+      'a 409 from the server shows a friendly localized message, not raw text [REQ-SOC-001] [REQ-USER-002]',
+      (tester) async {
+        await tester.pumpWidget(
+          buildApp((req) {
+            if (req.path == '/api/v1/friendships' && req.method == 'POST') {
+              return const ApiResponse(statusCode: 409, body: {'error': 'dup'});
+            }
+            return _defaultResponder(req);
+          }),
+        );
+        await tester.pumpAndSettle();
+        await login(tester);
+        await openSearchAndFind(tester);
+
+        await tester.tap(find.byKey(const Key('send_friend_request_8')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(AppStrings.forLocale('es').conflictError),
+          findsOneWidget,
+        );
+        expect(find.textContaining('ApiException'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'a 401 after login returns the user to LoginScreen and clears the token [REQ-AUTH-001]',
+      (tester) async {
+        await tester.pumpWidget(
+          buildApp((req) {
+            if (req.path == '/api/v1/friendships' && req.method == 'GET') {
+              return const ApiResponse(
+                statusCode: 401,
+                body: {'error': 'Unauthorized'},
+              );
+            }
+            return _defaultResponder(req);
+          }),
+        );
+        await tester.pumpAndSettle();
+        await login(tester);
+
+        expect(find.byKey(const Key('login_email_field')), findsOneWidget);
+        expect(await tokenStorage.readToken(), isNull);
+      },
+    );
+
+    testWidgets(
+      'restores a persisted session on start and uses the profile locale (en) [REQ-AUTH-001] [REQ-USER-002]',
+      (tester) async {
+        await tokenStorage.saveToken('persisted_token');
+
+        await tester.pumpWidget(buildApp(_defaultResponder));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('login_email_field')), findsNothing);
+        expect(find.text('Friends'), findsOneWidget);
+        final me = log.firstWhere((r) => r.path == '/api/v1/me');
+        expect(me.headers['Authorization'], equals('Bearer persisted_token'));
+      },
+    );
   });
 }

@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _errorMessage = e.toString());
+        setState(() => _errorMessage = widget.strings.errorMessage(e));
       }
     } finally {
       if (mounted) {
@@ -126,10 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       if (_errorMessage != null) ...[
         const SizedBox(height: 12),
-        Text(
-          _errorMessage!,
-          style: const TextStyle(color: Color(0xFFD9383A)),
-        ),
+        Text(_errorMessage!, style: const TextStyle(color: Color(0xFFD9383A))),
       ],
       const SizedBox(height: 20),
       ElevatedButton(

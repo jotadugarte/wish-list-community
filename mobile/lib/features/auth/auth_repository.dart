@@ -11,10 +11,7 @@ class AuthRepository {
   final ApiClient apiClient;
   final TokenStorage tokenStorage;
 
-  const AuthRepository({
-    required this.apiClient,
-    required this.tokenStorage,
-  });
+  const AuthRepository({required this.apiClient, required this.tokenStorage});
 
   // [REQ-AUTH-001] [REQ-NOTIF-002] Authenticates via POST /api/v1/session and stores Bearer token.
   Future<UserProfile> login({
@@ -48,29 +45,29 @@ class AuthRepository {
       throw StateError('Post-condition failed: token must be stored');
     }
 
-    return UserProfile.fromJson(
-      response.body['user'] as Map<String, dynamic>,
-    );
+    return UserProfile.fromJson(response.body['user'] as Map<String, dynamic>);
   }
 
   // [REQ-AUTH-001] [REQ-NOTIF-002] Revokes API token and unbinds FCM device_token on server.
   Future<void> logout() async {
-    await apiClient.request(
-      method: 'DELETE',
-      path: '/api/v1/session',
-    );
+    try {
+      await apiClient.request(method: 'DELETE', path: '/api/v1/session');
+    } on ApiException catch (e) {
+      // A 401 means the token is already invalid server-side; any other failure
+      // (e.g. no network) is rethrown so the session is not silently kept alive.
+      if (!e.isUnauthorized) rethrow;
+    }
     await tokenStorage.clearToken();
     if (await tokenStorage.readToken() != null) {
-      throw StateError('Post-condition failed: token must be cleared on logout');
+      throw StateError(
+        'Post-condition failed: token must be cleared on logout',
+      );
     }
   }
 
   // [REQ-USER-001] Fetches the authenticated user's private profile via GET /api/v1/me.
   Future<UserProfile> fetchCurrentProfile() async {
-    final response = await apiClient.request(
-      method: 'GET',
-      path: '/api/v1/me',
-    );
+    final response = await apiClient.request(method: 'GET', path: '/api/v1/me');
     return UserProfile.fromJson(response.body);
   }
 
@@ -88,10 +85,7 @@ class AuthRepository {
 
   // [REQ-LIFE-002] Soft-deletes the account via DELETE /api/v1/account and clears local token.
   Future<void> softDeleteAccount() async {
-    await apiClient.request(
-      method: 'DELETE',
-      path: '/api/v1/account',
-    );
+    await apiClient.request(method: 'DELETE', path: '/api/v1/account');
     await tokenStorage.clearToken();
   }
 
@@ -109,17 +103,12 @@ class AuthRepository {
       method: 'POST',
       path: '/api/v1/account/restore',
       authenticated: false,
-      body: {
-        'email_address': emailVo.value,
-        'password': password,
-      },
+      body: {'email_address': emailVo.value, 'password': password},
     );
 
     final token = response.body['token'] as String;
     await tokenStorage.saveToken(token);
 
-    return UserProfile.fromJson(
-      response.body['user'] as Map<String, dynamic>,
-    );
+    return UserProfile.fromJson(response.body['user'] as Map<String, dynamic>);
   }
 }

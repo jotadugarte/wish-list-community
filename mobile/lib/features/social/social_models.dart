@@ -49,9 +49,7 @@ class FriendshipItem {
       id: json['id'] as int,
       status: json['status'] as String,
       direction: (json['direction'] as String?) ?? 'outgoing',
-      friend: PublicUserCard.fromJson(
-        json['friend'] as Map<String, dynamic>,
-      ),
+      friend: PublicUserCard.fromJson(json['friend'] as Map<String, dynamic>),
     );
   }
 }

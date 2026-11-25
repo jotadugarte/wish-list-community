@@ -45,7 +45,7 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _error = e.toString());
+        setState(() => _error = widget.strings.errorMessage(e));
       }
     } finally {
       if (mounted) {
@@ -60,7 +60,7 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
       await _loadFriendships();
     } catch (e) {
       if (mounted) {
-        setState(() => _error = e.toString());
+        setState(() => _error = widget.strings.errorMessage(e));
       }
     }
   }
@@ -72,7 +72,7 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
     }
     final summary = _summary;
     if (summary == null) {
-      return const Center(child: Text('Sin conexiones'));
+      return Center(child: Text(_error ?? widget.strings.noConnections));
     }
 
     final s = widget.strings;

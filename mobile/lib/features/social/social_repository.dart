@@ -22,8 +22,9 @@ class SocialRepository {
       queryParams: {'q': queryVo.value},
     );
 
-    final rawList = (response.body['users'] as List<dynamic>? ?? const [])
-        .take(maxSearchResults);
+    final rawList = (response.body['users'] as List<dynamic>? ?? const []).take(
+      maxSearchResults,
+    );
     final cards = rawList
         .map((e) => PublicUserCard.fromJson(e as Map<String, dynamic>))
         .toList(growable: false);
@@ -42,7 +43,9 @@ class SocialRepository {
     );
 
     List<FriendshipItem> parseList(String key) {
-      final items = (response.body[key] as List<dynamic>? ?? const []).take(500);
+      final items = (response.body[key] as List<dynamic>? ?? const []).take(
+        500,
+      );
       return items
           .map((e) => FriendshipItem.fromJson(e as Map<String, dynamic>))
           .toList(growable: false);
@@ -71,7 +74,9 @@ class SocialRepository {
   }
 
   // [REQ-SOC-001] Accepts an incoming pending friend request.
-  Future<FriendshipItem> acceptFriendRequest({required int friendshipId}) async {
+  Future<FriendshipItem> acceptFriendRequest({
+    required int friendshipId,
+  }) async {
     if (friendshipId <= 0) {
       throw ArgumentError('Pre-condition failed: friendshipId must be > 0');
     }
