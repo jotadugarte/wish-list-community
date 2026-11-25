@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_133000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_25_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_133000) do
     t.index ["api_token_id"], name: "index_device_tokens_on_api_token_id"
     t.index ["token"], name: "index_device_tokens_on_token", unique: true
     t.index ["user_id"], name: "index_device_tokens_on_user_id"
+  end
+
+  create_table "friendships", force: :cascade do |t|
+    t.bigint "requester_id", null: false
+    t.bigint "addressee_id", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "LEAST(requester_id, addressee_id), GREATEST(requester_id, addressee_id)", name: "idx_friendships_on_unordered_user_pair", unique: true
+    t.index ["addressee_id"], name: "index_friendships_on_addressee_id"
+    t.index ["requester_id"], name: "index_friendships_on_requester_id"
+    t.index ["status"], name: "index_friendships_on_status"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -104,6 +116,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_133000) do
   add_foreign_key "audit_events", "users", column: "actor_id", on_delete: :nullify
   add_foreign_key "device_tokens", "api_tokens", on_delete: :cascade
   add_foreign_key "device_tokens", "users", on_delete: :cascade
+  add_foreign_key "friendships", "users", column: "addressee_id", on_delete: :cascade
+  add_foreign_key "friendships", "users", column: "requester_id", on_delete: :cascade
   add_foreign_key "sessions", "users", on_delete: :cascade
   add_foreign_key "user_blocks", "users", column: "blocked_id", on_delete: :cascade
   add_foreign_key "user_blocks", "users", column: "blocker_id", on_delete: :cascade

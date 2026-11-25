@@ -17,6 +17,8 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :api_tokens, dependent: :destroy
   has_many :device_tokens, dependent: :destroy
+  has_many :requested_friendships, class_name: "Friendship", foreign_key: :requester_id, dependent: :destroy
+  has_many :received_friendships, class_name: "Friendship", foreign_key: :addressee_id, dependent: :destroy
 
   register_soft_delete_hook(:revoke_all_user_credentials) do |user_record|
     user_record.device_tokens.delete_all
