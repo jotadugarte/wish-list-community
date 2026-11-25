@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/network/api_client.dart';
 import 'package:wish_list_mobile/core/network/token_storage.dart';
 import 'package:wish_list_mobile/core/theme/app_navigation_shell.dart';
@@ -12,7 +13,7 @@ import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/social/user_search_screen.dart';
 
 // Entry point for Wish List Community mobile app (iOS & Android).
-// Traceability: [REQ-ARCH-001], [REQ-AUTH-001], [REQ-SOC-001]
+// Traceability: [REQ-ARCH-001], [REQ-AUTH-001], [REQ-SOC-001], [REQ-USER-002]
 void main() {
   final tokenStorage = InMemoryTokenStorage();
   final apiClient = ApiClient(
@@ -57,6 +58,8 @@ class _WishListAppState extends State<WishListApp> {
   @override
   Widget build(BuildContext context) {
     final t = widget.tokens;
+    final s = AppStrings.forLocale(_currentUser?.locale ?? 'es');
+
     return MaterialApp(
       title: t.appName,
       debugShowCheckedModeBanner: false,
@@ -64,6 +67,7 @@ class _WishListAppState extends State<WishListApp> {
       home: _currentUser == null
           ? LoginScreen(
               tokens: t,
+              strings: s,
               authRepository: widget.authRepository,
               onAuthenticated: (profile) =>
                   setState(() => _currentUser = profile),
@@ -74,32 +78,41 @@ class _WishListAppState extends State<WishListApp> {
               onDestinationSelected: (idx) =>
                   setState(() => _selectedIndex = idx),
               appBar: AppBar(title: Text(t.appName)),
-              items: const [
-                AppNavDestination(icon: Icons.people_outline, label: 'Amigos'),
-                AppNavDestination(icon: Icons.search, label: 'Buscar'),
-                AppNavDestination(icon: Icons.person_outline, label: 'Perfil'),
+              items: [
+                AppNavDestination(
+                  icon: Icons.people_outline,
+                  label: s.navFriends,
+                ),
+                AppNavDestination(icon: Icons.search, label: s.navSearch),
+                AppNavDestination(
+                  icon: Icons.person_outline,
+                  label: s.navProfile,
+                ),
               ],
-              body: _buildActiveScreen(),
+              body: _buildActiveScreen(s),
             ),
     );
   }
 
-  Widget _buildActiveScreen() {
+  Widget _buildActiveScreen(AppStrings s) {
     switch (_selectedIndex) {
       case 0:
         return FriendsListScreen(
           tokens: widget.tokens,
+          strings: s,
           socialRepository: widget.socialRepository,
         );
       case 1:
         return UserSearchScreen(
           tokens: widget.tokens,
+          strings: s,
           socialRepository: widget.socialRepository,
         );
       case 2:
       default:
         return ProfileSettingsScreen(
           tokens: widget.tokens,
+          strings: s,
           user: _currentUser!,
           authRepository: widget.authRepository,
           onSignedOut: () => setState(() {

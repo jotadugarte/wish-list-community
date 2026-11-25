@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/app_icon_badge.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 
 // Displays accepted friends and incoming/outgoing pending friend requests.
-// Traceability: [REQ-SOC-001], [REQ-BLOCK-001]
+// Traceability: [REQ-SOC-001], [REQ-BLOCK-001], [REQ-DISC-001], [REQ-USER-002]
 class FriendsListScreen extends StatefulWidget {
   final DesignTokens tokens;
+  final AppStrings strings;
   final SocialRepository socialRepository;
 
   const FriendsListScreen({
     super.key,
     required this.tokens,
+    required this.strings,
     required this.socialRepository,
   });
 
@@ -53,21 +56,22 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
       return const Center(child: Text('Sin conexiones'));
     }
 
+    final s = widget.strings;
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         if (summary.incomingRequests.isNotEmpty) ...[
-          const Text(
-            'Solicitudes Recibidas',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          Text(
+            s.incomingRequestsTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 8),
           ...summary.incomingRequests.map(_buildIncomingCard),
           const SizedBox(height: 16),
         ],
-        const Text(
-          'Mis Amigos',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        Text(
+          s.myFriendsTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 8),
         ...summary.friends.map(_buildFriendCard),
@@ -111,11 +115,39 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
   }
 
   Widget _buildFriendCard(FriendshipItem item) {
+    final s = widget.strings;
     return Card(
       child: ListTile(
         leading: AppIconBadge(icon: Icons.people, tokens: widget.tokens),
         title: Text('@${item.friend.username.value}'),
-        subtitle: const Text('Amigo conectado'),
+        subtitle: Text(s.connectedFriendSubtitle),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              key: Key('block_friend_${item.friend.id}'),
+              tooltip: s.blockUserAction,
+              icon: const Icon(Icons.block),
+              onPressed: () async {
+                await widget.socialRepository.blockUser(
+                  blockedUserId: item.friend.id,
+                );
+                await _loadFriendships();
+              },
+            ),
+            IconButton(
+              key: Key('report_friend_${item.friend.id}'),
+              tooltip: s.reportUserAction,
+              icon: const Icon(Icons.flag_outlined),
+              onPressed: () async {
+                await widget.socialRepository.reportUser(
+                  targetUserId: item.friend.id,
+                  rawReason: 'spam',
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -31,6 +31,12 @@ void main() {
       expect(defaultLight.bg, isNot(equals(darkTokens.bg)));
       expect(defaultLight.navStructureId, equals('A'));
       expect(vividPop.navStructureId, equals('C'));
+
+      for (int i = 1; i <= 20; i++) {
+        final pid = i.toString().padLeft(2, '0');
+        final pTokens = DesignTokens.forConfiguration(paletteId: pid);
+        expect(pTokens.paletteId, equals(pid));
+      }
     });
 
     test('falls back safely to default preset 01 / A when unknown IDs are passed [REQ-ARCH-001]', () {

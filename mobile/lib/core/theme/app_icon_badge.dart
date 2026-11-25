@@ -31,6 +31,13 @@ class AppIconBadge extends StatelessWidget {
   }
 
   _BadgeStyle _resolveStyle(DesignTokens t) {
+    if (const {'01', '02', '03', '04'}.contains(t.iconStyleId)) {
+      return _resolvePrimaryStyles(t);
+    }
+    return _resolveSecondaryStyles(t);
+  }
+
+  _BadgeStyle _resolvePrimaryStyles(DesignTokens t) {
     switch (t.iconStyleId) {
       case '01':
         return _BadgeStyle(
@@ -48,23 +55,24 @@ class AppIconBadge extends StatelessWidget {
       case '03':
         return _BadgeStyle(
           iconColor: t.accent,
-          decoration: BoxDecoration(
-            color: t.accentBg,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: t.accentBg, shape: BoxShape.circle),
         );
       case '04':
+      default:
         return _BadgeStyle(
           iconColor: t.text,
           decoration: BoxDecoration(
             color: t.specBg,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: t.text, width: 2),
-            boxShadow: [
-              BoxShadow(color: t.text, offset: const Offset(2, 2)),
-            ],
+            boxShadow: [BoxShadow(color: t.text, offset: const Offset(2, 2))],
           ),
         );
+    }
+  }
+
+  _BadgeStyle _resolveSecondaryStyles(DesignTokens t) {
+    switch (t.iconStyleId) {
       case '05':
         return _BadgeStyle(
           iconColor: t.primaryFg,

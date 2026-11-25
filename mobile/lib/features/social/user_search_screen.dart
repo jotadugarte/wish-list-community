@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/app_icon_badge.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 
 // Anti-Stalking @username search screen: displays only @username and friend request
 // action button for non-friends, never exposing personal wishlists or email_address.
-// Traceability: [REQ-SOC-001], [REQ-WISH-001], [REQ-BLOCK-001], [REQ-DISC-001]
+// Traceability: [REQ-SOC-001], [REQ-WISH-001], [REQ-BLOCK-001], [REQ-DISC-001], [REQ-USER-002]
 class UserSearchScreen extends StatefulWidget {
   final DesignTokens tokens;
+  final AppStrings strings;
   final SocialRepository socialRepository;
 
   const UserSearchScreen({
     super.key,
     required this.tokens,
+    required this.strings,
     required this.socialRepository,
   });
 
@@ -49,6 +52,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final s = widget.strings;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -59,16 +63,14 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
                 child: TextField(
                   key: const Key('search_username_field'),
                   controller: _queryController,
-                  decoration: const InputDecoration(
-                    labelText: 'Buscar por @username',
-                  ),
+                  decoration: InputDecoration(labelText: s.searchInputLabel),
                 ),
               ),
               const SizedBox(width: 8),
               ElevatedButton(
                 key: const Key('search_submit_button'),
                 onPressed: _executeSearch,
-                child: const Text('Buscar'),
+                child: Text(s.searchButton),
               ),
             ],
           ),
@@ -89,6 +91,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   }
 
   Widget _buildUserCard(PublicUserCard card) {
+    final s = widget.strings;
     return Card(
       child: ListTile(
         leading: AppIconBadge(
@@ -98,20 +101,45 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
         title: Text('@${card.username.value}'),
         subtitle: Text(
           card.friendshipStatus == 'accepted'
-              ? 'Amigos'
-              : 'Solo perfil básico visible (Anti-Stalking)',
+              ? s.connectedFriendSubtitle
+              : s.antiStalkingSubtitle,
         ),
-        trailing: card.friendshipStatus == 'none'
-            ? ElevatedButton(
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (card.friendshipStatus == 'none')
+              ElevatedButton(
                 key: Key('send_friend_request_${card.id}'),
                 onPressed: () async {
                   await widget.socialRepository.sendFriendRequest(
                     addresseeId: card.id,
                   );
                 },
-                child: const Text('Agregar'),
+                child: Text(s.addFriendButton),
               )
-            : Text(card.friendshipStatus),
+            else
+              Text(card.friendshipStatus),
+            IconButton(
+              key: Key('block_user_${card.id}'),
+              tooltip: s.blockUserAction,
+              icon: const Icon(Icons.block),
+              onPressed: () async {
+                await widget.socialRepository.blockUser(blockedUserId: card.id);
+              },
+            ),
+            IconButton(
+              key: Key('report_user_${card.id}'),
+              tooltip: s.reportUserAction,
+              icon: const Icon(Icons.flag_outlined),
+              onPressed: () async {
+                await widget.socialRepository.reportUser(
+                  targetUserId: card.id,
+                  rawReason: 'harassment',
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

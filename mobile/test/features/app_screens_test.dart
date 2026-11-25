@@ -144,6 +144,8 @@ void main() {
 
       expect(find.text('@stranger_handle'), findsOneWidget);
       expect(find.byKey(const Key('send_friend_request_8')), findsOneWidget);
+      expect(find.byKey(const Key('block_user_8')), findsOneWidget);
+      expect(find.byKey(const Key('report_user_8')), findsOneWidget);
     });
   });
 }
