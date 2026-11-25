@@ -7,5 +7,8 @@ en:
         conflict: "Resource conflict or duplicate request"
         not_found: "Not found"
         invalid_credentials: "Invalid email or password"
+        invalid_search_query: "Search query must be between 2 and 30 valid @username characters"
+        friendship_invalid: "Unable to process friend request"
+        report_invalid: "Unable to submit report"
       passwords:
         reset_sent: "If that email address is in our system, we have sent password reset instructions."

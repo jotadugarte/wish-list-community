@@ -1,0 +1,181 @@
+# API v1 Contract Reference (`API_CONTRACT.md`)
+
+> **Purpose:** Living contract of all `/api/v1` REST endpoints consumed by the Flutter mobile app (`mobile/`) and external API clients. Maintained automatically by `sync-docs` whenever endpoints or payloads change.
+
+## Global Conventions (`[REQ-ARCH-001]`, `[REQ-AUTH-001]`, `[REQ-ARCH-003]`, `[REQ-BLOCK-001]`)
+- **Base Path:** `/api/v1`
+- **Authentication:** `Authorization: Bearer <raw_token>` (except public auth endpoints: `POST /api/v1/session`, `POST /api/v1/passwords`, `POST /api/v1/account/restore`).
+- **Localization (`[REQ-USER-002]`):** Error messages automatically use the authenticated user's `locale` (`es` or `en`).
+- **Standard Error Responses:**
+  - `401 Unauthorized`: `{ "error": "No autorizado" | "Unauthorized" }`
+  - `404 Not Found`: `{ "error": "No encontrado" | "Not found" }` (Also returned whenever a resource is blocked via **"Block Wins"** or unauthorized via Pundit to prevent existence leaks).
+  - `409 Conflict`: `{ "error": "Conflicto de recurso o solicitud duplicada" | "Resource conflict or duplicate request" }` (Trapped via `ActiveRecord::RecordNotUnique`).
+  - `422 Unprocessable Content`: `{ "error": "<localized validation message>" }`.
+
+---
+
+## 1. Authentication & Account Lifecycle (`Sprint 1`)
+
+### `POST /api/v1/session` (`[REQ-AUTH-001]`, `[REQ-AUTH-003]`, `[REQ-NOTIF-002]`)
+Authenticates an active user, issues a SHA-256-backed API token, and optionally binds an FCM push notification `device_token`.
+- **Auth Required:** No (Rate-limited: 10 req / 3 min per IP).
+- **Request Body:**
+  ```json
+  {
+    "email_address": "user@example.com",
+    "password": "secretPassword123",
+    "device_name": "iPhone 16",
+    "device_token": "optional_fcm_token"
+  }
+  ```
+- **Response (`201 Created`):**
+  ```json
+  {
+    "token": "raw_bearer_token_string",
+    "user": {
+      "id": 1,
+      "username": "nata_24",
+      "created_at": "2026-11-24T12:00:00Z"
+    }
+  }
+  ```
+
+### `DELETE /api/v1/session` (`[REQ-AUTH-001]`, `[REQ-NOTIF-002]`)
+Revokes the current API bearer token and immediately destroys any bound FCM `DeviceToken`.
+- **Auth Required:** Yes.
+- **Response:** `204 No Content`.
+
+### `POST /api/v1/passwords` (`[REQ-AUTH-003]`)
+Initiates a password reset with strict anti-enumeration (always returns `200 OK` regardless of whether the email exists).
+- **Auth Required:** No (Rate-limited: 5 req / 3 min per IP).
+- **Request Body:** `{ "email_address": "user@example.com" }`
+- **Response (`200 OK`):** `{ "message": "<localized generic confirmation>" }`
+
+### `GET /api/v1/me` (`[REQ-USER-001]`, `[REQ-USER-002]`, `[REQ-USER-003]`)
+Returns the authenticated user's full private profile.
+- **Auth Required:** Yes.
+- **Response (`200 OK`):**
+  ```json
+  {
+    "id": 1,
+    "email_address": "user@example.com",
+    "username": "nata_24",
+    "locale": "es",
+    "time_zone": "America/Bogota"
+  }
+  ```
+
+### `DELETE /api/v1/account` (`[REQ-LIFE-002]`)
+Soft-deletes the authenticated user's account, revokes all active credentials/tokens, and starts the 30-day restoration grace period before PII purge.
+- **Auth Required:** Yes.
+- **Response:** `204 No Content`.
+
+### `POST /api/v1/account/restore` (`[REQ-LIFE-002]`)
+Restores a soft-deleted account within the 30-day grace window and issues a fresh API token.
+- **Auth Required:** No.
+- **Request Body:** `{ "email_address": "user@example.com", "password": "secretPassword123" }`
+- **Response (`200 OK`):** `{ "token": "raw_bearer_token_string", "user": { "id": 1, "username": "nata_24", "created_at": "..." } }`
+
+---
+
+## 2. Social Graph, Anti-Stalking Search, Blocking & Reports (`Sprint 1 & Sprint 2`)
+
+### `GET /api/v1/users/search?q=<query>` (`[REQ-SOC-001]`, `[REQ-WISH-001]`, `[REQ-BLOCK-001]`)
+Prefix search for active (`kept`) non-blocked users by `@username` (validated via `SearchQuery` Value Object, `2..30` chars). Batch-loads `friendship_status` in 1 query (`Friendship.statuses_for`). Never exposes `email_address` or personal wishlists.
+- **Auth Required:** Yes.
+- **Response (`200 OK`):**
+  ```json
+  {
+    "users": [
+      {
+        "id": 2,
+        "username": "nata_friend",
+        "created_at": "2026-11-25T10:00:00Z",
+        "friendship_status": "accepted"
+      }
+    ]
+  }
+  ```
+
+### `GET /api/v1/users/:username` (`[REQ-USER-001]`, `[REQ-SOC-001]`, `[REQ-WISH-001]`, `[REQ-BLOCK-001]`)
+Returns the anti-stalking public profile card for `:username` (or `404 Not Found` if blocked in either direction or soft-deleted).
+- **Auth Required:** Yes.
+- **Response (`200 OK`):**
+  ```json
+  {
+    "id": 2,
+    "username": "ceci_nata",
+    "created_at": "2026-11-25T10:00:00Z",
+    "friendship_status": "none | pending_outgoing | pending_incoming | accepted"
+  }
+  ```
+
+### `GET /api/v1/friendships` (`[REQ-SOC-001]`)
+Lists the authenticated user's active accepted friends, incoming pending friend requests, and outgoing pending friend requests (automatically excluding soft-deleted accounts).
+- **Auth Required:** Yes.
+- **Response (`200 OK`):**
+  ```json
+  {
+    "friends": [
+      {
+        "id": 10,
+        "status": "accepted",
+        "direction": "outgoing",
+        "friend": { "id": 2, "username": "bob_gifts", "created_at": "..." },
+        "created_at": "...",
+        "updated_at": "..."
+      }
+    ],
+    "incoming_requests": [],
+    "outgoing_requests": []
+  }
+  ```
+
+### `POST /api/v1/friendships` (`[REQ-SOC-001]`, `[REQ-BLOCK-001]`)
+Sends a friend request to `addressee_id` (enforces max 20 pending outgoing requests, unordered unique pair constraint, and `"Block Wins"`).
+- **Auth Required:** Yes.
+- **Request Body:** `{ "addressee_id": 2 }`
+- **Response (`201 Created`):** `{ "friendship": { "id": 11, "status": "pending", "direction": "outgoing", "friend": { ... } } }`
+
+### `PATCH /api/v1/friendships/:id` (`[REQ-SOC-001]`, `[REQ-BLOCK-001]`, `[REQ-ADM-001]`)
+Allows the `addressee` of a pending friend request to accept it and records an `AuditEvent` (`"friendship.accepted"`).
+- **Auth Required:** Yes (must be `addressee`).
+- **Response (`200 OK`):** `{ "friendship": { "id": 11, "status": "accepted", ... } }`
+
+### `DELETE /api/v1/friendships/:id` (`[REQ-SOC-001]`, `[REQ-ADM-001]`)
+Allows either participant (`requester` or `addressee`) to decline a pending request, cancel an outgoing request, or remove an accepted friend, recording an `AuditEvent` (`"friendship.removed"`).
+- **Auth Required:** Yes (must be participant).
+- **Response:** `204 No Content`.
+
+### `POST /api/v1/user_blocks` (`[REQ-BLOCK-001]`, `[REQ-BLOCK-002]`, `[REQ-ADM-001]`)
+Directionally blocks `blocked_id`, transactionally destroying any existing `Friendship`, shares, and active reservations between the two users, and recording an `AuditEvent` (`"user.blocked"`).
+- **Auth Required:** Yes.
+- **Request Body:** `{ "blocked_id": 3 }`
+- **Response (`201 Created`):** `{ "blocked_id": 3, "status": "blocked" }`
+
+### `POST /api/v1/reports` (`[REQ-SOC-001]`, `[REQ-DISC-001]`, `[REQ-ADM-001]`)
+Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`) and records an `AuditEvent` (`"report.created"`).
+- **Auth Required:** Yes.
+- **Request Body:**
+  ```json
+  {
+    "reportable_type": "User",
+    "reportable_id": 3,
+    "reason": "harassment",
+    "details": "Optional context up to 1000 characters"
+  }
+  ```
+- **Response (`201 Created`):**
+  ```json
+  {
+    "report": {
+      "id": 1,
+      "reportable_type": "User",
+      "reportable_id": 3,
+      "reason": "harassment",
+      "details": "Optional context up to 1000 characters",
+      "status": "pending",
+      "created_at": "2026-11-25T10:30:00Z"
+    }
+  }
+  ```

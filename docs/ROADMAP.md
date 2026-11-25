@@ -21,6 +21,10 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Public profile: unique `@username` (email stays strictly private), 30-day change cooldown + 30-day quarantine on previous `@username`, preferred `locale` (`es`/`en`), and `time_zone` (`REQ-USER-001`, `REQ-USER-002`, `REQ-USER-003`, `REQ-USER-004`) — 2026-11-24
   - [x] Central Pundit permissions layer (*default-deny*) + Block users ("block wins": immediately cuts access and transactionally destroys friendship, shares, and active reservations) + immutable `AuditEvent` foundation (`REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-24
   - [x] Soft-delete + restore (30-day account restoration window before PII purge; wishlist restore cascades to items and leaves zero "ghost reservations") (`REQ-LIFE-001`, `REQ-LIFE-002`) — 2026-11-24
+- [x] **MVP Sprint 2 (Backend) — Social & Anti-Stalking Profile Search** — 2026-11-25
+  - [x] Search users by `@username` via `SearchQuery` Value Object (`GET /api/v1/users/search` and `GET /api/v1/users/:username`, anti-stalking: non-friends only see `@username` and `friendship_status`, never personal wishlists or `email_address`, with batched zero-`N+1` status loading) (`REQ-SOC-001`, `REQ-WISH-001`, `REQ-BLOCK-001`) — 2026-11-25
+  - [x] Friend requests + accept/decline/remove + friends list (`Friendship` & `FriendshipPolicy`, enforced by unordered unique pair index in PostgreSQL, 20-pending outgoing anti-spam cap, and automatic `UserBlock` cleanup hook) (`REQ-SOC-001`, `REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-25
+  - [x] Report user (`Report` polymorphic model, `ReportReason` Value Object, `ReportPolicy`, `POST /api/v1/reports` queue, duplicate pending report prevention, and immutable `AuditEvent` logging) (`REQ-SOC-001`, `REQ-DISC-001`, `REQ-ADM-001`) — 2026-11-25
 
 ## In Progress
 *(No items currently in progress)*
@@ -28,11 +32,8 @@ Things done and things left to do. Update this when finishing branches; use `roa
 ## Pending (by priority)
 - [ ] **MVP Sprint 1 (Mobile Foundation) — Flutter Base + Design System**
   - [ ] Initial Flutter project + shared design system (colors, typography, icons, spacing) + `/api/v1` auth integration (`REQ-ARCH-001`, `REQ-AUTH-001`)
-- [ ] **MVP Sprint 2 — Social & Anti-Stalking Profile Search**
-  - [ ] Search users by `@username` (anti-stalking: non-friends only see `@username` and *"Send Friend Request"* button, never personal wishlists) (`REQ-SOC-001`, `REQ-WISH-001`)
-  - [ ] Friend requests + accept/decline + friends list (enforced by unordered unique pair index in PostgreSQL) (`REQ-SOC-001`)
-  - [ ] Report user (MVP: reports queue; full moderation in Sprint 8) (`REQ-SOC-001`)
-  - [ ] API v1 endpoints + Flutter screens for this sprint
+- [ ] **MVP Sprint 2 (Mobile) — Social & Anti-Stalking Profile Search (Flutter Screens)**
+  - [ ] Flutter screens for `@username` search, friend requests/list, and user reporting consuming `/api/v1/users/search`, `/api/v1/friendships`, and `/api/v1/reports` (`REQ-SOC-001`, `REQ-WISH-001`)
 - [ ] **MVP Sprint 3 — Wishlists (Anti-Stalking Privacy + Secret Links)**
   - [ ] Wishlist CRUD with optional `event_date`, immutable URLs (`/wishlists/:id` and `/s/:share_token` independent of `@username`), and v1-ready nullable `activity_id` (`REQ-WISH-004`, `REQ-WISH-006`, `REQ-ARCH-002`)
   - [ ] Anti-stalking privacy per personal wishlist (`REQ-WISH-001`, `REQ-WISH-002`, `REQ-WISH-003`):

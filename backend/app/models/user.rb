@@ -17,6 +17,9 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :api_tokens, dependent: :destroy
   has_many :device_tokens, dependent: :destroy
+  has_many :requested_friendships, class_name: "Friendship", foreign_key: :requester_id, dependent: :destroy
+  has_many :received_friendships, class_name: "Friendship", foreign_key: :addressee_id, dependent: :destroy
+  has_many :submitted_reports, class_name: "Report", foreign_key: :reporter_id, dependent: :destroy
 
   register_soft_delete_hook(:revoke_all_user_credentials) do |user_record|
     user_record.device_tokens.delete_all
@@ -82,13 +85,37 @@ class User < ApplicationRecord
     Username.new(username)
   end
 
-  # [REQ-USER-001] Serializes only public profile fields; never exposes email_address.
-  def public_profile_json
-    {
+  # [REQ-SOC-001] [REQ-WISH-001] [REQ-BLOCK-001] Searches active non-blocked users by @username prefix (bounded to max 20).
+  def self.search_by_username(query_vo, viewer:, limit: 20)
+    raise ArgumentError, "Pre-condition failed: query_vo must be a SearchQuery" unless query_vo.is_a?(SearchQuery)
+    raise ArgumentError, "Pre-condition failed: viewer must be persisted" unless viewer&.persisted?
+
+    bounded_limit = [ limit.to_i, 20 ].min
+    blocked_ids = UserBlock.where(blocker_id: viewer.id).select(:blocked_id)
+    blocker_ids = UserBlock.where(blocked_id: viewer.id).select(:blocker_id)
+
+    kept
+      .where.not(id: viewer.id)
+      .where.not(id: blocked_ids)
+      .where.not(id: blocker_ids)
+      .where("LOWER(username) LIKE ?", query_vo.prefix_pattern)
+      .order(:username)
+      .limit(bounded_limit)
+  end
+
+  # [REQ-USER-001] [REQ-SOC-001] Serializes only public profile fields; never exposes email_address or personal wishlists.
+  def public_profile_json(viewer: nil, friendship_status: nil)
+    payload = {
       id: id,
       username: username_vo.value,
       created_at: created_at
     }
+    if friendship_status.present?
+      payload[:friendship_status] = friendship_status
+    elsif viewer.present?
+      payload[:friendship_status] = Friendship.status_between(viewer, self)
+    end
+    payload
   end
 
   # [REQ-USER-001] [REQ-USER-004] Changes the user's @username enforcing the 30-day cooldown

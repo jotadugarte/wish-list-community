@@ -158,15 +158,15 @@ description: >-
           Ensure you do not violate `docs/core/SYSTEM_ARCHITECTURE.md`.
           Run the project's linters/checkers. If `docs/ai/code_review_prompt.md` exists, use the `view_file` tool to read it for project-specific commands (e.g. Quality or Pre-Flight section); otherwise run the project's standard linters.
           You MUST use the `replace_file_content` tool to physically update the step's status to 'complete' in the session file.
-          Let the user know you've successfully passed the step, and invite them to move on to the next.
+          Execute `git add` and `git commit` for the passing implementation (GREEN commit), then immediately [AUTO-TRANSITION TO 3.3] in the same response.
         </action>
-        <yield>[PAUSE - AWAIT COMMAND TO PROCEED TO NEXT TDD STEP OR FINISH]</yield>
+        <yield>[AUTO-TRANSITION TO 3.3 AFTER GREEN COMMIT]</yield>
       </step>
       <step id="3.3">
         <action>
-          If more steps remain in the `<implementation_plan>` with `status="pending"`, return to Step 3.1. Otherwise, pleasantly let the user know that Phase 3 is complete and suggest running the `finish-branch` skill to wrap up.
+          If more steps remain in the `<implementation_plan>` with `status="pending"`, immediately [AUTO-TRANSITION TO 3.1] and continue executing the next step's RED -> Commit -> GREEN -> Commit loop without pausing. Once ALL steps in `<implementation_plan>` have `status="complete"`, pleasantly let the user know that Phase 3 is complete and suggest running the `finish-branch` skill to wrap up.
         </action>
-        <yield>[PAUSE - PHASE 3 COMPLETE OR PROCEED TO NEXT STEP]</yield>
+        <yield>[AUTO-TRANSITION TO 3.1 IF PENDING STEPS REMAIN, ELSE PAUSE - PHASE 3 COMPLETE]</yield>
       </step>
     </phase>
   </workflow>

@@ -51,8 +51,11 @@ The `sync-docs` skill keeps docs in sync with both the branch diff and task memo
 | `docs/core/ADRs/` | New architectural decisions |
 | `docs/core/SYSTEM_ARCHITECTURE.md` | Stack, boundaries, or forbidden libs changed |
 | `docs/core/TESTING_STRATEGY_MATRIX.md` | Testing frameworks, coverage targets, or mocking rules changed |
+| `docs/core/API_CONTRACT.md` | `/api/v1/` endpoints, request parameters, HTTP status codes, or JSON response payloads changed |
+| `docs/core/DESIGN_SYSTEM.md` | UI design tokens (color palette, typography, icon style, navigation structure) or shared Web/Flutter components changed |
 | `docs/ROADMAP.md` | Roadmap milestones, sprint deliverables, or backlog items changed |
 | `.cursorrules` | Conventions, patterns, or project rules changed (from diff or session) |
+| `.agents/rules/agentic-guild.md` | Conventions, patterns, or project rules changed (must always be updated in mirror with `.cursorrules`) |
 
 **To add more docs:** Update this table in `docs/ai/EXPECTED_PROJECT_STRUCTURE.md`. Add the path and the condition that triggers an update. The sync-docs skill reads this list.
 

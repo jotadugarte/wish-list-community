@@ -1,6 +1,6 @@
 # Database Schema Reference (`SCHEMA_REFERENCE.md`)
 
-> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_24_133000`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
+> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_25_101500`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
 
 ---
 
@@ -112,3 +112,39 @@ Strictly immutable (`readonly? => true` after creation) append-only audit log re
 | `action` | `string` | `false` | — | Canonical event key (e.g., `"user.blocked"`, `"user.soft_deleted"`, `"user.restored"`). |
 | `auditable_type` / `auditable_id` | `string` / `bigint` | `false` | — | Polymorphic target entity. |
 | `metadata` | `jsonb` | `false` | `{}` | Structured JSONB context for auditing and administrative revert. |
+
+---
+
+## 8. `friendships` (`[REQ-SOC-001]`, `[REQ-BLOCK-001]`, `[REQ-BLOCK-002]`)
+Bidirectional friendships and pending friend requests between users. Enforces unordered pair uniqueness at the PostgreSQL level and is automatically cleaned up via `UserBlock` cascading hooks when a block occurs.
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Primary identifier. |
+| `requester_id` | `bigint` | `false` | FK (`users`) | User who initiated the friend request (`on_delete: :cascade`). Subject to a maximum of 20 pending outgoing requests (`MAX_PENDING_OUTGOING = 20`). |
+| `addressee_id` | `bigint` | `false` | FK (`users`) | Target user receiving the friend request (`on_delete: :cascade`). Only the addressee may transition `status` from `"pending"` to `"accepted"`. |
+| `status` | `string` | `false` | `"pending"` | Lifecycle state (`"pending"` or `"accepted"`). |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Standard audit timestamps. |
+
+* **Indexes:**
+  * `idx_friendships_on_unordered_user_pair`: Unique functional index on `LEAST(requester_id, addressee_id), GREATEST(requester_id, addressee_id)` preventing duplicate or crossed inverse friend requests.
+  * `index_friendships_on_requester_id`, `index_friendships_on_addressee_id`, `index_friendships_on_status`: Supporting indexes for social graph queries and pending request count checks.
+
+---
+
+## 9. `reports` (`[REQ-SOC-001]`, `[REQ-DISC-001]`, `[REQ-ADM-001]`)
+Polymorphic abuse reporting queue supporting `User` reports (Sprint 2) and `Wishlist` reports (Sprint 7) for Sprint 8 Admin moderation.
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Primary identifier. |
+| `reporter_id` | `bigint` | `false` | FK (`users`) | Authenticated user submitting the report (`on_delete: :cascade`). Cannot report themselves. |
+| `reportable_type` / `reportable_id` | `string` / `bigint` | `false` | — | Polymorphic target entity (`"User"` or `"Wishlist"`). |
+| `reason` | `string` | `false` | — | Canonical reason validated by `ReportReason` Value Object (`spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`). |
+| `details` | `text` | `true` | `nil` | Optional reporter explanation (bounded to `<= 1000` characters). |
+| `status` | `string` | `false` | `"pending"` | Moderation workflow state (`"pending"`, `"reviewed"`, `"dismissed"`). |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Standard audit timestamps. |
+
+* **Indexes:**
+  * `idx_reports_unique_pending_per_reporter_target`: Partial unique index on `(reporter_id, reportable_type, reportable_id) WHERE status = 'pending'`, preventing duplicate pending reports by the same reporter on the same target.
+  * `index_reports_on_reportable_type_and_reportable_id`, `index_reports_on_reporter_id`, `index_reports_on_status`: Moderation queue lookup indexes.

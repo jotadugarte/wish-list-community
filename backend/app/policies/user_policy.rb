@@ -5,6 +5,11 @@
 # access is completely denied.
 # Traceability: [REQ-BLOCK-001], [REQ-WISH-001]
 class UserPolicy < ApplicationPolicy
+  # [REQ-SOC-001] Permits any active authenticated user to search @username handles.
+  def search?
+    user.present? && !user.discarded?
+  end
+
   # [REQ-BLOCK-001] Permits viewing basic public @username card only if active and not blocked.
   def show?
     return false if record.nil? || record.discarded_at.present?

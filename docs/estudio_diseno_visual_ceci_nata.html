@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estudio Interactivo de Diseño Visual — Para Ceci (Ñata)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Comfortaa:wght@600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=DM+Sans:opsz,wght@9..40,400..700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Fredoka:wght@500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Lato:wght@400;700&family=Manrope:wght@400;600;700&family=Montserrat:wght@400;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Nunito:wght@500;700&family=Outfit:wght@400;600;700&family=Paytone+One&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Righteous&family=Space+Grotesk:wght@500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --studio-bg: #f4f3ef;
+      --studio-surface: #ffffff;
+      --studio-surface-alt: #eae8e1;
+      --studio-text: #1b1a17;
+      --studio-muted: #5d5a52;
+      --studio-border: #dad6cc;
+      --studio-accent: #1e3a2f;
+
+      /* Dynamic Preview Variables (Updated live by JS) */
+      --app-bg: #f7f6f2;
+      --app-surface: #ffffff;
+      --app-surface-2: #efeae2;
+      --app-text: #1c1b18;
+      --app-muted: #656159;
+      --app-primary: #1e3a2f;
+      --app-primary-fg: #ffffff;
+      --app-accent: #c86d51;
+      --app-accent-soft: #f9ebe6;
+      --app-border: #e2ded5;
+      --app-font-heading: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+      --app-font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--studio-bg);
+      color: var(--studio-text);
+      line-height: 1.55;
+      padding-bottom: 110px;
+    }
+
+    .studio-wrapper {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+
+    header.studio-header {
+      background: var(--studio-surface);
+      border: 1px solid var(--studio-border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #e8efec;
+      color: #1e3a2f;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    header.studio-header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    header.studio-header p {
+      color: var(--studio-muted);
+      font-size: 15px;
+      max-width: 820px;
+    }
+
+    .studio-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .controls-column {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .control-panel {
+      background: var(--studio-surface);
+      border: 1px solid var(--studio-border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .panel-header {
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--studio-border);
+      padding-bottom: 12px;
+    }
+
+    .panel-step {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--studio-muted);
+      display: block;
+    }
+
+    .panel-title {
+      font-size: 19px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .panel-desc {
+      font-size: 13.5px;
+      color: var(--studio-muted);
+      margin-top: 4px;
+    }
+
+    /* App Name Studio */
+    .name-inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--studio-muted);
+      margin-bottom: 6px;
+    }
+
+    .input-group input,
+    .input-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--studio-border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--studio-text);
+      background: #faf9f6;
+    }
+
+    .input-group input:focus,
+    .input-group textarea:focus {
+      outline: none;
+      border-color: var(--studio-accent);
+      background: #ffffff;
+    }
+
+    /* Palette Selector Grid */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .palette-card {
+      border: 2px solid var(--studio-border);
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      background: #faf9f6;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+
+    .palette-card:hover {
+      border-color: #9e998e;
+    }
+
+    .palette-card.active {
+      border-color: var(--studio-text);
+      background: #ffffff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+    }
+
+    .swatches-row {
+      display: flex;
+      height: 28px;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 9px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .swatch-cell {
+      flex: 1;
+      height: 100%;
+    }
+
+    .palette-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .palette-vibe {
+      font-size: 12px;
+      color: var(--studio-muted);
+      display: block;
+    }
+
+    /* Typography, Icons & Nav Grid */
+    .option-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .option-card {
+      border: 2px solid var(--studio-border);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      background: #faf9f6;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+
+    .option-card:hover {
+      border-color: #9e998e;
+    }
+
+    .option-card.active {
+      border-color: var(--studio-text);
+      background: #ffffff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+    }
+
+    .option-card h4 {
+      font-size: 14.5px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .option-card p {
+      font-size: 12.5px;
+      color: var(--studio-muted);
+    }
+
+    .icon-preview-strip {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--studio-border);
+      color: var(--studio-text);
+    }
+
+    /* Image Uploader Moodboard */
+    .upload-dropzone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      border: 2px dashed #b9b4a8;
+      border-radius: 12px;
+      padding: 26px 20px;
+      text-align: center;
+      background: #faf9f6;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: all 0.15s ease;
+    }
+
+    .upload-dropzone:hover {
+      border-color: var(--studio-accent);
+      background: #f2f5f3;
+    }
+
+    .upload-btn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--studio-accent);
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .upload-dropzone strong {
+      display: block;
+      font-size: 14px;
+      color: var(--studio-text);
+    }
+
+    .upload-dropzone span.upload-hint {
+      display: block;
+      font-size: 12.5px;
+      color: var(--studio-muted);
+    }
+
+    .moodboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .moodboard-item {
+      border: 1px solid var(--studio-border);
+      border-radius: 8px;
+      background: #faf9f6;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .moodboard-item img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      background: #e5e2dc;
+    }
+
+    .moodboard-item-body {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .moodboard-item-body textarea {
+      width: 100%;
+      min-height: 54px;
+      font-size: 12.5px;
+      padding: 6px 8px;
+      border: 1px solid var(--studio-border);
+      border-radius: 6px;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    .btn-remove-img {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #8c2323;
+      cursor: pointer;
+    }
+
+    /* LIVE PREVIEW PHONE COLUMN */
+    .preview-column {
+      position: sticky;
+      top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preview-toolbar {
+      background: var(--studio-surface);
+      border: 1px solid var(--studio-border);
+      border-radius: 10px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .preview-toolbar span {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--studio-muted);
+    }
+
+    .mode-switch-btn {
+      background: var(--studio-surface-alt);
+      border: 1px solid var(--studio-border);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--studio-text);
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 375px;
+      margin: 0 auto;
+      background: var(--app-bg);
+      color: var(--app-text);
+      font-family: var(--app-font-body);
+      border: 8px solid #1e1d1a;
+      border-radius: 32px;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.14);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 140px);
+      max-height: 590px;
+      min-height: 440px;
+      position: relative;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .phone-statusbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 18px 4px 18px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--app-text);
+      flex-shrink: 0;
+    }
+
+    .phone-topbar {
+      padding: 7px 14px 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--app-border);
+      background: var(--app-surface);
+      flex-shrink: 0;
+    }
+
+    .phone-brand {
+      font-family: var(--app-font-heading);
+      font-size: 16.5px;
+      font-weight: 700;
+      color: var(--app-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .phone-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--app-accent-soft);
+      color: var(--app-accent);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--app-border);
+    }
+
+    .phone-segmented-top {
+      display: none;
+      margin: 6px 12px 0 12px;
+      background: var(--app-surface-2);
+      padding: 3px;
+      border-radius: 7px;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .phone-segmented-top.visible {
+      display: flex;
+    }
+
+    .seg-pill {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 6px;
+      border-radius: 5px;
+      color: var(--app-muted);
+    }
+
+    .seg-pill.active {
+      background: var(--app-surface);
+      color: var(--app-text);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .phone-content {
+      padding: 8px 12px 68px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .wishlist-banner {
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
+      border-radius: 10px;
+      padding: 9px 11px;
+    }
+
+    .wishlist-banner-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+
+    .badge-pill {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 7px;
+      border-radius: 99px;
+      background: var(--app-accent-soft);
+      color: var(--app-accent);
+    }
+
+    .wishlist-banner h3 {
+      font-family: var(--app-font-heading);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 1px;
+    }
+
+    .wishlist-banner p {
+      font-size: 11px;
+      color: var(--app-muted);
+    }
+
+    .gift-card {
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
+      border-radius: 10px;
+      padding: 9px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .gift-card-main {
+      display: flex;
+      gap: 10px;
+    }
+
+    .gift-thumb {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background: var(--app-surface-2);
+      border: 1px solid var(--app-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--app-primary);
+    }
+
+    .gift-info h4 {
+      font-family: var(--app-font-heading);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 1px;
+    }
+
+    .gift-spec-note {
+      font-size: 10.5px;
+      color: var(--app-muted);
+      background: var(--app-surface-2);
+      padding: 3px 6px;
+      border-radius: 5px;
+      margin-top: 3px;
+    }
+
+    .gift-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+      border-top: 1px solid var(--app-border);
+    }
+
+    .desire-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--app-accent);
+    }
+
+    .btn-app-primary {
+      background: var(--app-primary);
+      color: var(--app-primary-fg);
+      border: none;
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-app-reserved {
+      background: var(--app-surface-2);
+      color: var(--app-muted);
+      border: 1px solid var(--app-border);
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .activity-mini-card {
+      background: var(--app-primary);
+      color: var(--app-primary-fg);
+      border-radius: 12px;
+      padding: 13px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .activity-mini-card h5 {
+      font-family: var(--app-font-heading);
+      font-size: 13.5px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .activity-mini-card span {
+      font-size: 11.5px;
+      opacity: 0.86;
+    }
+
+    /* Phone Bottom Nav Variants */
+    .phone-bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--app-surface);
+      border-top: 1px solid var(--app-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 9px 8px 14px 8px;
+    }
+
+    .phone-bottom-nav.nav-pill-dock {
+      bottom: 12px;
+      left: 14px;
+      right: 14px;
+      border: 1px solid var(--app-border);
+      border-radius: 999px;
+      padding: 8px 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--app-muted);
+    }
+
+    .nav-tab.active {
+      color: var(--app-primary);
+      font-weight: 700;
+    }
+
+    .nav-center-fab {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--app-accent);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Sticky Footer */
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--studio-surface);
+      border-top: 1px solid var(--studio-border);
+      padding: 14px 20px;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+      z-index: 100;
+    }
+
+    .sticky-footer-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .current-recipe {
+      font-size: 13.5px;
+      color: var(--studio-text);
+    }
+
+    .current-recipe strong {
+      font-weight: 700;
+    }
+
+    .footer-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-save-html {
+      background: var(--studio-accent);
+      color: #ffffff;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-copy-summary {
+      background: var(--studio-surface-alt);
+      color: var(--studio-text);
+      border: 1px solid var(--studio-border);
+      padding: 11px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 85px;
+      right: 24px;
+      background: #1b1a17;
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 200;
+    }
+
+    .toast.visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 960px) {
+      .studio-grid {
+        grid-template-columns: 1fr;
+      }
+      .preview-column {
+        position: static;
+        order: -1;
+      }
+      .name-inputs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="studio-wrapper">
+    <header class="studio-header">
+      <span class="eyebrow">Laboratorio Interactivo de Identidad Visual</span>
+      <h1>Diseño Visual, Paletas, Tipografía, Iconos y Nombre de la App — Para Ceci (Ñata)</h1>
+      <p>
+        Hola Ñata. En esta página puedes combinar en vivo las <strong>10 paletas de colores</strong>, las <strong>6 tipografías</strong>, los <strong>4 estilos de iconos</strong>, las <strong>4 estructuras de navegación</strong> y probar el <strong>nombre de la app</strong> viendo cómo cambia el teléfono de vista previa al instante. También puedes subir capturas o fotos de referencia si quieres mostrarnos ejemplos visuales para un siguiente pase.
+      </p>
+    </header>
+
+    <div class="studio-grid">
+      <!-- LEFT COLUMN: INTERACTIVE CONTROLS -->
+      <div class="controls-column">
+
+        <!-- 1. APP NAME LAB -->
+        <section class="control-panel">
+          <div class="panel-header">
+            <span class="panel-step">Paso 01 — Identidad y Nombre</span>
+            <h2 class="panel-title">Propuestas de Nombre para la Aplicación</h2>
+            <p class="panel-desc">Escribe un nombre en el primer campo para verlo puesto en vivo en la barra superior del teléfono simulado, y anota tus candidatos favoritos.</p>
+          </div>
+          <div class="name-inputs-grid">
+            <div class="input-group">
+              <label for="live-app-name">Nombre en vista previa (cambia en vivo):</label>
+              <input type="text" id="live-app-name" value="Wish List" placeholder="Escribe un nombre para probarlo..." />
+            </div>
+            <div class="input-group">
+              <label for="reviewer-name">Revisado por:</label>
+              <input type="text" id="reviewer-name" value="Ceci Pinilla (Ñata)" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="name-ideas-notes">Ideas de nombres para la app (puedes anotar varios candidatos o qué estilo de nombre te gusta):</label>
+            <textarea id="name-ideas-notes" rows="2" placeholder="Ejemplo: Me gustan nombres cortos en español o inglés como..."></textarea>
+          </div>
+        </section>
+
+        <!-- 2. 20 COLOR PALETTES -->
+        <section class="control-panel">
+          <div class="panel-header">
+            <span class="panel-step">Paso 02 — Color y Atmósfera</span>
+            <h2 class="panel-title">20 Paletas de Colores (1–10 Editoriales / 11–20 Vivas, Pop y Llamativas)</h2>
+            <p class="panel-desc">Haz clic en cualquiera de las 20 paletas para transformar el teléfono al instante. Las paletas 11 a la 20 tienen colores vivos, festivos y de alto impacto.</p>
+          </div>
+          <div class="palette-grid" id="palettes-container"></div>
+          <div class="input-group">
+            <label for="palette-notes">Notas sobre colores (¿Te gustaría mezclar colores de dos paletas o pedir una paleta adicional?):</label>
+            <textarea id="palette-notes" rows="2" placeholder="Escribe aquí si quieres algún ajuste en los tonos o proponer otros colores..."></textarea>
+          </div>
+        </section>
+
+        <!-- 3. TYPOGRAPHY -->
+        <section class="control-panel">
+          <div class="panel-header">
+            <span class="panel-step">Paso 03 — Tipografía</span>
+            <h2 class="panel-title">Combinaciones de Fuentes (Títulos y Texto)</h2>
+            <p class="panel-desc">Haz clic en cada tarjeta para cambiar la letra del teléfono en tiempo real.</p>
+          </div>
+          <div class="option-grid-2" id="typography-container"></div>
+          <div class="input-group">
+            <label for="typography-notes">Notas sobre tipografía (¿Prefieres letras más redondeadas, más editoriales con serifa, o más minimalistas?):</label>
+            <textarea id="typography-notes" rows="2" placeholder="Comentarios opcionales sobre las fuentes..."></textarea>
+          </div>
+        </section>
+
+        <!-- 4. ICONOGRAPHY -->
+        <section class="control-panel">
+          <div class="panel-header">
+            <span class="panel-step">Paso 04 — Iconografía</span>
+            <h2 class="panel-title">Estilos de Iconos</h2>
+            <p class="panel-desc">Elige el grosor y acabado de los iconos que aparecen en los botones y en la barra de navegación.</p>
+          </div>
+          <div class="option-grid-2" id="icons-container"></div>
+          <div class="input-group">
+            <label for="icons-notes">Notas sobre los iconos:</label>
+            <textarea id="icons-notes" rows="2" placeholder="Comentarios opcionales sobre el estilo de iconos..."></textarea>
+          </div>
+        </section>
+
+        <!-- 5. NAVIGATION ARCHITECTURE -->
+        <section class="control-panel">
+          <div class="panel-header">
+            <span class="panel-step">Paso 05 — Arquitectura de Navegación</span>
+            <h2 class="panel-title">Estructuras de Navegación en el Celular</h2>
+            <p class="panel-desc">Haz clic para ver cómo se organiza el menú principal en la parte inferior y superior de la pantalla.</p>
+          </div>
+          <div class="option-grid-2" id="navigation-container"></div>
+          <div class="input-group">
+            <label for="navigation-notes">Notas sobre la navegación y orden de las secciones:</label>
+            <textarea id="navigation-notes" rows="2" placeholder="¿Qué pestañas te parece más cómodo tener a la mano?"></textarea>
+          </div>
+        </section>
+
+        <!-- 6. REFERENCE PHOTOS / MOODBOARD UPLOADER -->
+        <section class="control-panel">
+          <div class="panel-header">
+            <span class="panel-step">Paso 06 — Referencias Visuales e Inspiración</span>
+            <h2 class="panel-title">Subir Fotos o Capturas de Ejemplo (Moodboard de Ñata)</h2>
+            <p class="panel-desc">
+              Si tienes capturas de pantalla de otras apps, paletas de Pinterest o diseños que te encanten, súbelas aquí. Las fotos quedan guardadas dentro de este mismo archivo HTML cuando lo descargues.
+            </p>
+          </div>
+          <label class="upload-dropzone" for="image-upload-input">
+            <span class="upload-btn-pill">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Seleccionar fotos o capturas de mi dispositivo
+            </span>
+            <strong>Sube imágenes de apps, colores o estilos que te gusten como referencia</strong>
+            <span class="upload-hint">Acepta PNG, JPG o WebP. Al subir una imagen, aparecerá aquí abajo con un espacio para que anotes qué te gusta de ella.</span>
+          </label>
+          <input type="file" id="image-upload-input" accept="image/*" multiple style="display: none;" />
+          <div class="moodboard-grid" id="moodboard-container"></div>
+
+          <div class="input-group" style="margin-top: 18px;">
+            <label for="general-design-notes">Comentarios generales o pedidos para el siguiente pase de diseño:</label>
+            <textarea id="general-design-notes" rows="3" placeholder="Escribe aquí cualquier otra idea visual, sensación que quieras transmitir o cambios que quieras ver en el siguiente pase..."></textarea>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN: LIVE INTERACTIVE MOBILE MOCKUP -->
+      <aside class="preview-column">
+        <div class="preview-toolbar">
+          <span>Vista Previa en Vivo</span>
+          <button type="button" class="mode-switch-btn" id="btn-toggle-dark">
+            Ver en Modo Oscuro
+          </button>
+        </div>
+
+        <div class="phone-frame" id="phone-mockup">
+          <div class="phone-statusbar">
+            <span>9:41</span>
+            <span id="preview-palette-tag">Paleta 01</span>
+          </div>
+
+          <div class="phone-topbar">
+            <div class="phone-brand" id="preview-app-name">Wish List</div>
+            <div class="phone-avatar">CP</div>
+          </div>
+
+          <!-- Top segmented bar (only visible in Navigation Structure D) -->
+          <div class="phone-segmented-top" id="preview-top-segmented">
+            <div class="seg-pill active">Mis Listas</div>
+            <div class="seg-pill">Compartidas</div>
+            <div class="seg-pill">Mis Reservas</div>
+          </div>
+
+          <div class="phone-content">
+            <div class="wishlist-banner">
+              <div class="wishlist-banner-top">
+                <span class="badge-pill">Solo Amigos Aceptados</span>
+                <span style="font-size: 11px; color: var(--app-muted); font-weight: 600;">Evento: 24 Nov</span>
+              </div>
+              <h3>Cumpleaños de Ñata</h3>
+              <p>5 deseos disponibles — Tus amigos reservan en secreto sin spoilers.</p>
+            </div>
+
+            <!-- Item Card 1 -->
+            <div class="gift-card">
+              <div class="gift-card-main">
+                <div class="gift-thumb" id="preview-gift-icon-1"></div>
+                <div class="gift-info">
+                  <h4>Cafetera Espresso Compacta</h4>
+                  <div style="font-size: 11.5px; color: var(--app-muted);">Amazon — Agregado desde el celular</div>
+                  <div class="gift-spec-note">
+                    <strong>Especificación:</strong> En la foto sale negra, pero la quiero en color crema mate.
+                  </div>
+                </div>
+              </div>
+              <div class="gift-card-footer">
+                <span class="desire-tag">Nivel: Lo quiero muchísimo</span>
+                <button type="button" class="btn-app-primary">
+                  <span id="preview-btn-icon"></span>
+                  <span>Reservar regalo</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Item Card 2 (Reserved Unified State) -->
+            <div class="gift-card">
+              <div class="gift-card-main">
+                <div class="gift-thumb" id="preview-gift-icon-2"></div>
+                <div class="gift-info">
+                  <h4>Audífonos Inalámbricos Cancelación Ruido</h4>
+                  <div style="font-size: 11.5px; color: var(--app-muted);">MercadoLibre</div>
+                  <div class="gift-spec-note">
+                    <strong>Especificación:</strong> Color gris espacial o plateado.
+                  </div>
+                </div>
+              </div>
+              <div class="gift-card-footer">
+                <span class="desire-tag">Nivel: Alto</span>
+                <span class="btn-app-reserved">Reservado / No disponible</span>
+              </div>
+            </div>
+
+            <!-- Group Activity Mini Banner -->
+            <div class="activity-mini-card">
+              <div>
+                <h5>Amigo Secreto Navidad</h5>
+                <span>Presupuesto: Rango $40.000 - $60.000</span>
+              </div>
+              <div id="preview-activity-icon"></div>
+            </div>
+          </div>
+
+          <!-- Dynamic Bottom Navigation -->
+          <nav class="phone-bottom-nav" id="preview-bottom-nav"></nav>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="sticky-footer">
+    <div class="sticky-footer-inner">
+      <div class="current-recipe" id="recipe-summary-bar">
+        Combinación activa: <strong>Paleta 01</strong> + <strong>Plus Jakarta Sans</strong> + <strong>Trazo Medio</strong> + <strong>4 Pestañas</strong>
+      </div>
+      <div class="footer-buttons">
+        <button type="button" class="btn-save-html" id="btn-download-html">
+          Guardar y Descargar HTML con mis decisiones
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast-msg">Guardado</div>
+
+  <script id="embedded-design-state" type="application/json">
+{
+  "isExported": false,
+  "updatedAt": null,
+  "reviewerName": "Ceci Pinilla (Ñata)",
+  "appName": "Wish List",
+  "nameIdeasNotes": "",
+  "selectedPaletteId": "pal-01",
+  "previewDarkMode": false,
+  "paletteNotes": "",
+  "selectedTypographyId": "typo-01",
+  "typographyNotes": "",
+  "selectedIconStyleId": "icon-02",
+  "iconsNotes": "",
+  "selectedNavId": "nav-01",
+  "navigationNotes": "",
+  "generalDesignNotes": "",
+  "referenceImages": []
+}
+  </script>
+
+  <script>
+    const PALETTES = [
+      {
+        id: "pal-01",
+        code: "Paleta 01",
+        name: "01. Bosque Editorial & Crema",
+        vibe: "Cálida, orgánica, atemporal y serena",
+        light: {
+          bg: "#F7F6F2", surface: "#FFFFFF", surface2: "#EFECE6",
+          text: "#1C1B18", muted: "#656159", primary: "#1E3A2F", primaryFg: "#FFFFFF",
+          accent: "#C86D51", accentSoft: "#F9EBE6", border: "#E2DED5"
+        },
+        dark: {
+          bg: "#121715", surface: "#1B221F", surface2: "#252E2A",
+          text: "#F3F2EE", muted: "#9CA39E", primary: "#4E8C73", primaryFg: "#FFFFFF",
+          accent: "#E08266", accentSoft: "#36231E", border: "#2D3833"
+        }
+      },
+      {
+        id: "pal-02",
+        code: "Paleta 02",
+        name: "02. Coral Festivo & Arena",
+        vibe: "Alegre, social, ideal para cumpleaños y regalos",
+        light: {
+          bg: "#FAF7F5", surface: "#FFFFFF", surface2: "#F3ECE7",
+          text: "#232020", muted: "#6E6563", primary: "#D9485B", primaryFg: "#FFFFFF",
+          accent: "#232946", accentSoft: "#E8EAF2", border: "#E8DFD9"
+        },
+        dark: {
+          bg: "#171416", surface: "#221D20", surface2: "#2D262A",
+          text: "#FAF5F6", muted: "#A89CA1", primary: "#F06275", primaryFg: "#FFFFFF",
+          accent: "#E8A598", accentSoft: "#382428", border: "#362E33"
+        }
+      },
+      {
+        id: "pal-03",
+        code: "Paleta 03",
+        name: "03. Lavanda Digital & Pizarra",
+        vibe: "Moderna, fresca, juvenil y creativa",
+        light: {
+          bg: "#F7F6FC", surface: "#FFFFFF", surface2: "#ECEAF6",
+          text: "#1D1B26", muted: "#646075", primary: "#554388", primaryFg: "#FFFFFF",
+          accent: "#2A7F8E", accentSoft: "#E3F3F6", border: "#DFDCF0"
+        },
+        dark: {
+          bg: "#14131C", surface: "#1E1C29", surface2: "#282536",
+          text: "#F4F2FA", muted: "#9D99B0", primary: "#8772C4", primaryFg: "#FFFFFF",
+          accent: "#58B4C4", accentSoft: "#1D3238", border: "#312E42"
+        }
+      },
+      {
+        id: "pal-04",
+        code: "Paleta 04",
+        name: "04. Terracota Artesanal & Oliva",
+        vibe: "Mediterránea, acogedora y con mucha personalidad",
+        light: {
+          bg: "#F8F4EE", surface: "#FFFFFF", surface2: "#EFE8DC",
+          text: "#241F1B", muted: "#6E6359", primary: "#B85635", primaryFg: "#FFFFFF",
+          accent: "#465947", accentSoft: "#E7EDE7", border: "#E3DACB"
+        },
+        dark: {
+          bg: "#1A1614", surface: "#241E1B", surface2: "#302824",
+          text: "#F7F2EB", muted: "#A89B8F", primary: "#D97250", primaryFg: "#FFFFFF",
+          accent: "#83A185", accentSoft: "#232E24", border: "#3B312C"
+        }
+      },
+      {
+        id: "pal-05",
+        code: "Paleta 05",
+        name: "05. Azul Fiordo & Ámbar",
+        vibe: "Confiable, limpia, equilibrada entre frío y cálido",
+        light: {
+          bg: "#F4F7F9", surface: "#FFFFFF", surface2: "#E7EEF2",
+          text: "#162026", muted: "#5A6973", primary: "#1A4D66", primaryFg: "#FFFFFF",
+          accent: "#CC7722", accentSoft: "#FBF0E4", border: "#D7E2E8"
+        },
+        dark: {
+          bg: "#10171C", surface: "#182229", surface2: "#212E38",
+          text: "#F0F5F8", muted: "#90A2AD", primary: "#3E88AD", primaryFg: "#FFFFFF",
+          accent: "#E89846", accentSoft: "#362819", border: "#2A3A47"
+        }
+      },
+      {
+        id: "pal-06",
+        code: "Paleta 06",
+        name: "06. Rosa Cuarzo & Carbón",
+        vibe: "Sofisticada, delicada y con contraste editorial",
+        light: {
+          bg: "#FAF7F8", surface: "#FFFFFF", surface2: "#F2EAED",
+          text: "#211D1F", muted: "#6B6065", primary: "#9E3E5C", primaryFg: "#FFFFFF",
+          accent: "#3A3537", accentSoft: "#EAE7E8", border: "#E6DCE0"
+        },
+        dark: {
+          bg: "#171416", surface: "#221D20", surface2: "#2E272B",
+          text: "#F9F3F5", muted: "#A6989E", primary: "#C96382", primaryFg: "#FFFFFF",
+          accent: "#E0B8C4", accentSoft: "#38262C", border: "#382F34"
+        }
+      },
+      {
+        id: "pal-07",
+        code: "Paleta 07",
+        name: "07. Esmeralda & Dorado Ocre",
+        vibe: "Distinguida, viva, evoca cajas de regalo de lujo",
+        light: {
+          bg: "#F5F8F6", surface: "#FFFFFF", surface2: "#E8EFEA",
+          text: "#17211C", muted: "#5A6B62", primary: "#0F624C", primaryFg: "#FFFFFF",
+          accent: "#B8821E", accentSoft: "#FAF2E1", border: "#D7E3DC"
+        },
+        dark: {
+          bg: "#0F1714", surface: "#17241F", surface2: "#20302A",
+          text: "#EFF6F2", muted: "#8FA69B", primary: "#279678", primaryFg: "#FFFFFF",
+          accent: "#E0AD4E", accentSoft: "#332B19", border: "#293D35"
+        }
+      },
+      {
+        id: "pal-08",
+        code: "Paleta 08",
+        name: "08. Cobalto Vibrante & Nieve",
+        vibe: "Nítida, tecnológica, luminosa y de alto contraste",
+        light: {
+          bg: "#F8FAFC", surface: "#FFFFFF", surface2: "#EEF2F6",
+          text: "#0F172A", muted: "#64748B", primary: "#2563EB", primaryFg: "#FFFFFF",
+          accent: "#E11D48", accentSoft: "#FFE4E6", border: "#E2E8F0"
+        },
+        dark: {
+          bg: "#0B1120", surface: "#151F32", surface2: "#1E293B",
+          text: "#F8FAFC", muted: "#94A3B8", primary: "#3B82F6", primaryFg: "#FFFFFF",
+          accent: "#FB7185", accentSoft: "#381824", border: "#283548"
+        }
+      },
+      {
+        id: "pal-09",
+        code: "Paleta 09",
+        name: "09. Cacao & Verde Salvia",
+        vibe: "Tierra, artesanal, muy cálida y relajada",
+        light: {
+          bg: "#F6F3EC", surface: "#FFFFFF", surface2: "#ECE7DC",
+          text: "#241D18", muted: "#6B6158", primary: "#4A3328", primaryFg: "#FFFFFF",
+          accent: "#4E6E5D", accentSoft: "#E6EFEA", border: "#DFD8CA"
+        },
+        dark: {
+          bg: "#171412", surface: "#221D1A", surface2: "#2E2723",
+          text: "#F5F0E8", muted: "#A3988E", primary: "#8C6754", primaryFg: "#FFFFFF",
+          accent: "#7CA38E", accentSoft: "#213028", border: "#38302B"
+        }
+      },
+      {
+        id: "pal-10",
+        code: "Paleta 10",
+        name: "10. Monocromo Editorial & Rubí",
+        vibe: "Minimalismo puro estilo revista con un solo acento fuerte",
+        light: {
+          bg: "#FAFAFA", surface: "#FFFFFF", surface2: "#F0F0F0",
+          text: "#141413", muted: "#666664", primary: "#141413", primaryFg: "#FFFFFF",
+          accent: "#C92A42", accentSoft: "#FCECEF", border: "#E5E5E3"
+        },
+        dark: {
+          bg: "#111110", surface: "#1B1B1A", surface2: "#262624",
+          text: "#F7F7F5", muted: "#9E9E9B", primary: "#F7F7F5", primaryFg: "#141413",
+          accent: "#F0566E", accentSoft: "#381B20", border: "#2E2E2C"
+        }
+      },
+      {
+        id: "pal-11",
+        code: "Paleta 11",
+        name: "11. Fiesta Magenta & Mandarina Pop",
+        vibe: "Súper viva, energética, festiva y explosiva",
+        light: {
+          bg: "#FFF0F6", surface: "#FFFFFF", surface2: "#FFE0EE",
+          text: "#2B0918", muted: "#7A3E58", primary: "#E1007A", primaryFg: "#FFFFFF",
+          accent: "#FF5E00", accentSoft: "#FFE8D6", border: "#F7C6DC"
+        },
+        dark: {
+          bg: "#1C0812", surface: "#2B0E1D", surface2: "#3D1429",
+          text: "#FFF0F6", muted: "#D48FB0", primary: "#FF2E9D", primaryFg: "#FFFFFF",
+          accent: "#FF8533", accentSoft: "#47210B", border: "#521D38"
+        }
+      },
+      {
+        id: "pal-12",
+        code: "Paleta 12",
+        name: "12. Violeta Eléctrico & Lima Vibrante",
+        vibe: "Llamativa, moderna, juvenil estilo app viral",
+        light: {
+          bg: "#F3EEFF", surface: "#FFFFFF", surface2: "#E5DAFF",
+          text: "#1A0B36", muted: "#5C4785", primary: "#6D28D9", primaryFg: "#FFFFFF",
+          accent: "#4D7C0F", accentSoft: "#ECFCCB", border: "#D3C2FA"
+        },
+        dark: {
+          bg: "#110921", surface: "#1B1033", surface2: "#271847",
+          text: "#F5F0FF", muted: "#A794CC", primary: "#8B5CF6", primaryFg: "#FFFFFF",
+          accent: "#A3E635", accentSoft: "#23360B", border: "#362261"
+        }
+      },
+      {
+        id: "pal-13",
+        code: "Paleta 13",
+        name: "13. Turquesa Caribe & Coral Tropical",
+        vibe: "Fresca, luminosa, veraniega y llena de vida",
+        light: {
+          bg: "#E6FCFF", surface: "#FFFFFF", surface2: "#CCF5FA",
+          text: "#082F38", muted: "#3B6E7A", primary: "#008B9E", primaryFg: "#FFFFFF",
+          accent: "#FF4242", accentSoft: "#FFE3E3", border: "#AEE8F0"
+        },
+        dark: {
+          bg: "#061C21", surface: "#0C2B33", surface2: "#133C47",
+          text: "#E8FCFF", muted: "#7AB8C4", primary: "#00B8D4", primaryFg: "#061C21",
+          accent: "#FF6B6B", accentSoft: "#421818", border: "#1B4E5C"
+        }
+      },
+      {
+        id: "pal-14",
+        code: "Paleta 14",
+        name: "14. Amarillo Sol & Azul Ultramar (Pop Art)",
+        vibe: "Alto impacto visual, alegre, audaz y súper memorable",
+        light: {
+          bg: "#FEF9C3", surface: "#FFFFFF", surface2: "#FEF08A",
+          text: "#172554", muted: "#475985", primary: "#1D4ED8", primaryFg: "#FFFFFF",
+          accent: "#E11D48", accentSoft: "#FFE4E6", border: "#FDE047"
+        },
+        dark: {
+          bg: "#0F172A", surface: "#1E293B", surface2: "#334155",
+          text: "#FEF9C3", muted: "#94A3B8", primary: "#FACC15", primaryFg: "#0F172A",
+          accent: "#FB7185", accentSoft: "#3F1624", border: "#475569"
+        }
+      },
+      {
+        id: "pal-15",
+        code: "Paleta 15",
+        name: "15. Frambuesa Intenso & Durazno Dulce",
+        vibe: "Cálida y vibrante, con fondo durazno suave y botones intensos",
+        light: {
+          bg: "#FFF0E5", surface: "#FFFFFF", surface2: "#FFE0CC",
+          text: "#2E0D16", muted: "#7D4957", primary: "#C9184A", primaryFg: "#FFFFFF",
+          accent: "#7209B7", accentSoft: "#F3E0FF", border: "#F5C6B0"
+        },
+        dark: {
+          bg: "#1F0910", surface: "#2E0E18", surface2: "#421423",
+          text: "#FFF0E5", muted: "#C98F9E", primary: "#FF4D6D", primaryFg: "#FFFFFF",
+          accent: "#B5179E", accentSoft: "#3B0D36", border: "#571B2E"
+        }
+      },
+      {
+        id: "pal-16",
+        code: "Paleta 16",
+        name: "16. Verde Matcha Vivo & Rosa Chicle",
+        vibe: "Contraste divertido, moderno, botánico y pop",
+        light: {
+          bg: "#E8FDF2", surface: "#FFFFFF", surface2: "#D1FAE5",
+          text: "#062E1E", muted: "#386B56", primary: "#059669", primaryFg: "#FFFFFF",
+          accent: "#DB2777", accentSoft: "#FCE7F3", border: "#A7F3D0"
+        },
+        dark: {
+          bg: "#051F15", surface: "#0A3022", surface2: "#114230",
+          text: "#ECFDF5", muted: "#76B59C", primary: "#10B981", primaryFg: "#051F15",
+          accent: "#F472B6", accentSoft: "#42142B", border: "#195740"
+        }
+      },
+      {
+        id: "pal-17",
+        code: "Paleta 17",
+        name: "17. Naranja Sunset & Púrpura Real",
+        vibe: "Atardecer vibrante, cálida, dinámica y muy llamativa",
+        light: {
+          bg: "#FFF4E6", surface: "#FFFFFF", surface2: "#FFE5C4",
+          text: "#2B1406", muted: "#78523A", primary: "#EA580C", primaryFg: "#FFFFFF",
+          accent: "#7C3AED", accentSoft: "#EDE9FE", border: "#FCD3A1"
+        },
+        dark: {
+          bg: "#1C0D06", surface: "#2B150A", surface2: "#3D1E0E",
+          text: "#FFF7ED", muted: "#C4957A", primary: "#FB923C", primaryFg: "#1C0D06",
+          accent: "#A78BFA", accentSoft: "#2A1B4E", border: "#522914"
+        }
+      },
+      {
+        id: "pal-18",
+        code: "Paleta 18",
+        name: "18. Azul Cielo & Mandarina Dorado",
+        vibe: "Luminosa, optimista, limpia y llena de color",
+        light: {
+          bg: "#EBF8FF", surface: "#FFFFFF", surface2: "#D6F0FF",
+          text: "#082840", muted: "#3F6785", primary: "#0284C7", primaryFg: "#FFFFFF",
+          accent: "#D97706", accentSoft: "#FEF3C7", border: "#BAE6FD"
+        },
+        dark: {
+          bg: "#071926", surface: "#0D283B", surface2: "#153852",
+          text: "#F0F9FF", muted: "#7FA9C7", primary: "#38BDF8", primaryFg: "#071926",
+          accent: "#FBBF24", accentSoft: "#3D2B07", border: "#1E4B6B"
+        }
+      },
+      {
+        id: "pal-19",
+        code: "Paleta 19",
+        name: "19. Cyber Berry (Noche Neón Rosa & Cian)",
+        vibe: "Fondo oscuro nativo con acentos neón súper modernos",
+        light: {
+          bg: "#13111C", surface: "#1E1B2E", surface2: "#2A2640",
+          text: "#FAF8FF", muted: "#9E96B8", primary: "#FF2A85", primaryFg: "#FFFFFF",
+          accent: "#00D8E8", accentSoft: "#113842", border: "#363052"
+        },
+        dark: {
+          bg: "#09080D", surface: "#13111C", surface2: "#1E1B2E",
+          text: "#FFFFFF", muted: "#9E96B8", primary: "#FF2A85", primaryFg: "#FFFFFF",
+          accent: "#00F0FF", accentSoft: "#0E3138", border: "#2B2640"
+        }
+      },
+      {
+        id: "pal-20",
+        code: "Paleta 20",
+        name: "20. Carnaval Confeti (Índigo & Fucsia Fiesta)",
+        vibe: "Blanco puro con morado índigo eléctrico y fucsia intenso",
+        light: {
+          bg: "#F5F3FF", surface: "#FFFFFF", surface2: "#EDE9FE",
+          text: "#1E1B4B", muted: "#5B568A", primary: "#4F46E5", primaryFg: "#FFFFFF",
+          accent: "#D946EF", accentSoft: "#FAE8FF", border: "#DDD6FE"
+        },
+        dark: {
+          bg: "#0F0E26", surface: "#19173B", surface2: "#252252",
+          text: "#F5F3FF", muted: "#9893C7", primary: "#6366F1", primaryFg: "#FFFFFF",
+          accent: "#E879F9", accentSoft: "#3B1542", border: "#322E6B"
+        }
+      }
+    ];
+
+    const TYPOGRAPHIES = [
+      {
+        id: "typo-01",
+        name: "01. Plus Jakarta Sans",
+        desc: "Geométrica, moderna y muy amigable para redes sociales.",
+        headingFont: '"Plus Jakarta Sans", sans-serif',
+        bodyFont: '"Plus Jakarta Sans", sans-serif'
+      },
+      {
+        id: "typo-02",
+        name: "02. Fraunces + DM Sans",
+        desc: "Títulos con serifa suave y curva tipo editorial moderna.",
+        headingFont: '"Fraunces", serif',
+        bodyFont: '"DM Sans", sans-serif'
+      },
+      {
+        id: "typo-03",
+        name: "03. Syne + Plus Jakarta (Audaz Artística)",
+        desc: "Títulos anchos y súper llamativos estilo estudio de diseño.",
+        headingFont: '"Syne", sans-serif',
+        bodyFont: '"Plus Jakarta Sans", sans-serif'
+      },
+      {
+        id: "typo-04",
+        name: "04. Abril Fatface + Poppins (Glamour / Revista)",
+        desc: "Títulos gruesos de alto contraste tipo portada Vogue/Glamour.",
+        headingFont: '"Abril Fatface", serif',
+        bodyFont: '"Poppins", sans-serif'
+      },
+      {
+        id: "typo-05",
+        name: "05. Fredoka + Nunito (Burbuja / Divertida)",
+        desc: "Súper redondeada, alegre, cercana y con vibra de celebración.",
+        headingFont: '"Fredoka", sans-serif',
+        bodyFont: '"Nunito", sans-serif'
+      },
+      {
+        id: "typo-06",
+        name: "06. Playfair Display + Lato (Lujo Clásico)",
+        desc: "Elegancia clásica de caja de regalo de alta joyería.",
+        headingFont: '"Playfair Display", serif',
+        bodyFont: '"Lato", sans-serif'
+      },
+      {
+        id: "typo-07",
+        name: "07. Bricolage Grotesque + Inter (Tendencia 2026)",
+        desc: "Tipografía expresiva con curvas únicas y mucha personalidad.",
+        headingFont: '"Bricolage Grotesque", sans-serif',
+        bodyFont: '"Inter", sans-serif'
+      },
+      {
+        id: "typo-08",
+        name: "08.Paytone One + DM Sans (Póster Grueso)",
+        desc: "Títulos ultra pesados, compactos y con muchísimo impacto.",
+        headingFont: '"Paytone One", sans-serif',
+        bodyFont: '"DM Sans", sans-serif'
+      },
+      {
+        id: "typo-09",
+        name: "09. Righteous + Quicksand (Pop / Retro-Futurista)",
+        desc: "Geométrica creativa y original que destaca de inmediato.",
+        headingFont: '"Righteous", sans-serif',
+        bodyFont: '"Quicksand", sans-serif'
+      },
+      {
+        id: "typo-10",
+        name: "10. Cormorant Garamond + Montserrat (Boutique)",
+        desc: "Serifa fina de alta costura combinada con cuerpo geométrico.",
+        headingFont: '"Cormorant Garamond", serif',
+        bodyFont: '"Montserrat", sans-serif'
+      },
+      {
+        id: "typo-11",
+        name: "11. Comfortaa + Nunito Sans (Circular Continua)",
+        desc: "Letras basadas en círculos abiertos, fresca y muy distintiva.",
+        headingFont: '"Comfortaa", sans-serif',
+        bodyFont: '"Nunito Sans", sans-serif'
+      },
+      {
+        id: "typo-12",
+        name: "12. Space Grotesk + Inter (Vanguardia Tech)",
+        desc: "Cortes angulares modernos y máxima nitidez en móvil.",
+        headingFont: '"Space Grotesk", sans-serif',
+        bodyFont: '"Inter", sans-serif'
+      }
+    ];
+
+    const ICON_STYLES = [
+      {
+        id: "icon-01",
+        name: "01. Línea Limpia Minimal",
+        desc: "Solo el trazo delgado sin caja ni fondo alrededor.",
+        variant: "minimal"
+      },
+      {
+        id: "icon-02",
+        name: "02. Cápsula Sólida Color Primario",
+        desc: "Icono blanco encerrado en un botón cuadrado redondeado del color primario.",
+        variant: "solid-pill"
+      },
+      {
+        id: "icon-03",
+        name: "03. Burbuja Pastel Circular",
+        desc: "Círculo de fondo suave con el icono pintado en el color de acento.",
+        variant: "pastel-circle"
+      },
+      {
+        id: "icon-04",
+        name: "04. Sticker Pop / Brutalista (Borde + Sombra Dura)",
+        desc: "Caja con borde negro grueso y sombra sólida desplazada estilo sticker.",
+        variant: "brutalist-sticker"
+      },
+      {
+        id: "icon-05",
+        name: "05. Insignia en Gradiente Vivo",
+        desc: "Fondo en degradado diagonal entre el color primario y el acento.",
+        variant: "gradient-badge"
+      },
+      {
+        id: "icon-06",
+        name: "06. Silueta Sólida Rellena (Filled Bold)",
+        desc: "Iconos gruesos completamente rellenos sin contenedor.",
+        variant: "filled-bold"
+      },
+      {
+        id: "icon-07",
+        name: "07. Etiqueta Costura Punteada (Craft Tag)",
+        desc: "Marco con borde punteado tipo etiqueta de regalo artesanal.",
+        variant: "dashed-tag"
+      },
+      {
+        id: "icon-08",
+        name: "08. Doble Tono Con Marco Grueso",
+        desc: "Relleno interior translúcido con anillo exterior del color primario.",
+        variant: "duotone-ring"
+      }
+    ];
+
+    const NAV_STRUCTURES = [
+      {
+        id: "nav-01",
+        name: "A. Barra Inferior Clásica (4 Pestañas)",
+        desc: "Mis Listas | Amigos | Mis Reservas | Actividades (con perfil arriba)."
+      },
+      {
+        id: "nav-02",
+        name: "B. 5 Pestañas con Botón Central '+'",
+        desc: "Listas | Amigos | [ + Agregar Deseo ] | Reservas | Actividades."
+      },
+      {
+        id: "nav-03",
+        name: "C. Barra Flotante Tipo Cápsula (Pill Dock)",
+        desc: "Menú inferior redondeado separado de los bordes con estética moderna."
+      },
+      {
+        id: "nav-04",
+        name: "D. 3 Pestañas + Selector Superior",
+        desc: "Abajo solo Regalos | Comunidad | Cuenta, y arriba selector rápido."
+      }
+    ];
+
+    const STORAGE_KEY = "wishlist_visual_design_studio_nata_v1";
+
+    function getSvgIcon(type, styleObj) {
+      const variant = styleObj.variant || "minimal";
+      let sw = 2.0;
+      let fillAttr = "none";
+      let strokeAttr = "currentColor";
+      let wrapperStyle = "display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;transition:all 0.15s ease;";
+
+      if (variant === "minimal") {
+        sw = 1.6;
+      } else if (variant === "solid-pill") {
+        sw = 2.1;
+        wrapperStyle += "background:var(--app-primary);color:var(--app-primary-fg);border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.12);";
+      } else if (variant === "pastel-circle") {
+        sw = 2.2;
+        wrapperStyle += "background:var(--app-accent-soft);color:var(--app-accent);border-radius:50%;border:1px solid var(--app-accent);";
+      } else if (variant === "brutalist-sticker") {
+        sw = 2.4;
+        wrapperStyle += "background:var(--app-accent-soft);color:#111111;border:2px solid #111111;border-radius:6px;box-shadow:2px 2px 0px #111111;";
+      } else if (variant === "gradient-badge") {
+        sw = 2.1;
+        wrapperStyle += "background:linear-gradient(135deg, var(--app-primary), var(--app-accent));color:#ffffff;border-radius:9px;box-shadow:0 3px 8px rgba(0,0,0,0.18);";
+      } else if (variant === "filled-bold") {
+        sw = 1.8;
+        fillAttr = "currentColor";
+      } else if (variant === "dashed-tag") {
+        sw = 2.0;
+        wrapperStyle += "background:var(--app-surface);color:var(--app-primary);border:1.8px dashed var(--app-accent);border-radius:7px;";
+      } else if (variant === "duotone-ring") {
+        sw = 2.2;
+        fillAttr = "rgba(225, 29, 72, 0.22)";
+        wrapperStyle += "background:var(--app-surface-2);color:var(--app-primary);border:2px solid var(--app-primary);border-radius:50%;";
+      }
+
+      let svgInner = "";
+      switch (type) {
+        case "gift":
+          svgInner = `<svg width="16" height="16" viewBox="0 0 24 24" fill="${fillAttr}" stroke="${strokeAttr}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>`;
+          break;
+        case "users":
+          svgInner = `<svg width="16" height="16" viewBox="0 0 24 24" fill="${fillAttr}" stroke="${strokeAttr}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+          break;
+        case "bookmark":
+          svgInner = `<svg width="16" height="16" viewBox="0 0 24 24" fill="${fillAttr}" stroke="${strokeAttr}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`;
+          break;
+        case "sparkles":
+          svgInner = `<svg width="16" height="16" viewBox="0 0 24 24" fill="${fillAttr}" stroke="${strokeAttr}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>`;
+          break;
+        case "plus":
+          svgInner = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`;
+          break;
+        case "user":
+          svgInner = `<svg width="16" height="16" viewBox="0 0 24 24" fill="${fillAttr}" stroke="${strokeAttr}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>`;
+          break;
+        default:
+          return "";
+      }
+
+      return `<span style="${wrapperStyle}">${svgInner}</span>`;
+    }
+
+    function loadInitialState() {
+      const embeddedEl = document.getElementById("embedded-design-state");
+      try {
+        const parsed = JSON.parse(embeddedEl.textContent);
+        if (parsed && parsed.isExported) return parsed;
+      } catch (e) {
+        // ignore
+      }
+
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+      } catch (e) {
+        // ignore
+      }
+
+      return {
+        isExported: false,
+        updatedAt: null,
+        reviewerName: "Ceci Pinilla (Ñata)",
+        appName: "Wish List",
+        nameIdeasNotes: "",
+        selectedPaletteId: "pal-01",
+        previewDarkMode: false,
+        paletteNotes: "",
+        selectedTypographyId: "typo-01",
+        typographyNotes: "",
+        selectedIconStyleId: "icon-02",
+        iconsNotes: "",
+        selectedNavId: "nav-01",
+        navigationNotes: "",
+        generalDesignNotes: "",
+        referenceImages: []
+      };
+    }
+
+    let state = loadInitialState();
+    if (!Array.isArray(state.referenceImages)) state.referenceImages = [];
+
+    function saveState() {
+      state.updatedAt = new Date().toISOString();
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // localStorage may exceed quota if many huge images; HTML export still holds everything in memory
+      }
+      updateLiveMockup();
+    }
+
+    function renderControls() {
+      // 1. Palettes
+      const palContainer = document.getElementById("palettes-container");
+      palContainer.innerHTML = "";
+      PALETTES.forEach((p) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `palette-card ${state.selectedPaletteId === p.id ? "active" : ""}`;
+        btn.innerHTML = `
+          <div class="swatches-row">
+            <div class="swatch-cell" style="background: ${p.light.bg}"></div>
+            <div class="swatch-cell" style="background: ${p.light.surface2}"></div>
+            <div class="swatch-cell" style="background: ${p.light.primary}"></div>
+            <div class="swatch-cell" style="background: ${p.light.accent}"></div>
+            <div class="swatch-cell" style="background: ${p.light.text}"></div>
+          </div>
+          <span class="palette-name">${p.name}</span>
+          <span class="palette-vibe">${p.vibe}</span>
+        `;
+        btn.addEventListener("click", () => {
+          state.selectedPaletteId = p.id;
+          renderControls();
+          saveState();
+        });
+        palContainer.appendChild(btn);
+      });
+
+      // 2. Typography
+      const typoContainer = document.getElementById("typography-container");
+      typoContainer.innerHTML = "";
+      TYPOGRAPHIES.forEach((t) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `option-card ${state.selectedTypographyId === t.id ? "active" : ""}`;
+        btn.innerHTML = `
+          <h4 style="font-family: ${t.headingFont}; font-size: 16px;">${t.name}</h4>
+          <p style="font-family: ${t.bodyFont};">${t.desc}</p>
+        `;
+        btn.addEventListener("click", () => {
+          state.selectedTypographyId = t.id;
+          renderControls();
+          saveState();
+        });
+        typoContainer.appendChild(btn);
+      });
+
+      // 3. Icons
+      const iconContainer = document.getElementById("icons-container");
+      iconContainer.innerHTML = "";
+      ICON_STYLES.forEach((ic) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `option-card ${state.selectedIconStyleId === ic.id ? "active" : ""}`;
+        btn.innerHTML = `
+          <h4>${ic.name}</h4>
+          <p>${ic.desc}</p>
+          <div class="icon-preview-strip">
+            ${getSvgIcon("gift", ic)}
+            ${getSvgIcon("users", ic)}
+            ${getSvgIcon("bookmark", ic)}
+            ${getSvgIcon("sparkles", ic)}
+          </div>
+        `;
+        btn.addEventListener("click", () => {
+          state.selectedIconStyleId = ic.id;
+          renderControls();
+          saveState();
+        });
+        iconContainer.appendChild(btn);
+      });
+
+      // 4. Navigation
+      const navContainer = document.getElementById("navigation-container");
+      navContainer.innerHTML = "";
+      NAV_STRUCTURES.forEach((nv) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `option-card ${state.selectedNavId === nv.id ? "active" : ""}`;
+        btn.innerHTML = `
+          <h4>${nv.name}</h4>
+          <p>${nv.desc}</p>
+        `;
+        btn.addEventListener("click", () => {
+          state.selectedNavId = nv.id;
+          renderControls();
+          saveState();
+        });
+        navContainer.appendChild(btn);
+      });
+
+      // Populate text inputs
+      document.getElementById("live-app-name").value = state.appName || "Wish List";
+      document.getElementById("reviewer-name").value = state.reviewerName || "Ceci Pinilla (Ñata)";
+      document.getElementById("name-ideas-notes").value = state.nameIdeasNotes || "";
+      document.getElementById("palette-notes").value = state.paletteNotes || "";
+      document.getElementById("typography-notes").value = state.typographyNotes || "";
+      document.getElementById("icons-notes").value = state.iconsNotes || "";
+      document.getElementById("navigation-notes").value = state.navigationNotes || "";
+      document.getElementById("general-design-notes").value = state.generalDesignNotes || "";
+
+      renderMoodboard();
+      updateLiveMockup();
+    }
+
+    function renderMoodboard() {
+      const container = document.getElementById("moodboard-container");
+      container.innerHTML = "";
+      state.referenceImages.forEach((imgObj, idx) => {
+        const card = document.createElement("div");
+        card.className = "moodboard-item";
+        card.innerHTML = `
+          <img src="${imgObj.dataUrl}" alt="Referencia ${idx + 1}" />
+          <div class="moodboard-item-body">
+            <textarea placeholder="¿Qué te gusta de esta imagen? (colores, botones, tarjetas...)" data-img-idx="${idx}">${imgObj.note || ""}</textarea>
+            <button type="button" class="btn-remove-img" data-rem-idx="${idx}">Eliminar imagen</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll("textarea[data-img-idx]").forEach((ta) => {
+        ta.addEventListener("input", () => {
+          const i = parseInt(ta.getAttribute("data-img-idx"), 10);
+          state.referenceImages[i].note = ta.value;
+          ta.textContent = ta.value;
+          saveState();
+        });
+      });
+
+      container.querySelectorAll("button[data-rem-idx]").forEach((b) => {
+        b.addEventListener("click", () => {
+          const i = parseInt(b.getAttribute("data-rem-idx"), 10);
+          state.referenceImages.splice(i, 1);
+          renderMoodboard();
+          saveState();
+        });
+      });
+    }
+
+    function updateLiveMockup() {
+      const pal = PALETTES.find((p) => p.id === state.selectedPaletteId) || PALETTES[0];
+      const typo = TYPOGRAPHIES.find((t) => t.id === state.selectedTypographyId) || TYPOGRAPHIES[0];
+      const iconStyle = ICON_STYLES.find((i) => i.id === state.selectedIconStyleId) || ICON_STYLES[1];
+      const navStyle = NAV_STRUCTURES.find((n) => n.id === state.selectedNavId) || NAV_STRUCTURES[0];
+
+      const scheme = state.previewDarkMode ? pal.dark : pal.light;
+      const root = document.documentElement;
+
+      root.style.setProperty("--app-bg", scheme.bg);
+      root.style.setProperty("--app-surface", scheme.surface);
+      root.style.setProperty("--app-surface-2", scheme.surface2);
+      root.style.setProperty("--app-text", scheme.text);
+      root.style.setProperty("--app-muted", scheme.muted);
+      root.style.setProperty("--app-primary", scheme.primary);
+      root.style.setProperty("--app-primary-fg", scheme.primaryFg);
+      root.style.setProperty("--app-accent", scheme.accent);
+      root.style.setProperty("--app-accent-soft", scheme.accentSoft);
+      root.style.setProperty("--app-border", scheme.border);
+      root.style.setProperty("--app-font-heading", typo.headingFont);
+      root.style.setProperty("--app-font-body", typo.bodyFont);
+
+      document.getElementById("preview-app-name").textContent = (state.appName && state.appName.trim()) ? state.appName.trim() : "Wish List";
+      document.getElementById("preview-palette-tag").textContent = `${pal.code} (${state.previewDarkMode ? "Oscuro" : "Claro"})`;
+      document.getElementById("btn-toggle-dark").textContent = state.previewDarkMode ? "Ver en Modo Claro" : "Ver en Modo Oscuro";
+
+      // Update icons inside phone
+      document.getElementById("preview-gift-icon-1").innerHTML = getSvgIcon("gift", iconStyle);
+      document.getElementById("preview-gift-icon-2").innerHTML = getSvgIcon("sparkles", iconStyle);
+      document.getElementById("preview-btn-icon").innerHTML = getSvgIcon("bookmark", iconStyle);
+      document.getElementById("preview-activity-icon").innerHTML = getSvgIcon("users", iconStyle);
+
+      // Update Navigation Structure inside phone
+      const topSeg = document.getElementById("preview-top-segmented");
+      const bottomNav = document.getElementById("preview-bottom-nav");
+      bottomNav.className = "phone-bottom-nav";
+
+      if (navStyle.id === "nav-04") {
+        topSeg.classList.add("visible");
+        bottomNav.innerHTML = `
+          <div class="nav-tab active">${getSvgIcon("gift", iconStyle)}<span>Regalos</span></div>
+          <div class="nav-tab">${getSvgIcon("users", iconStyle)}<span>Comunidad</span></div>
+          <div class="nav-tab">${getSvgIcon("user", iconStyle)}<span>Cuenta</span></div>
+        `;
+      } else if (navStyle.id === "nav-02") {
+        topSeg.classList.remove("visible");
+        bottomNav.innerHTML = `
+          <div class="nav-tab active">${getSvgIcon("gift", iconStyle)}<span>Listas</span></div>
+          <div class="nav-tab">${getSvgIcon("users", iconStyle)}<span>Amigos</span></div>
+          <div class="nav-center-fab">${getSvgIcon("plus", iconStyle)}</div>
+          <div class="nav-tab">${getSvgIcon("bookmark", iconStyle)}<span>Reservas</span></div>
+          <div class="nav-tab">${getSvgIcon("sparkles", iconStyle)}<span>Actividades</span></div>
+        `;
+      } else {
+        topSeg.classList.remove("visible");
+        if (navStyle.id === "nav-03") {
+          bottomNav.classList.add("nav-pill-dock");
+        }
+        bottomNav.innerHTML = `
+          <div class="nav-tab active">${getSvgIcon("gift", iconStyle)}<span>Mis Listas</span></div>
+          <div class="nav-tab">${getSvgIcon("users", iconStyle)}<span>Amigos</span></div>
+          <div class="nav-tab">${getSvgIcon("bookmark", iconStyle)}<span>Reservas</span></div>
+          <div class="nav-tab">${getSvgIcon("sparkles", iconStyle)}<span>Actividades</span></div>
+        `;
+      }
+
+      document.getElementById("recipe-summary-bar").innerHTML = `
+        Combinación activa: <strong>${pal.name}</strong> + <strong>${typo.name}</strong> + <strong>${iconStyle.name}</strong> + <strong>${navStyle.name}</strong>
+      `;
+    }
+
+    // Input listeners
+    function bindInput(id, key) {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => {
+        state[key] = el.value;
+        if (el.tagName === "TEXTAREA") {
+          el.textContent = el.value;
+        } else {
+          el.setAttribute("value", el.value);
+        }
+        saveState();
+      });
+    }
+
+    bindInput("live-app-name", "appName");
+    bindInput("reviewer-name", "reviewerName");
+    bindInput("name-ideas-notes", "nameIdeasNotes");
+    bindInput("palette-notes", "paletteNotes");
+    bindInput("typography-notes", "typographyNotes");
+    bindInput("icons-notes", "iconsNotes");
+    bindInput("navigation-notes", "navigationNotes");
+    bindInput("general-design-notes", "generalDesignNotes");
+
+    document.getElementById("btn-toggle-dark").addEventListener("click", () => {
+      state.previewDarkMode = !state.previewDarkMode;
+      saveState();
+    });
+
+    // Image Upload with client-side resize so embedded HTML stays fast and portable
+    document.getElementById("image-upload-input").addEventListener("change", (e) => {
+      const files = Array.from(e.target.files || []);
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = 900;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.82);
+
+            state.referenceImages.push({
+              name: file.name,
+              dataUrl: compressedDataUrl,
+              note: ""
+            });
+            renderMoodboard();
+            saveState();
+            showToast("Imagen agregada al documento");
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = "";
+    });
+
+    function showToast(msg) {
+      const t = document.getElementById("toast-msg");
+      t.textContent = msg;
+      t.classList.add("visible");
+      setTimeout(() => t.classList.remove("visible"), 3000);
+    }
+
+    document.getElementById("btn-download-html").addEventListener("click", () => {
+      state.isExported = true;
+      state.updatedAt = new Date().toISOString();
+
+      document.querySelectorAll("input[type='text']").forEach((inp) => {
+        inp.setAttribute("value", inp.value);
+      });
+      document.querySelectorAll("textarea").forEach((ta) => {
+        ta.textContent = ta.value;
+      });
+
+      const embeddedEl = document.getElementById("embedded-design-state");
+      embeddedEl.textContent = "\n" + JSON.stringify(state, null, 2) + "\n  ";
+
+      const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([fullHtml], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "diseno_visual_nata_completado.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast("Archivo HTML descargado con tus decisiones e imágenes");
+    });
+
+    renderControls();
+  </script>
+</body>
+</html>

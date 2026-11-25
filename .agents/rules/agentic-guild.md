@@ -17,15 +17,16 @@ trigger: always_on
   </memory_management>
 
   <execution_protocol>
-    <directive>Continuous TDD Commit Loop & State Machine Enforcement</directive>
+    <directive>Continuous Full-Plan TDD Commit Loop & State Machine Enforcement</directive>
     <rules>
-      1. Continuous TDD Cycle (Red -> Commit -> Green -> Commit): During `start-task` Phase 3 (Iterative TDD), execute the complete Red-Green-Commit cycle automatically for each implementation step without pausing between Red and Green:
-         a. RED: Write the failing test(s), verify they fail, and execute `git commit` for the failing tests.
-         b. GREEN: Write the implementation code and run the test suite.
-         c. FIX LOOP: If any test fails, diagnose, fix, and execute `git commit` for the fix, reiterating until all tests pass in GREEN.
-         d. COMMIT GREEN: Once the step's tests pass in GREEN, execute `git commit` for the passing implementation and present a concise summary to the user.
-      2. The Hard Gate: Outside the automated Red-Green-Commit TDD loop, when instructions contain a `[PAUSE]` tag, wait for explicit human authorization.
-      3. Actionable Yields: End every response by stating the current step and providing the next command to proceed.
+      1. Continuous Full-Plan TDD Cycle (Execute Steps 1..N Automatically): During `start-task` Phase 3 (Iterative TDD), execute ALL pending steps in `<implementation_plan>` from start to finish without pausing between steps. For EVERY individual step, strictly execute its own Red-Green-Commit cycle:
+         a. RED: Write the failing test(s) for the current step, verify they fail (RED), and execute `git commit` for the failing tests.
+         b. GREEN: Write the implementation code for the current step and run the test suite + linter.
+         c. FIX LOOP: If any test or linter check fails, diagnose, fix, and execute `git commit` for the fix, reiterating until all tests pass in GREEN.
+         d. COMMIT GREEN & ADVANCE: Once the step's tests pass in GREEN, mark the step `status="complete"` in the session file, execute `git commit` for the passing implementation, and immediately advance to the next pending step in `<implementation_plan>` until all steps are complete.
+      2. Automatic Commit on Every Review / Audit / Docs Pass: During `code-review`, `audit-compliance`, `sync-docs`, `harvest-rules`, and `finish-branch`, whenever changes or fixes are applied and verified in a pass, the agent MUST automatically execute `git add` and `git commit` for that pass so the user never has to commit manually.
+      3. The Hard Gate: Outside the automated Phase 3 Full-Plan TDD loop, when instructions contain a `[PAUSE]` tag, wait for explicit human authorization.
+      4. Actionable Yields: End every response by stating the current step and providing the next command to proceed.
     </rules>
   </execution_protocol>
 

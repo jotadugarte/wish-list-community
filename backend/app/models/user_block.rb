@@ -67,6 +67,7 @@ class UserBlock < ApplicationRecord
     private
 
     def execute_cleanup_hooks!(blocker, blocked)
+      Friendship
       hooks = cleanup_hooks.values.first(MAX_CLEANUP_HOOKS)
       hooks.each do |hook|
         hook.call(blocker, blocked)
