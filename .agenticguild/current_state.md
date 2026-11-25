@@ -6,7 +6,7 @@
 
   <execution_context>
     <active_skill>finish-branch</active_skill>
-    <current_phase>Phase 3: Remote Async Review (The BugBot Loop)</current_phase>
-    <current_step>Step 3.1 (Awaiting CI Status)</current_step>
+    <current_phase>Phase 4: Final Spackle & PR (sync-docs Phase 3)</current_phase>
+    <current_step>Step 4.1 (sync-docs Step 3.1 Complete)</current_step>
   </execution_context>
 </agent_state>

@@ -48,7 +48,9 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 * **Invariants:**
   * A user cannot block or befriend themselves.
   * Unordered unique pair index on `friendships` (`LEAST(requester_id, addressee_id), GREATEST(requester_id, addressee_id)`) prevents duplicate inverse requests.
+  * Maximum **20 pending outgoing friend requests** (`MAX_PENDING_OUTGOING = 20`) per user to prevent spam.
   * Creating a `UserBlock` transactionally destroys any existing `Friendship`, removes `WishlistShare` records, and silently cancels active `Reservations` between the two users.
+* **Value Objects:** `SearchQuery` (`2..30` valid handle characters, strips leading `@` and escapes SQL wildcards for prefix searches).
 
 ### 4.3 `Wishlist` & `WishlistShare`
 * **Responsibility:** Collection of desired items with anti-stalking privacy (`friends` for all accepted friends, `shared` for selected friends + Secret Link `share_token`), optional `event_date`, and configurable `max_reservations_per_user` (default `nil`/unlimited for personal wishlists).
@@ -83,6 +85,9 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 
 ### 4.7 `Report`, `AuditEvent`, `NotificationPreference` & `DeviceToken`
 * **Responsibility:** Polymorphic abuse reports (`User`, `Wishlist`), immutable admin audit trail (`AuditEvent`), per-event notification toggles (`in_app`, `email`, `push`), and `api_token`-bound FCM `DeviceToken` (automatically unbound on logout/revocation).
+* **Invariants:**
+  * A user cannot report themselves, and partial unique index (`WHERE status = 'pending'`) prevents duplicate pending reports by the same reporter on the same target.
+* **Value Objects:** `ReportReason` (`spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`).
 
 ---
 
