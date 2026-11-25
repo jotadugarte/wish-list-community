@@ -32,11 +32,29 @@ class Friendship < ApplicationRecord
     return "none" if viewer.nil? || target.nil? || viewer.id == target.id
 
     record = between_users(viewer, target).first
+    status_for_record(record, viewer.id)
+  end
+
+  # [REQ-SOC-001] Batch-loads friendship statuses for a collection of target users in 1 query (prevents N+1).
+  def self.statuses_for(viewer, target_users)
+    return {} if viewer.nil? || target_users.blank?
+
+    target_ids = target_users.first(50).map(&:id)
+    records = where(requester_id: viewer.id, addressee_id: target_ids)
+              .or(where(requester_id: target_ids, addressee_id: viewer.id))
+              .limit(50)
+
+    by_other_id = records.index_by { |r| r.requester_id == viewer.id ? r.addressee_id : r.requester_id }
+    target_ids.index_with { |tid| status_for_record(by_other_id[tid], viewer.id) }
+  end
+
+  def self.status_for_record(record, viewer_id)
     return "none" if record.nil?
     return "accepted" if record.status == "accepted"
 
-    record.requester_id == viewer.id ? "pending_outgoing" : "pending_incoming"
+    record.requester_id == viewer_id ? "pending_outgoing" : "pending_incoming"
   end
+  private_class_method :status_for_record
 
   # [REQ-SOC-001] [REQ-BLOCK-001] Creates a pending friend request enforcing all Pre-conditions.
   def self.request!(requester:, addressee:)

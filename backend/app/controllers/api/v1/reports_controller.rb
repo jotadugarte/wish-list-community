@@ -24,6 +24,7 @@ module Api
 
         render json: { report: report.as_api_json }, status: :created
       rescue ArgumentError, ActiveRecord::RecordInvalid
+        skip_authorization
         render json: { error: I18n.t("api.v1.errors.report_invalid") }, status: :unprocessable_content
       end
 

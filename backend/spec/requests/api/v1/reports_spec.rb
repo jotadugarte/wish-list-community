@@ -38,5 +38,17 @@ RSpec.describe "Api::V1::Reports", type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
     end
+
+    it "returns 422 Unprocessable Content for an unsupported reportable_type without Pundit errors" do
+      post "/api/v1/reports",
+           params: {
+             reportable_type: "UnknownEntity",
+             reportable_id: target_user.id,
+             reason: "spam"
+           },
+           headers: auth_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 end

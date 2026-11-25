@@ -104,13 +104,17 @@ class User < ApplicationRecord
   end
 
   # [REQ-USER-001] [REQ-SOC-001] Serializes only public profile fields; never exposes email_address or personal wishlists.
-  def public_profile_json(viewer: nil)
+  def public_profile_json(viewer: nil, friendship_status: nil)
     payload = {
       id: id,
       username: username_vo.value,
       created_at: created_at
     }
-    payload[:friendship_status] = Friendship.status_between(viewer, self) if viewer.present?
+    if friendship_status.present?
+      payload[:friendship_status] = friendship_status
+    elsif viewer.present?
+      payload[:friendship_status] = Friendship.status_between(viewer, self)
+    end
     payload
   end
 
