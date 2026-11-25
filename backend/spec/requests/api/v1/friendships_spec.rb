@@ -12,10 +12,13 @@ RSpec.describe "Api::V1::Friendships", type: :request do
   let(:bob_headers) { { "Authorization" => "Bearer #{bob_token}" } }
 
   describe "GET /api/v1/friendships [REQ-SOC-001]" do
-    it "lists accepted friends, pending incoming requests, and pending outgoing requests" do
+    it "lists accepted friends, pending incoming requests, and pending outgoing requests while excluding discarded users" do
       accepted = Friendship.request!(requester: alice, addressee: bob)
       accepted.accept!(actor: bob)
       Friendship.request!(requester: charlie, addressee: alice)
+      discarded_friend = create(:user, username: "ghost_friend")
+      Friendship.request!(requester: alice, addressee: discarded_friend).accept!(actor: discarded_friend)
+      discarded_friend.soft_delete!
 
       get "/api/v1/friendships", headers: alice_headers
 
@@ -68,13 +71,14 @@ RSpec.describe "Api::V1::Friendships", type: :request do
     end
   end
 
-  describe "DELETE /api/v1/friendships/:id [REQ-SOC-001]" do
-    it "allows either participant to decline, cancel, or remove a friendship" do
+  describe "DELETE /api/v1/friendships/:id [REQ-SOC-001] [REQ-ADM-001]" do
+    it "allows either participant to decline, cancel, or remove a friendship and records an AuditEvent" do
       friendship = Friendship.request!(requester: alice, addressee: bob)
 
       expect do
         delete "/api/v1/friendships/#{friendship.id}", headers: bob_headers
       end.to change(Friendship, :count).by(-1)
+         .and change { AuditEvent.where(action: "friendship.removed").count }.by(1)
 
       expect(response).to have_http_status(:no_content)
     end

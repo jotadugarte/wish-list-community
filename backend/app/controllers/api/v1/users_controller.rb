@@ -15,8 +15,8 @@ module Api
         render json: {
           users: matches.map { |u| u.public_profile_json(viewer: current_user) }
         }, status: :ok
-      rescue ArgumentError => e
-        render json: { error: e.message }, status: :unprocessable_content
+      rescue ArgumentError
+        render json: { error: I18n.t("api.v1.errors.invalid_search_query") }, status: :unprocessable_content
       end
 
       # [REQ-USER-001] [REQ-BLOCK-001] Looks up a user by @username Value Object and enforces UserPolicy.

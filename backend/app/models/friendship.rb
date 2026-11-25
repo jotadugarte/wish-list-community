@@ -72,6 +72,33 @@ class Friendship < ApplicationRecord
     self
   end
 
+  # [REQ-SOC-001] [REQ-ADM-001] Declines, cancels, or removes a friendship and records an AuditEvent.
+  def remove!(actor:)
+    raise ArgumentError, "Pre-condition failed: friendship must be persisted" unless persisted?
+    unless actor && (actor.id == requester_id || actor.id == addressee_id)
+      raise ArgumentError, "Pre-condition failed: actor must be a participant"
+    end
+
+    transaction do
+      AuditEvent.record!(
+        actor: actor,
+        action: "friendship.removed",
+        auditable: self,
+        metadata: { requester_id: requester_id, addressee_id: addressee_id, previous_status: status }
+      )
+      destroy!
+    end
+
+    raise "Post-condition failed: friendship must be destroyed" unless destroyed?
+
+    true
+  end
+
+  # [REQ-SOC-001] Returns true when both participants are active (non-discarded).
+  def active_participants?
+    !requester.discarded? && !addressee.discarded?
+  end
+
   # [REQ-SOC-001] Serializes the friendship relative to the given viewer.
   def as_api_json(viewer:)
     other = requester_id == viewer.id ? addressee : requester

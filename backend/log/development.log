@@ -94,3 +94,51 @@ FOREIGN KEY ("actor_id")
   [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m
   [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO public /*application='Backend'*/[0m
   [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m
+  [1m[35m (1.1ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5073945470573576205) /*application='Backend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (6.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (9.8ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backend'*/[0m
+Migrating to CreateFriendships (20261125100000)
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN /*application='Backend'*/[0m
+  [1m[35m (38.0ms)[0m  [1m[35mCREATE TABLE "friendships" ("id" bigserial primary key, "requester_id" bigint NOT NULL, "addressee_id" bigint NOT NULL, "status" character varying DEFAULT 'pending' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='Backend'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE INDEX "index_friendships_on_requester_id" ON "friendships" ("requester_id") /*application='Backend'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE INDEX "index_friendships_on_addressee_id" ON "friendships" ("addressee_id") /*application='Backend'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE INDEX "index_friendships_on_status" ON "friendships" ("status") /*application='Backend'*/[0m
+  [1m[35m (0.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "idx_friendships_on_unordered_user_pair" ON "friendships" (LEAST(requester_id, addressee_id), GREATEST(requester_id, addressee_id)) /*application='Backend'*/[0m
+  [1m[35m (61.2ms)[0m  [1m[35mALTER TABLE "friendships" ADD CONSTRAINT "fk_rails_a87446a2d6"
+FOREIGN KEY ("requester_id")
+  REFERENCES "users" ("id")
+ ON DELETE CASCADE /*application='Backend'*/[0m
+  [1m[35m (0.8ms)[0m  [1m[35mALTER TABLE "friendships" ADD CONSTRAINT "fk_rails_faaf50894c"
+FOREIGN KEY ("addressee_id")
+  REFERENCES "users" ("id")
+ ON DELETE CASCADE /*application='Backend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20261125100000') RETURNING "version" /*application='Backend'*/[0m
+  [1m[36mTRANSACTION (230.7ms)[0m  [1m[35mCOMMIT /*application='Backend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT pg_advisory_unlock(5073945470573576205) /*application='Backend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backend'*/[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO public /*application='Backend'*/[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO public /*application='Backend'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5073945470573576205) /*application='Backend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backend'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backend'*/[0m
+Migrating to CreateReports (20261125101500)
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN /*application='Backend'*/[0m
+  [1m[35m (4.6ms)[0m  [1m[35mCREATE TABLE "reports" ("id" bigserial primary key, "reporter_id" bigint NOT NULL, "reportable_type" character varying NOT NULL, "reportable_id" bigint NOT NULL, "reason" character varying NOT NULL, "details" text, "status" character varying DEFAULT 'pending' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='Backend'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE INDEX "index_reports_on_reporter_id" ON "reports" ("reporter_id") /*application='Backend'*/[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_reports_on_reportable_type_and_reportable_id" ON "reports" ("reportable_type", "reportable_id") /*application='Backend'*/[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_reports_on_status" ON "reports" ("status") /*application='Backend'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "idx_reports_unique_pending_per_reporter_target" ON "reports" ("reporter_id", "reportable_type", "reportable_id") WHERE status = 'pending' /*application='Backend'*/[0m
+  [1m[35m (1.6ms)[0m  [1m[35mALTER TABLE "reports" ADD CONSTRAINT "fk_rails_c4cb6e6463"
+FOREIGN KEY ("reporter_id")
+  REFERENCES "users" ("id")
+ ON DELETE CASCADE /*application='Backend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20261125101500') RETURNING "version" /*application='Backend'*/[0m
+  [1m[36mTRANSACTION (31.8ms)[0m  [1m[35mCOMMIT /*application='Backend'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT pg_advisory_unlock(5073945470573576205) /*application='Backend'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backend'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO public /*application='Backend'*/[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO public /*application='Backend'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Backend'*/[0m

@@ -23,8 +23,8 @@ module Api
         )
 
         render json: { report: report.as_api_json }, status: :created
-      rescue ArgumentError, ActiveRecord::RecordInvalid => e
-        render json: { error: e.message }, status: :unprocessable_content
+      rescue ArgumentError, ActiveRecord::RecordInvalid
+        render json: { error: I18n.t("api.v1.errors.report_invalid") }, status: :unprocessable_content
       end
 
       private

@@ -16,6 +16,7 @@ module Api
                                      .or(Friendship.where(addressee_id: current_user.id))
                                      .includes(:requester, :addressee)
                                      .limit(MAX_LIST_LIMIT)
+                                     .select(&:active_participants?)
 
         accepted = user_friendships.select { |f| f.status == "accepted" }
         incoming = user_friendships.select { |f| f.status == "pending" && f.addressee_id == current_user.id }
@@ -36,8 +37,8 @@ module Api
 
         friendship = Friendship.request!(requester: current_user, addressee: target_user)
         render json: { friendship: friendship.as_api_json(viewer: current_user) }, status: :created
-      rescue ArgumentError, ActiveRecord::RecordInvalid => e
-        render json: { error: e.message }, status: :unprocessable_content
+      rescue ArgumentError, ActiveRecord::RecordInvalid
+        render json: { error: I18n.t("api.v1.errors.friendship_invalid") }, status: :unprocessable_content
       end
 
       # [REQ-SOC-001] [REQ-BLOCK-001] Accepts a pending incoming friend request.
@@ -49,12 +50,12 @@ module Api
         render json: { friendship: friendship.as_api_json(viewer: current_user) }, status: :ok
       end
 
-      # [REQ-SOC-001] Declines, cancels, or removes a friendship.
+      # [REQ-SOC-001] [REQ-ADM-001] Declines, cancels, or removes a friendship and records an AuditEvent.
       def destroy
         friendship = Friendship.find(params[:id])
         authorize friendship, :destroy?
 
-        friendship.destroy!
+        friendship.remove!(actor: current_user)
         head :no_content
       end
     end
