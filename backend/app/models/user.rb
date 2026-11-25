@@ -84,13 +84,33 @@ class User < ApplicationRecord
     Username.new(username)
   end
 
-  # [REQ-USER-001] Serializes only public profile fields; never exposes email_address.
-  def public_profile_json
-    {
+  # [REQ-SOC-001] [REQ-WISH-001] [REQ-BLOCK-001] Searches active non-blocked users by @username prefix (bounded to max 20).
+  def self.search_by_username(query_vo, viewer:, limit: 20)
+    raise ArgumentError, "Pre-condition failed: query_vo must be a SearchQuery" unless query_vo.is_a?(SearchQuery)
+    raise ArgumentError, "Pre-condition failed: viewer must be persisted" unless viewer&.persisted?
+
+    bounded_limit = [ limit.to_i, 20 ].min
+    blocked_ids = UserBlock.where(blocker_id: viewer.id).select(:blocked_id)
+    blocker_ids = UserBlock.where(blocked_id: viewer.id).select(:blocker_id)
+
+    kept
+      .where.not(id: viewer.id)
+      .where.not(id: blocked_ids)
+      .where.not(id: blocker_ids)
+      .where("LOWER(username) LIKE ?", query_vo.prefix_pattern)
+      .order(:username)
+      .limit(bounded_limit)
+  end
+
+  # [REQ-USER-001] [REQ-SOC-001] Serializes only public profile fields; never exposes email_address or personal wishlists.
+  def public_profile_json(viewer: nil)
+    payload = {
       id: id,
       username: username_vo.value,
       created_at: created_at
     }
+    payload[:friendship_status] = Friendship.status_between(viewer, self) if viewer.present?
+    payload
   end
 
   # [REQ-USER-001] [REQ-USER-004] Changes the user's @username enforcing the 30-day cooldown

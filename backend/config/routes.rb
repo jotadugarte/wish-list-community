@@ -13,6 +13,7 @@ Rails.application.routes.draw do
         post :restore
       end
       get "me" => "profiles#show"
+      get "users/search" => "users#search", as: :search_users
       get "users/:username" => "users#show", as: :user
       resources :user_blocks, only: %i[create]
     end
