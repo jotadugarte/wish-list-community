@@ -1,12 +1,12 @@
 <agent_state>
   <!-- When multiple task_*.md files exist in active_sessions/, set this to the active session filename (e.g. task_foo.md) for cross-IDE and status-check consistency. -->
   <active_task_pointer>
-    task_sprint-2-backend-social.md
+    [NONE]
   </active_task_pointer>
 
   <execution_context>
-    <active_skill>finish-branch</active_skill>
-    <current_phase>Phase 4: Final Spackle & PR</current_phase>
-    <current_step>Step 4.3 (Roadmap Updated & PR Description Ready)</current_step>
+    <active_skill>[NONE]</active_skill>
+    <current_phase>[NONE]</current_phase>
+    <current_step>[NONE]</current_step>
   </execution_context>
 </agent_state>
