@@ -1015,14 +1015,8 @@
         Combinación activa: <strong>Paleta 01</strong> + <strong>Plus Jakarta Sans</strong> + <strong>Trazo Medio</strong> + <strong>4 Pestañas</strong>
       </div>
       <div class="footer-buttons">
-        <button type="button" class="btn-copy-summary" id="btn-generate-link" title="Solo para Jader: Configurar llave y copiar link para enviar a Ñata">
-          Generar link para Ñata
-        </button>
-        <button type="button" class="btn-copy-summary" id="btn-download-html">
-          Descargar copia HTML
-        </button>
-        <button type="button" class="btn-save-html" id="btn-save-cloud">
-          Guardar mis decisiones en línea
+        <button type="button" class="btn-save-html" id="btn-download-html">
+          Guardar y Descargar HTML con mis decisiones
         </button>
       </div>
     </div>
@@ -1935,172 +1929,16 @@
       setTimeout(() => t.classList.remove("visible"), 3000);
     }
 
-    function buildSummaryText() {
-      const pal = PALETTES.find((p) => p.id === state.selectedPaletteId) || PALETTES[0];
-      const typo = TYPOGRAPHIES.find((t) => t.id === state.selectedTypographyId) || TYPOGRAPHIES[0];
-      const iconStyle = ICON_STYLES.find((i) => i.id === state.selectedIconStyleId) || ICON_STYLES[1];
-      const navStyle = NAV_STRUCTURES.find((n) => n.id === state.selectedNavId) || NAV_STRUCTURES[0];
-
-      return [
-        "DECISIONES DE DISENO VISUAL — WISH LIST COMMUNITY",
-        `Revisado por: ${state.reviewerName}`,
-        `Nombre probado en barra superior: ${state.appName}`,
-        `Ideas de nombre: ${state.nameIdeasNotes || "(Sin notas)"}`,
-        `Paleta seleccionada: ${pal.name}`,
-        `Notas de paleta: ${state.paletteNotes || "(Sin notas)"}`,
-        `Tipografia seleccionada: ${typo.name}`,
-        `Notas de tipografia: ${state.typographyNotes || "(Sin notas)"}`,
-        `Estilo de iconos: ${iconStyle.name}`,
-        `Notas de iconos: ${state.iconsNotes || "(Sin notas)"}`,
-        `Estructura de navegacion: ${navStyle.name}`,
-        `Notas de navegacion: ${state.navigationNotes || "(Sin notas)"}`,
-        `Imagenes de referencia adjuntas: ${state.referenceImages.length}`,
-        `Notas generales: ${state.generalDesignNotes || "(Sin notas)"}`
-      ].join("\n");
-    }
-
-    const GH_REPO = "jotadugarte/wish-list-community";
-    const GH_TARGET_PATH = "docs/references/diseno_visual_nata_completado.json";
-    const GH_TOKEN_STORAGE_KEY = "wishlist_gh_api_token_v1";
-
-    function extractTokenFromUrl() {
-      const hash = window.location.hash || "";
-      const match = hash.match(/token=([^&]+)/);
-      if (match && match[1]) {
-        const tok = decodeURIComponent(match[1]);
-        try {
-          sessionStorage.setItem(GH_TOKEN_STORAGE_KEY, tok);
-          localStorage.setItem(GH_TOKEN_STORAGE_KEY, tok);
-        } catch (e) {
-          // ignore
-        }
-        window.GHP_TOKEN = tok;
-        if (window.history && window.history.replaceState) {
-          window.history.replaceState(null, "", window.location.pathname + window.location.search);
-        }
-      }
-    }
-
-    extractTokenFromUrl();
-
-    function getStoredToken() {
-      if (window.GHP_TOKEN) return window.GHP_TOKEN;
-      try {
-        return sessionStorage.getItem(GH_TOKEN_STORAGE_KEY) || localStorage.getItem(GH_TOKEN_STORAGE_KEY) || "";
-      } catch (e) {
-        return "";
-      }
-    }
-
-    function utf8ToBase64(str) {
-      const bytes = new TextEncoder().encode(str);
-      let binary = "";
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      return btoa(binary);
-    }
-
-    document.getElementById("btn-generate-link").addEventListener("click", async () => {
-      const currentTok = getStoredToken();
-      const inputTok = prompt(
-        "Pega aquí tu Fine-Grained Personal Access Token de GitHub (con permiso Contents: Read and write en wish-list-community):",
-        currentTok
-      );
-      if (!inputTok || !inputTok.trim()) return;
-
-      const cleanTok = inputTok.trim();
-      try {
-        localStorage.setItem(GH_TOKEN_STORAGE_KEY, cleanTok);
-        sessionStorage.setItem(GH_TOKEN_STORAGE_KEY, cleanTok);
-      } catch (e) {
-        // ignore
-      }
-      window.GHP_TOKEN = cleanTok;
-
-      const baseUrl = "https://jotadugarte.github.io/wish-list-community/estudio_diseno_visual_ceci_nata.html";
-      const shareUrl = `${baseUrl}#token=${encodeURIComponent(cleanTok)}`;
-
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        alert("Link para Ñata copiado al portapapeles.\n\nEnvíale ese link por WhatsApp. Cuando ella abra el link y pulse 'Guardar mis decisiones en línea', sus respuestas se guardarán directo en tu repositorio.");
-      } catch (e) {
-        prompt("Copia este link y envíaselo a Ñata:", shareUrl);
-      }
-    });
-
-    async function saveToGitHubBranch(token, branchName, base64Content) {
-      const apiUrl = `https://api.github.com/repos/${GH_REPO}/contents/${GH_TARGET_PATH}`;
-      const headers = {
-        "Accept": "application/vnd.github+json",
-        "Authorization": `Bearer ${token}`,
-        "X-GitHub-Api-Version": "2022-11-28"
-      };
-
-      let existingSha = null;
-      const getRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(branchName)}`, { headers });
-      if (getRes.ok) {
-        const data = await getRes.json();
-        existingSha = data.sha;
-      }
-
-      const body = {
-        message: `docs(design): save visual design decisions from ${state.reviewerName || "Ceci (Nata)"}`,
-        content: base64Content,
-        branch: branchName
-      };
-      if (existingSha) body.sha = existingSha;
-
-      return fetch(apiUrl, {
-        method: "PUT",
-        headers: { ...headers, "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-    }
-
-    document.getElementById("btn-save-cloud").addEventListener("click", async () => {
-      let token = getStoredToken();
-      if (!token) {
-        const asked = prompt("Para guardar en línea directamente en el repositorio de Jader, pega la llave de acceso (o usa el botón 'Descargar copia HTML'):");
-        if (!asked || !asked.trim()) return;
-        token = asked.trim();
-        window.GHP_TOKEN = token;
-      }
-
-      const btn = document.getElementById("btn-save-cloud");
-      const originalText = btn.textContent;
-      btn.textContent = "Guardando en los archivos de Jader...";
-      btn.disabled = true;
-
-      try {
-        state.isExported = true;
-        state.updatedAt = new Date().toISOString();
-        const jsonPayload = JSON.stringify(state, null, 2);
-        const base64Content = utf8ToBase64(jsonPayload);
-
-        let putRes = await saveToGitHubBranch(token, "feat/sprint-1-mobile-design-system", base64Content);
-        if (!putRes.ok) {
-          putRes = await saveToGitHubBranch(token, "main", base64Content);
-        }
-
-        if (putRes.ok) {
-          showToast("Guardado en línea exitoso en el repositorio de Jader");
-          alert("Listo, Ñata. Tus decisiones de diseño y fotos de referencia ya quedaron guardadas directamente en los archivos del proyecto de Jader.");
-        } else {
-          const errData = await putRes.json().catch(() => ({}));
-          alert(`No se pudo guardar automáticamente (${errData.message || putRes.status}). Puedes hacer clic en 'Descargar copia HTML' para no perder tus cambios.`);
-        }
-      } catch (err) {
-        alert("Error de conexión al guardar en línea. Haz clic en 'Descargar copia HTML' como respaldo.");
-      } finally {
-        btn.textContent = originalText;
-        btn.disabled = false;
-      }
-    });
-
     document.getElementById("btn-download-html").addEventListener("click", () => {
       state.isExported = true;
       state.updatedAt = new Date().toISOString();
+
+      document.querySelectorAll("input[type='text']").forEach((inp) => {
+        inp.setAttribute("value", inp.value);
+      });
+      document.querySelectorAll("textarea").forEach((ta) => {
+        ta.textContent = ta.value;
+      });
 
       const embeddedEl = document.getElementById("embedded-design-state");
       embeddedEl.textContent = "\n" + JSON.stringify(state, null, 2) + "\n  ";
