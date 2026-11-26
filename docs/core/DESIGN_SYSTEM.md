@@ -5,6 +5,7 @@
 ## 1. Interactive Co-Founder Design Studio
 - **Live Exploration Artifact:** [`docs/estudio_diseno_visual_ceci_nata.html`](../estudio_diseno_visual_ceci_nata.html)
 - **Status:** Awaiting final visual selection file (`diseno_visual_nata_completado.html`) from co-founder **Ceci Pinilla ("Ñata")**.
+- **Interim policy (D2b, 2026-11-26):** Ship and iterate with current `DesignTokens` / theme defaults until Ñata’s final HTML lands; retokenize afterward. Do not block sprints on design lock.
 
 ## 2. Token Architecture (Parameterized for Web & Flutter)
 Both clients consume the following semantic design tokens so the entire visual identity updates from a single definition:
