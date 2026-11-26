@@ -35,6 +35,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   late final TextEditingController _storeUrl;
   String _priority = 'medium';
   LinkPreview? _preview;
+  bool _previewConfirmed = false;
   String? _error;
   bool _saving = false;
 
@@ -70,6 +71,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     setState(() {
       _error = null;
       _preview = null;
+      _previewConfirmed = false;
     });
     try {
       final preview = await widget.itemRepository.previewLink(
@@ -95,7 +97,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         preview.sourceUrl,
       ].join('\n');
     }
-    setState(() {});
+    setState(() => _previewConfirmed = true);
   }
 
   Future<void> _save() async {
@@ -123,7 +125,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
           priceCents: priceCents,
           currency: currency,
           linkUrls: linkUrls,
-          confirmedPreview: _preview,
+          confirmedPreview: _previewConfirmed ? _preview : null,
         );
       } else {
         await widget.itemRepository.updateItem(

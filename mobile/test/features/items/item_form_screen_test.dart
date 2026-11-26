@@ -68,6 +68,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.textContaining('Preview Title'), findsWidgets);
       expect(find.text('Usar vista previa'), findsOneWidget);
+      await tester.tap(find.text('Usar vista previa'));
+      await tester.pumpAndSettle();
+      expect(find.text('Preview Title'), findsWidgets);
     },
   );
 }

@@ -74,5 +74,16 @@ RSpec.describe "Api::V1::Items", type: :request do
       titles = response.parsed_body["items"].map { |i| i["title"] }
       expect(titles).to eq(%w[C A B])
     end
+
+    it "rejects partial reorder item_ids [REQ-ITEM-001]" do
+      a = create(:item, wishlist: wishlist, title: "A")
+      create(:item, wishlist: wishlist, title: "B")
+
+      patch "/api/v1/wishlists/#{wishlist.id}/items/reorder",
+            params: { item_ids: [ a.id ] },
+            headers: headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 end

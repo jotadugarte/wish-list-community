@@ -29,7 +29,7 @@ module Api
           attach_uploaded_images!(item)
         end
         render json: { item: item.reload.as_api_json }, status: :created
-      rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error => e
+      rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error => e
         skip_authorization unless @_pundit_policy_authorized
         render json: { errors: [ e.message.presence || "Invalid item" ] }, status: :unprocessable_content
       end
@@ -51,7 +51,7 @@ module Api
           attach_uploaded_images!(item)
         end
         render json: { item: item.reload.as_api_json }, status: :ok
-      rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error => e
+      rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error => e
         render json: { errors: [ e.message ] }, status: :unprocessable_content
       end
 
@@ -167,13 +167,18 @@ module Api
 
           ItemImageProcessor.attach!(item: item, io: file.tempfile, filename: file.original_filename)
         end
+      rescue ArgumentError
+        raise
+      rescue ImageProcessing::Error, Vips::Error => e
+        raise ArgumentError, e.message.presence || "image could not be processed"
       end
 
       def reorder_items!(wishlist, ids)
         raise ArgumentError, "item_ids required" if ids.empty?
 
-        kept_ids = wishlist.items.kept.where(id: ids).pluck(:id)
-        raise ArgumentError, "item_ids must belong to wishlist" unless kept_ids.sort == ids.sort
+        all_kept_ids = wishlist.items.kept.order(:position, :id).pluck(:id)
+        raise ArgumentError, "item_ids must include every kept item" unless ids.sort == all_kept_ids.sort
+        raise ArgumentError, "item_ids must belong to wishlist" unless ids.uniq.size == ids.size
 
         Item.transaction do
           ids.each_with_index do |id, index|
