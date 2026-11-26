@@ -327,7 +327,7 @@ Tenant = single-tenant app (no multi-tenant IDs). Cloud agent runs headless rows
 **Owner to run:** QA-S5-19, QA-S5-20. **Out of scope:** QA-S5-21.
 
 ## QA reviewer record — 2026-11-26 Sprint 5 Secret Reservations
-**Delivery:** not posted
+**Delivery:** posted
 
 ### Environment
 - Branch: `cursor/feat-sprint-5-secret-reservations-47be`
