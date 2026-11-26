@@ -214,7 +214,7 @@ Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harass
 
 ## 3. Wishlists (`Sprint 3`)
 
-Empty wishlist shells (no items). Privacy modes: `friends` | `shared`. Default on create: `friends` with `share_token: null`.
+Wishlist shells; items via nested `/wishlists/:id/items` (Sprint 4). Privacy modes: `friends` | `shared`. Default on create: `friends` with `share_token: null`.
 `share_token` is included only in owner-facing payloads (create/index/show/update/rotate for the owner). Shared-with-me and friend discovery responses omit it so non-owners cannot redistribute the Secret Link.
 
 ### Wishlist JSON shell
@@ -293,3 +293,47 @@ Policy-scoped wishlists for `@username` (O3A). Strangers get `[]`; block → `40
 ### Web Secret Link (Hotwire, not `/api/v1`)
 - `GET /s/:share_token` — guest OG invitation *"Lista de deseos de @username"*; logged-in upserts `WishlistShare(source: secret_link)` (`[REQ-WISH-005]`, `[REQ-WISH-003]`).
 - `GET|POST /session` and `GET|POST /signup` — HTML auth with allowlisted `return_to` matching `\A/s/[A-Za-z0-9\-_]+\z` (`[REQ-WISH-005]`, `[REQ-AUTH-001]`).
+
+---
+
+## 4. Items, Media & Link Previews (`Sprint 4`)
+
+Item CRUD (`1 item = 1 unit`), multipart images (server WebP/EXIF strip), optional `price_cents`/`currency`, `position` reorder, and sync OpenGraph previews (confirm before persist).
+
+### Item JSON
+```json
+{
+  "id": 1,
+  "wishlist_id": 1,
+  "title": "Auriculares",
+  "specifications": "Negro",
+  "priority": "high",
+  "price_cents": 5000,
+  "currency": "USD",
+  "position": 0,
+  "links": [{ "id": 1, "url": "https://shop.example/a", "position": 0 }],
+  "images": [{ "id": 10, "content_type": "image/webp", "byte_size": 1234, "url": "/rails/active_storage/blobs/..." }],
+  "discarded_at": null,
+  "created_at": "...",
+  "updated_at": "..."
+}
+```
+
+### `GET/POST /api/v1/wishlists/:wishlist_id/items` (`[REQ-ITEM-001]`, `[REQ-ITEM-003]`, `[REQ-ARCH-002]`)
+Index (policy-scoped) / create (owner). Create accepts `item` JSON + optional `confirmed_preview` + multipart `images[]`.
+
+### `GET/PATCH/DELETE /api/v1/items/:id` (`[REQ-ITEM-001]`, `[REQ-LIFE-001]`)
+Show / update / soft-delete.
+
+### `POST /api/v1/items/:id/restore` (`[REQ-LIFE-001]`)
+Owner restore within SoftDeletable grace.
+
+### `DELETE /api/v1/items/:id/images/:image_id` (`[REQ-ITEM-002]`)
+Detach one image.
+
+### `PATCH /api/v1/wishlists/:wishlist_id/items/reorder` (`[REQ-ITEM-001]`)
+Body: `{ "item_ids": [3,1,2] }`.
+
+### `POST /api/v1/link_previews` (`[REQ-ITEM-006]`)
+Body: `{ "url": "https://..." }` → `{ "title", "image_url", "source_url" }` (best-effort; SSRF-safe). Auth required.
+

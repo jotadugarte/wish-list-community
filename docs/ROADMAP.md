@@ -48,15 +48,15 @@ Things done and things left to do. Update this when finishing branches; use `roa
 *(No items currently in progress)*
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 4 — Items + Media + Automatic Store Image Extraction**
-  - [ ] Item CRUD (`1 item = 1 unit`), prominent `specifications` note below the image (for exact color/size/variant clarifications), `priority` desire levels (`low`, `medium`, `high`, `must_have`), multiple `http/https` purchase links (`ItemLink`), and v1-ready nullable `price_cents`/`currency` (`REQ-ITEM-001`, `REQ-ITEM-003`, `REQ-ITEM-005`, `REQ-ARCH-002`)
-  - [ ] Soft-delete/restore cascade for items (no ghost reservations on restore) via `SoftDeletable` hooks (`REQ-LIFE-001`)
-  - [ ] Automatic best-effort extraction of product image and title (`og:image`, `og:title` with SSRF protection) when pasting or sharing a store link (e.g., Amazon, MercadoLibre) (`REQ-ITEM-006`)
-  - [ ] Up to 3 images per item (`REQ-ITEM-002`):
-    - [ ] Max 2MB each, max 1600px on the longest side
-    - [ ] Optional client-side compression (UX)
-    - [ ] Mandatory server-side resize + WebP re-encode + full EXIF/GPS metadata stripping via `libvips`
-  - [ ] API v1 endpoints + Flutter screens for this sprint
+- [x] **MVP Sprint 4 — Items + Media + Automatic Store Image Extraction** — 2026-11-26 — Branch: cursor/feat-sprint-4-items-media-ab93
+  - [x] Item CRUD (`1 item = 1 unit`), prominent `specifications` note below the image (for exact color/size/variant clarifications), `priority` desire levels (`low`, `medium`, `high`, `must_have`), multiple `http/https` purchase links (`ItemLink`), and v1-ready nullable `price_cents`/`currency` (`REQ-ITEM-001`, `REQ-ITEM-003`, `REQ-ITEM-005`, `REQ-ARCH-002`)
+  - [x] Soft-delete/restore cascade for items (no ghost reservations on restore) via `SoftDeletable` hooks (`REQ-LIFE-001`)
+  - [x] Automatic best-effort extraction of product image and title (`og:image`, `og:title` with SSRF protection) when pasting or sharing a store link (e.g., Amazon, MercadoLibre) (`REQ-ITEM-006`)
+  - [x] Up to 3 images per item (`REQ-ITEM-002`):
+    - [x] Max 2MB each, max 1600px on the longest side
+    - [ ] Optional client-side compression (UX) — deferred O6A to Sprint 9
+    - [x] Mandatory server-side resize + WebP re-encode + full EXIF/GPS metadata stripping via `libvips`
+  - [x] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 5 — Secret Reservations (72h Grace Auto-Release & Context-Aware Limits)**
   - [ ] Reserve an item (logged-in users with access only) with "first to reserve wins" concurrency enforced by a PostgreSQL partial unique index (`WHERE status IN ('active', 'expired_grace')`) (`REQ-RES-001`)
   - [ ] Zero spoilers for recipient: owner never sees reservation state, and reservation mutations never update `items.updated_at` (`REQ-RES-002`)

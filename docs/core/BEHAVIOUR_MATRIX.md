@@ -21,3 +21,16 @@
 | BM-WISH-013 | Explicit share exists; users unfriend | Friendship remove | `WishlistShare`s between pair deleted | Domain | REQ-BLOCK-002 (parity), L-unfriend-shares | `spec/models/wishlist_share_spec.rb` | automated |
 | BM-WISH-014 | Owner opens own Secret Link while logged in | `GET /s/:own_token` | Owner shell; **no** self `WishlistShare` row | Web | REQ-WISH-003 | `spec/requests/secret_links_spec.rb` | automated |
 | BM-WISH-015 | Attacker crafts `return_to=//evil` or off-allowlist path | Web login/signup | Reject; no open redirect | Web | REQ-WISH-005 | `spec/requests/secret_link_return_to_spec.rb` | automated |
+
+| BM-ITEM-001 | Owner + kept wishlist | Create/list/update/delete/restore item via API | CRUD succeeds; soft-delete hides from kept | API | REQ-ITEM-001, REQ-LIFE-001 | `spec/requests/api/v1/items_spec.rb` | automated |
+| BM-ITEM-002 | Accepted friend; wishlist `friends` | `GET .../items` | Friend sees items | API / Policy | REQ-WISH-001, REQ-ITEM-001 | `spec/requests/api/v1/items_spec.rb`, `spec/policies/item_policy_spec.rb` | automated |
+| BM-ITEM-003 | Stranger or blocked | Index/show item | 404 / deny | API / Policy | REQ-BLOCK-001 | `spec/requests/api/v1/items_spec.rb` | automated |
+| BM-ITEM-004 | Owner uploads image | Attach via processor | ≤3; WebP; ≤1600; EXIF stripped | Service | REQ-ITEM-002 | `spec/services/item_image_processor_spec.rb` | automated |
+| BM-ITEM-005 | ItemLink with javascript: URL | Create link | Validation error | Domain | REQ-ITEM-001 | `spec/models/item_link_spec.rb` | automated |
+| BM-ITEM-006 | Auth user; mocked store HTML | `POST /link_previews` | Returns og title/image | API | REQ-ITEM-006 | `spec/requests/api/v1/link_previews_spec.rb` | automated |
+| BM-ITEM-007 | SSRF URL (127.0.0.1 / 10/8 / metadata) | OpenGraphPreview.fetch | Empty fields; no connect | Service | REQ-ITEM-006 | `spec/services/open_graph_preview_spec.rb` | automated |
+| BM-ITEM-008 | Wishlist with items | Soft-delete wishlist | Items discarded | Domain | REQ-LIFE-001 | `spec/models/wishlist_item_cascade_spec.rb` | automated |
+| BM-ITEM-009 | Cascaded soft-delete | Restore wishlist | Cascaded items restored; no reservations | Domain | REQ-LIFE-001 | `spec/models/wishlist_item_cascade_spec.rb` | automated |
+| BM-ITEM-010 | Invalid priority | Create item | RecordInvalid | Domain | REQ-ITEM-003 | `spec/models/item_spec.rb` | automated |
+| BM-ITEM-011 | Guest Secret Link + items exist | `GET /s/:token` | Invitation OG; no item titles | Web | REQ-WISH-005 | `spec/requests/secret_links_items_spec.rb` | automated |
+| BM-ITEM-012 | Logged-in sharee | `GET /s/:token` | Read-only item list | Web | REQ-ITEM-001, O1A | `spec/requests/secret_links_items_spec.rb` | automated |

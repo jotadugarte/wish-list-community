@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_detail_screen.dart';
+import 'package:wish_list_mobile/features/items/item_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 
 // Lists the owner's wishlists and supports create with default friends privacy.
@@ -102,6 +103,7 @@ class _MyWishlistsScreenState extends State<MyWishlistsScreen> {
                     tokens: widget.tokens,
                     strings: s,
                     wishlistRepository: widget.wishlistRepository,
+                    itemRepository: ItemRepository(apiClient: widget.wishlistRepository.apiClient),
                     wishlistId: w.id,
                     canManage: true,
                   ),
