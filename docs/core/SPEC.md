@@ -56,8 +56,10 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 * **Responsibility:** Collection of desired items with anti-stalking privacy (`friends` for all accepted friends, `shared` for selected friends + Secret Link `share_token`), optional `event_date`, and configurable `max_reservations_per_user` (default `nil`/unlimited for personal wishlists).
 * **Invariants:**
   * Wishlist URLs (`/wishlists/:id` and `/s/:share_token`) are independent of `@username` so handle changes never break shared links.
-  * Switching a wishlist from `shared` to private `friends` mode immediately wipes/invalidates `share_token`.
+  * Switching a wishlist from `shared` to private `friends` mode immediately wipes/invalidates `share_token` and revokes `secret_link` shares; redundant mode patches that do not change mode must not remint the token (rotation is explicit).
   * Logged-in non-blocked users opening a valid `share_token` link gain persistent access in their *"Shared with me"* tab (`WishlistShare` with `source: 'secret_link'`) while the token remains valid.
+  * API serializers expose `share_token` only to the wishlist owner; non-owner show/shared/friend payloads omit it so Secret Links cannot be redistributed.
+  * Account soft-delete cascades soft-delete of kept owned wishlists and records their IDs on `user.soft_deleted` AuditEvent metadata; account restore restores only that cascaded set.
 
 ### 4.4 `Item` & `ItemLink`
 * **Responsibility:** A single giftable unit inside a `Wishlist`, with `title`, prominent `specifications` note (exact color/size/variant clarification), `priority` (`low`, `medium`, `high`, `must_have`), optional `price_cents` and `currency`, multiple purchase links (`ItemLink`), automatic store image/title extraction (`og:image`, `og:title`), and up to 3 WebP images.
