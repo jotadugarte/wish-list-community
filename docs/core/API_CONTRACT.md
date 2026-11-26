@@ -40,6 +40,36 @@ Authenticates an active user, issues a SHA-256-backed API token, and optionally 
   }
   ```
 
+### `POST /api/v1/signup` (`[REQ-AUTH-001]`, `[REQ-AUTH-002]`, `[REQ-AUTH-003]`, `[REQ-USER-001]`, `[REQ-USER-002]`, `[REQ-USER-003]`)
+Registers a new user with mandatory UGC Terms/EULA acceptance (`terms_accepted` → `terms_accepted_at`), then issues a SHA-256-backed API token (same response shape as session create).
+- **Auth Required:** No (Rate-limited: 10 req / 3 min per IP).
+- **Request Body:**
+  ```json
+  {
+    "email_address": "user@example.com",
+    "username": "nata_24",
+    "password": "secretPassword123",
+    "password_confirmation": "secretPassword123",
+    "locale": "es",
+    "time_zone": "America/Costa_Rica",
+    "terms_accepted": true,
+    "device_name": "iPhone 16",
+    "device_token": "optional_fcm_token"
+  }
+  ```
+- **Response (`201 Created`):**
+  ```json
+  {
+    "token": "raw_bearer_token_string",
+    "user": {
+      "id": 1,
+      "username": "nata_24",
+      "created_at": "2026-11-26T12:00:00Z"
+    }
+  }
+  ```
+- **Error (`422 Unprocessable Content`):** `{ "errors": ["<localized validation or terms message>"] }` when `terms_accepted` is missing/false or identity validation fails. Does not reveal whether an email exists beyond ordinary uniqueness validation messages.
+
 ### `DELETE /api/v1/session` (`[REQ-AUTH-001]`, `[REQ-NOTIF-002]`)
 Revokes the current API bearer token and immediately destroys any bound FCM `DeviceToken`.
 - **Auth Required:** Yes.

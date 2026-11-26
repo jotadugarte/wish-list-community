@@ -13,7 +13,7 @@
     <step id="4" status="complete">Implement AuthRepository.signUp — make Step 3 GREEN.</step>
     <step id="5" status="complete">Write failing widget/repo tests for SignUpScreen + LoginScreen navigation + bilingual AppStrings signup keys [REQ-AUTH-002] [REQ-USER-002].</step>
     <step id="6" status="complete">Implement SignUpScreen, wire LoginScreen signup link, extend AppStrings (es/en) — make Step 5 GREEN.</step>
-    <step id="7" status="pending">Update docs/core/API_CONTRACT.md with POST /api/v1/signup and correct docs/ROADMAP.md signup Done wording to match shipped surface (API+Flutter).</step>
+    <step id="7" status="complete">Update docs/core/API_CONTRACT.md with POST /api/v1/signup and correct docs/ROADMAP.md signup Done wording to match shipped surface (API+Flutter).</step>
   </implementation_plan>
 
   <working_notes>

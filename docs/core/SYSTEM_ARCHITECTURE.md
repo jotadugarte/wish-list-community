@@ -14,7 +14,7 @@
 * **Authorization Engine:** Pundit (`ApplicationPolicy` with mandatory `after_action :verify_authorized` and `after_action :verify_policy_scoped` default-deny enforcement)
 * **Image Processing:** ActiveStorage + `image_processing` (`libvips`) with mandatory server-side resize (<= 1600px), WebP encoding, and full EXIF/GPS metadata stripping
 * **Testing Suite:** RSpec + FactoryBot (`backend/`), `flutter_test` (`mobile/`) with CI job `flutter_test` (`flutter analyze` + `flutter test`)
-* **Mobile Client Surfaces (Flutter thin client):** Auth and social screens live under `mobile/lib/features/` and consume `/api/v1` only — `LoginScreen`, `PasswordResetScreen`, `AccountRestoreScreen`, `ProfileSettingsScreen`, `FriendsListScreen`, `UserSearchScreen`, plus bilingual `AppStrings` (`es` / `en`). Visual identity is centralized in `DesignTokens` / `AppTheme` / `AppNavigationShell`.
+* **Mobile Client Surfaces (Flutter thin client):** Auth and social screens live under `mobile/lib/features/` and consume `/api/v1` only — `LoginScreen`, `SignUpScreen`, `PasswordResetScreen`, `AccountRestoreScreen`, `ProfileSettingsScreen`, `FriendsListScreen`, `UserSearchScreen`, plus bilingual `AppStrings` (`es` / `en`). Visual identity is centralized in `DesignTokens` / `AppTheme` / `AppNavigationShell`.
 
 ## 2. Architectural Paradigm
 * **Server-First Authority:** 100% of business logic, authorization policies, privacy rules, reservation concurrency, and budget validations reside on the Rails 8 server. Both the Web UI and Flutter mobile apps act strictly as clients.

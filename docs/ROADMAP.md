@@ -17,7 +17,7 @@ Things done and things left to do. Update this when finishing branches; use `roa
 - [x] **MVP Sprint 1 (Backend Foundation) — Base + Auth + API + Core Policies** — 2026-11-24
   - [x] Monorepo setup: `backend/` (Rails 8 + PostgreSQL + Solid Queue + Hotwire/Tailwind CSS + RSpec + Pundit) and `mobile/` skeleton (`REQ-ARCH-001`) — 2026-11-24
   - [x] Versioned API `/api/v1` with SHA-256 `api_tokens` authentication and `RecordNotUnique` idempotency handling; web uses cookie sessions (`REQ-AUTH-001`, `REQ-ARCH-003`) — 2026-11-24
-  - [x] Authentication (login, logout, sessions), anti-enumeration password reset (always generic `200 OK`), and Rails 8 `rate_limit` on auth endpoints; User model requires `terms_accepted_at` (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`) — 2026-11-24
+  - [x] Authentication (`POST /api/v1/signup` with `terms_accepted_at`, login, logout, sessions), anti-enumeration password reset (always generic `200 OK`), and Rails 8 `rate_limit` on auth endpoints (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`) — 2026-11-24; signup API wired 2026-11-26 (`cursor/chore-signup-p0`)
   - [x] Public profile: unique `@username` (email stays strictly private), 30-day change cooldown + 30-day quarantine on previous `@username`, preferred `locale` (`es`/`en`), and `time_zone` (`REQ-USER-001`, `REQ-USER-002`, `REQ-USER-003`, `REQ-USER-004`) — 2026-11-24
   - [x] Central Pundit permissions layer (*default-deny*) + Block users ("block wins": immediately cuts access and transactionally destroys friendship, shares, and active reservations) + immutable `AuditEvent` foundation (`REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-24
   - [x] Soft-delete + restore infrastructure (`SoftDeletable` concern + 30-day account restoration window before PII purge) (`REQ-LIFE-001`, `REQ-LIFE-002`) — 2026-11-24 — *Wishlist/item cascade Pending until those entities exist (Sprint 3/4)*
@@ -26,18 +26,18 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Friend requests + accept/decline/remove + friends list (`Friendship` & `FriendshipPolicy`, enforced by unordered unique pair index in PostgreSQL, 20-pending outgoing anti-spam cap, and automatic `UserBlock` cleanup hook) (`REQ-SOC-001`, `REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-25
   - [x] Report user (`Report` polymorphic model, `ReportReason` Value Object, `ReportPolicy`, `POST /api/v1/reports` queue, duplicate pending report prevention, and immutable `AuditEvent` logging) (`REQ-SOC-001`, `REQ-DISC-001`, `REQ-ADM-001`) — 2026-11-25
 - [x] **MVP Sprint 1 (Mobile Foundation) — Flutter Base + Design System** — 2026-11-26 — Branch: `feat/sprint-1-2-mobile-foundation`
-  - [x] Flutter project + parameterized `DesignTokens` / `AppTheme` / `AppIconBadge` / `AppNavigationShell` + Dart domain VOs + `ApiClient` / secure token storage + `AuthRepository` + auth UI (`LoginScreen`, `PasswordResetScreen`, `AccountRestoreScreen`, `ProfileSettingsScreen`) with bilingual `AppStrings` (`REQ-ARCH-001`, `REQ-AUTH-001`, `REQ-AUTH-003`, `REQ-LIFE-002`, `REQ-USER-001`, `REQ-USER-002`) — 2026-11-26
+  - [x] Flutter project + parameterized `DesignTokens` / `AppTheme` / `AppIconBadge` / `AppNavigationShell` + Dart domain VOs + `ApiClient` / secure token storage + `AuthRepository` + auth UI (`LoginScreen`, `SignUpScreen`, `PasswordResetScreen`, `AccountRestoreScreen`, `ProfileSettingsScreen`) with bilingual `AppStrings` (`REQ-ARCH-001`, `REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`, `REQ-LIFE-002`, `REQ-USER-001`, `REQ-USER-002`) — 2026-11-26; `SignUpScreen` added 2026-11-26 (`cursor/chore-signup-p0`)
 - [x] **MVP Sprint 2 (Mobile) — Social & Anti-Stalking Profile Search (Flutter Screens)** — 2026-11-26 — Branch: `feat/sprint-1-2-mobile-foundation`
   - [x] Flutter screens for `@username` search, friend requests/list, block/report consuming `/api/v1/users/search`, `/api/v1/friendships`, `/api/v1/user_blocks`, and `/api/v1/reports` (`REQ-SOC-001`, `REQ-WISH-001`, `REQ-BLOCK-001`, `REQ-DISC-001`) — 2026-11-26
+- [x] **Chore P0 — Signup (before Sprint 3)** — 2026-11-26 — Branch: `cursor/chore-signup-p0`
+  - [x] Registration `POST /api/v1/signup` creating users with required `terms_accepted_at` + Rails 8 `rate_limit` (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`)
+  - [x] Flutter `SignUpScreen` + `AuthRepository.signUp` consuming signup API (`REQ-AUTH-001`, `REQ-AUTH-002`)
+  - [x] `API_CONTRACT` / ROADMAP / testing docs updated for signup Done
 
 ## In Progress
 *(No items currently in progress)*
 
 ## Pending (by priority)
-- [ ] **Chore P0 — Signup (before Sprint 3)** — *not Done until this PR lands*
-  - [ ] Registration endpoint(s) (`/api/v1` + web as needed) creating users with required `terms_accepted_at` + Rails 8 `rate_limit` (`REQ-AUTH-001`, `REQ-AUTH-002`)
-  - [ ] Flutter `SignUpScreen` consuming signup API (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-MOB-001`)
-  - [ ] Update `API_CONTRACT` / ROADMAP to mark signup Done only after merge
 - [ ] **MVP Sprint 3 — Wishlists (Anti-Stalking Privacy + Secret Links)**
   - [ ] Wishlist CRUD with optional `event_date`, immutable URLs (`/wishlists/:id` and `/s/:share_token` independent of `@username`), and v1-ready nullable `activity_id` (`REQ-WISH-004`, `REQ-WISH-006`, `REQ-ARCH-002`)
   - [ ] Soft-delete/restore cascade for wishlists via `SoftDeletable` hooks (infra Ready; entity cascade Pending) (`REQ-LIFE-001`)
