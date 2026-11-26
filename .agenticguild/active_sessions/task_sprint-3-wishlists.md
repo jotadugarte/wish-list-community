@@ -7,7 +7,24 @@
   </metadata>
 
   <implementation_plan>
-    <!-- Filled in explore-task Phase 1 Step 1.4 after Final check + lock checklist. Do not start-task until owner authorizes. -->
+    <step id="1" status="pending">Write failing RSpec model/VO specs for `Wishlist` + `ShareToken`/`PrivacyMode`: defaults (`privacy_mode=friends`, `share_token` nil), `shared` mints unique URL-safe token, `shared`→`friends` wipes token, SoftDeletable discard/restore within grace, optional `event_date`, nullable `activity_id` + `max_reservations_per_user` columns present. Trace `[REQ-WISH-001]`, `[REQ-WISH-002]`, `[REQ-WISH-004]`, `[REQ-WISH-006]`, `[REQ-ARCH-002]`, `[REQ-LIFE-001]`.</step>
+    <step id="2" status="pending">Implement migrations + models minimally to make step 1 green (`wishlists`, `wishlist_shares` with unique `(wishlist_id, user_id)`, indexes on `share_token` unique where present, SoftDeletable on Wishlist). No controllers yet.</step>
+    <step id="3" status="pending">Write failing RSpec for `WishlistShare` invariants + `UserBlock` cleanup hook deleting shares between the pair; friendship `remove!` also deletes shares between the pair (S3 risk mitigation). Trace `[REQ-WISH-003]`, `[REQ-BLOCK-002]`.</step>
+    <step id="4" status="pending">Implement `WishlistShare` + register cleanup hooks (Zeitwerk-safe constant reference) until step 3 green.</step>
+    <step id="5" status="pending">Write failing `WishlistPolicy` / Scope specs for the 4-actor matrix (stranger, accepted friend on `friends`/`shared`+explicit, secret_link share, blocked either direction) plus owner. Trace `[REQ-WISH-001]`, `[REQ-BLOCK-001]`.</step>
+    <step id="6" status="pending">Implement `WishlistPolicy` (+ Scope) until step 5 green. Default-deny via ApplicationPolicy.</step>
+    <step id="7" status="pending">Write failing request specs for owner CRUD: `GET/POST /api/v1/wishlists`, `GET/PATCH/DELETE /api/v1/wishlists/:id` (soft-delete), optional `POST .../restore`; privacy mode transitions; rotate `POST /api/v1/wishlists/:id/share_token/rotate` (O4A); explicit shares `POST/DELETE .../shares`. Trace `[REQ-WISH-001..004]`, `[REQ-WISH-006]`, `[REQ-LIFE-001]`, `[REQ-ARCH-003]`.</step>
+    <step id="8" status="pending">Implement API controllers/routes/serializers for step 7 until green (thin controllers; services for mode change, rotate, share upsert).</step>
+    <step id="9" status="pending">Write failing request specs for `GET /api/v1/shared_wishlists` and `GET /api/v1/users/:username/wishlists` (O3A): strangers get empty/404 aligned with anti-stalking; friends see accessible lists; block → 404. Trace `[REQ-WISH-001]`, `[REQ-WISH-003]`, `[REQ-BLOCK-001]`.</step>
+    <step id="10" status="pending">Implement shared-with-me + user wishlists index until step 9 green.</step>
+    <step id="11" status="pending">Write failing system/request specs for Hotwire `GET /s/:share_token`: OG meta invitation only (`Lista de deseos de @username`, no items); guest HTML invitation + login/signup CTAs with `return_to`; logged-in non-blocked upserts `WishlistShare(source: secret_link)` and shows empty shell; invalid/blocked/discarded → 404; open-redirect rejected. Trace `[REQ-WISH-002]`, `[REQ-WISH-003]`, `[REQ-WISH-005]`, `[REQ-WISH-006]`.</step>
+    <step id="12" status="pending">Implement Secret Link controller/view + safe OG helpers until step 11 green (no item payloads).</step>
+    <step id="13" status="pending">Write failing system specs for web Hotwire login + signup HTML with `return_to` allowlisted to same-origin `/s/...` paths; after auth redirect back and register Shared-with-me. Reuse signup domain rules (`terms_accepted_at`, rate_limit). Trace `[REQ-WISH-005]`, `[REQ-AUTH-001]`, `[REQ-AUTH-002]`, `[REQ-AUTH-003]`.</step>
+    <step id="14" status="pending">Implement web session `new` + web signup HTML/controllers and `return_to` plumbing until step 13 green (O1A).</step>
+    <step id="15" status="pending">Write failing Flutter widget/repository tests for: my wishlists list/create/edit (default `friends` O2A), Shared with me, friend wishlists via username endpoint, wishlist detail empty shell, copy/rotate Secret Link when `shared`, bilingual AppStrings, DesignTokens defaults. Trace matching REQ-WISH-*.</step>
+    <step id="16" status="pending">Implement Flutter screens/repos/navigation until step 15 green (D2b / D6a). No Item UI.</step>
+    <step id="17" status="pending">Update living docs in-repo as part of the feature work: `docs/core/API_CONTRACT.md` wishlist endpoints; ROADMAP Sprint 3 checkboxes only when verified; touch DATA_FLOW_MAP only if share/unfriend hook wording needs the friendship-remove note. Keep architecture anchors intact (no ADR unless violated).</step>
+    <step id="18" status="pending">Run full backend RSpec + `flutter analyze`/`flutter test` locally; fix failures until green. End of start-task implementation scope.</step>
   </implementation_plan>
 
   <working_notes>
@@ -28,16 +45,10 @@
 - Pre-Sprint 3 owner locks: **D3a** wishlists S3 / items S4; **D4a** Hotwire mínimo `/s/:share_token` + OG-safe + return_to in S3; **D6a** API+Flutter primary, web only where SPEC requires (Secret Link); **D2b** DesignTokens defaults until Ñata HTML.
 
 ### What we don't know (owner forks)
-- Exact web auth HTML surface for `return_to` across login **and** sign-up (REQ-WISH-005) — see Open **O1**.
-- Default `privacy_mode` on create — see Open **O2**.
-- How friends discover another friend's accessible wishlists in API — see Open **O3**.
-- Whether owner can **rotate** `share_token` while staying in `shared` — see Open **O4**.
+- None material — O1–O4 locked 2026-11-26 (owner: O1A O2A O3A O4A). Remaining edges are implementation risks or Deferred.
 
 ### What we need to define (before start-task)
-- Answer O1–O4 (or defer with parking notes).
-- Domain model + API surface + Flutter screens list for S3-only scope (empty wishlist shells; no Item CRUD).
-- Soft-delete / block cleanup hooks that are safe before Items/Reservations exist.
-- Final check + `<implementation_plan>` (TDD), then handoff to start-task only when owner says so.
+- Owner confirmation of `<implementation_plan>` (this file). Then explicit `start-task` (not auto).
 
 ## Classification
 **Feature** (new domain entities + API + Flutter + minimal Hotwire Secret Link).
@@ -61,8 +72,16 @@
 | **L-schema-ready** | Wishlist schema includes optional `event_date`, nullable `activity_id` readiness (REQ-ARCH-002), SoftDeletable `discarded_at`, and `max_reservations_per_user` column (default `nil`) even though reservation **UI/logic** waits for Sprint 5. | SPEC 4.3 / REQ-ARCH-002 / REQ-WISH-004 |
 | **L-guest-reserve** | Guests may view Secret Link preview; must log in to reserve/gift — reserve itself is Sprint 5 (no items in S3). | REQ-WISH-002 + D3a |
 | **L-process** | TDD (`verification: tdd`); start-task hands-off when owner authorizes; no start-task until explicit owner order. | config + pre-Sprint 3 |
+| **L-O1A** | Minimal Hotwire **login + signup** HTML with allowlisted `return_to` under `/s/...` for Secret Link funnel. | owner 2026-11-26 O1A |
+| **L-O2A** | Default `privacy_mode` on create = **`friends`** (no token until switched to `shared`). | owner 2026-11-26 O2A |
+| **L-O3A** | Friend discovery via **`GET /api/v1/users/:username/wishlists`** (policy-scoped); keep public profile card thin. | owner 2026-11-26 O3A |
+| **L-O4A** | Owner can **rotate** `share_token` while staying `shared` (invalidates old URL; revokes `secret_link` shares; keeps `explicit`). | owner 2026-11-26 O4A |
+| **L-api-surface** | S3 API: owner CRUD wishlists; shares CRUD; rotate; `GET /shared_wishlists`; `GET /users/:username/wishlists`; soft-delete (+ restore for owner). | explore lock |
+| **L-web-surface** | Web: `GET /s/:share_token` + OG + guest invitation CTAs; web auth pages for return_to only — no web wishlist CRUD. | D4a/D6a/O1A |
+| **L-flutter-surface** | Flutter: my lists, create/edit, Shared with me, friend lists, empty detail shell, copy/rotate link; DesignTokens defaults. | D6a/D2b |
+| **L-unfriend-shares** | On `Friendship#remove!`, delete `WishlistShare`s between the pair (share cleanup parity with block; avoids orphan explicit access). | Final check |
 
-## Open (decision cards for owner)
+## Open (resolved — archive)
 
 ### O1 — Web auth HTML for Secret Link `return_to` (REQ-WISH-005)
 **Context:** `/s/:share_token` is web Hotwire. Unauthenticated humans and crawlers hit it. After viewing the safe invitation, a guest must log in or sign up and land back on the same Secret Link. Today web `SessionsController` only `create`/`destroy` with no HTML forms and always redirects to health `root`. API signup exists; web signup does not.
@@ -73,7 +92,7 @@
 
 **Option C — Defer return_to / treat as risk:** Ship OG + page without round-trip restore. Cost: lowest now. Leaves REQ-WISH-005 incomplete and a broken guest funnel.
 
-**Recommendation:** **A**. Reply `O1A` / `O1B` / `O1C` (or free-form).
+**LOCKED → O1A** (owner 2026-11-26).
 
 ### O2 — Default `privacy_mode` on create
 **Context:** Owner creates a wishlist before choosing audience.
@@ -82,7 +101,7 @@
 
 **Option B — Default `shared`:** Generate `share_token` immediately; easier "copy link" UX but wider accidental exposure if owner forgets.
 
-**Recommendation:** **A**. Reply `O2A` / `O2B`.
+**LOCKED → O2A** (owner 2026-11-26).
 
 ### O3 — Friend discovery of accessible wishlists
 **Context:** Accepted friends must be able to open `friends`-mode lists (and lists they are explicitly shared into). Profile search today never embeds wishlists (anti-stalking for strangers). Friends need a discovery path in Flutter.
@@ -93,7 +112,7 @@
 
 **Option C — No friend index in S3; only "mine" + "Shared with me":** Friends cannot browse a friend's `friends`-mode lists until a later sprint — **violates** SPEC matrix row 2 for Sprint 3 privacy goals.
 
-**Recommendation:** **A**. Reply `O3A` / `O3B` / `O3C`.
+**LOCKED → O3A** (owner 2026-11-26).
 
 ### O4 — Rotate Secret Link while staying in `shared`
 **Context:** SPEC mandates wipe on `shared`→`friends`. WhatsApp leak / accidental forward may need a new token without flipping mode.
@@ -102,7 +121,7 @@
 
 **Option B — Mode flip only:** Must switch to `friends` then back to `shared` to mint a new token. Cost: simpler API; worse UX; easy to forget re-adding selected friends.
 
-**Recommendation:** **A**. Reply `O4A` / `O4B`.
+**LOCKED → O4A** (owner 2026-11-26).
 
 ## Deferred (parked — out of Sprint 3 product scope)
 
@@ -159,24 +178,48 @@
 ### Out of S3 domain creation
 - `Item`, `ItemLink`, `Reservation`, `GiftRecord` — Sprint 4+.
 
-## Proposed S3 API surface (draft — refine after O1–O4)
-- `GET/POST /api/v1/wishlists` — mine (index/create)
-- `GET/PATCH/DELETE /api/v1/wishlists/:id` — show/update/soft-delete (restore endpoint TBD if needed in S3)
-- `POST /api/v1/wishlists/:id/shares` / `DELETE ...` — manage explicit friend shares when `shared`
-- `POST /api/v1/wishlists/:id/share_token/rotate` — if O4A
-- `GET /api/v1/shared_wishlists` — "Shared with me"
-- `GET /api/v1/users/:username/wishlists` — if O3A
-- Web: `GET /s/:share_token` (Hotwire + OG); web auth with `return_to` per O1
+## Proposed S3 API surface (locked)
+- `GET/POST /api/v1/wishlists` — mine (index/create; default `friends`)
+- `GET/PATCH/DELETE /api/v1/wishlists/:id` — show/update/soft-delete
+- `POST /api/v1/wishlists/:id/restore` — owner restore within SoftDeletable grace
+- `POST /api/v1/wishlists/:id/shares` / `DELETE /api/v1/wishlists/:id/shares/:user_id` — explicit friend shares when `shared`
+- `POST /api/v1/wishlists/:id/share_token/rotate` — O4A
+- `GET /api/v1/shared_wishlists` — Shared with me
+- `GET /api/v1/users/:username/wishlists` — O3A policy-scoped
+- Web: `GET /s/:share_token` (Hotwire + OG); `GET/POST` web session + web signup with `return_to` (O1A)
 
-## Proposed Flutter surfaces (draft)
-- My wishlists list + create/edit privacy/event_date + copy Secret Link when shared
-- Shared with me tab/list
-- Friend wishlists list (from O3) + wishlist detail empty shell
+## Proposed Flutter surfaces (locked)
+- My wishlists list + create/edit privacy/event_date + copy/rotate Secret Link when shared
+- Shared with me list
+- Friend wishlists list (O3A) + wishlist detail empty shell
 - DesignTokens defaults (D2b); bilingual AppStrings
+
+## Dark corners & pitfalls (Final check 2026-11-26)
+1. **Open redirect via `return_to`:** allowlist same-origin paths matching `\A/s/[A-Za-z0-9\-_]+\z` only; reject `//`, absolute URLs, other paths.
+2. **Invalid / blocked / soft-deleted Secret Link:** respond **404** (no existence leak); OG must not render private titles for discarded lists.
+3. **Owner opens own Secret Link:** idempotent — do not create a self `WishlistShare`; show owner shell.
+4. **Unauthenticated human vs crawler:** both get invitation-level data only; after auth, empty wishlist shell (no items in S3).
+5. **Unfriend vs Block:** Block already destroys shares; also destroy shares on friendship remove (**L-unfriend-shares**) so explicit shares cannot outlive friendship.
+6. **Rotate vs mode flip:** rotate revokes only `secret_link` shares; explicit remain; mode→`friends` wipes token + secret_link shares.
+7. **`activity_id` without FK:** nullable bigint, no FK until Activities exist — document in migration.
+8. **Title limits:** implement as 1..100 grapheme-safe string (impl detail); no owner fork.
+9. **Empty Flutter UX:** expected; copy "Sin ítems aún" — not a defect in S3 QA.
+10. **Docs drift:** API_CONTRACT must gain wishlist section in-plan step 17; sync-docs pause remains a finish-branch concern later.
+
+No remaining Open owner forks. Pitfalls recorded as risks / Locked mitigations above.
+
+## Lock checklist (step 1.4)
+- [x] Opening triad recorded
+- [x] Classification: Feature
+- [x] Domain Model populated (Wishlist, WishlistShare)
+- [x] Final check / dark corners recorded
+- [x] Every open question answered (O1A–O4A), deferred, or risk
+- [x] `<implementation_plan>` written (TDD; ends at local green tests)
+- [ ] Behaviour matrix offer (project has no `docs/core/BEHAVIOUR_MATRIX.md`) — awaiting owner Yes/No once
 
 ## Repo facts (main @ 8dd403c)
 - No wishlist files under `backend/` or `mobile/`.
-- `API_CONTRACT.md` has zero wishlist endpoints yet (docs update belongs in start-task / sync-docs).
-- `BEHAVIOUR_MATRIX.md` missing — offer at lock-checklist (step 1.4), not now.
+- `API_CONTRACT.md` has zero wishlist endpoints yet (plan step 17).
+- `BEHAVIOUR_MATRIX.md` missing — offered at plan confirmation.
   </working_notes>
 </task_session>
