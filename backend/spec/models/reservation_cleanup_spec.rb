@@ -34,4 +34,10 @@ RSpec.describe "Reservation cleanup hooks [REQ-LIFE-001] [REQ-BLOCK-002]" do
     friendship.remove!(actor: owner)
     expect(reservation.reload.status).to eq("canceled")
   end
+
+  it "cancels the user's own holds on account soft-delete [REQ-LIFE-002]" do
+    reservation = Reservation.create!(item: item, user: friend, status: "active", estimated_date: Date.current + 3)
+    friend.soft_delete!(actor: friend)
+    expect(reservation.reload.status).to eq("canceled")
+  end
 end

@@ -398,3 +398,13 @@ Owner direction: leave findings unfixed; continue finish-branch to Draft PR.
 | 2 | item.rb availability_for raw String | accepted unfixed |
 | 3 | WishlistItem.availability raw String? | accepted unfixed |
 | 4 | ReservationModel.status raw String | accepted unfixed |
+
+## Review disposition — correction 2026-11-26
+
+Owner correction: previous ACCEPT all was a mistake. Treat as **FIX all (A)** for code-review pass1 findings 1–11.
+
+| # | Finding | Decision |
+| :--- | :--- | :--- |
+| 1–11 | See code-review pass1 | **fixed** (implementing on branch) |
+
+Compliance audit findings 1–4 remain deferred unless owner says otherwise.

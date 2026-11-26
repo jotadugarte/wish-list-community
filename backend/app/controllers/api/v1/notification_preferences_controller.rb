@@ -18,7 +18,6 @@ module Api
         pref = NotificationPreference.find_or_initialize_by(user_id: current_user.id)
         incoming = params.require(:notification_preference).permit(channels: {}).to_h
         channels = pref.channels.is_a?(Hash) ? pref.channels.deep_dup : {}
-        Array(incoming["channels"] || incoming[:channels]).each { |_| } # no-op keep structure
         if incoming["channels"].is_a?(Hash) || incoming[:channels].is_a?(Hash)
           raw = (incoming["channels"] || incoming[:channels])
           raw.each do |event_key, channel_hash|

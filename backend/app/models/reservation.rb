@@ -50,29 +50,41 @@ class Reservation < ApplicationRecord
   def self.notify_critical_edit!(item:)
     hold = find_by(item_id: item.id, status: ReservationStatus::ACTIVE_HOLD)
     return if hold.nil?
+    return if hold.user.nil? || hold.user.discarded?
 
-    NotificationDispatcher.dispatch!(
-      user: hold.user,
-      event_key: "reservation.item_critical_edit",
-      title: "Reserved item updated",
-      body: "An item you reserved was edited by the owner.",
-      payload: { reservation_id: hold.id, item_id: item.id }
-    )
+    I18n.with_locale(hold.user.locale.presence || I18n.default_locale) do
+      NotificationDispatcher.dispatch!(
+        user: hold.user,
+        event_key: "reservation.item_critical_edit",
+        title: I18n.t("notifications.reservation.item_critical_edit.title"),
+        body: I18n.t("notifications.reservation.item_critical_edit.body"),
+        payload: { reservation_id: hold.id, item_id: item.id }
+      )
+    end
   end
 
   # [REQ-RES-003] Notify the reserver when a reserved item is soft-deleted.
-  def self.notify_item_deleted!(item:)
-    # Holds already canceled by soft-delete hook; find recently canceled for this item by this cascade.
-    recent = where(item_id: item.id, status: "canceled").order(updated_at: :desc).limit(1).first
-    return if recent.nil?
+  # Prefer the pre-cancel hold captured by the soft-delete hook (avoids wrong canceled row).
+  def self.notify_item_deleted!(reservation:)
+    return if reservation.nil?
+    return if reservation.user.nil? || reservation.user.discarded?
 
-    NotificationDispatcher.dispatch!(
-      user: recent.user,
-      event_key: "reservation.item_deleted",
-      title: "Reserved item deleted",
-      body: "An item you reserved was deleted by the owner.",
-      payload: { reservation_id: recent.id, item_id: item.id }
-    )
+    I18n.with_locale(reservation.user.locale.presence || I18n.default_locale) do
+      NotificationDispatcher.dispatch!(
+        user: reservation.user,
+        event_key: "reservation.item_deleted",
+        title: I18n.t("notifications.reservation.item_deleted.title"),
+        body: I18n.t("notifications.reservation.item_deleted.body"),
+        payload: { reservation_id: reservation.id, item_id: reservation.item_id }
+      )
+    end
+  end
+
+  # [REQ-LIFE-002] Cancel active/grace holds owned by a soft-deleting account (reserver side).
+  def self.cancel_for_reserver!(user_id)
+    where(user_id: user_id, status: ReservationStatus::ACTIVE_HOLD).limit(500).find_each do |reservation|
+      reservation.update!(status: "canceled", grace_expires_at: nil)
+    end
   end
 
   # [REQ-RES-001] [REQ-RES-004] JSON payload for the reserver (never for owner spoilers).

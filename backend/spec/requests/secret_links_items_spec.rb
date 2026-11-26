@@ -37,8 +37,9 @@ RSpec.describe "Secret Links item list (O1A)", type: :request do
       expect(response.body).to include("Secret Gadget XYZ")
       expect(response.body).to include("Talla M")
       expect(response.body).to include("https://shop.example/g")
-      expect(response.body).to include("available")
-      expect(response.body).to include("Reserve")
+      expect(response.body).to include('data-availability="available"')
+      expect(response.body).to include("Reservar").or include("Reserve")
+      expect(response.body).to include("Disponible").or include("Available")
     end
   end
 end

@@ -14,8 +14,11 @@ module Api
       def index
         wishlist = find_wishlist_for_read!
         authorize wishlist, :index?, policy_class: ItemPolicy
-        items = wishlist.items.kept.order(:position, :id).limit(MAX_INDEX)
-        render json: { items: items.map { |i| i.as_api_json(viewer: current_user) } }, status: :ok
+        items = wishlist.items.kept.order(:position, :id).limit(MAX_INDEX).to_a
+        holds = Item.active_holds_by_item_id(items.map(&:id))
+        render json: {
+          items: items.map { |i| i.as_api_json(viewer: current_user, holds_by_item_id: holds) }
+        }, status: :ok
       end
 
       # [REQ-ITEM-001] Creates an item for the wishlist owner (O3A/O4A/O5A).

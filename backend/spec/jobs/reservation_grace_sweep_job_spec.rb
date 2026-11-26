@@ -35,4 +35,22 @@ RSpec.describe ReservationGraceSweepJob do
     expect(reservation.reload.status).to eq("auto_released")
     expect(friend.notifications.where(event_key: "reservation.auto_released")).to exist
   end
+
+  it "cancels holds for discarded reservers without aborting the batch [REQ-RES-006]" do
+    discarded = create(:user, time_zone: "UTC")
+    Friendship.request!(requester: owner, addressee: discarded).accept!(actor: discarded)
+    other_item = create(:item, wishlist: wishlist, title: "Otro")
+    dead_hold = Reservation.create!(
+      item: item, user: discarded, status: "active", estimated_date: Date.yesterday
+    )
+    live_hold = Reservation.create!(
+      item: other_item, user: friend, status: "active", estimated_date: Date.yesterday
+    )
+    discarded.update_columns(discarded_at: Time.current)
+
+    described_class.perform_now
+
+    expect(dead_hold.reload.status).to eq("canceled")
+    expect(live_hold.reload.status).to eq("expired_grace")
+  end
 end

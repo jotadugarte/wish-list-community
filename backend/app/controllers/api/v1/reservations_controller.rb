@@ -19,7 +19,7 @@ module Api
           private_note: reservation_params[:private_note]
         )
         render json: { reservation: created.as_api_json }, status: :created
-      rescue ReservationService::Error, ArgumentError, ActiveRecord::RecordInvalid => e
+      rescue ReservationService::Error, ArgumentError, ActiveRecord::RecordInvalid, ActionController::ParameterMissing => e
         skip_authorization unless @_pundit_policy_authorized
         render json: { errors: [ e.message ] }, status: :unprocessable_content
       end

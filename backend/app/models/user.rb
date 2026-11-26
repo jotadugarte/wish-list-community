@@ -31,6 +31,12 @@ class User < ApplicationRecord
     user_record.sessions.delete_all
   end
 
+  # [REQ-LIFE-002] Cancel the user's own active/grace reservations so sweeps never notify discarded reservers.
+  register_soft_delete_hook(:cancel_reserver_holds) do |user_record|
+    ::Reservation
+    Reservation.cancel_for_reserver!(user_record.id)
+  end
+
   # [REQ-LIFE-002] Cascade soft-delete owned wishlists so Secret Links die with the account.
   register_soft_delete_hook(:cascade_soft_delete_wishlists) do |user_record|
     ::Wishlist

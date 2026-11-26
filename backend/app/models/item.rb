@@ -18,7 +18,7 @@ class Item < ApplicationRecord
     Reservation
     hold = Reservation.find_by(item_id: item_record.id, status: ReservationStatus::ACTIVE_HOLD)
     Reservation.cancel_active_holds_for_item!(item_record.id)
-    Reservation.notify_item_deleted!(item: item_record) if hold
+    Reservation.notify_item_deleted!(reservation: hold) if hold
   end
 
   before_validation :apply_default_priority, on: :create
@@ -39,7 +39,8 @@ class Item < ApplicationRecord
 
   # [REQ-ITEM-001] [REQ-RES-002] JSON payload for API clients.
   # Viewer-relative `availability` is included for non-owners only (O3A).
-  def as_api_json(viewer: nil)
+  # Optional `holds_by_item_id` avoids N+1 on bounded list serialization.
+  def as_api_json(viewer: nil, holds_by_item_id: nil)
     payload = {
       id: id,
       wishlist_id: wishlist_id,
@@ -57,17 +58,31 @@ class Item < ApplicationRecord
     }
     return payload if viewer.nil? || viewer.id == wishlist.owner_id
 
-    payload[:availability] = availability_for(viewer)
+    payload[:availability] = availability_for(viewer, holds_by_item_id: holds_by_item_id)
     payload
   end
 
   # [REQ-RES-002] O3A: available | reserved_by_me | unavailable (never exposes reserver identity).
-  def availability_for(viewer)
-    hold = Reservation.find_by(item_id: id, status: ReservationStatus::ACTIVE_HOLD)
+  def availability_for(viewer, holds_by_item_id: nil)
+    hold = if holds_by_item_id
+      holds_by_item_id[id]
+    else
+      Reservation.find_by(item_id: id, status: ReservationStatus::ACTIVE_HOLD)
+    end
     return "available" if hold.nil?
     return "reserved_by_me" if hold.user_id == viewer.id
 
     "unavailable"
+  end
+
+  # [REQ-RES-002] Batch-load active/grace holds for a page of items (bounded lists).
+  def self.active_holds_by_item_id(item_ids)
+    ids = Array(item_ids).first(200)
+    return {} if ids.empty?
+
+    Reservation.where(item_id: ids, status: ReservationStatus::ACTIVE_HOLD)
+               .limit(200)
+               .index_by(&:item_id)
   end
 
   private

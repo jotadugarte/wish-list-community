@@ -26,24 +26,25 @@
           <% end %>
 
           <% if availability.present? %>
-            <p class="text-xs mt-2" data-testid="availability-<%= item.id %>"><%= availability %></p>
+            <% min_date = Time.use_zone(current_user.time_zone.presence || "UTC") { Date.current } %>
+            <p class="text-xs mt-2" data-testid="availability-<%= item.id %>"><%= t("secret_links.availability.#{availability}") %></p>
             <% if availability == "available" %>
               <%= form_with url: secret_link_item_reservations_path(share_token: @wishlist.share_token, item_id: item.id), method: :post, class: "mt-2 space-y-2" do %>
                 <label class="block text-xs">
-                  <%= t("secret_links.estimated_date", default: "Estimated date") %>
-                  <input type="date" name="estimated_date" required min="<%= Date.current %>" class="border px-2 py-1 text-sm" />
+                  <%= t("secret_links.estimated_date") %>
+                  <input type="date" name="estimated_date" required min="<%= min_date %>" class="border px-2 py-1 text-sm" />
                 </label>
-                <button type="submit" class="text-sm underline" data-testid="reserve-<%= item.id %>"><%= t("secret_links.reserve", default: "Reserve") %></button>
+                <button type="submit" class="text-sm underline" data-testid="reserve-<%= item.id %>"><%= t("secret_links.reserve") %></button>
               <% end %>
             <% elsif my_hold %>
               <%= form_with url: secret_link_reservation_path(share_token: @wishlist.share_token, id: my_hold.id), method: :patch, class: "mt-2 space-y-2" do %>
                 <label class="block text-xs">
-                  <%= t("secret_links.estimated_date", default: "Estimated date") %>
-                  <input type="date" name="estimated_date" required min="<%= Date.current %>" value="<%= my_hold.estimated_date %>" class="border px-2 py-1 text-sm" />
+                  <%= t("secret_links.estimated_date") %>
+                  <input type="date" name="estimated_date" required min="<%= min_date %>" value="<%= my_hold.estimated_date %>" class="border px-2 py-1 text-sm" />
                 </label>
-                <button type="submit" class="text-sm underline" data-testid="extend-<%= item.id %>"><%= t("secret_links.extend", default: "Extend") %></button>
+                <button type="submit" class="text-sm underline" data-testid="extend-<%= item.id %>"><%= t("secret_links.extend") %></button>
               <% end %>
-              <%= button_to t("secret_links.cancel", default: "Cancel reservation"),
+              <%= button_to t("secret_links.cancel"),
                     secret_link_reservation_path(share_token: @wishlist.share_token, id: my_hold.id),
                     method: :delete,
                     class: "text-sm underline mt-1",

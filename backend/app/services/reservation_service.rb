@@ -8,14 +8,15 @@ class ReservationService
   # [REQ-RES-001] [REQ-RES-005] Pre-condition: item kept, estimated_date present.
   # Post-condition: returns persisted active Reservation.
   def self.create!(item:, user:, estimated_date:, private_note: nil)
-    raise Error, "item required" if item.nil? || item.discarded?
-    raise Error, "user required" if user.nil? || user.discarded?
+    raise Error, I18n.t("reservations.errors.item_required") if item.nil? || item.discarded?
+    raise Error, I18n.t("reservations.errors.user_required") if user.nil? || user.discarded?
 
     date_vo = EstimatedDate.new(estimated_date, time_zone: user.time_zone.presence || "UTC")
     date_vo.assert_not_past!
 
     Reservation.transaction do
-      enforce_per_wishlist_limit!(wishlist: item.wishlist, user: user)
+      wishlist = item.wishlist.lock!
+      enforce_per_wishlist_limit!(wishlist: wishlist, user: user)
       reservation = Reservation.create!(
         item: item,
         user: user,
@@ -38,8 +39,8 @@ class ReservationService
 
   # [REQ-RES-001] [REQ-RES-006] O5A extend: set new date; grace → active.
   def self.extend!(reservation:, estimated_date:, private_note: :unchanged)
-    raise Error, "reservation required" if reservation.nil?
-    raise Error, "not extendable" unless ReservationStatus::ACTIVE_HOLD.include?(reservation.status)
+    raise Error, I18n.t("reservations.errors.reservation_required") if reservation.nil?
+    raise Error, I18n.t("reservations.errors.not_extendable") unless ReservationStatus::ACTIVE_HOLD.include?(reservation.status)
 
     date_vo = EstimatedDate.new(estimated_date, time_zone: reservation.user.time_zone.presence || "UTC")
     date_vo.assert_not_past!
@@ -58,14 +59,18 @@ class ReservationService
         auditable: reservation,
         metadata: { estimated_date: date_vo.value.iso8601 }
       )
+      unless reservation.status == "active" && reservation.grace_expires_at.nil?
+        raise "Post-condition failed: extend must leave reservation active with nil grace"
+      end
+
       reservation
     end
   end
 
   # [REQ-RES-001] O6A voluntary cancel.
   def self.cancel!(reservation:, actor:)
-    raise Error, "reservation required" if reservation.nil?
-    raise Error, "not cancelable" unless ReservationStatus::ACTIVE_HOLD.include?(reservation.status)
+    raise Error, I18n.t("reservations.errors.reservation_required") if reservation.nil?
+    raise Error, I18n.t("reservations.errors.not_cancelable") unless ReservationStatus::ACTIVE_HOLD.include?(reservation.status)
 
     Reservation.transaction do
       reservation.update!(status: "canceled", grace_expires_at: nil)
@@ -75,6 +80,8 @@ class ReservationService
         auditable: reservation,
         metadata: { item_id: reservation.item_id }
       )
+      raise "Post-condition failed: cancel must leave status canceled" unless reservation.status == "canceled"
+
       reservation
     end
   end
@@ -83,11 +90,17 @@ class ReservationService
     limit = wishlist.max_reservations_per_user
     return if limit.nil?
 
-    raise Error, "limit must be positive" if limit < 1
+    raise Error, I18n.t("reservations.errors.limit_must_be_positive") if limit < 1
 
-    item_ids = wishlist.items.kept.limit(500).pluck(:id)
-    count = Reservation.where(user_id: user.id, item_id: item_ids, status: ReservationStatus::ACTIVE_HOLD).limit(500).count
-    raise Error, "reservation limit reached for this wishlist" if count >= limit
+    count = Reservation.joins(:item)
+                       .where(
+                         user_id: user.id,
+                         status: ReservationStatus::ACTIVE_HOLD,
+                         items: { wishlist_id: wishlist.id, discarded_at: nil }
+                       )
+                       .limit(limit + 1)
+                       .count
+    raise Error, I18n.t("reservations.errors.limit_reached") if count >= limit
   end
   private_class_method :enforce_per_wishlist_limit!
 end
