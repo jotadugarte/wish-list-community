@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
-# Value Object for secret reservation lifecycle statuses (Sprint 5 subset).
-# Traceability: [REQ-RES-001], [REQ-RES-006]
+# Value Object for secret reservation lifecycle statuses (S5 + completed_by_gift in S6).
+# Traceability: [REQ-RES-001], [REQ-RES-006], [REQ-GIFT-001]
 class ReservationStatus
-  ALLOWED = %w[active expired_grace auto_released canceled].freeze
+  ALLOWED = %w[active expired_grace auto_released canceled completed_by_gift].freeze
   ACTIVE_HOLD = %w[active expired_grace].freeze
+
 
   attr_reader :value
 

@@ -3,14 +3,14 @@
 require "rails_helper"
 
 RSpec.describe ReservationStatus do
-  describe "allowed S5 statuses [REQ-RES-001] [REQ-RES-006]" do
-    %w[active expired_grace auto_released canceled].each do |status|
+  describe "allowed reservation statuses [REQ-RES-001] [REQ-RES-006] [REQ-GIFT-001]" do
+    %w[active expired_grace auto_released canceled completed_by_gift].each do |status|
       it "accepts #{status}" do
         expect(described_class.new(status).value).to eq(status)
       end
     end
 
-    it "rejects gift/unknown statuses in S5 constructor [REQ-RES-001]" do
+    it "rejects gift/unknown statuses in constructor [REQ-RES-001]" do
       expect { described_class.new("purchased_secret") }.to raise_error(ArgumentError)
       expect { described_class.new("nope") }.to raise_error(ArgumentError)
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_211000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -90,6 +90,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_211000) do
     t.index ["addressee_id"], name: "index_friendships_on_addressee_id"
     t.index ["requester_id"], name: "index_friendships_on_requester_id"
     t.index ["status"], name: "index_friendships_on_status"
+  end
+
+  create_table "gift_records", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.bigint "gifter_id"
+    t.string "status", default: "purchased_secret", null: false
+    t.string "thank_you_note"
+    t.string "purchase_link_ref"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["gifter_id", "status"], name: "index_gift_records_on_gifter_id_and_status"
+    t.index ["gifter_id"], name: "index_gift_records_on_gifter_id"
+    t.index ["item_id"], name: "index_gift_records_on_item_id"
+    t.index ["item_id"], name: "index_gift_records_one_open_gift_per_item", unique: true, where: "((status)::text = ANY ((ARRAY['purchased_secret'::character varying, 'delivered_pending_confirmation'::character varying])::text[]))"
   end
 
   create_table "item_links", force: :cascade do |t|
@@ -256,6 +270,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_211000) do
   add_foreign_key "device_tokens", "users", on_delete: :cascade
   add_foreign_key "friendships", "users", column: "addressee_id", on_delete: :cascade
   add_foreign_key "friendships", "users", column: "requester_id", on_delete: :cascade
+  add_foreign_key "gift_records", "items"
+  add_foreign_key "gift_records", "users", column: "gifter_id"
   add_foreign_key "item_links", "items"
   add_foreign_key "items", "wishlists"
   add_foreign_key "notification_preferences", "users"
