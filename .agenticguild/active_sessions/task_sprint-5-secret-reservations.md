@@ -272,10 +272,10 @@
     <step id="4" status="complete">Implement `ReservationPolicy` (+ Scope for my_reservations) until step 3 green.</step>
     <step id="5" status="complete">Write failing request specs for create/extend/cancel: `POST /api/v1/items/:item_id/reservations`, `PATCH /api/v1/reservations/:id`, `DELETE /api/v1/reservations/:id`; `max_reservations_per_user`; concurrent second reserve → 409; O5A extend grace→active; O6A cancel. Trace `[REQ-RES-001]`, `[REQ-RES-005]`, `[REQ-ARCH-003]`.</step>
     <step id="6" status="complete">Implement reservation create/extend/cancel services + API controllers/routes/serializers until step 5 green.</step>
-    <step id="7" status="pending">Write failing request specs for `GET /api/v1/my_reservations` (`active` + `expired_grace`). Trace `[REQ-RES-004]`.</step>
-    <step id="8" status="pending">Implement My Reservations endpoint until step 7 green.</step>
-    <step id="9" status="pending">Write failing specs for item `availability` (`available`|`reserved_by_me`|`unavailable`) for non-owners; omitted for owner; reservation paths do not change `items.updated_at`. Trace `[REQ-RES-002]`, O3A.</step>
-    <step id="10" status="pending">Implement item serialization branching for `availability` until step 9 green.</step>
+    <step id="7" status="complete">Write failing request specs for `GET /api/v1/my_reservations` (`active` + `expired_grace`). Trace `[REQ-RES-004]`.</step>
+    <step id="8" status="complete">Implement My Reservations endpoint until step 7 green.</step>
+    <step id="9" status="complete">Write failing specs for item `availability` (`available`|`reserved_by_me`|`unavailable`) for non-owners; omitted for owner; reservation paths do not change `items.updated_at`. Trace `[REQ-RES-002]`, O3A.</step>
+    <step id="10" status="complete">Implement item serialization branching for `availability` until step 9 green.</step>
     <step id="11" status="pending">Write failing specs: soft-delete cancels active/grace; block cancels between pair; friendship remove cancels between pair. Trace `[REQ-LIFE-001]`, `[REQ-BLOCK-002]`.</step>
     <step id="12" status="pending">Implement SoftDeletable / UserBlock / Friendship cleanup hooks until step 11 green.</step>
     <step id="13" status="pending">Write failing specs for notification foundation: `Notification`, `NotificationPreference` (defaults all-on), `NotificationDispatcher` (in-app + email enqueue + push no-op); `GET/PATCH /notification_preferences`; `GET /notifications` (+ mark read). Trace `[REQ-NOTIF-001]`, O1A, O8A.</step>

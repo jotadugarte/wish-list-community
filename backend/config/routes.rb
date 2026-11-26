@@ -41,6 +41,7 @@ Rails.application.routes.draw do
         resources :reservations, only: %i[create], controller: "reservations"
       end
       resources :reservations, only: %i[update destroy]
+      get "my_reservations" => "my_reservations#index"
       resources :link_previews, only: %i[create]
       get "shared_wishlists" => "shared_wishlists#index"
     end

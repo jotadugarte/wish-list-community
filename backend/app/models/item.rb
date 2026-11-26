@@ -34,9 +34,10 @@ class Item < ApplicationRecord
     ItemPriority.new(priority)
   end
 
-  # [REQ-ITEM-001] JSON payload for API clients (no reservation fields).
-  def as_api_json
-    {
+  # [REQ-ITEM-001] [REQ-RES-002] JSON payload for API clients.
+  # Viewer-relative `availability` is included for non-owners only (O3A).
+  def as_api_json(viewer: nil)
+    payload = {
       id: id,
       wishlist_id: wishlist_id,
       title: title,
@@ -51,6 +52,19 @@ class Item < ApplicationRecord
       created_at: created_at,
       updated_at: updated_at
     }
+    return payload if viewer.nil? || viewer.id == wishlist.owner_id
+
+    payload[:availability] = availability_for(viewer)
+    payload
+  end
+
+  # [REQ-RES-002] O3A: available | reserved_by_me | unavailable (never exposes reserver identity).
+  def availability_for(viewer)
+    hold = Reservation.find_by(item_id: id, status: ReservationStatus::ACTIVE_HOLD)
+    return "available" if hold.nil?
+    return "reserved_by_me" if hold.user_id == viewer.id
+
+    "unavailable"
   end
 
   private

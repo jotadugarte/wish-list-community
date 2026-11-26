@@ -15,7 +15,7 @@ module Api
         wishlist = find_wishlist_for_read!
         authorize wishlist, :index?, policy_class: ItemPolicy
         items = wishlist.items.kept.order(:position, :id).limit(MAX_INDEX)
-        render json: { items: items.map(&:as_api_json) }, status: :ok
+        render json: { items: items.map { |i| i.as_api_json(viewer: current_user) } }, status: :ok
       end
 
       # [REQ-ITEM-001] Creates an item for the wishlist owner (O3A/O4A/O5A).
@@ -28,7 +28,7 @@ module Api
           apply_confirmed_preview!(item)
           attach_uploaded_images!(item)
         end
-        render json: { item: item.reload.as_api_json }, status: :created
+        render json: { item: item.reload.as_api_json(viewer: current_user) }, status: :created
       rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error => e
         skip_authorization unless @_pundit_policy_authorized
         render json: { errors: [ e.message.presence || "Invalid item" ] }, status: :unprocessable_content
@@ -38,7 +38,7 @@ module Api
       def show
         item = Item.kept.find(params[:id])
         authorize item, :show?
-        render json: { item: item.as_api_json }, status: :ok
+        render json: { item: item.as_api_json(viewer: current_user) }, status: :ok
       end
 
       # [REQ-ITEM-001] Owner updates fields, links, and optional images.
@@ -50,7 +50,7 @@ module Api
           apply_confirmed_preview!(item)
           attach_uploaded_images!(item)
         end
-        render json: { item: item.reload.as_api_json }, status: :ok
+        render json: { item: item.reload.as_api_json(viewer: current_user) }, status: :ok
       rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error => e
         render json: { errors: [ e.message ] }, status: :unprocessable_content
       end
@@ -71,7 +71,7 @@ module Api
           return render json: { errors: [ "not restorable" ] }, status: :unprocessable_content
         end
 
-        render json: { item: item.as_api_json }, status: :ok
+        render json: { item: item.as_api_json(viewer: current_user) }, status: :ok
       end
 
       # [REQ-ITEM-002] Detaches one image attachment.
@@ -80,7 +80,7 @@ module Api
         authorize item, :manage_images?
         attachment = item.images.attachments.find(params[:image_id])
         attachment.purge
-        render json: { item: item.reload.as_api_json }, status: :ok
+        render json: { item: item.reload.as_api_json(viewer: current_user) }, status: :ok
       end
 
       # [REQ-ITEM-001] Reorders items for a wishlist (O8A).
@@ -90,7 +90,7 @@ module Api
         ids = Array(params.require(:item_ids)).map(&:to_i).first(MAX_INDEX)
         reorder_items!(wishlist, ids)
         items = wishlist.items.kept.order(:position, :id).limit(MAX_INDEX)
-        render json: { items: items.map(&:as_api_json) }, status: :ok
+        render json: { items: items.map { |i| i.as_api_json(viewer: current_user) } }, status: :ok
       rescue ArgumentError, ActiveRecord::RecordInvalid => e
         render json: { errors: [ e.message ] }, status: :unprocessable_content
       end

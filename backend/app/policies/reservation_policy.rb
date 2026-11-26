@@ -3,6 +3,11 @@
 # Pundit policy for secret reservations — create requires wishlist access; mutations reserver-only.
 # Traceability: [REQ-RES-001], [REQ-RES-004], [REQ-WISH-002], [REQ-BLOCK-001]
 class ReservationPolicy < ApplicationPolicy
+  # [REQ-RES-004] Authenticated users may list their own reservations via Scope.
+  def index?
+    user.present? && !user.discarded?
+  end
+
   # [REQ-RES-001] [REQ-WISH-002] [REQ-BLOCK-001] Create when viewer may see the item wishlist and is not the owner.
   def create?
     return false if user.nil? || user.discarded?
