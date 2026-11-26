@@ -1,1 +1,7 @@
-{"stealth_mode": false}
+{
+  "stealth_mode": false,
+  "start_task_mode": "hands-off",
+  "finish_branch_mode": "stepped",
+  "agent_git": "commit",
+  "verification": "tdd"
+}

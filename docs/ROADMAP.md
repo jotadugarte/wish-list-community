@@ -25,15 +25,15 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Search users by `@username` via `SearchQuery` Value Object (`GET /api/v1/users/search` and `GET /api/v1/users/:username`, anti-stalking: non-friends only see `@username` and `friendship_status`, never personal wishlists or `email_address`, with batched zero-`N+1` status loading) (`REQ-SOC-001`, `REQ-WISH-001`, `REQ-BLOCK-001`) — 2026-11-25
   - [x] Friend requests + accept/decline/remove + friends list (`Friendship` & `FriendshipPolicy`, enforced by unordered unique pair index in PostgreSQL, 20-pending outgoing anti-spam cap, and automatic `UserBlock` cleanup hook) (`REQ-SOC-001`, `REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-25
   - [x] Report user (`Report` polymorphic model, `ReportReason` Value Object, `ReportPolicy`, `POST /api/v1/reports` queue, duplicate pending report prevention, and immutable `AuditEvent` logging) (`REQ-SOC-001`, `REQ-DISC-001`, `REQ-ADM-001`) — 2026-11-25
+- [x] **MVP Sprint 1 (Mobile Foundation) — Flutter Base + Design System** — 2026-11-26 — Branch: `feat/sprint-1-2-mobile-foundation`
+  - [x] Flutter project + parameterized `DesignTokens` / `AppTheme` / `AppIconBadge` / `AppNavigationShell` + Dart domain VOs + `ApiClient` / secure token storage + `AuthRepository` + auth UI (`LoginScreen`, `PasswordResetScreen`, `AccountRestoreScreen`, `ProfileSettingsScreen`) with bilingual `AppStrings` (`REQ-ARCH-001`, `REQ-AUTH-001`, `REQ-AUTH-003`, `REQ-LIFE-002`, `REQ-USER-001`, `REQ-USER-002`) — 2026-11-26
+- [x] **MVP Sprint 2 (Mobile) — Social & Anti-Stalking Profile Search (Flutter Screens)** — 2026-11-26 — Branch: `feat/sprint-1-2-mobile-foundation`
+  - [x] Flutter screens for `@username` search, friend requests/list, block/report consuming `/api/v1/users/search`, `/api/v1/friendships`, `/api/v1/user_blocks`, and `/api/v1/reports` (`REQ-SOC-001`, `REQ-WISH-001`, `REQ-BLOCK-001`, `REQ-DISC-001`) — 2026-11-26
 
 ## In Progress
 *(No items currently in progress)*
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 1 (Mobile Foundation) — Flutter Base + Design System**
-  - [ ] Initial Flutter project + shared design system (colors, typography, icons, spacing) + `/api/v1` auth integration (`REQ-ARCH-001`, `REQ-AUTH-001`)
-- [ ] **MVP Sprint 2 (Mobile) — Social & Anti-Stalking Profile Search (Flutter Screens)**
-  - [ ] Flutter screens for `@username` search, friend requests/list, and user reporting consuming `/api/v1/users/search`, `/api/v1/friendships`, and `/api/v1/reports` (`REQ-SOC-001`, `REQ-WISH-001`)
 - [ ] **MVP Sprint 3 — Wishlists (Anti-Stalking Privacy + Secret Links)**
   - [ ] Wishlist CRUD with optional `event_date`, immutable URLs (`/wishlists/:id` and `/s/:share_token` independent of `@username`), and v1-ready nullable `activity_id` (`REQ-WISH-004`, `REQ-WISH-006`, `REQ-ARCH-002`)
   - [ ] Anti-stalking privacy per personal wishlist (`REQ-WISH-001`, `REQ-WISH-002`, `REQ-WISH-003`):
