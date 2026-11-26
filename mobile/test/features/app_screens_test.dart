@@ -264,6 +264,63 @@ void main() {
     );
 
     testWidgets(
+      'LoginScreen navigates to SignUpScreen and registers via POST /api/v1/signup [REQ-AUTH-002] [REQ-USER-002]',
+      (tester) async {
+        await tester.pumpWidget(
+          buildApp((req) {
+            if (req.path == '/api/v1/signup' && req.method == 'POST') {
+              return const ApiResponse(
+                statusCode: 201,
+                body: {
+                  'token': 'signup_session_token',
+                  'user': {
+                    'id': 42,
+                    'username': 'new_member',
+                    'created_at': '2026-11-26T16:00:00Z',
+                  },
+                },
+              );
+            }
+            return _defaultResponder(req);
+          }),
+        );
+        await tester.pumpAndSettle();
+
+        final s = AppStrings.forLocale('es');
+        expect(find.text(s.signUpLink), findsOneWidget);
+        await tester.tap(find.byKey(const Key('signup_link')));
+        await tester.pumpAndSettle();
+
+        expect(find.text(s.signUpTitle), findsOneWidget);
+        await tester.enterText(
+          find.byKey(const Key('signup_email_field')),
+          'new@example.com',
+        );
+        await tester.enterText(
+          find.byKey(const Key('signup_username_field')),
+          'new_member',
+        );
+        await tester.enterText(
+          find.byKey(const Key('signup_password_field')),
+          'Password123!',
+        );
+        await tester.tap(find.byKey(const Key('signup_terms_checkbox')));
+        await tester.pump();
+        await tester.tap(find.byKey(const Key('signup_submit_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Amigos'), findsOneWidget);
+        expect(await tokenStorage.readToken(), equals('signup_session_token'));
+        final signup = log.lastWhere((r) => r.path == '/api/v1/signup');
+        expect(signup.method, equals('POST'));
+        expect(signup.body?['email_address'], equals('new@example.com'));
+        expect(signup.body?['username'], equals('new_member'));
+        expect(signup.body?['terms_accepted'], isTrue);
+        expect(signup.headers.containsKey('Authorization'), isFalse);
+      },
+    );
+
+    testWidgets(
       'LoginScreen navigates to PasswordResetScreen and submits POST /api/v1/passwords [REQ-AUTH-003] [REQ-USER-002]',
       (tester) async {
         const resetMessage = 'If the account exists, instructions were sent.';
