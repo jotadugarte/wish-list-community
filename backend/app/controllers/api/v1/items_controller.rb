@@ -22,11 +22,14 @@ module Api
       def create
         wishlist = current_user.wishlists.kept.find(params[:wishlist_id])
         authorize wishlist, :create?, policy_class: ItemPolicy
-        item = build_item!(wishlist)
-        apply_confirmed_preview!(item)
-        attach_uploaded_images!(item)
+        item = nil
+        Item.transaction do
+          item = build_item!(wishlist)
+          apply_confirmed_preview!(item)
+          attach_uploaded_images!(item)
+        end
         render json: { item: item.reload.as_api_json }, status: :created
-      rescue ArgumentError, ActiveRecord::RecordInvalid => e
+      rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error => e
         skip_authorization unless @_pundit_policy_authorized
         render json: { errors: [ e.message.presence || "Invalid item" ] }, status: :unprocessable_content
       end
@@ -42,11 +45,13 @@ module Api
       def update
         item = Item.kept.find(params[:id])
         authorize item, :update?
-        apply_item_updates!(item)
-        apply_confirmed_preview!(item)
-        attach_uploaded_images!(item)
+        Item.transaction do
+          apply_item_updates!(item)
+          apply_confirmed_preview!(item)
+          attach_uploaded_images!(item)
+        end
         render json: { item: item.reload.as_api_json }, status: :ok
-      rescue ArgumentError, ActiveRecord::RecordInvalid => e
+      rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error => e
         render json: { errors: [ e.message ] }, status: :unprocessable_content
       end
 
@@ -151,8 +156,8 @@ module Api
         return if bytes.blank?
 
         ItemImageProcessor.attach!(item: item, io: StringIO.new(bytes), filename: "preview.bin")
-      rescue ArgumentError
-        nil
+      rescue ArgumentError, ImageProcessing::Error, Vips::Error
+        raise ArgumentError, "preview image could not be processed"
       end
 
       def attach_uploaded_images!(item)

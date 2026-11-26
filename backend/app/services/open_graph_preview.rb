@@ -119,7 +119,12 @@ class OpenGraphPreview
   end
 
   def blocked_ip?(ip)
-    BLOCKED_NETWORKS.any? { |net| net.include?(ip) }
+    candidates = [ ip ]
+    # Normalize IPv4-mapped IPv6 (e.g. ::ffff:127.0.0.1) to the embedded IPv4.
+    if ip.ipv6? && ip.ipv4_mapped?
+      candidates << ip.native
+    end
+    candidates.any? { |addr| BLOCKED_NETWORKS.any? { |net| net.include?(addr) } }
   end
 
   def extract_meta(html, property)

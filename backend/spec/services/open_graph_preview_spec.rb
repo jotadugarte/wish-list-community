@@ -45,5 +45,14 @@ RSpec.describe OpenGraphPreview do
         expect(WebMock).not_to have_requested(:get, evil)
       end
     end
+
+    it "rejects IPv4-mapped IPv6 loopback as SSRF [REQ-ITEM-006]" do
+      allow(Addrinfo).to receive(:getaddrinfo).and_return(
+        [ Addrinfo.ip("::ffff:127.0.0.1") ]
+      )
+      result = described_class.fetch("http://example.test/secret")
+      expect(result[:title]).to eq("")
+      expect(result[:image_url]).to eq("")
+    end
   end
 end

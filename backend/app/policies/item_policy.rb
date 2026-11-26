@@ -30,9 +30,9 @@ class ItemPolicy < ApplicationPolicy
     owner_of_item_active?
   end
 
-  # [REQ-LIFE-001] Only the wishlist owner may restore within grace.
+  # [REQ-LIFE-001] Only the wishlist owner may restore within grace, and only when the parent wishlist is kept.
   def restore?
-    owner_of_item? && record.discarded?
+    owner_of_item? && record.discarded? && !record.wishlist.discarded?
   end
 
   # [REQ-ITEM-001] Reorder and image detach are owner mutations.

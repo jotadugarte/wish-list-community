@@ -45,5 +45,11 @@ RSpec.describe ItemPolicy do
       expect(policy_for(owner, item).restore?).to be(true)
       expect(policy_for(friend, item).restore?).to be(false)
     end
+
+    it "denies restore when the parent wishlist is discarded [REQ-LIFE-001]" do
+      item.soft_delete!(actor: owner)
+      wishlist.soft_delete!(actor: owner)
+      expect(policy_for(owner, item.reload).restore?).to be(false)
+    end
   end
 end
