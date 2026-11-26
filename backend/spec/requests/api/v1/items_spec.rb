@@ -85,5 +85,19 @@ RSpec.describe "Api::V1::Items", type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
     end
+
+    it "clears optional price fields on update [REQ-ARCH-002]" do
+      item = create(:item, wishlist: wishlist, title: "Priced", price_cents: 1200, currency: "USD")
+
+      patch "/api/v1/items/#{item.id}",
+            params: { item: { price_cents: nil, currency: nil, specifications: "" } },
+            headers: headers,
+            as: :json
+
+      expect(response).to have_http_status(:ok)
+      body = response.parsed_body["item"]
+      expect(body["price_cents"]).to be_nil
+      expect(body["currency"]).to be_nil
+    end
   end
 end

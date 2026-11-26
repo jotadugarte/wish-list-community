@@ -116,10 +116,26 @@ module Api
         permitted = params.fetch(:item, ActionController::Parameters.new).permit(
           :title, :specifications, :priority, :price_cents, :currency
         )
-        attrs = permitted.to_h
+        attrs = {}
+        permitted.each do |key, value|
+          name = key.to_s
+          if %w[specifications price_cents currency].include?(name)
+            attrs[name] = blank_to_nil_price_field(name, value)
+          elsif value.present?
+            attrs[name] = value
+          end
+        end
         preview_title = params.dig(:confirmed_preview, :title).presence || params.dig(:confirmed_preview, "title").presence
         attrs["title"] = preview_title if attrs["title"].blank? && preview_title.present?
-        attrs.compact_blank
+        attrs
+      end
+
+      # Nullable pair fields (REQ-ARCH-002): blank/nil clears; keep explicit keys so PATCH can unset.
+      def blank_to_nil_price_field(name, value)
+        return nil if value.nil? || value == ""
+        return Integer(value) if name == "price_cents"
+
+        value
       end
 
       def links_params
