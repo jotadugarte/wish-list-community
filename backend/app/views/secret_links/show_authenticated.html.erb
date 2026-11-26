@@ -2,5 +2,28 @@
 
 <section class="secret-link-shell w-full max-w-xl mx-auto space-y-4">
   <h1 class="text-2xl font-semibold"><%= @wishlist.title %></h1>
-  <p><%= t("secret_links.authenticated_empty_shell", username: @wishlist.owner.username) %></p>
+  <p class="text-sm text-gray-600"><%= t("secret_links.authenticated_empty_shell", username: @wishlist.owner.username) %></p>
+
+  <% if @items.blank? %>
+    <p class="text-sm"><%= t("secret_links.no_items_yet", default: "No items yet.") %></p>
+  <% else %>
+    <ul class="space-y-4" data-testid="secret-link-items">
+      <% @items.each do |item| %>
+        <li class="border-l-4 border-indigo-500 pl-3 py-2">
+          <h2 class="font-medium"><%= item.title %></h2>
+          <% if item.specifications.present? %>
+            <p class="text-sm bg-slate-50 p-2 mt-1"><%= item.specifications %></p>
+          <% end %>
+          <p class="text-xs uppercase tracking-wide mt-1"><%= item.priority %></p>
+          <% if item.item_links.any? %>
+            <ul class="mt-2 text-sm space-y-1">
+              <% item.item_links.limit(20).each do |link| %>
+                <li><a href="<%= link.url %>" rel="noopener noreferrer" target="_blank" class="underline"><%= link.url %></a></li>
+              <% end %>
+            </ul>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
 </section>

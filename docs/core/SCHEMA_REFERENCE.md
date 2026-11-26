@@ -1,6 +1,6 @@
 # Database Schema Reference (`SCHEMA_REFERENCE.md`)
 
-> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_26_140000`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
+> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_26_193834`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
 
 ---
 
@@ -152,7 +152,7 @@ Polymorphic abuse reporting queue supporting `User` reports (Sprint 2) and `Wish
 ---
 
 ## 10. `wishlists` (`[REQ-WISH-001]`, `[REQ-WISH-002]`, `[REQ-WISH-004]`, `[REQ-WISH-006]`, `[REQ-LIFE-001]`, `[REQ-ARCH-002]`)
-Empty personal wishlist shells (Sprint 3). Items arrive in a later sprint. Anti-stalking privacy modes gate discovery; Secret Link uses opaque `share_token`.
+Personal wishlist shells with anti-stalking privacy modes and opaque Secret Link `share_token`. Soft-delete cascades kept child `items` via SoftDeletable hooks (`REQ-LIFE-001`).
 
 | Column | Type | Null | Default | Business Semantics |
 | :--- | :--- | :--- | :--- | :--- |
@@ -188,3 +188,44 @@ Grants a user access to a `shared`-mode wishlist via explicit friend share or Se
   * `index_wishlist_shares_on_wishlist_id_and_user_id`: Unique composite preventing duplicate shares.
   * `index_wishlist_shares_on_wishlist_id`, `index_wishlist_shares_on_user_id`.
 * **Cleanup:** Deleted between a user pair on `UserBlock.block!` and `Friendship#remove!` (`REQ-BLOCK-002` parity).
+
+---
+
+## 12. `items` (`[REQ-ITEM-001]`, `[REQ-ITEM-003]`, `[REQ-ITEM-005]`, `[REQ-ARCH-002]`, `[REQ-LIFE-001]`)
+Single giftable units inside a wishlist (`1 item = 1 unit`). Soft-deletable; restore fails closed when the parent wishlist is discarded.
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Primary identifier. |
+| `wishlist_id` | `bigint` | `false` | FK (`wishlists`) | Parent wishlist (`on_delete: :cascade`). Soft-delete of the wishlist cascades soft-delete of kept items. |
+| `title` | `string` | `false` | — | Display title. May be filled from a confirmed OpenGraph preview (`REQ-ITEM-006`). |
+| `specifications` | `text` | `true` | `nil` | Prominent color/size/variant note (`REQ-ITEM-001`). Clearable via PATCH. |
+| `priority` | `string` | `false` | `"medium"` | `ItemPriority` VO: `low`, `medium`, `high`, `must_have` (`REQ-ITEM-003`). |
+| `price_cents` | `integer` | `true` | `nil` | Optional integer cents; nullable pair with `currency` (`REQ-ARCH-002`). Clearable via PATCH. |
+| `currency` | `string` | `true` | `nil` | Optional ISO-like currency code paired with `price_cents`. Clearable via PATCH. |
+| `position` | `integer` | `false` | `0` | Owner reorder order within the wishlist. Full-set reorder replaces positions atomically. |
+| `discarded_at` | `datetime` | `true` | `nil` | Soft-delete timestamp (`SoftDeletable`, 30-day restore grace) (`REQ-LIFE-001`). |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Standard audit timestamps. Reservation mutations must not touch `updated_at` (Sprint 5). |
+
+* **Indexes:** `index_items_on_wishlist_id`, `index_items_on_wishlist_id_and_position`, `index_items_on_wishlist_id_and_discarded_at`, `index_items_on_discarded_at`.
+* **Attachments:** `has_many_attached :images` (ActiveStorage); max 3; server WebP + EXIF/GPS strip (`REQ-ITEM-002`). Store OG remote images attach only after owner confirm (`confirmed_preview`).
+
+---
+
+## 13. `item_links` (`[REQ-ITEM-001]`)
+Purchase URLs for an item. Validated by `ExternalUrl` (`http`/`https` only).
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Primary identifier. |
+| `item_id` | `bigint` | `false` | FK (`items`) | Parent item (`on_delete: :cascade`). |
+| `url` | `string` | `false` | — | Absolute `http`/`https` purchase URL (`ExternalUrl` VO). |
+| `position` | `integer` | `false` | `0` | Display order among links on the item. |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Standard audit timestamps. |
+
+* **Indexes:** `index_item_links_on_item_id`, `index_item_links_on_item_id_and_position`.
+
+---
+
+## 14. ActiveStorage (`active_storage_blobs`, `active_storage_attachments`, `active_storage_variant_records`) (`[REQ-ITEM-002]`)
+Rails ActiveStorage tables for item images (Disk service in local/test). Blobs store WebP bytes after `ItemImageProcessor` resize/strip; attachments bind `Item` records under name `images`. Variant records support optional derivatives; primary pipeline stores stripped WebP on the blob itself.

@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
+import 'package:wish_list_mobile/features/items/item_form_screen.dart';
+import 'package:wish_list_mobile/features/items/item_models.dart';
+import 'package:wish_list_mobile/features/items/item_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 
-// Empty wishlist shell detail with optional Secret Link copy/rotate for owners.
-// Traceability: [REQ-WISH-001], [REQ-WISH-002], [REQ-WISH-006]
+// Wishlist detail with item list, specs box, and optional Secret Link management.
+// Traceability: [REQ-WISH-001], [REQ-WISH-002], [REQ-WISH-006], [REQ-ITEM-001]
 class WishlistDetailScreen extends StatefulWidget {
   final DesignTokens tokens;
   final AppStrings strings;
   final WishlistRepository wishlistRepository;
+  final ItemRepository itemRepository;
   final int wishlistId;
   final bool canManage;
 
@@ -18,6 +22,7 @@ class WishlistDetailScreen extends StatefulWidget {
     required this.tokens,
     required this.strings,
     required this.wishlistRepository,
+    required this.itemRepository,
     required this.wishlistId,
     required this.canManage,
   });
@@ -28,6 +33,7 @@ class WishlistDetailScreen extends StatefulWidget {
 
 class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
   WishlistShell? _wishlist;
+  List<WishlistItem> _items = const [];
   String? _error;
   bool _loading = true;
 
@@ -46,7 +52,15 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
       final shell = await widget.wishlistRepository.fetchWishlist(
         widget.wishlistId,
       );
-      if (mounted) setState(() => _wishlist = shell);
+      final items = await widget.itemRepository.fetchItems(
+        wishlistId: widget.wishlistId,
+      );
+      if (mounted) {
+        setState(() {
+          _wishlist = shell;
+          _items = items;
+        });
+      }
     } catch (e) {
       if (mounted) setState(() => _error = widget.strings.errorMessage(e));
     } finally {
@@ -83,11 +97,33 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
     await Clipboard.setData(ClipboardData(text: '/s/$token'));
   }
 
+  Future<void> _openForm({WishlistItem? existing}) async {
+    final saved = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => ItemFormScreen(
+          tokens: widget.tokens,
+          strings: widget.strings,
+          itemRepository: widget.itemRepository,
+          wishlistId: widget.wishlistId,
+          existing: existing,
+        ),
+      ),
+    );
+    if (saved == true) await _load();
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = widget.strings;
     return Scaffold(
       appBar: AppBar(title: Text(s.wishlistDetailTitle)),
+      floatingActionButton: widget.canManage
+          ? FloatingActionButton.extended(
+              onPressed: () => _openForm(),
+              label: Text(s.addItemButton),
+              icon: const Icon(Icons.add),
+            )
+          : null,
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _wishlist == null
@@ -100,13 +136,11 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 8),
-                Text(s.wishlistEmptyShellHint),
                 if (_error != null) ...[
-                  const SizedBox(height: 8),
                   Text(_error!, style: TextStyle(color: widget.tokens.accent)),
+                  const SizedBox(height: 8),
                 ],
                 if (widget.canManage) ...[
-                  const SizedBox(height: 16),
                   Text(s.privacyModeLabel),
                   Row(
                     children: [
@@ -142,9 +176,46 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                       ],
                     ),
                   ],
+                  const SizedBox(height: 16),
                 ],
+                if (_items.isEmpty)
+                  Text(s.noItemsYet)
+                else
+                  ..._items.map(_itemTile),
               ],
             ),
+    );
+  }
+
+  Widget _itemTile(WishlistItem item) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        onTap: widget.canManage ? () => _openForm(existing: item) : null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(item.title, style: Theme.of(context).textTheme.titleMedium),
+            if (item.specifications != null && item.specifications!.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 6),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: widget.tokens.specBg,
+                  border: Border(
+                    left: BorderSide(color: widget.tokens.accent, width: 4),
+                  ),
+                ),
+                child: Text(item.specifications!),
+              ),
+            const SizedBox(height: 4),
+            Text(item.priority, style: Theme.of(context).textTheme.labelSmall),
+            for (final link in item.links.take(5))
+              Text(link.url, style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
+      ),
     );
   }
 }

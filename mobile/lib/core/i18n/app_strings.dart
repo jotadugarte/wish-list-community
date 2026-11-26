@@ -39,6 +39,19 @@ class AppStrings {
   final String noSharedWishlists;
   final String noFriendWishlists;
   final String wishlistEmptyShellHint;
+  final String addItemButton;
+  final String editItemTitle;
+  final String itemTitleLabel;
+  final String itemSpecsLabel;
+  final String itemPriorityLabel;
+  final String itemLinksLabel;
+  final String itemPriceLabel;
+  final String itemCurrencyLabel;
+  final String pasteStoreUrlLabel;
+  final String previewLinkButton;
+  final String confirmPreviewButton;
+  final String noItemsYet;
+  final String saveItemButton;
   final String privacyModeLabel;
   final String privacyFriendsLabel;
   final String privacySharedLabel;
@@ -105,6 +118,19 @@ class AppStrings {
     required this.noSharedWishlists,
     required this.noFriendWishlists,
     required this.wishlistEmptyShellHint,
+    required this.addItemButton,
+    required this.editItemTitle,
+    required this.itemTitleLabel,
+    required this.itemSpecsLabel,
+    required this.itemPriorityLabel,
+    required this.itemLinksLabel,
+    required this.itemPriceLabel,
+    required this.itemCurrencyLabel,
+    required this.pasteStoreUrlLabel,
+    required this.previewLinkButton,
+    required this.confirmPreviewButton,
+    required this.noItemsYet,
+    required this.saveItemButton,
     required this.privacyModeLabel,
     required this.privacyFriendsLabel,
     required this.privacySharedLabel,
@@ -201,7 +227,20 @@ class AppStrings {
     noWishlistsYet: 'Aún no tienes listas',
     noSharedWishlists: 'Nadie ha compartido listas contigo todavía',
     noFriendWishlists: 'No hay listas visibles',
-    wishlistEmptyShellHint: 'Los ítems llegarán en un sprint posterior.',
+    wishlistEmptyShellHint: 'Agrega regalos a esta lista.',
+    addItemButton: 'Agregar ítem',
+    editItemTitle: 'Editar ítem',
+    itemTitleLabel: 'Título',
+    itemSpecsLabel: 'Especificaciones (color, talla, variante)',
+    itemPriorityLabel: 'Prioridad',
+    itemLinksLabel: 'Enlaces de compra (uno por línea)',
+    itemPriceLabel: 'Precio (centavos, opcional)',
+    itemCurrencyLabel: 'Moneda (USD, CRC…)',
+    pasteStoreUrlLabel: 'Pegar enlace de tienda',
+    previewLinkButton: 'Vista previa',
+    confirmPreviewButton: 'Usar vista previa',
+    noItemsYet: 'Aún no hay ítems',
+    saveItemButton: 'Guardar ítem',
     privacyModeLabel: 'Privacidad',
     privacyFriendsLabel: 'Amigos',
     privacySharedLabel: 'Compartida',
@@ -269,7 +308,20 @@ class AppStrings {
     noWishlistsYet: 'You have no wishlists yet',
     noSharedWishlists: 'Nothing shared with you yet',
     noFriendWishlists: 'No visible wishlists',
-    wishlistEmptyShellHint: 'Items arrive in a later sprint.',
+    wishlistEmptyShellHint: 'Add gifts to this list.',
+    addItemButton: 'Add item',
+    editItemTitle: 'Edit item',
+    itemTitleLabel: 'Title',
+    itemSpecsLabel: 'Specifications (color, size, variant)',
+    itemPriorityLabel: 'Priority',
+    itemLinksLabel: 'Purchase links (one per line)',
+    itemPriceLabel: 'Price (cents, optional)',
+    itemCurrencyLabel: 'Currency (USD, CRC…)',
+    pasteStoreUrlLabel: 'Paste store link',
+    previewLinkButton: 'Preview',
+    confirmPreviewButton: 'Use preview',
+    noItemsYet: 'No items yet',
+    saveItemButton: 'Save item',
     privacyModeLabel: 'Privacy',
     privacyFriendsLabel: 'Friends',
     privacySharedLabel: 'Shared',

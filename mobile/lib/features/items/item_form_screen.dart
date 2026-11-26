@@ -1,0 +1,243 @@
+import 'package:flutter/material.dart';
+import 'package:wish_list_mobile/core/i18n/app_strings.dart';
+import 'package:wish_list_mobile/core/theme/design_tokens.dart';
+import 'package:wish_list_mobile/features/items/item_models.dart';
+import 'package:wish_list_mobile/features/items/item_repository.dart';
+
+// Add/edit item with paste-URL preview confirm (O3A) and optional price (O5A).
+// Traceability: [REQ-ITEM-001], [REQ-ITEM-003], [REQ-ITEM-006], [REQ-ARCH-002]
+class ItemFormScreen extends StatefulWidget {
+  final DesignTokens tokens;
+  final AppStrings strings;
+  final ItemRepository itemRepository;
+  final int wishlistId;
+  final WishlistItem? existing;
+
+  const ItemFormScreen({
+    super.key,
+    required this.tokens,
+    required this.strings,
+    required this.itemRepository,
+    required this.wishlistId,
+    this.existing,
+  });
+
+  @override
+  State<ItemFormScreen> createState() => _ItemFormScreenState();
+}
+
+class _ItemFormScreenState extends State<ItemFormScreen> {
+  late final TextEditingController _title;
+  late final TextEditingController _specs;
+  late final TextEditingController _links;
+  late final TextEditingController _price;
+  late final TextEditingController _currency;
+  late final TextEditingController _storeUrl;
+  String _priority = 'medium';
+  LinkPreview? _preview;
+  bool _previewConfirmed = false;
+  String? _error;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existing;
+    _title = TextEditingController(text: e?.title ?? '');
+    _specs = TextEditingController(text: e?.specifications ?? '');
+    _links = TextEditingController(
+      text: e?.links.map((l) => l.url).join('\n') ?? '',
+    );
+    _price = TextEditingController(
+      text: e?.priceCents != null ? '${e!.priceCents}' : '',
+    );
+    _currency = TextEditingController(text: e?.currency ?? '');
+    _storeUrl = TextEditingController();
+    _priority = e?.priority ?? 'medium';
+  }
+
+  @override
+  void dispose() {
+    _title.dispose();
+    _specs.dispose();
+    _links.dispose();
+    _price.dispose();
+    _currency.dispose();
+    _storeUrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _previewLink() async {
+    setState(() {
+      _error = null;
+      _preview = null;
+      _previewConfirmed = false;
+    });
+    try {
+      final preview = await widget.itemRepository.previewLink(
+        url: _storeUrl.text,
+      );
+      if (!mounted) return;
+      setState(() => _preview = preview);
+    } catch (e) {
+      if (mounted) setState(() => _error = widget.strings.errorMessage(e));
+    }
+  }
+
+  void _applyPreview() {
+    final preview = _preview;
+    if (preview == null) return;
+    if (_title.text.trim().isEmpty && preview.title.isNotEmpty) {
+      _title.text = preview.title;
+    }
+    if (preview.sourceUrl.isNotEmpty &&
+        !_links.text.contains(preview.sourceUrl)) {
+      _links.text = [
+        if (_links.text.trim().isNotEmpty) _links.text.trim(),
+        preview.sourceUrl,
+      ].join('\n');
+    }
+    setState(() => _previewConfirmed = true);
+  }
+
+  Future<void> _save() async {
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+    try {
+      final linkUrls = _links.text
+          .split('\n')
+          .map((l) => l.trim())
+          .where((l) => l.isNotEmpty)
+          .toList(growable: false);
+      final priceRaw = _price.text.trim();
+      final currencyRaw = _currency.text.trim().toUpperCase();
+      final priceCents = priceRaw.isEmpty ? null : int.tryParse(priceRaw);
+      final currency = currencyRaw.isEmpty ? null : currencyRaw;
+
+      if (widget.existing == null) {
+        await widget.itemRepository.createItem(
+          wishlistId: widget.wishlistId,
+          title: _title.text,
+          specifications: _specs.text.trim().isEmpty ? null : _specs.text.trim(),
+          priority: _priority,
+          priceCents: priceCents,
+          currency: currency,
+          linkUrls: linkUrls,
+          confirmedPreview: _previewConfirmed ? _preview : null,
+        );
+      } else {
+        await widget.itemRepository.updateItem(
+          itemId: widget.existing!.id,
+          title: _title.text.trim(),
+          specifications: _specs.text.trim().isEmpty ? null : _specs.text.trim(),
+          priority: _priority,
+          priceCents: priceCents,
+          currency: currency,
+          linkUrls: linkUrls,
+        );
+      }
+      if (mounted) Navigator.of(context).pop(true);
+    } catch (e) {
+      if (mounted) setState(() => _error = widget.strings.errorMessage(e));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.strings;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          widget.existing == null ? s.addItemButton : s.editItemTitle,
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          TextField(
+            controller: _storeUrl,
+            decoration: InputDecoration(labelText: s.pasteStoreUrlLabel),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton(
+            onPressed: _previewLink,
+            child: Text(s.previewLinkButton),
+          ),
+          if (_preview != null) ...[
+            const SizedBox(height: 8),
+            Text('${_preview!.title}\n${_preview!.imageUrl}'),
+            TextButton(
+              onPressed: _applyPreview,
+              child: Text(s.confirmPreviewButton),
+            ),
+          ],
+          const SizedBox(height: 16),
+          TextField(
+            controller: _title,
+            decoration: InputDecoration(labelText: s.itemTitleLabel),
+          ),
+          const SizedBox(height: 8),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: widget.tokens.specBg,
+              border: Border(
+                left: BorderSide(color: widget.tokens.accent, width: 4),
+              ),
+            ),
+            child: TextField(
+              controller: _specs,
+              maxLines: 3,
+              decoration: InputDecoration(
+                labelText: s.itemSpecsLabel,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.all(12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(s.itemPriorityLabel),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final p in ItemRepository.allowedPriorities)
+                ChoiceChip(
+                  label: Text(p),
+                  selected: _priority == p,
+                  onSelected: (_) => setState(() => _priority = p),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _links,
+            maxLines: 3,
+            decoration: InputDecoration(labelText: s.itemLinksLabel),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _price,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: s.itemPriceLabel),
+          ),
+          TextField(
+            controller: _currency,
+            decoration: InputDecoration(labelText: s.itemCurrencyLabel),
+          ),
+          if (_error != null) ...[
+            const SizedBox(height: 8),
+            Text(_error!, style: TextStyle(color: widget.tokens.accent)),
+          ],
+          const SizedBox(height: 16),
+          FilledButton(
+            onPressed: _saving ? null : _save,
+            child: Text(s.saveItemButton),
+          ),
+        ],
+      ),
+    );
+  }
+}

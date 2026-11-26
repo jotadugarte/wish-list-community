@@ -67,7 +67,8 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
   * `1 Item = 1 Giftable Unit` in MVP.
   * Up to 3 images per item, max 2MB each, resized to <= 1600px longest side, converted to WebP, with all EXIF/GPS metadata stripped via `libvips`.
   * Reservation and gift state changes must **never** touch `items.updated_at` (preventing timing side-channel leaks to the wishlist owner).
-* **Value Objects:** `ExternalUrl` (strict `http/https` validation + SSRF-safe OpenGraph fetch), `ImageDimensions`.
+* **Value Objects:** `ExternalUrl` (strict `http/https` validation + SSRF-safe OpenGraph fetch), `ItemPriority` (`low` / `medium` / `high` / `must_have`), `ImageDimensions`.
+* **Store preview confirm (O3A):** Pasting a store URL returns a best-effort OpenGraph **preview** only. Title and remote image are persisted on the item only after the owner explicitly confirms; fetching a preview must never auto-write the item.
 
 ### 4.5 `Reservation` & `GiftRecord`
 * **Responsibility:** Secret item reservation (`active`, `expired_grace`, `auto_released`, `canceled`, `completed_by_gift`) and dual-path gift fulfillment (`purchased_secret`, `delivered_pending_confirmation`, `received_confirmed`) with optional anonymous thank-you note.
@@ -130,7 +131,7 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 * **`REQ-ITEM-003`**: Item `priority` desire levels (`low`, `medium`, `high`, `must_have`).
 * **`REQ-ITEM-004`**: Items in `received_confirmed` state are visually separated into a *"Received Gifts"* section at the bottom of the wishlist.
 * **`REQ-ITEM-005`**: Each `Item` represents 1 giftable unit in MVP.
-* **`REQ-ITEM-006`**: Automatic best-effort extraction of product image and title (`og:image`, `og:title` with SSRF protection) when pasting or sharing a store link in MVP.
+* **`REQ-ITEM-006`**: Automatic best-effort extraction of product image and title (`og:image`, `og:title` with SSRF protection) when pasting or sharing a store link in MVP. Preview is confirm-before-persist: the owner must accept the preview before title/image are written on the item.
 
 ### Reservations & Gift Fulfillment
 * **`REQ-RES-001`**: First-to-reserve concurrency enforced by PostgreSQL partial unique index on active/grace reservations, with private note and private `estimated_date`.
