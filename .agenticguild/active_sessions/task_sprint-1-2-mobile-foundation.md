@@ -49,3 +49,34 @@ Build the complete Flutter mobile foundation (`mobile/`) covering **MVP Sprint 1
   <step id="5" status="complete">Write failing `flutter test` widget tests for the Sprint 1 & Sprint 2 Mobile Screens (`test/features/app_screens_test.dart`) verifying Login, Anti-Stalking `@username` Search, Friends & Requests management, and Block/Report dialogs, then implement `LoginScreen`, `UserSearchScreen`, `FriendsListScreen`, `ProfileSettingsScreen`, and `WishListApp` root (`[REQ-AUTH-001]`, `[REQ-SOC-001]`, `[REQ-WISH-001]`, `[REQ-BLOCK-001]`).</step>
   <step id="6" status="complete">Write failing `flutter test` widget tests for `PasswordResetScreen` and `AccountRestoreScreen` (navigation from `LoginScreen`, bilingual `AppStrings`, AuthRepository wiring), then implement both screens (`[REQ-AUTH-003]`, `[REQ-LIFE-002]`, `[REQ-USER-002]`).</step>
 </implementation_plan>
+
+## QA reviewer record — 2026-11-26
+
+**Delivery:** not posted
+
+**Environment:** Cloud agent VM; Flutter 3.50.1 stable; headless `flutter_test` only; mocked ApiClient (no staging API).
+
+**Prerequisites:** flutter ready; mobile lib ready; app_screens_test ready.
+
+**Results:**
+| ID | Result | Evidence |
+| S1 | passed | LoginScreen auth + Friends/Search nav |
+| S2 | passed | Persisted session restore + en locale |
+| S3 | passed | PasswordResetScreen POST /api/v1/passwords |
+| S4 | passed | Invalid email → localized invalidInputError |
+| S5 | passed | AccountRestoreScreen restore + token persist |
+| S6 | passed | Covered by S1 friends assertions |
+| S7 | passed | Block + report API calls |
+| S8 | passed | 409 → conflictError (es), no ApiException leak |
+| S9 | passed | 401 → LoginScreen + token cleared |
+| S10 | passed | flutter analyze clean; flutter test 39/39 |
+| S11 | passed | AppStrings es/en + error map |
+| S12 | passed | AuthRepository password reset + restore |
+| O1 | owner to run | Simulator/device walkthrough |
+| O2 | owner to run | integration_test/Maestro N/A this PR |
+| test_qa | passed then removed | Temporary Login reset/restore link check; folder deleted after pass |
+
+**Product bugs:** none  
+**Test mistakes:** none  
+**Not run:** O1, O2 (owner-only per qa_profile)
+
