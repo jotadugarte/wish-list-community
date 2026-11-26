@@ -4,6 +4,8 @@ import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_detail_screen.dart';
 import 'package:wish_list_mobile/features/items/item_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
+import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
+import 'package:wish_list_mobile/features/reservations/my_reservations_screen.dart';
 
 // Lists the owner's wishlists and supports create with default friends privacy.
 // Traceability: [REQ-WISH-001], [REQ-USER-002]
@@ -11,12 +13,14 @@ class MyWishlistsScreen extends StatefulWidget {
   final DesignTokens tokens;
   final AppStrings strings;
   final WishlistRepository wishlistRepository;
+  final ReservationRepository? reservationRepository;
 
   const MyWishlistsScreen({
     super.key,
     required this.tokens,
     required this.strings,
     required this.wishlistRepository,
+    this.reservationRepository,
   });
 
   @override
@@ -77,6 +81,23 @@ class _MyWishlistsScreenState extends State<MyWishlistsScreen> {
       padding: const EdgeInsets.all(16),
       children: [
         Text(s.myWishlistsTitle, style: Theme.of(context).textTheme.titleLarge),
+        if (widget.reservationRepository != null) ...[
+          const SizedBox(height: 8),
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MyReservationsScreen(
+                    tokens: widget.tokens,
+                    strings: widget.strings,
+                    reservationRepository: widget.reservationRepository!,
+                  ),
+                ),
+              );
+            },
+            child: Text(s.openMyReservationsAction),
+          ),
+        ],
         const SizedBox(height: 12),
         TextField(
           controller: _titleController,
@@ -100,6 +121,7 @@ class _MyWishlistsScreenState extends State<MyWishlistsScreen> {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => WishlistDetailScreen(
+                      reservationRepository: widget.reservationRepository,
                     tokens: widget.tokens,
                     strings: s,
                     wishlistRepository: widget.wishlistRepository,

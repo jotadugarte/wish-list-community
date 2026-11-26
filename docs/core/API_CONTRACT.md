@@ -337,3 +337,21 @@ Body: `{ "item_ids": [3,1,2] }`.
 ### `POST /api/v1/link_previews` (`[REQ-ITEM-006]`)
 Body: `{ "url": "https://..." }` → `{ "title", "image_url", "source_url" }` (best-effort; SSRF-safe). Auth required.
 
+## 5. Reservations & Notifications (Sprint 5)
+
+### Reservations
+- `POST /api/v1/items/:item_id/reservations` — create (`estimated_date`, optional `private_note`); **409** on concurrent hold ([REQ-RES-001], [REQ-ARCH-003])
+- `PATCH /api/v1/reservations/:id` — extend date / note; grace → active ([REQ-RES-006] O5A)
+- `DELETE /api/v1/reservations/:id` — voluntary cancel ([REQ-RES-001] O6A)
+- `GET /api/v1/my_reservations` — current user `active` + `expired_grace` ([REQ-RES-004])
+- Item payloads for **non-owners** may include `availability`: `available` | `reserved_by_me` | `unavailable` (omitted for owner) ([REQ-RES-002] O3A)
+
+### Hotwire Secret Link (O4B)
+- `POST /s/:share_token/items/:item_id/reservations`
+- `PATCH /s/:share_token/reservations/:id`
+- `DELETE /s/:share_token/reservations/:id`
+
+### Notifications foundation (D5a / O1A / O8A)
+- `GET /api/v1/notifications` · `POST /api/v1/notifications/:id/mark_read`
+- `GET/PATCH /api/v1/notification_preferences`
+

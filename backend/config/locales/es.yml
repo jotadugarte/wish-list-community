@@ -23,6 +23,38 @@ es:
     login_cta: "Iniciar sesión"
     signup_cta: "Crear cuenta"
     authenticated_empty_shell: "Lista de deseos de @%{username}. Los ítems llegan en un sprint posterior."
+    no_items_yet: "Aún no hay ítems."
+    estimated_date: "Fecha estimada"
+    reserve: "Reservar"
+    extend: "Extender"
+    cancel: "Cancelar reservación"
+    availability:
+      available: "Disponible"
+      reserved_by_me: "Reservado por mí"
+      unavailable: "No disponible"
+  reservations:
+    errors:
+      item_required: "se requiere el ítem"
+      user_required: "se requiere el usuario"
+      reservation_required: "se requiere la reservación"
+      not_extendable: "no se puede extender"
+      not_cancelable: "no se puede cancelar"
+      limit_must_be_positive: "el límite debe ser positivo"
+      limit_reached: "se alcanzó el límite de reservaciones para esta lista"
+  notifications:
+    reservation:
+      grace_started:
+        title: "Inicio del período de gracia"
+        body: "Tu reservación venció; tienes 72 horas para extender o cancelar."
+      auto_released:
+        title: "Reservación liberada automáticamente"
+        body: "Tu reservación se liberó después del período de gracia."
+      item_critical_edit:
+        title: "Ítem reservado actualizado"
+        body: "El dueño editó un ítem que reservaste."
+      item_deleted:
+        title: "Ítem reservado eliminado"
+        body: "El dueño eliminó un ítem que reservaste."
   web_auth:
     login_title: "Iniciar sesión"
     signup_title: "Crear cuenta"

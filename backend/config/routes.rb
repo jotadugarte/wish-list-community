@@ -8,6 +8,12 @@ Rails.application.routes.draw do
 
   get "s/:share_token", to: "secret_links#show", as: :secret_link,
       constraints: { share_token: /[A-Za-z0-9\-_]+/ }
+  post "s/:share_token/items/:item_id/reservations", to: "secret_link_reservations#create", as: :secret_link_item_reservations,
+      constraints: { share_token: /[A-Za-z0-9\-_]+/ }
+  patch "s/:share_token/reservations/:id", to: "secret_link_reservations#update", as: :secret_link_reservation,
+      constraints: { share_token: /[A-Za-z0-9\-_]+/ }
+  delete "s/:share_token/reservations/:id", to: "secret_link_reservations#destroy",
+      constraints: { share_token: /[A-Za-z0-9\-_]+/ }
 
   namespace :api do
     namespace :v1 do
@@ -37,6 +43,15 @@ Rails.application.routes.draw do
         member do
           post :restore
           delete "images/:image_id", action: :destroy_image
+        end
+        resources :reservations, only: %i[create], controller: "reservations"
+      end
+      resources :reservations, only: %i[update destroy]
+      get "my_reservations" => "my_reservations#index"
+      resource :notification_preferences, only: %i[show update]
+      resources :notifications, only: %i[index] do
+        member do
+          post :mark_read
         end
       end
       resources :link_previews, only: %i[create]

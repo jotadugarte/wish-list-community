@@ -23,6 +23,38 @@ en:
     login_cta: "Log in"
     signup_cta: "Sign up"
     authenticated_empty_shell: "Wishlist from @%{username}. Items arrive in a later release."
+    no_items_yet: "No items yet."
+    estimated_date: "Estimated date"
+    reserve: "Reserve"
+    extend: "Extend"
+    cancel: "Cancel reservation"
+    availability:
+      available: "Available"
+      reserved_by_me: "Reserved by me"
+      unavailable: "Unavailable"
+  reservations:
+    errors:
+      item_required: "item required"
+      user_required: "user required"
+      reservation_required: "reservation required"
+      not_extendable: "not extendable"
+      not_cancelable: "not cancelable"
+      limit_must_be_positive: "limit must be positive"
+      limit_reached: "reservation limit reached for this wishlist"
+  notifications:
+    reservation:
+      grace_started:
+        title: "Reservation grace started"
+        body: "Your reservation expired; you have 72 hours to extend or cancel."
+      auto_released:
+        title: "Reservation auto-released"
+        body: "Your reservation was released after the grace window."
+      item_critical_edit:
+        title: "Reserved item updated"
+        body: "An item you reserved was edited by the owner."
+      item_deleted:
+        title: "Reserved item deleted"
+        body: "An item you reserved was deleted by the owner."
   web_auth:
     login_title: "Log in"
     signup_title: "Sign up"

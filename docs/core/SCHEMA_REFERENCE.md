@@ -229,3 +229,55 @@ Purchase URLs for an item. Validated by `ExternalUrl` (`http`/`https` only).
 
 ## 14. ActiveStorage (`active_storage_blobs`, `active_storage_attachments`, `active_storage_variant_records`) (`[REQ-ITEM-002]`)
 Rails ActiveStorage tables for item images (Disk service in local/test). Blobs store WebP bytes after `ItemImageProcessor` resize/strip; attachments bind `Item` records under name `images`. Variant records support optional derivatives; primary pipeline stores stripped WebP on the blob itself.
+
+---
+
+## 15. `reservations` (`[REQ-RES-001]`, `[REQ-RES-002]`, `[REQ-RES-006]`)
+Secret holds on one item by one reserver. Gift completion statuses (`completed_by_gift`) and purchase path fields arrive in Sprint 6.
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Primary identifier. |
+| `item_id` | `bigint` | `false` | FK (`items`) | Held item. |
+| `user_id` | `bigint` | `false` | FK (`users`) | Reserver (never the wishlist owner). |
+| `status` | `string` | `false` | `"active"` | `ReservationStatus`: Sprint 5 uses `active`, `expired_grace`, `auto_released`, `canceled`. |
+| `estimated_date` | `date` | `false` | — | Private calendar date interpreted in the reserver's `time_zone` (`EstimatedDate` VO). |
+| `private_note` | `string` | `true` | `nil` | Private note visible only to the reserver. |
+| `grace_expires_at` | `datetime` | `true` | `nil` | Set when entering `expired_grace`; cleared on extend back to `active` or terminal cancel/auto-release. |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Row timestamps. Mutations must not touch `items.updated_at`. |
+
+* **Indexes:** `index_reservations_on_item_id`, `index_reservations_on_user_id`, `index_reservations_on_user_id_and_status`, partial unique `index_reservations_one_active_hold_per_item` on `item_id` **where** `status IN ('active','expired_grace')`.
+* **Why/when:** Created when a friend/sharee reserves; extended or canceled by the reserver; swept by `ReservationGraceSweepJob`; canceled on item soft-delete, block, unfriend, or account soft-delete of the reserver.
+
+---
+
+## 16. `notifications` (`[REQ-NOTIF-001]`)
+In-app notification inbox rows created by `NotificationDispatcher`.
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Primary identifier. |
+| `user_id` | `bigint` | `false` | FK (`users`) | Recipient. |
+| `event_key` | `string` | `false` | — | Stable event id (e.g. `reservation.grace_started`). |
+| `title` | `string` | `false` | — | Localized title at write time. |
+| `body` | `text` | `true` | `nil` | Localized body. |
+| `payload` | `jsonb` | `false` | `{}` | Opaque ids for deep links (e.g. `reservation_id`). |
+| `read_at` | `datetime` | `true` | `nil` | Set when the user marks the row read. |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Standard audit timestamps. |
+
+* **Indexes:** `index_notifications_on_user_id`, `(user_id, created_at)`, `(user_id, read_at)`.
+
+---
+
+## 17. `notification_preferences` (`[REQ-NOTIF-001]`, O8A)
+Per-user channel toggles. Missing row = defaults all-on for Sprint 5 events.
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Primary identifier. |
+| `user_id` | `bigint` | `false` | FK (`users`) | Unique per user. |
+| `channels` | `jsonb` | `false` | `{}` | Nested map `event_key → { in_app, email, push }` booleans. |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Standard audit timestamps. |
+
+* **Indexes:** unique `index_notification_preferences_on_user_id`.
+* **Why/when:** Push preference is stored in Sprint 5; FCM send remains a no-op until Sprint 9.

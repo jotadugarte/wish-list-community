@@ -17,6 +17,8 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :api_tokens, dependent: :destroy
   has_many :device_tokens, dependent: :destroy
+  has_many :notifications, dependent: :destroy
+  has_one :notification_preference, dependent: :destroy
   has_many :requested_friendships, class_name: "Friendship", foreign_key: :requester_id, dependent: :destroy
   has_many :received_friendships, class_name: "Friendship", foreign_key: :addressee_id, dependent: :destroy
   has_many :submitted_reports, class_name: "Report", foreign_key: :reporter_id, dependent: :destroy
@@ -27,6 +29,12 @@ class User < ApplicationRecord
     user_record.device_tokens.delete_all
     user_record.api_tokens.delete_all
     user_record.sessions.delete_all
+  end
+
+  # [REQ-LIFE-002] Cancel the user's own active/grace reservations so sweeps never notify discarded reservers.
+  register_soft_delete_hook(:cancel_reserver_holds) do |user_record|
+    ::Reservation
+    Reservation.cancel_for_reserver!(user_record.id)
   end
 
   # [REQ-LIFE-002] Cascade soft-delete owned wishlists so Secret Links die with the account.
