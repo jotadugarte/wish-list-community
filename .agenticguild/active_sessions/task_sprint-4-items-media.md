@@ -105,6 +105,9 @@
 | ROADMAP Sprint 3 still `[ ]` | Hygiene via sync-docs/roadmap-manage — not S4 impl |
 | Flutter detail is empty shell | Replace with item list + add/edit; keep privacy/rotate chrome |
 
+## Domain Model confirmation (start-task 3.0)
+Hands-off: confirmed VOs `ExternalUrl`, `ItemPriority`, `ImageDimensions` as explored — no renames.
+
 ## Domain Model (CbC — confirmed start-task hands-off 2026-11-26)
 
 ### Entity: `Item`
@@ -156,8 +159,8 @@ BM-ITEM-001..010 planned→automated with tests.
   </working_notes>
 
   <implementation_plan>
-    <step id="1" status="pending">Write failing RSpec for Value Objects `ExternalUrl` (http/https only; reject javascript/data/file) and `ItemPriority` (low/medium/high/must_have). Trace `[REQ-ITEM-001]`, `[REQ-ITEM-003]`.</step>
-    <step id="2" status="pending">Implement `ExternalUrl` and `ItemPriority` minimally until step 1 green.</step>
+    <step id="1" status="complete">Write failing RSpec for Value Objects `ExternalUrl` (http/https only; reject javascript/data/file) and `ItemPriority` (low/medium/high/must_have). Trace `[REQ-ITEM-001]`, `[REQ-ITEM-003]`.</step>
+    <step id="2" status="complete">Implement `ExternalUrl` and `ItemPriority` minimally until step 1 green.</step>
     <step id="3" status="pending">Write failing RSpec for `Item` + `ItemLink` models: belongs_to wishlist, SoftDeletable, priority default medium, price pair invariant, position default append, links, `has_many_attached :images` (max 3). Trace `[REQ-ITEM-001]`, `[REQ-ITEM-002]`, `[REQ-ITEM-003]`, `[REQ-ITEM-005]`, `[REQ-ARCH-002]`, `[REQ-LIFE-001]`.</step>
     <step id="4" status="pending">Implement ActiveStorage install migrations + `items`/`item_links` migrations + models until step 3 green. Add WebMock to test Gemfile group. No controllers yet.</step>
     <step id="5" status="pending">Write failing specs for Wishlist soft_delete/restore cascading Items (documented no-op reservation cancel hook). Trace `[REQ-LIFE-001]`.</step>
