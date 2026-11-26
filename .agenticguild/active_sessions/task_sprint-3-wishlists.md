@@ -21,10 +21,10 @@
     <step id="12" status="complete">Implement Secret Link controller/view + safe OG helpers until step 11 green (no item payloads).</step>
     <step id="13" status="complete">Write failing system specs for web Hotwire login + signup HTML with `return_to` allowlisted to same-origin `/s/...` paths; after auth redirect back and register Shared-with-me. Reuse signup domain rules (`terms_accepted_at`, rate_limit). Trace `[REQ-WISH-005]`, `[REQ-AUTH-001]`, `[REQ-AUTH-002]`, `[REQ-AUTH-003]`.</step>
     <step id="14" status="complete">Implement web session `new` + web signup HTML/controllers and `return_to` plumbing until step 13 green (O1A).</step>
-    <step id="15" status="pending">Write failing Flutter widget/repository tests for: my wishlists list/create/edit (default `friends` O2A), Shared with me, friend wishlists via username endpoint, wishlist detail empty shell, copy/rotate Secret Link when `shared`, bilingual AppStrings, DesignTokens defaults. Trace matching REQ-WISH-*.</step>
-    <step id="16" status="pending">Implement Flutter screens/repos/navigation until step 15 green (D2b / D6a). No Item UI.</step>
-    <step id="17" status="pending">Update living docs in-repo as part of the feature work: `docs/core/API_CONTRACT.md` wishlist endpoints; ROADMAP Sprint 3 checkboxes only when verified; touch DATA_FLOW_MAP only if share/unfriend hook wording needs the friendship-remove note. Keep architecture anchors intact (no ADR unless violated).</step>
-    <step id="18" status="pending">Run full backend RSpec + `flutter analyze`/`flutter test` locally; fix failures until green. End of start-task implementation scope.</step>
+    <step id="15" status="complete">Write failing Flutter widget/repository tests for: my wishlists list/create/edit (default `friends` O2A), Shared with me, friend wishlists via username endpoint, wishlist detail empty shell, copy/rotate Secret Link when `shared`, bilingual AppStrings, DesignTokens defaults. Trace matching REQ-WISH-*.</step>
+    <step id="16" status="complete">Implement Flutter screens/repos/navigation until step 15 green (D2b / D6a). No Item UI.</step>
+    <step id="17" status="complete">Update living docs in-repo as part of the feature work: `docs/core/API_CONTRACT.md` wishlist endpoints; ROADMAP Sprint 3 checkboxes only when verified; touch DATA_FLOW_MAP only if share/unfriend hook wording needs the friendship-remove note. Keep architecture anchors intact (no ADR unless violated).</step>
+    <step id="18" status="complete">Run full backend RSpec + `flutter analyze`/`flutter test` locally; fix failures until green. End of start-task implementation scope.</step>
   </implementation_plan>
 
   <working_notes>

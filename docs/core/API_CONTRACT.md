@@ -209,3 +209,86 @@ Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harass
     }
   }
   ```
+
+---
+
+## 3. Wishlists (`Sprint 3`)
+
+Empty wishlist shells (no items). Privacy modes: `friends` | `shared`. Default on create: `friends` with `share_token: null`.
+
+### Wishlist JSON shell
+```json
+{
+  "id": 1,
+  "title": "Cumpleaños",
+  "privacy_mode": "friends",
+  "share_token": null,
+  "event_date": "2026-12-25",
+  "max_reservations_per_user": null,
+  "owner": { "id": 1, "username": "nata_24", "created_at": "2026-11-26T12:00:00Z" },
+  "discarded_at": null,
+  "created_at": "2026-11-26T12:00:00Z",
+  "updated_at": "2026-11-26T12:00:00Z"
+}
+```
+
+### `GET /api/v1/wishlists` (`[REQ-WISH-001]`)
+Lists the authenticated user's kept wishlists.
+- **Auth Required:** Yes.
+- **Response (`200 OK`):** `{ "wishlists": [ /* shell */ ] }`
+
+### `POST /api/v1/wishlists` (`[REQ-WISH-001]`, `[REQ-WISH-004]`)
+Creates a wishlist (`privacy_mode` forced to `friends`).
+- **Auth Required:** Yes.
+- **Request Body:** `{ "wishlist": { "title": "Cumpleaños", "event_date": "2026-12-25" } }`
+- **Response (`201 Created`):** `{ "wishlist": { /* shell */ } }`
+
+### `GET /api/v1/wishlists/:id` (`[REQ-WISH-001]`, `[REQ-BLOCK-001]`)
+Shows a wishlist when `WishlistPolicy#show?` allows (owner, friends-mode friend, or sharee).
+- **Auth Required:** Yes.
+- **Response (`200 OK`):** `{ "wishlist": { /* shell */ } }` — `404` on deny/block.
+
+### `PATCH /api/v1/wishlists/:id` (`[REQ-WISH-001]`, `[REQ-WISH-002]`, `[REQ-WISH-004]`)
+Owner updates `title` / `event_date` / `privacy_mode` (mode change mints or wipes `share_token`).
+- **Auth Required:** Yes (owner).
+- **Response (`200 OK`):** `{ "wishlist": { /* shell */ } }`
+
+### `DELETE /api/v1/wishlists/:id` (`[REQ-LIFE-001]`)
+Owner soft-deletes the wishlist.
+- **Auth Required:** Yes (owner).
+- **Response:** `204 No Content`.
+
+### `POST /api/v1/wishlists/:id/restore` (`[REQ-LIFE-001]`)
+Owner restores within SoftDeletable 30-day grace.
+- **Auth Required:** Yes (owner).
+- **Response (`200 OK`):** `{ "wishlist": { /* shell */ } }`
+
+### `POST /api/v1/wishlists/:id/share_token/rotate` (`[REQ-WISH-002]`, `[REQ-WISH-006]`)
+Rotates Secret Link while staying `shared`; revokes `secret_link` shares; keeps `explicit`.
+- **Auth Required:** Yes (owner).
+- **Response (`200 OK`):** `{ "wishlist": { /* shell with new share_token */ } }`
+
+### `POST /api/v1/wishlists/:id/shares` (`[REQ-WISH-003]`)
+Creates an explicit share for an accepted friend while wishlist is `shared`.
+- **Auth Required:** Yes (owner).
+- **Request Body:** `{ "user_id": 2 }`
+- **Response (`201 Created`):** `{ "share": { "id": 1, "wishlist_id": 1, "user_id": 2, "source": "explicit", "user": { /* public card */ }, "created_at": "..." } }`
+
+### `DELETE /api/v1/wishlists/:id/shares/:user_id` (`[REQ-WISH-003]`)
+Removes a share row.
+- **Auth Required:** Yes (owner).
+- **Response:** `204 No Content`.
+
+### `GET /api/v1/shared_wishlists` (`[REQ-WISH-003]`)
+*"Shared with me"* — wishlists the viewer has a `WishlistShare` for.
+- **Auth Required:** Yes.
+- **Response (`200 OK`):** `{ "wishlists": [ /* shell */ ] }`
+
+### `GET /api/v1/users/:username/wishlists` (`[REQ-WISH-001]`, `[REQ-BLOCK-001]`)
+Policy-scoped wishlists for `@username` (O3A). Strangers get `[]`; block → `404`.
+- **Auth Required:** Yes.
+- **Response (`200 OK`):** `{ "wishlists": [ /* shell */ ] }`
+
+### Web Secret Link (Hotwire, not `/api/v1`)
+- `GET /s/:share_token` — guest OG invitation *"Lista de deseos de @username"*; logged-in upserts `WishlistShare(source: secret_link)` (`[REQ-WISH-005]`, `[REQ-WISH-003]`).
+- `GET|POST /session` and `GET|POST /signup` — HTML auth with allowlisted `return_to` matching `\A/s/[A-Za-z0-9\-_]+\z` (`[REQ-WISH-005]`, `[REQ-AUTH-001]`).

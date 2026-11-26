@@ -6,6 +6,7 @@ import 'package:wish_list_mobile/core/network/token_storage.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
+import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 import 'package:wish_list_mobile/main.dart';
 
 typedef _Responder = ApiResponse Function(RecordedApiRequest req);
@@ -41,6 +42,12 @@ ApiResponse _defaultResponder(RecordedApiRequest req) {
         'time_zone': 'UTC',
       },
     );
+  }
+  if (req.path == '/api/v1/wishlists' && req.method == 'GET') {
+    return const ApiResponse(statusCode: 200, body: {'wishlists': []});
+  }
+  if (req.path == '/api/v1/shared_wishlists' && req.method == 'GET') {
+    return const ApiResponse(statusCode: 200, body: {'wishlists': []});
   }
   if (req.path == '/api/v1/friendships' && req.method == 'GET') {
     return const ApiResponse(
@@ -131,6 +138,7 @@ void main() {
           tokenStorage: tokenStorage,
         ),
         socialRepository: SocialRepository(apiClient: client),
+        wishlistRepository: WishlistRepository(apiClient: client),
       );
     }
 
@@ -167,6 +175,8 @@ void main() {
         expect(find.byKey(const Key('login_email_field')), findsOneWidget);
         await login(tester);
 
+        await tester.tap(find.text('Amigos'));
+        await tester.pumpAndSettle();
         expect(find.text('@ceci_nata'), findsOneWidget);
         expect(find.text('@carlos_friend'), findsOneWidget);
 
@@ -231,7 +241,7 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           buildApp((req) {
-            if (req.path == '/api/v1/friendships' && req.method == 'GET') {
+            if (req.path == '/api/v1/wishlists' && req.method == 'GET') {
               return const ApiResponse(
                 statusCode: 401,
                 body: {'error': 'Unauthorized'},
@@ -398,6 +408,9 @@ void main() {
         await tester.tap(find.byKey(const Key('restore_submit_button')));
         await tester.pumpAndSettle();
 
+        expect(find.text(s.myWishlistsTitle), findsOneWidget);
+        await tester.tap(find.text(s.navFriends));
+        await tester.pumpAndSettle();
         expect(find.text('@ceci_nata'), findsOneWidget);
         expect(await tokenStorage.readToken(), equals('restored_session_token'));
         final restore = log.firstWhere(

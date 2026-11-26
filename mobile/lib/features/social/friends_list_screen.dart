@@ -3,19 +3,23 @@ import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/app_icon_badge.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
+import 'package:wish_list_mobile/features/wishlists/friend_wishlists_screen.dart';
+import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 
 // Displays accepted friends and incoming/outgoing pending friend requests.
-// Traceability: [REQ-SOC-001], [REQ-BLOCK-001], [REQ-DISC-001], [REQ-USER-002]
+// Traceability: [REQ-SOC-001], [REQ-BLOCK-001], [REQ-DISC-001], [REQ-USER-002], [REQ-WISH-001]
 class FriendsListScreen extends StatefulWidget {
   final DesignTokens tokens;
   final AppStrings strings;
   final SocialRepository socialRepository;
+  final WishlistRepository? wishlistRepository;
 
   const FriendsListScreen({
     super.key,
     required this.tokens,
     required this.strings,
     required this.socialRepository,
+    this.wishlistRepository,
   });
 
   @override
@@ -145,6 +149,24 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (widget.wishlistRepository != null)
+              IconButton(
+                key: Key('view_wishlists_${item.friend.id}'),
+                tooltip: s.viewWishlistsAction,
+                icon: const Icon(Icons.card_giftcard_outlined),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => FriendWishlistsScreen(
+                        tokens: widget.tokens,
+                        strings: s,
+                        wishlistRepository: widget.wishlistRepository!,
+                        username: item.friend.username.value,
+                      ),
+                    ),
+                  );
+                },
+              ),
             IconButton(
               key: Key('block_friend_${item.friend.id}'),
               tooltip: s.blockUserAction,

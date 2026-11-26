@@ -13,10 +13,13 @@ import 'package:wish_list_mobile/features/auth/profile_settings_screen.dart';
 import 'package:wish_list_mobile/features/social/friends_list_screen.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/social/user_search_screen.dart';
+import 'package:wish_list_mobile/features/wishlists/my_wishlists_screen.dart';
+import 'package:wish_list_mobile/features/wishlists/shared_wishlists_screen.dart';
+import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 
 // Entry point for Wish List Community mobile app (iOS & Android).
 // Run with: flutter run --dart-define=API_BASE_URL=https://your-server
-// Traceability: [REQ-ARCH-001], [REQ-AUTH-001], [REQ-SOC-001], [REQ-USER-002]
+// Traceability: [REQ-ARCH-001], [REQ-AUTH-001], [REQ-SOC-001], [REQ-WISH-001], [REQ-USER-002]
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -34,12 +37,14 @@ void main() {
     tokenStorage: tokenStorage,
   );
   final socialRepo = SocialRepository(apiClient: apiClient);
+  final wishlistRepo = WishlistRepository(apiClient: apiClient);
 
   runApp(
     WishListApp(
       tokens: DesignTokens.forConfiguration(),
       authRepository: authRepo,
       socialRepository: socialRepo,
+      wishlistRepository: wishlistRepo,
     ),
   );
 }
@@ -48,12 +53,14 @@ class WishListApp extends StatefulWidget {
   final DesignTokens tokens;
   final AuthRepository authRepository;
   final SocialRepository socialRepository;
+  final WishlistRepository wishlistRepository;
 
   const WishListApp({
     super.key,
     required this.tokens,
     required this.authRepository,
     required this.socialRepository,
+    required this.wishlistRepository,
   });
 
   @override
@@ -140,6 +147,8 @@ class _WishListAppState extends State<WishListApp> {
       onDestinationSelected: (idx) => setState(() => _selectedIndex = idx),
       appBar: AppBar(title: Text(t.appName)),
       items: [
+        AppNavDestination(icon: Icons.card_giftcard_outlined, label: s.navWishlists),
+        AppNavDestination(icon: Icons.share_outlined, label: s.navShared),
         AppNavDestination(icon: Icons.people_outline, label: s.navFriends),
         AppNavDestination(icon: Icons.search, label: s.navSearch),
         AppNavDestination(icon: Icons.person_outline, label: s.navProfile),
@@ -151,18 +160,31 @@ class _WishListAppState extends State<WishListApp> {
   Widget _buildActiveScreen(AppStrings s) {
     switch (_selectedIndex) {
       case 0:
+        return MyWishlistsScreen(
+          tokens: widget.tokens,
+          strings: s,
+          wishlistRepository: widget.wishlistRepository,
+        );
+      case 1:
+        return SharedWishlistsScreen(
+          tokens: widget.tokens,
+          strings: s,
+          wishlistRepository: widget.wishlistRepository,
+        );
+      case 2:
         return FriendsListScreen(
           tokens: widget.tokens,
           strings: s,
           socialRepository: widget.socialRepository,
+          wishlistRepository: widget.wishlistRepository,
         );
-      case 1:
+      case 3:
         return UserSearchScreen(
           tokens: widget.tokens,
           strings: s,
           socialRepository: widget.socialRepository,
         );
-      case 2:
+      case 4:
       default:
         return ProfileSettingsScreen(
           tokens: widget.tokens,
