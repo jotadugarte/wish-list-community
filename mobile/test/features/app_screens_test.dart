@@ -262,5 +262,118 @@ void main() {
         expect(me.headers['Authorization'], equals('Bearer persisted_token'));
       },
     );
+
+    testWidgets(
+      'LoginScreen navigates to PasswordResetScreen and submits POST /api/v1/passwords [REQ-AUTH-003] [REQ-USER-002]',
+      (tester) async {
+        const resetMessage = 'If the account exists, instructions were sent.';
+        await tester.pumpWidget(
+          buildApp((req) {
+            if (req.path == '/api/v1/passwords' && req.method == 'POST') {
+              return const ApiResponse(
+                statusCode: 200,
+                body: {'message': resetMessage},
+              );
+            }
+            return _defaultResponder(req);
+          }),
+        );
+        await tester.pumpAndSettle();
+
+        final s = AppStrings.forLocale('es');
+        expect(find.text(s.forgotPasswordLink), findsOneWidget);
+        await tester.tap(find.byKey(const Key('forgot_password_link')));
+        await tester.pumpAndSettle();
+
+        expect(find.text(s.passwordResetTitle), findsOneWidget);
+        await tester.enterText(
+          find.byKey(const Key('password_reset_email_field')),
+          'jader@example.com',
+        );
+        await tester.tap(find.byKey(const Key('password_reset_submit_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.text(resetMessage), findsOneWidget);
+        final reset = log.lastWhere((r) => r.path == '/api/v1/passwords');
+        expect(reset.method, equals('POST'));
+        expect(reset.body?['email_address'], equals('jader@example.com'));
+        expect(reset.headers.containsKey('Authorization'), isFalse);
+      },
+    );
+
+    testWidgets(
+      'LoginScreen navigates to AccountRestoreScreen and restores within 30-day window [REQ-LIFE-002] [REQ-USER-002]',
+      (tester) async {
+        await tester.pumpWidget(
+          buildApp((req) {
+            if (req.path == '/api/v1/account/restore' && req.method == 'POST') {
+              return const ApiResponse(
+                statusCode: 200,
+                body: {
+                  'token': 'restored_session_token',
+                  'user': {
+                    'id': 1,
+                    'username': 'jader_dev',
+                    'created_at': '2026-11-25T10:00:00Z',
+                  },
+                },
+              );
+            }
+            return _defaultResponder(req);
+          }),
+        );
+        await tester.pumpAndSettle();
+
+        final s = AppStrings.forLocale('es');
+        expect(find.text(s.restoreAccountLink), findsOneWidget);
+        await tester.tap(find.byKey(const Key('restore_account_link')));
+        await tester.pumpAndSettle();
+
+        expect(find.text(s.accountRestoreTitle), findsOneWidget);
+        await tester.enterText(
+          find.byKey(const Key('restore_email_field')),
+          'jader@example.com',
+        );
+        await tester.enterText(
+          find.byKey(const Key('restore_password_field')),
+          'Password123!',
+        );
+        await tester.tap(find.byKey(const Key('restore_submit_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.text('@ceci_nata'), findsOneWidget);
+        expect(await tokenStorage.readToken(), equals('restored_session_token'));
+        final restore = log.firstWhere(
+          (r) => r.path == '/api/v1/account/restore',
+        );
+        expect(restore.method, equals('POST'));
+        expect(restore.body?['email_address'], equals('jader@example.com'));
+        expect(restore.headers.containsKey('Authorization'), isFalse);
+      },
+    );
+
+    testWidgets(
+      'PasswordResetScreen shows friendly error for invalid email input [REQ-AUTH-003] [REQ-USER-002]',
+      (tester) async {
+        await tester.pumpWidget(buildApp(_defaultResponder));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('forgot_password_link')));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(
+          find.byKey(const Key('password_reset_email_field')),
+          'not-an-email',
+        );
+        await tester.tap(find.byKey(const Key('password_reset_submit_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(AppStrings.forLocale('es').invalidInputError),
+          findsOneWidget,
+        );
+        expect(log.where((r) => r.path == '/api/v1/passwords'), isEmpty);
+      },
+    );
   });
 }

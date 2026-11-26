@@ -9,6 +9,15 @@ class AppStrings {
   final String passwordLabel;
   final String signInButton;
   final String signingInButton;
+  final String forgotPasswordLink;
+  final String passwordResetTitle;
+  final String passwordResetSubmitButton;
+  final String passwordResetSubmittingButton;
+  final String restoreAccountLink;
+  final String accountRestoreTitle;
+  final String accountRestoreSubmitButton;
+  final String accountRestoreSubmittingButton;
+  final String accountRestoreSubtitle;
   final String navFriends;
   final String navSearch;
   final String navProfile;
@@ -41,6 +50,15 @@ class AppStrings {
     required this.passwordLabel,
     required this.signInButton,
     required this.signingInButton,
+    required this.forgotPasswordLink,
+    required this.passwordResetTitle,
+    required this.passwordResetSubmitButton,
+    required this.passwordResetSubmittingButton,
+    required this.restoreAccountLink,
+    required this.accountRestoreTitle,
+    required this.accountRestoreSubmitButton,
+    required this.accountRestoreSubmittingButton,
+    required this.accountRestoreSubtitle,
     required this.navFriends,
     required this.navSearch,
     required this.navProfile,
@@ -103,6 +121,16 @@ class AppStrings {
     passwordLabel: 'Contraseña',
     signInButton: 'Entrar',
     signingInButton: 'Ingresando...',
+    forgotPasswordLink: '¿Olvidaste tu contraseña?',
+    passwordResetTitle: 'Restablecer Contraseña',
+    passwordResetSubmitButton: 'Enviar instrucciones',
+    passwordResetSubmittingButton: 'Enviando...',
+    restoreAccountLink: 'Restaurar cuenta desactivada',
+    accountRestoreTitle: 'Restaurar Cuenta',
+    accountRestoreSubmitButton: 'Restaurar cuenta',
+    accountRestoreSubmittingButton: 'Restaurando...',
+    accountRestoreSubtitle:
+        'Puedes restaurar tu cuenta dentro de los 30 días posteriores a la desactivación.',
     navFriends: 'Amigos',
     navSearch: 'Buscar',
     navProfile: 'Perfil',
@@ -136,6 +164,16 @@ class AppStrings {
     passwordLabel: 'Password',
     signInButton: 'Sign In',
     signingInButton: 'Signing in...',
+    forgotPasswordLink: 'Forgot your password?',
+    passwordResetTitle: 'Reset Password',
+    passwordResetSubmitButton: 'Send instructions',
+    passwordResetSubmittingButton: 'Sending...',
+    restoreAccountLink: 'Restore deactivated account',
+    accountRestoreTitle: 'Restore Account',
+    accountRestoreSubmitButton: 'Restore account',
+    accountRestoreSubmittingButton: 'Restoring...',
+    accountRestoreSubtitle:
+        'You can restore your account within 30 days of deactivation.',
     navFriends: 'Friends',
     navSearch: 'Search',
     navProfile: 'Profile',

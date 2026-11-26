@@ -8,6 +8,14 @@ void main() {
       expect(AppStrings.forLocale('es').navFriends, equals('Amigos'));
       expect(AppStrings.forLocale('EN').navFriends, equals('Friends'));
       expect(AppStrings.forLocale('fr').locale, equals('es'));
+      expect(
+        AppStrings.forLocale('es').forgotPasswordLink,
+        equals('¿Olvidaste tu contraseña?'),
+      );
+      expect(
+        AppStrings.forLocale('en').accountRestoreTitle,
+        equals('Restore Account'),
+      );
     });
 
     test('maps errors to friendly localized messages without leaking technical text [REQ-USER-002]', () {
