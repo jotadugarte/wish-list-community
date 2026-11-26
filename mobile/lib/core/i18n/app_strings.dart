@@ -7,8 +7,14 @@ class AppStrings {
   final String signInTitle;
   final String emailLabel;
   final String passwordLabel;
+  final String usernameLabel;
   final String signInButton;
   final String signingInButton;
+  final String signUpLink;
+  final String signUpTitle;
+  final String signUpButton;
+  final String signingUpButton;
+  final String termsAcceptedLabel;
   final String forgotPasswordLink;
   final String passwordResetTitle;
   final String passwordResetSubmitButton;
@@ -48,8 +54,14 @@ class AppStrings {
     required this.signInTitle,
     required this.emailLabel,
     required this.passwordLabel,
+    required this.usernameLabel,
     required this.signInButton,
     required this.signingInButton,
+    required this.signUpLink,
+    required this.signUpTitle,
+    required this.signUpButton,
+    required this.signingUpButton,
+    required this.termsAcceptedLabel,
     required this.forgotPasswordLink,
     required this.passwordResetTitle,
     required this.passwordResetSubmitButton,
@@ -119,8 +131,14 @@ class AppStrings {
     signInTitle: 'Iniciar Sesión',
     emailLabel: 'Correo electrónico',
     passwordLabel: 'Contraseña',
+    usernameLabel: '@username',
     signInButton: 'Entrar',
     signingInButton: 'Ingresando...',
+    signUpLink: 'Crear una cuenta',
+    signUpTitle: 'Crear Cuenta',
+    signUpButton: 'Registrarme',
+    signingUpButton: 'Registrando...',
+    termsAcceptedLabel: 'Acepto los Términos de Uso',
     forgotPasswordLink: '¿Olvidaste tu contraseña?',
     passwordResetTitle: 'Restablecer Contraseña',
     passwordResetSubmitButton: 'Enviar instrucciones',
@@ -162,8 +180,14 @@ class AppStrings {
     signInTitle: 'Sign In',
     emailLabel: 'Email address',
     passwordLabel: 'Password',
+    usernameLabel: '@username',
     signInButton: 'Sign In',
     signingInButton: 'Signing in...',
+    signUpLink: 'Create an account',
+    signUpTitle: 'Create Account',
+    signUpButton: 'Sign Up',
+    signingUpButton: 'Signing up...',
+    termsAcceptedLabel: 'I accept the Terms of Use',
     forgotPasswordLink: 'Forgot your password?',
     passwordResetTitle: 'Reset Password',
     passwordResetSubmitButton: 'Send instructions',
