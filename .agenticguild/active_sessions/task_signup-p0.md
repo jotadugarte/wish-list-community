@@ -7,8 +7,8 @@
   </metadata>
 
   <implementation_plan>
-    <step id="1" status="pending">Write failing request specs for POST /api/v1/signup: creates user with terms_accepted_at when terms_accepted=true, rejects missing terms (422), rejects invalid/duplicate identity (422), issues bearer token+user payload like session create, and declares rate_limit [REQ-AUTH-001] [REQ-AUTH-002] [REQ-AUTH-003] [REQ-USER-001] [REQ-USER-002] [REQ-USER-003].</step>
-    <step id="2" status="pending">Implement Api::V1::SignupsController + route resource :signup (create only) with rate_limit, terms gating, User creation via EmailAddress/Username VOs, ApiToken.issue_for!, and localized 422 errors — make Step 1 specs GREEN.</step>
+    <step id="1" status="complete">Write failing request specs for POST /api/v1/signup: creates user with terms_accepted_at when terms_accepted=true, rejects missing terms (422), rejects invalid/duplicate identity (422), issues bearer token+user payload like session create, and declares rate_limit [REQ-AUTH-001] [REQ-AUTH-002] [REQ-AUTH-003] [REQ-USER-001] [REQ-USER-002] [REQ-USER-003].</step>
+    <step id="2" status="complete">Implement Api::V1::SignupsController + route resource :signup (create only) with rate_limit, terms gating, User creation via EmailAddress/Username VOs, ApiToken.issue_for!, and localized 422 errors — make Step 1 specs GREEN.</step>
     <step id="3" status="pending">Write failing Flutter AuthRepository.signUp unit test: POST /api/v1/signup with email/username/password/locale/time_zone/terms_accepted, stores token, returns UserProfile [REQ-AUTH-001] [REQ-AUTH-002].</step>
     <step id="4" status="pending">Implement AuthRepository.signUp — make Step 3 GREEN.</step>
     <step id="5" status="pending">Write failing widget/repo tests for SignUpScreen + LoginScreen navigation + bilingual AppStrings signup keys [REQ-AUTH-002] [REQ-USER-002].</step>

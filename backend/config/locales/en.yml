@@ -7,6 +7,7 @@ en:
         conflict: "Resource conflict or duplicate request"
         not_found: "Not found"
         invalid_credentials: "Invalid email or password"
+        terms_required: "You must accept the Terms of Use to create an account"
         invalid_search_query: "Search query must be between 2 and 30 valid @username characters"
         friendship_invalid: "Unable to process friend request"
         report_invalid: "Unable to submit report"
