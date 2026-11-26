@@ -1,31 +1,48 @@
 <% content_for :title, @wishlist.title %>
+<% is_owner = current_user.id == @wishlist.owner_id %>
+<% received_ids = Item.received_gift_item_ids_for(@wishlist.id) %>
+<% active_items = @items.reject { |i| received_ids.include?(i.id) } %>
+<% received_items = @items.select { |i| received_ids.include?(i.id) } %>
 
 <section class="secret-link-shell w-full max-w-xl mx-auto space-y-4">
   <h1 class="text-2xl font-semibold"><%= @wishlist.title %></h1>
   <p class="text-sm text-gray-600"><%= t("secret_links.authenticated_empty_shell", username: @wishlist.owner.username) %></p>
 
-  <% if @items.blank? %>
+  <% if active_items.blank? && received_items.blank? %>
     <p class="text-sm"><%= t("secret_links.no_items_yet", default: "No items yet.") %></p>
   <% else %>
     <ul class="space-y-4" data-testid="secret-link-items">
-      <% @items.each do |item| %>
-        <% availability = current_user.id == @wishlist.owner_id ? nil : item.availability_for(current_user) %>
+      <% active_items.each do |item| %>
+        <% availability = is_owner ? nil : item.availability_for(current_user) %>
         <% my_hold = availability == "reserved_by_me" ? Reservation.find_by(item_id: item.id, user_id: current_user.id, status: ReservationStatus::ACTIVE_HOLD) : nil %>
+        <% my_open_gift = GiftRecord.where(item_id: item.id, gifter_id: current_user.id, status: GiftStatus::OPEN).limit(1).first %>
+        <% pending_delivery = is_owner ? GiftRecord.find_by(item_id: item.id, status: "delivered_pending_confirmation") : nil %>
         <li class="border-l-4 border-indigo-500 pl-3 py-2" data-availability="<%= availability %>">
           <h2 class="font-medium"><%= item.title %></h2>
           <% if item.specifications.present? %>
             <p class="text-sm bg-slate-50 p-2 mt-1"><%= item.specifications %></p>
           <% end %>
           <p class="text-xs uppercase tracking-wide mt-1"><%= item.priority %></p>
-          <% if item.item_links.any? %>
-            <ul class="mt-2 text-sm space-y-1">
-              <% item.item_links.limit(20).each do |link| %>
-                <li><a href="<%= link.url %>" rel="noopener noreferrer" target="_blank" class="underline"><%= link.url %></a></li>
-              <% end %>
-            </ul>
-          <% end %>
 
-          <% if availability.present? %>
+          <% if is_owner %>
+            <% if pending_delivery %>
+              <%= form_with url: secret_link_confirm_received_path(share_token: @wishlist.share_token, id: pending_delivery.id), method: :post, class: "mt-2 space-y-2" do %>
+                <label class="block text-xs">
+                  <%= t("secret_links.thank_you_optional") %>
+                  <input type="text" name="thank_you_note" maxlength="500" class="border px-2 py-1 text-sm w-full" />
+                </label>
+                <button type="submit" class="text-sm underline" data-testid="confirm-received-<%= item.id %>"><%= t("secret_links.confirm_received") %></button>
+              <% end %>
+            <% else %>
+              <%= form_with url: secret_link_mark_received_path(share_token: @wishlist.share_token, item_id: item.id), method: :post, class: "mt-2 space-y-2" do %>
+                <label class="block text-xs">
+                  <%= t("secret_links.thank_you_optional") %>
+                  <input type="text" name="thank_you_note" maxlength="500" class="border px-2 py-1 text-sm w-full" />
+                </label>
+                <button type="submit" class="text-sm underline" data-testid="mark-received-<%= item.id %>"><%= t("secret_links.mark_received") %></button>
+              <% end %>
+            <% end %>
+          <% elsif availability.present? %>
             <% min_date = Time.use_zone(current_user.time_zone.presence || "UTC") { Date.current } %>
             <p class="text-xs mt-2" data-testid="availability-<%= item.id %>"><%= t("secret_links.availability.#{availability}") %></p>
             <% if availability == "available" %>
@@ -49,10 +66,32 @@
                     method: :delete,
                     class: "text-sm underline mt-1",
                     data: { testid: "cancel-#{item.id}" } %>
+              <%= button_to t("secret_links.mark_purchased"),
+                    secret_link_mark_purchased_path(share_token: @wishlist.share_token, reservation_id: my_hold.id),
+                    method: :post,
+                    class: "text-sm underline mt-1",
+                    data: { testid: "mark-purchased-#{item.id}" } %>
+            <% elsif my_open_gift&.status == "purchased_secret" %>
+              <%= button_to t("secret_links.mark_delivered"),
+                    secret_link_mark_delivered_path(share_token: @wishlist.share_token, id: my_open_gift.id),
+                    method: :post,
+                    class: "text-sm underline mt-2",
+                    data: { testid: "mark-delivered-#{item.id}" } %>
             <% end %>
           <% end %>
         </li>
       <% end %>
     </ul>
+
+    <% if received_items.any? %>
+      <section class="mt-8 space-y-3" data-testid="received-gifts">
+        <h2 class="text-lg font-semibold"><%= t("secret_links.received_gifts") %></h2>
+        <ul class="space-y-2">
+          <% received_items.each do |item| %>
+            <li class="pl-3 py-1 text-sm" data-testid="received-gift-<%= item.id %>"><%= item.title %></li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
   <% end %>
 </section>

@@ -32,6 +32,17 @@ es:
       available: "Disponible"
       reserved_by_me: "Reservado por mí"
       unavailable: "No disponible"
+    mark_purchased: "Marcar como comprado"
+    mark_delivered: "Marcar como entregado"
+    mark_received: "Ya recibí esto"
+    confirm_received: "Confirmar recepción"
+    thank_you_optional: "Nota de agradecimiento opcional"
+    received_gifts: "Regalos recibidos"
+    marked_purchased: "Marcado como comprado"
+    marked_delivered: "Marcado como entregado"
+    confirmed_received: "Recepción confirmada"
+    marked_received: "Marcado como recibido"
+
   reservations:
     errors:
       item_required: "se requiere el ítem"

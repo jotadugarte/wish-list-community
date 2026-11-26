@@ -32,6 +32,17 @@ en:
       available: "Available"
       reserved_by_me: "Reserved by me"
       unavailable: "Unavailable"
+    mark_purchased: "Mark purchased"
+    mark_delivered: "Mark delivered"
+    mark_received: "I already received this"
+    confirm_received: "Confirm receipt"
+    thank_you_optional: "Optional thank-you note"
+    received_gifts: "Received Gifts"
+    marked_purchased: "Marked as purchased"
+    marked_delivered: "Marked as delivered"
+    confirmed_received: "Receipt confirmed"
+    marked_received: "Marked as received"
+
   reservations:
     errors:
       item_required: "item required"

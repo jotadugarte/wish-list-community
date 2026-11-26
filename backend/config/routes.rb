@@ -14,8 +14,17 @@ Rails.application.routes.draw do
       constraints: { share_token: /[A-Za-z0-9\-_]+/ }
   delete "s/:share_token/reservations/:id", to: "secret_link_reservations#destroy",
       constraints: { share_token: /[A-Za-z0-9\-_]+/ }
+  post "s/:share_token/reservations/:reservation_id/mark_purchased", to: "secret_link_gifts#mark_purchased",
+      as: :secret_link_mark_purchased, constraints: { share_token: /[A-Za-z0-9\-_]+/ }
+  post "s/:share_token/gifts/:id/mark_delivered", to: "secret_link_gifts#mark_delivered",
+      as: :secret_link_mark_delivered, constraints: { share_token: /[A-Za-z0-9\-_]+/ }
+  post "s/:share_token/gifts/:id/confirm_received", to: "secret_link_gifts#confirm_received",
+      as: :secret_link_confirm_received, constraints: { share_token: /[A-Za-z0-9\-_]+/ }
+  post "s/:share_token/items/:item_id/mark_received", to: "secret_link_gifts#mark_received",
+      as: :secret_link_mark_received, constraints: { share_token: /[A-Za-z0-9\-_]+/ }
 
   namespace :api do
+
     namespace :v1 do
       resource :session, only: %i[create destroy]
       resource :signup, only: %i[create]
