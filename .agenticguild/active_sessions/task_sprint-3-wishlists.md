@@ -215,11 +215,16 @@ No remaining Open owner forks. Pitfalls recorded as risks / Locked mitigations a
 - [x] Final check / dark corners recorded
 - [x] Every open question answered (O1A–O4A), deferred, or risk
 - [x] `<implementation_plan>` written (TDD; ends at local green tests)
-- [ ] Behaviour matrix offer (project has no `docs/core/BEHAVIOUR_MATRIX.md`) — awaiting owner Yes/No once
+- [x] Behaviour matrix: owner **BM yes** — created `docs/core/BEHAVIOUR_MATRIX.md` (wishlist access actors BM-WISH-001..015)
 
-## Repo facts (main @ 8dd403c)
-- No wishlist files under `backend/` or `mobile/`.
-- `API_CONTRACT.md` has zero wishlist endpoints yet (plan step 17).
-- `BEHAVIOUR_MATRIX.md` missing — offered at plan confirmation.
+## Plan confirmation (step 2.1) — 2026-11-26
+- Owner: **CONTINUE / ACCEPT PLAN**
+- Validation: Feature + `verification: tdd` → plan is test-first (failing specs before implement); aligns with SYSTEM_ARCHITECTURE (Rails Hotwire + `/api/v1` + Flutter; Pundit; no SPA). Plan ends at local green tests (no out-of-scope wrap-up steps).
+- **Spec Locked.** Explore handoff ready. Do **not** auto-run start-task — owner must say `start-task` explicitly.
+
+## Repo facts (main @ 8dd403c + explore branch)
+- Product wishlist code still absent until start-task.
+- `API_CONTRACT.md` wishlist section = plan step 17.
+- `docs/core/BEHAVIOUR_MATRIX.md` seeded for Sprint 3 access actors.
   </working_notes>
 </task_session>
