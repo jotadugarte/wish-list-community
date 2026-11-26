@@ -180,4 +180,11 @@ BM-ITEM-001..010 planned→automated with tests.
     <step id="19" status="complete">Update API_CONTRACT, BEHAVIOUR_MATRIX BM-ITEM-*, ROADMAP Sprint 4 verified slices only.</step>
     <step id="20" status="complete">Run full RSpec + flutter analyze/test until green. End of start-task scope.</step>
   </implementation_plan>
+
+## QA profile refresh proposal (2026-11-26)
+
+Owner chose **QA C** (refresh profile first; do not run full QA) and **PR C** (hold Draft PR / no finish-branch).
+
+**ACCEPTED** and applied to `docs/ai/qa_profile.md` (owner ACCEPT). Full QA not run. Draft PR still held.
+
 </task_session>
