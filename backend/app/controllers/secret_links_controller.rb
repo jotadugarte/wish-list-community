@@ -11,6 +11,7 @@ class SecretLinksController < ApplicationController
     if logged_in?
       register_share_if_needed!(wishlist)
       @wishlist = wishlist
+      @items = wishlist.items.kept.order(:position, :id).limit(200)
       render :show_authenticated
     else
       @wishlist = wishlist

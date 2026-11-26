@@ -173,8 +173,8 @@ BM-ITEM-001..010 planned→automated with tests.
     <step id="12" status="complete">Implement OpenGraph preview service + link_previews endpoint until step 11 green (O2A/O3A).</step>
     <step id="13" status="complete">Write failing request specs for items API CRUD/restore/multipart/reorder/links/price/Pundit 404. Trace `[REQ-ITEM-001..003]`, `[REQ-ITEM-005]`, `[REQ-ARCH-002]`, `[REQ-LIFE-001]`.</step>
     <step id="14" status="complete">Implement API controllers/routes/serializers until step 13 green (O4A/O8A; O3A confirmed preview apply).</step>
-    <step id="15" status="pending">Write failing specs for Hotwire `/s/:share_token`: guest OG invitation-only; authorized viewer read-only items. Trace `[REQ-WISH-005]`, `[REQ-ITEM-001]`, O1A.</step>
-    <step id="16" status="pending">Implement Hotwire Secret Link read-only items until step 15 green.</step>
+    <step id="15" status="complete">Write failing specs for Hotwire `/s/:share_token`: guest OG invitation-only; authorized viewer read-only items. Trace `[REQ-WISH-005]`, `[REQ-ITEM-001]`, O1A.</step>
+    <step id="16" status="complete">Implement Hotwire Secret Link read-only items until step 15 green.</step>
     <step id="17" status="pending">Write failing Flutter tests for item list/add/edit/preview/price/specs/bilingual. Trace REQ-ITEM-*.</step>
     <step id="18" status="pending">Implement Flutter screens/repos until step 17 green.</step>
     <step id="19" status="pending">Update API_CONTRACT, BEHAVIOUR_MATRIX BM-ITEM-*, ROADMAP Sprint 4 verified slices only.</step>
