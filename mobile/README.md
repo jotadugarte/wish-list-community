@@ -31,7 +31,7 @@ flutter test
 | `lib/core/network/` | `ApiClient` (Bearer auth, 15s timeout, 401 handling), token storage (`SecureTokenStorage` in production, `InMemoryTokenStorage` in tests), `resolveApiBaseUrl` |
 | `lib/core/i18n/` | `AppStrings` (`es` / `en`) and friendly error mapping |
 | `lib/core/theme/` | `DesignTokens`, `AppTheme`, `AppIconBadge`, `AppNavigationShell` |
-| `lib/features/auth/` | Login, profile, logout, account soft-delete / restore |
+| `lib/features/auth/` | Login, password reset, account restore, profile, logout, soft-delete |
 | `lib/features/social/` | Anti-stalking `@username` search, friendships, block, report |
 
 ## Changing the visual identity (design tokens)

@@ -111,7 +111,10 @@ class _WishListAppState extends State<WishListApp> {
     final t = widget.tokens;
     final s = AppStrings.forLocale(_currentUser?.locale ?? 'es');
 
+    // ValueKey resets the navigator when auth state flips so pushed auth
+    // routes (password reset / account restore) cannot outlive the session.
     return MaterialApp(
+      key: ValueKey<String>(_currentUser == null ? 'signed_out' : 'signed_in'),
       title: t.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.build(t),

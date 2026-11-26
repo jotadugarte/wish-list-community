@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/app_icon_badge.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
+import 'package:wish_list_mobile/features/auth/account_restore_screen.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
+import 'package:wish_list_mobile/features/auth/password_reset_screen.dart';
 
 // Login screen powered by DesignTokens, AppStrings, and AuthRepository.
 // Traceability: [REQ-AUTH-001], [REQ-AUTH-003], [REQ-LIFE-002], [REQ-USER-002]
@@ -60,6 +62,33 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  // [REQ-AUTH-003] Opens the anti-enumeration password reset screen.
+  void _openPasswordReset() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => PasswordResetScreen(
+          tokens: widget.tokens,
+          strings: widget.strings,
+          authRepository: widget.authRepository,
+        ),
+      ),
+    );
+  }
+
+  // [REQ-LIFE-002] Opens the 30-day account restore screen.
+  void _openAccountRestore() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => AccountRestoreScreen(
+          tokens: widget.tokens,
+          strings: widget.strings,
+          authRepository: widget.authRepository,
+          onRestored: widget.onAuthenticated,
+        ),
+      ),
+    );
   }
 
   @override
@@ -133,6 +162,16 @@ class _LoginScreenState extends State<LoginScreen> {
         key: const Key('login_submit_button'),
         onPressed: _isLoading ? null : _submitLogin,
         child: Text(_isLoading ? s.signingInButton : s.signInButton),
+      ),
+      TextButton(
+        key: const Key('forgot_password_link'),
+        onPressed: _openPasswordReset,
+        child: Text(s.forgotPasswordLink),
+      ),
+      TextButton(
+        key: const Key('restore_account_link'),
+        onPressed: _openAccountRestore,
+        child: Text(s.restoreAccountLink),
       ),
     ];
   }
