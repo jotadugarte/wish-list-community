@@ -108,10 +108,10 @@ module Api
       end
 
       def apply_item_updates!(item)
-        critical_before = [item.title, item.specifications, item.item_links.limit(50).pluck(:url)]
+        critical_before = [ item.title, item.specifications, item.item_links.limit(50).pluck(:url) ]
         item.update!(item_attrs) if item_attrs.present?
         replace_links!(item, links_params) if params[:item]&.key?(:links)
-        critical_after = [item.title, item.specifications, item.item_links.limit(50).pluck(:url)]
+        critical_after = [ item.title, item.specifications, item.item_links.limit(50).pluck(:url) ]
         if critical_before != critical_after
           Reservation
           Reservation.notify_critical_edit!(item: item)

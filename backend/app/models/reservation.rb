@@ -36,7 +36,7 @@ class Reservation < ApplicationRecord
   def self.cancel_between_users!(user_a, user_b)
     raise ArgumentError, "users required" if user_a.nil? || user_b.nil?
 
-    ids = [user_a.id, user_b.id]
+    ids = [ user_a.id, user_b.id ]
     where(status: ReservationStatus::ACTIVE_HOLD, user_id: ids).limit(200).find_each do |reservation|
       owner_id = reservation.item.wishlist.owner_id
       next unless ids.include?(owner_id)

@@ -293,3 +293,108 @@
   </implementation_plan>
 
 </task_session>
+
+## QA matrix (2026-11-26 Sprint 5 Secret Reservations)
+
+Tenant = single-tenant app (no multi-tenant IDs). Cloud agent runs headless rows only.
+
+| ID | Tenant | Role | Screen / surface | Steps | Expected | Type | Req |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| QA-S5-01 | default | authenticated member (any) | Flutter smoke — LoginScreen | `cd mobile && flutter test test_qa/smoke_sprint5_test.dart` — pump LoginScreen with mocks | Login surface builds; primary CTA visible | smoke | REQ-AUTH-001 |
+| QA-S5-02 | default | authenticated member | Flutter smoke — MyWishlistsScreen | Same QA file — open MyWishlists; assert `openMyReservationsAction` control present | My Wishlists loads; “Mis reservaciones” / My reservations entry visible | smoke | REQ-RES-004 |
+| QA-S5-03 | default | friend (reserver) | API `POST /api/v1/items/:id/reservations` | `cd backend && bundle exec rspec spec/requests/api/v1/reservations_spec.rb` — create with estimated_date + private_note | 201; status `active`; note returned | functional | REQ-RES-001 BM-RES-001 |
+| QA-S5-04 | default | friend (second) | API reserve race | Same file — second user POST same item after first hold | 409 Conflict | functional | REQ-ARCH-003 BM-RES-002 |
+| QA-S5-05 | default | friend (reserver) | API extend + cancel | Same file — PATCH estimated_date; force grace then PATCH → active; DELETE | Extend OK; grace→active clears grace_expires_at; DELETE → `canceled` | functional | REQ-RES-001 REQ-RES-006 O5A O6A |
+| QA-S5-06 | default | friend (reserver) | API max_reservations_per_user | Same file — wishlist max=1; reserve second item | 422 unprocessable | functional | REQ-RES-005 |
+| QA-S5-07 | default | friend / owner | Item `availability` | `bundle exec rspec spec/models/item_availability_spec.rb` | Non-owner gets available\|reserved_by_me\|unavailable; owner omits; reserve does not bump items.updated_at | functional | REQ-RES-002 O3A BM-RES-003 |
+| QA-S5-08 | default | friend (reserver) | `GET /api/v1/my_reservations` | `bundle exec rspec spec/requests/api/v1/my_reservations_spec.rb` | Lists only current user’s active + expired_grace | functional / persistence | REQ-RES-004 BM-RES-004 |
+| QA-S5-09 | default | owner actor / reserver | Soft-delete / block / unfriend cleanup | `bundle exec rspec spec/models/reservation_cleanup_spec.rb` | Active/grace canceled; restore leaves no ghost | functional | REQ-LIFE-001 REQ-BLOCK-002 BM-RES-005 |
+| QA-S5-10 | default | reserver | Critical edit / soft-delete notify | `bundle exec rspec spec/models/reservation_notifications_spec.rb` | Reserver notified on critical edit and soft-delete | functional | REQ-RES-003 |
+| QA-S5-11 | default | system / reserver | `ReservationGraceSweepJob` | `bundle exec rspec spec/jobs/reservation_grace_sweep_job_spec.rb` | Due active → expired_grace + notify; due grace → auto_released + notify | functional | REQ-RES-006 O7A BM-RES-006 |
+| QA-S5-12 | default | authenticated member | NotificationDispatcher + prefs API | `bundle exec rspec spec/services/notification_dispatcher_spec.rb spec/requests/api/v1/notifications_spec.rb` | In-app + email enqueue; push no-op; prefs GET/PATCH; mark read; skip when pref off | functional | REQ-NOTIF-001 O1A O8A BM-NOTIF-001 |
+| QA-S5-13 | default | logged-in sharee / guest / owner | Hotwire `/s/:share_token` reservations | `bundle exec rspec spec/requests/secret_link_reservations_spec.rb` | Sharee reserve/extend/cancel; owner no reserve controls; (guest gated per related secret_links specs) | functional | REQ-WISH-002 REQ-RES-001 O4B BM-RES-007 |
+| QA-S5-14 | default | friend (Flutter) | ReservationRepository | `cd mobile && flutter test test/features/reservations/reservation_repository_test.dart` | create posts payload; fetchMine maps my_reservations | functional | REQ-RES-001 REQ-RES-004 |
+| QA-S5-15 | default | friend (Flutter UI) | WishlistDetail reserve + MyReservationsScreen | `cd mobile && flutter test test_qa/reservations_surfaces_test.dart` — non-owner detail shows reserve/availability; MyReservationsScreen loads list from mock repo | Reserve CTA / availability labels; My Reservations lists holds | functional | REQ-RES-001 REQ-RES-004 O3A |
+| QA-S5-16 | default | friend (Flutter) | Locale `en` reservation strings | Same QA file with `AppStrings.en` (or Locale en) | Reserve / availability / My reservations strings present in English (no missing keys) | locale | REQ-USER-002 |
+| QA-S5-17 | default | regression | Auth + wishlist + S4 items smoke | `cd mobile && flutter test test/features/app_screens_test.dart` and analyze; include Login/SignUp/MyWishlists/SharedWishlists/item surfaces | Suite green; prior surfaces still load | regression | S1–S4 |
+| QA-S5-18 | default | regression | Full backend suite | `cd backend && bundle exec rspec` | All examples green | regression | suite |
+| QA-S5-19 | default | owner device | Real-device Flutter reserve/extend/cancel + Hotwire | On simulator/device: friend reserves on friend wishlist; extend; cancel; Secret Link sharee same; owner sees no spoilers | UX matches plan | functional | REQ-RES-* O4B |
+| QA-S5-20 | default | owner device | Live email / FCM push delivery | Out of cloud scope — profile forbids real send | N/A cloud; owner may spot-check SMTP/FCM later | owner to run | REQ-NOTIF-001 |
+| QA-S5-21 | default | out of scope | Gift / purchased_secret / Received Gifts | Do not run | Mark not in scope (Sprint 6) | n/a | REQ-GIFT-* |
+
+**Temp QA files (created only if missing during run):** `mobile/test_qa/smoke_sprint5_test.dart`, `mobile/test_qa/reservations_surfaces_test.dart` — removed after pass unless owner keeps them.
+
+**Owner to run:** QA-S5-19, QA-S5-20. **Out of scope:** QA-S5-21.
+
+## QA reviewer record — 2026-11-26 Sprint 5 Secret Reservations
+**Delivery:** not posted
+
+### Environment
+- Branch: `cursor/feat-sprint-5-secret-reservations-47be`
+- Cloud headless: Flutter widget/QA + RSpec; no browser/simulator; no live SMTP/FCM
+- Ruby 3.4.13 · Flutter 3.50.1 · PostgreSQL test DB
+
+### Prerequisites
+- Flutter / Ruby / PG test DB: ready
+- Factories for reservations/notifications: ready
+- Staging API / simulators / live push-email: not required for cloud rows
+
+### Results
+| ID | Result |
+| :--- | :--- |
+| QA-S5-01 Login smoke | passed (`flutter test test_qa/smoke_sprint5_test.dart`) |
+| QA-S5-02 MyWishlists → My Reservations entry | passed |
+| QA-S5-03 create reservation | passed (`reservations_spec`) |
+| QA-S5-04 409 race | passed |
+| QA-S5-05 extend + cancel / grace→active | passed |
+| QA-S5-06 max_reservations_per_user | passed |
+| QA-S5-07 availability + no updated_at bump | passed (`item_availability_spec`) |
+| QA-S5-08 my_reservations | passed |
+| QA-S5-09 soft-delete/block/unfriend cleanup | passed (`reservation_cleanup_spec`) |
+| QA-S5-10 critical edit/delete notify | passed |
+| QA-S5-11 grace sweep job | passed |
+| QA-S5-12 dispatcher + prefs/inbox | passed |
+| QA-S5-13 Hotwire O4B (sharee/owner/guest) | passed (`secret_link_reservations_spec`) |
+| QA-S5-14 Flutter ReservationRepository | passed |
+| QA-S5-15 reserve UI + MyReservationsScreen | passed (`test_qa/reservations_surfaces_test.dart`) |
+| QA-S5-16 en locale reservation strings | passed |
+| QA-S5-17 Flutter regression (app_screens + analyze) | passed (analyze clean; 9/9 app_screens) |
+| QA-S5-18 Full RSpec | passed (202 examples, 0 failures) |
+| QA-S5-19 real-device Flutter/Hotwire UX | owner to run |
+| QA-S5-20 live email/FCM | owner to run (forbidden in cloud) |
+| QA-S5-21 gift / purchased_secret | out of scope (Sprint 6) |
+
+### Notes
+- No product bugs. No test mistakes.
+- Temp QA files removed after pass: `mobile/test_qa/smoke_sprint5_test.dart`, `mobile/test_qa/reservations_surfaces_test.dart`.
+
+## Review disposition
+
+### Code review pass 1 (2026-11-26) — ACCEPT all (D)
+Owner: ACCEPT all. Leave findings unfixed; continue finish-branch to Draft PR.
+
+| # | Finding (short) | Decision |
+| :--- | :--- | :--- |
+| 1 | Grace sweep limit-before-due starvation | accepted unfixed |
+| 2 | Soft-deleted reserver + sweep dispatch abort | accepted unfixed |
+| 3 | max_reservations_per_user check-then-insert race | accepted unfixed |
+| 4 | N+1 availability on item list | accepted unfixed |
+| 5 | Hardcoded EN notification/Hotwire/API strings | accepted unfixed |
+| 6 | create missing ParameterMissing rescue | accepted unfixed |
+| 7 | notify_item_deleted! re-find canceled row | accepted unfixed |
+| 8 | Dead Array.each in prefs update | accepted unfixed |
+| 9 | Missing CbC post-asserts on extend!/cancel! | accepted unfixed |
+| 10 | Hotwire min= server Date.current | accepted unfixed |
+| 11 | Limit check plucks only 500 item IDs | accepted unfixed |
+
+Source detail: `/cursor/stores/self/internal/sprint-5-code-review-pass1.md`
+
+### Compliance audit pass 1 (2026-11-26) — ACCEPT all (continue to Draft)
+Owner direction: leave findings unfixed; continue finish-branch to Draft PR.
+
+| # | Finding (short) | Decision |
+| :--- | :--- | :--- |
+| 1 | my_wishlists_screen.dart build 64 lines (>60) | accepted unfixed |
+| 2 | item.rb availability_for raw String | accepted unfixed |
+| 3 | WishlistItem.availability raw String? | accepted unfixed |
+| 4 | ReservationModel.status raw String | accepted unfixed |

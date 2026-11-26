@@ -33,7 +33,7 @@ class EstimatedDate
   alias eql? ==
 
   def hash
-    [value, time_zone_name].hash
+    [ value, time_zone_name ].hash
   end
 
   def to_s

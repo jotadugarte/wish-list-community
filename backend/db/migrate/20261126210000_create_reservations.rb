@@ -16,6 +16,6 @@ class CreateReservations < ActiveRecord::Migration[8.1]
               unique: true,
               where: "status IN ('active', 'expired_grace')",
               name: "index_reservations_one_active_hold_per_item"
-    add_index :reservations, [:user_id, :status], name: "index_reservations_on_user_id_and_status"
+    add_index :reservations, [ :user_id, :status ], name: "index_reservations_on_user_id_and_status"
   end
 end
