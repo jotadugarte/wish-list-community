@@ -1,6 +1,6 @@
 # Database Schema Reference (`SCHEMA_REFERENCE.md`)
 
-> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_25_101500`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
+> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_26_140000`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
 
 ---
 
@@ -45,7 +45,7 @@ Enforces a 30-day quarantine on a user's previous `@username` after they change 
 ---
 
 ## 3. `sessions` (`[REQ-AUTH-001]`)
-Stateful Web cookie sessions (`HttpOnly`, `SameSite=Lax`). Automatically cleared upon logout or account soft-delete.
+Stateful Web cookie sessions (`HttpOnly`, `Secure` in production, `SameSite=Lax`). Automatically cleared upon logout or account soft-delete.
 
 | Column | Type | Null | Default | Business Semantics |
 | :--- | :--- | :--- | :--- | :--- |
@@ -148,3 +148,43 @@ Polymorphic abuse reporting queue supporting `User` reports (Sprint 2) and `Wish
 * **Indexes:**
   * `idx_reports_unique_pending_per_reporter_target`: Partial unique index on `(reporter_id, reportable_type, reportable_id) WHERE status = 'pending'`, preventing duplicate pending reports by the same reporter on the same target.
   * `index_reports_on_reportable_type_and_reportable_id`, `index_reports_on_reporter_id`, `index_reports_on_status`: Moderation queue lookup indexes.
+
+---
+
+## 10. `wishlists` (`[REQ-WISH-001]`, `[REQ-WISH-002]`, `[REQ-WISH-004]`, `[REQ-WISH-006]`, `[REQ-LIFE-001]`, `[REQ-ARCH-002]`)
+Empty personal wishlist shells (Sprint 3). Items arrive in a later sprint. Anti-stalking privacy modes gate discovery; Secret Link uses opaque `share_token`.
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Immutable wishlist identifier used in `/wishlists/:id` (`REQ-WISH-006`). |
+| `owner_id` | `bigint` | `false` | FK (`users`) | Owning user (`on_delete: :cascade`). Account soft-delete cascades soft-delete of kept wishlists (`REQ-LIFE-002`). |
+| `title` | `string` | `false` | — | Owner-visible list title. |
+| `privacy_mode` | `string` | `false` | `"friends"` | `PrivacyMode` VO: `"friends"` (accepted friends) or `"shared"` (selected sharees + Secret Link). Default on create is `"friends"` (`REQ-WISH-001`). |
+| `share_token` | `string` | `true` | `nil` | Opaque URL-safe Secret Link token (`ShareToken` VO). Present only when `privacy_mode = shared`; wiped on switch to `friends`; unique when present (`REQ-WISH-002`, `REQ-WISH-006`). Owner-only in API JSON. |
+| `event_date` | `date` | `true` | `nil` | Optional event date for later reserver warnings (`REQ-WISH-004`). |
+| `activity_id` | `bigint` | `true` | `nil` | Nullable readiness column for future Activity linkage (`REQ-ARCH-002`). |
+| `max_reservations_per_user` | `integer` | `true` | `nil` | Optional per-user reservation cap; `nil` means unlimited for personal lists. |
+| `discarded_at` | `datetime` | `true` | `nil` | Soft-delete timestamp (`SoftDeletable`, 30-day restore grace) (`REQ-LIFE-001`). |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Standard audit timestamps. |
+
+* **Indexes:**
+  * `index_wishlists_on_share_token_unique`: Partial unique index on `share_token WHERE share_token IS NOT NULL`.
+  * `index_wishlists_on_owner_id`, `index_wishlists_on_owner_id_and_discarded_at`, `index_wishlists_on_discarded_at`, `index_wishlists_on_activity_id`.
+
+---
+
+## 11. `wishlist_shares` (`[REQ-WISH-003]`, `[REQ-BLOCK-002]`)
+Grants a user access to a `shared`-mode wishlist via explicit friend share or Secret Link upsert. Unique per `(wishlist_id, user_id)`.
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Primary identifier. |
+| `wishlist_id` | `bigint` | `false` | FK (`wishlists`) | Shared wishlist (`on_delete: :cascade`). |
+| `user_id` | `bigint` | `false` | FK (`users`) | Sharee (`on_delete: :cascade`). Cannot be the wishlist owner. |
+| `source` | `string` | `false` | `"explicit"` | `"explicit"` (owner selected friend) or `"secret_link"` (opened `/s/:share_token`). Secret-link rows are revoked when the token is wiped or rotated (`REQ-WISH-002`, `REQ-WISH-003`). |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Standard audit timestamps. |
+
+* **Indexes:**
+  * `index_wishlist_shares_on_wishlist_id_and_user_id`: Unique composite preventing duplicate shares.
+  * `index_wishlist_shares_on_wishlist_id`, `index_wishlist_shares_on_user_id`.
+* **Cleanup:** Deleted between a user pair on `UserBlock.block!` and `Friendship#remove!` (`REQ-BLOCK-002` parity).
