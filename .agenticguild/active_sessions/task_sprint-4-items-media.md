@@ -156,6 +156,72 @@ BM-ITEM-001..010 planned→automated with tests.
 ## Lock checklist (2026-11-26)
 - [x] Opening triad · Feature classification · Domain Model · Final check · O1A–O8A locked · BM exists · plan below
 
+
+## QA matrix (2026-11-26 Sprint 4)
+
+Owner authorized matrix + pass. Tenant = default single-tenant app.
+
+| ID | tenant | role | screen/surface | steps | expected | type | requirement |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| QA-S4-01 | default | authenticated member | LoginScreen smoke | `cd mobile && flutter test test_qa/smoke_sprint4_test.dart` — pump LoginScreen with es strings | Login title visible; no crash | smoke | REQ-AUTH-001 |
+| QA-S4-02 | default | authenticated member | MyWishlistsScreen smoke | same file — pump MyWishlistsScreen with mocked GET/POST wishlists | "Mis listas de deseos" + list title shown | smoke | REQ-WISH-001 |
+| QA-S4-03 | default | owner | WishlistDetailScreen items | `test_qa/items_surfaces_test.dart` — detail loads mocked items; specs box text visible | title + specifications rendered | functional | REQ-ITEM-001 |
+| QA-S4-04 | default | owner | ItemFormScreen preview | form: enter store URL, tap Vista previa, see preview title; es strings | preview controls + specs label | functional | REQ-ITEM-006 |
+| QA-S4-05 | default | owner | ItemFormScreen locale en | pump ItemFormScreen with AppStrings.forLocale('en') | "Add item", "Specifications" present; no es leftovers on those labels | locale | REQ-USER-002 |
+| QA-S4-06 | default | owner | API items CRUD | `cd backend && bundle exec rspec spec/requests/api/v1/items_spec.rb` | 0 failures; create/list/update/delete/restore/reorder | functional+persistence | REQ-ITEM-001, REQ-LIFE-001 |
+| QA-S4-07 | default | authenticated member | API link_previews | `bundle exec rspec spec/requests/api/v1/link_previews_spec.rb` | 0 failures; auth required; mocked OG | functional | REQ-ITEM-006 |
+| QA-S4-08 | default | owner | API/media image processor | `bundle exec rspec spec/services/item_image_processor_spec.rb` | WebP ≤1600; reject >2MB and 4th image | functional | REQ-ITEM-002 |
+| QA-S4-09 | default | n/a | OG SSRF | `bundle exec rspec spec/services/open_graph_preview_spec.rb` | private IPs empty fields; mocked success | functional | REQ-ITEM-006 |
+| QA-S4-10 | default | guest | Hotwire Secret Link OG | `bundle exec rspec spec/requests/secret_links_items_spec.rb` example guest | invitation; no item title | functional | REQ-WISH-005 |
+| QA-S4-11 | default | sharee | Hotwire Secret Link items | same file authenticated example | read-only item title/specs/link | functional | REQ-ITEM-001, O1A |
+| QA-S4-12 | default | owner | Soft-delete cascade | `bundle exec rspec spec/models/wishlist_item_cascade_spec.rb` | cascade + restore | persistence | REQ-LIFE-001 |
+| QA-S4-13 | default | owner | Regression suite mobile | `cd mobile && flutter analyze && flutter test` | analyze clean; all tests pass | regression | REQ-ARCH-001 |
+| QA-S4-14 | default | owner | Regression suite API | `cd backend && bundle exec rspec` | 0 failures | regression | REQ-ARCH-001 |
+| QA-S4-15 | default | owner | Flutter gallery multipart | N/A — no picker in UI | n/a — gap | functional | REQ-ITEM-002 |
+| QA-S4-16 | default | guest | Real WhatsApp OG card | owner opens `/s/:token` in WhatsApp | invitation only | functional | REQ-WISH-005 |
+
+
+## QA reviewer record — 2026-11-26 Sprint 4 Items+Media
+
+**Delivery:** not posted  
+**Environment:** Cloud agent headless; Flutter 3.50.1; Ruby 3.4.13; PostgreSQL test DB; WebMock for OG; ActiveStorage Disk test.  
+**Branch:** `cursor/feat-sprint-4-items-media-ab93` (profile commit `4b0c11b` pushed).  
+**Profile:** `docs/ai/qa_profile.md` (Sprint 4 refresh, owner ACCEPT).
+
+### Prerequisites
+- Flutter / Ruby / test DB / factories: ready
+- Live staging API / simulators: not required for cloud rows
+
+### Results
+| ID | Result | Evidence |
+| :--- | :--- | :--- |
+| QA-S4-01 Login smoke | passed | `flutter test test_qa/smoke_sprint4_test.dart` |
+| QA-S4-02 MyWishlists smoke | passed | same |
+| QA-S4-03 WishlistDetail items/specs | passed | `flutter test test_qa/items_surfaces_test.dart` |
+| QA-S4-04 ItemForm preview | passed | same |
+| QA-S4-05 ItemForm en locale | passed | same |
+| QA-S4-06 Items API CRUD/reorder | passed | `rspec spec/requests/api/v1/items_spec.rb` |
+| QA-S4-07 link_previews | passed | `rspec spec/requests/api/v1/link_previews_spec.rb` |
+| QA-S4-08 image processor | passed | `rspec spec/services/item_image_processor_spec.rb` |
+| QA-S4-09 OG SSRF | passed | `rspec spec/services/open_graph_preview_spec.rb` |
+| QA-S4-10 Hotwire guest OG | passed | `rspec spec/requests/secret_links_items_spec.rb` |
+| QA-S4-11 Hotwire auth items | passed | same |
+| QA-S4-12 soft-delete cascade | passed | `rspec spec/models/wishlist_item_cascade_spec.rb` |
+| QA-S4-13 mobile regression | passed | `flutter analyze` clean; `flutter test` 48 passed |
+| QA-S4-14 API regression | passed | `bundle exec rspec` 156 examples, 0 failures |
+| QA-S4-15 Flutter gallery multipart | n/a — gap | No picker in UI (profile note) |
+| QA-S4-16 Real WhatsApp OG | owner to run | Open `/s/:token` in WhatsApp; expect invitation only |
+
+### Not run / owner
+- Real device gallery pick; Maestro/integration_test; live store scrape; real WhatsApp OG (QA-S4-16)
+
+### Temp files removed
+- `mobile/test_qa/smoke_sprint4_test.dart`
+- `mobile/test_qa/items_surfaces_test.dart`
+
+### Product bugs
+- None found in this pass.
+
   </working_notes>
 
   <implementation_plan>
