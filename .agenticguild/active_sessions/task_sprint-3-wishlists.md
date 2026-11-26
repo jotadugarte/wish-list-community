@@ -232,7 +232,7 @@ No remaining Open owner forks. Pitfalls recorded as risks / Locked mitigations a
 
 ## QA reviewer record — 2026-11-26 (Sprint 3 Wishlists)
 
-**Delivery:** not posted
+**Delivery:** posted
 
 **Environment:** Cloud agent VM; Ruby 3.4.13; Flutter 3.50.1; PostgreSQL 16 test DB; mocked Flutter ApiClient; no live staging API; no simulator.
 
