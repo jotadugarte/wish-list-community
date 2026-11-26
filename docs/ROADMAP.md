@@ -20,7 +20,7 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Authentication (`POST /api/v1/signup` with `terms_accepted_at`, login, logout, sessions), anti-enumeration password reset (always generic `200 OK`), and Rails 8 `rate_limit` on auth endpoints (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`) — 2026-11-24; signup API wired 2026-11-26 (`cursor/chore-signup-p0`)
   - [x] Public profile: unique `@username` (email stays strictly private), 30-day change cooldown + 30-day quarantine on previous `@username`, preferred `locale` (`es`/`en`), and `time_zone` (`REQ-USER-001`, `REQ-USER-002`, `REQ-USER-003`, `REQ-USER-004`) — 2026-11-24
   - [x] Central Pundit permissions layer (*default-deny*) + Block users ("block wins": immediately cuts access and transactionally destroys friendship, shares, and active reservations) + immutable `AuditEvent` foundation (`REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-24
-  - [x] Soft-delete + restore infrastructure (`SoftDeletable` concern + 30-day account restoration window before PII purge) (`REQ-LIFE-001`, `REQ-LIFE-002`) — 2026-11-24 — *Wishlist cascade Done in Sprint 3; item cascade Done in Sprint 4; reservation cascade still Pending (Sprint 5)*
+  - [x] Soft-delete + restore infrastructure (`SoftDeletable` concern + 30-day account restoration window before PII purge) (`REQ-LIFE-001`, `REQ-LIFE-002`) — 2026-11-24 — *Wishlist cascade Done in Sprint 3; item cascade Done in Sprint 4; reservation cascade Done in Sprint 5*
 - [x] **MVP Sprint 2 (Backend) — Social & Anti-Stalking Profile Search** — 2026-11-25
   - [x] Search users by `@username` via `SearchQuery` Value Object (`GET /api/v1/users/search` and `GET /api/v1/users/:username`, anti-stalking: non-friends only see `@username` and `friendship_status`, never personal wishlists or `email_address`, with batched zero-`N+1` status loading) (`REQ-SOC-001`, `REQ-WISH-001`, `REQ-BLOCK-001`) — 2026-11-25
   - [x] Friend requests + accept/decline/remove + friends list (`Friendship` & `FriendshipPolicy`, enforced by unordered unique pair index in PostgreSQL, 20-pending outgoing anti-spam cap, and automatic `UserBlock` cleanup hook) (`REQ-SOC-001`, `REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-25
@@ -36,12 +36,12 @@ Things done and things left to do. Update this when finishing branches; use `roa
 
 - [x] **MVP Sprint 3 — Wishlists (Anti-Stalking Privacy + Secret Links)** — 2026-11-26 — Branch: `cursor/feat-sprint-3-wishlists`
   - [x] Wishlist CRUD with optional `event_date`, immutable URLs (`/wishlists/:id` and `/s/:share_token` independent of `@username`), and v1-ready nullable `activity_id` (`REQ-WISH-004`, `REQ-WISH-006`, `REQ-ARCH-002`) — 2026-11-26
-  - [x] Soft-delete/restore for wishlists via `SoftDeletable` (item cascade Done in Sprint 4; reservation cascade still Sprint 5) (`REQ-LIFE-001`) — 2026-11-26
+  - [x] Soft-delete/restore for wishlists via `SoftDeletable` (item cascade Done in Sprint 4; reservation cascade Done in Sprint 5) (`REQ-LIFE-001`) — 2026-11-26
   - [x] Anti-stalking privacy per personal wishlist (`REQ-WISH-001`, `REQ-WISH-002`, `REQ-WISH-003`):
     - [x] `friends`: visible to accepted friends only (never exposed to strangers searching `@username`)
     - [x] `shared`: visible to specific selected friends + anyone opening the Secret Link (`share_token`)
   - [x] Secret link lifecycle: invalidated on `friends`; OG invitation without items; `return_to` login/signup; Shared-with-me upsert; token rotate (O4A) (`REQ-WISH-002`, `REQ-WISH-003`, `REQ-WISH-005`, `REQ-WISH-006`) — 2026-11-26
-  - [x] Guests view Secret Link invitation only; must log in for Shared-with-me (reserve/gift remains Sprint 5) (`REQ-WISH-001`, `REQ-WISH-002`) — 2026-11-26
+  - [x] Guests view Secret Link invitation only; must log in for Shared-with-me (reserve Done in Sprint 5; gift remains Sprint 6) (`REQ-WISH-001`, `REQ-WISH-002`) — 2026-11-26
   - [x] API v1 endpoints + Flutter wishlist screens for this sprint — 2026-11-26
 - [x] **MVP Sprint 4 — Items + Media + Automatic Store Image Extraction** — 2026-11-26 — Branch: `cursor/feat-sprint-4-items-media-ab93`
   - [x] Item CRUD (`1 item = 1 unit`), prominent `specifications` note below the image (for exact color/size/variant clarifications), `priority` desire levels (`low`, `medium`, `high`, `must_have`), multiple `http/https` purchase links (`ItemLink`), and v1-ready nullable `price_cents`/`currency` (`REQ-ITEM-001`, `REQ-ITEM-003`, `REQ-ITEM-005`, `REQ-ARCH-002`) — 2026-11-26
@@ -52,19 +52,21 @@ Things done and things left to do. Update this when finishing branches; use `roa
     - [ ] Optional client-side compression (UX) — deferred O6A to Sprint 9
     - [x] Mandatory server-side resize + WebP re-encode + full EXIF/GPS metadata stripping via `libvips`
   - [x] API v1 endpoints + Flutter screens for this sprint — 2026-11-26
+- [x] **MVP Sprint 5 — Secret Reservations (72h Grace Auto-Release & Context-Aware Limits)** — 2026-11-26 — Branch: `cursor/feat-sprint-5-secret-reservations-47be` — Draft PR #12
+  - [x] Reserve an item (logged-in users with access only) with "first to reserve wins" concurrency enforced by a PostgreSQL partial unique index (`WHERE status IN ('active', 'expired_grace')`) (`REQ-RES-001`) — 2026-11-26
+  - [x] Zero spoilers for recipient: owner never sees reservation state, and reservation mutations never update `items.updated_at`; viewer-relative `availability` for non-owners (O3A) (`REQ-RES-002`) — 2026-11-26
+  - [x] Context-aware reservation limits: personal wishlists default to unlimited per friend (or owner-configurable `max_reservations_per_user`); group activities default to 1 per participant deferred to v1 (`REQ-RES-005`) — 2026-11-26
+  - [x] Private note and timezone-aware private `estimated_date` from the reserver (`REQ-RES-001`, `REQ-USER-003`) — 2026-11-26
+  - [x] 72-hour expiration grace window via `ReservationGraceSweepJob`: extend or voluntary cancel in Sprint 5; mark purchased deferred to Sprint 6 (O2A/O5A/O6A/O7A) (`REQ-RES-006`) — 2026-11-26
+  - [x] Dedicated *"My Reservations"* screen/endpoint (`/api/v1/my_reservations`) + notification to reserver if owner edits critical details or deletes a reserved item (`REQ-RES-003`, `REQ-RES-004`) — 2026-11-26
+  - [x] Notification foundation: in-app + email enqueue + push no-op; preferences defaults-on (O1A/O8A) (`REQ-NOTIF-001`) — 2026-11-26
+  - [x] Hotwire Secret Link reserve/extend/cancel parity with Flutter (O4B) (`REQ-WISH-002`, `REQ-RES-001`) — 2026-11-26
+  - [x] API v1 endpoints + Flutter screens for this sprint — 2026-11-26
 
 ## In Progress
 *(No items currently in progress)*
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 5 — Secret Reservations (72h Grace Auto-Release & Context-Aware Limits)**
-  - [ ] Reserve an item (logged-in users with access only) with "first to reserve wins" concurrency enforced by a PostgreSQL partial unique index (`WHERE status IN ('active', 'expired_grace')`) (`REQ-RES-001`)
-  - [ ] Zero spoilers for recipient: owner never sees reservation state, and reservation mutations never update `items.updated_at` (`REQ-RES-002`)
-  - [ ] Context-aware reservation limits: personal wishlists default to unlimited per friend (or owner-configurable limit); group activities default to 1 per participant (`REQ-RES-005`)
-  - [ ] Private note and timezone-aware private `estimated_date` from the reserver (`REQ-RES-001`, `REQ-USER-003`)
-  - [ ] 72-hour expiration grace window: when `estimated_date` expires, notify reserver and grant 72 hours (3 days) to extend or mark purchased; if ignored after 72 hours, automatically release the reservation (`REQ-RES-006`)
-  - [ ] Dedicated *"My Reservations"* screen/endpoint (`/api/v1/my_reservations`) + instant notification to reserver if owner edits critical details or deletes a reserved item (`REQ-RES-003`, `REQ-RES-004`)
-  - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 6 — Dual-Path Gift Fulfillment + Anonymous Thank-You Note**
   - [ ] Unified `"Reserved / Unavailable"` status shown to other friends for both reserved and secretly purchased items; third-party friends cannot override another friend's active reservation (`REQ-GIFT-002`)
   - [ ] Dual-path fulfillment (`REQ-GIFT-001`, `REQ-GIFT-003`):

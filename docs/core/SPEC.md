@@ -14,7 +14,7 @@
 | **Block Wins** | Access control law where a block between two users immediately terminates all visibility, friendships, shares, and active reservations in both directions. | Enforced centrally in `ApplicationPolicy` and `UserBlockService` (`REQ-BLOCK-001`, `REQ-BLOCK-002`). |
 | **Quarantined Username** | A previously used `@username` locked for 30 days after a user changes their handle so no third party can claim it to impersonate them. | Tracked via `UsernameReservation` / cooldown checks (`REQ-USER-004`). |
 | **Ghost Reservation** | An invalid state where a soft-deleted and later restored wishlist/item resurrects an old reservation that the reserver already gave up on. | Prevented by permanently canceling reservations upon item/wishlist soft-delete (`REQ-LIFE-001`). |
-| **Expired Grace Window** | A 72-hour (3-day) period after a reservation's `estimated_date` passes during which the reserver is notified and can extend or mark as purchased before automatic release. | `Reservation` status `expired_grace` -> `auto_released` after 72h (`REQ-RES-006`). |
+| **Expired Grace Window** | A 72-hour (3-day) period after a reservation's `estimated_date` passes during which the reserver is notified and can **extend or voluntarily cancel** before automatic release. Mark purchased during grace is Sprint 6. | `Reservation` status `expired_grace` -> `auto_released` after 72h via `ReservationGraceSweepJob` (`REQ-RES-006`, O2A). |
 | **Blind Auto-Bridge** | Re-stitching a Secret Santa Hamiltonian cycle (`A -> B -> C` becomes `A -> C`) when `B` drops out after the draw, without revealing to the activity creator who gifts whom. | Executed server-side in `ActivityDropoutBridgeService` (`REQ-ACT-003`, `REQ-ACT-004`). |
 
 ---
@@ -74,10 +74,14 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 * **Responsibility:** Secret item reservation (`active`, `expired_grace`, `auto_released`, `canceled`, `completed_by_gift`) and dual-path gift fulfillment (`purchased_secret`, `delivered_pending_confirmation`, `received_confirmed`) with optional anonymous thank-you note.
 * **Invariants:**
   * PostgreSQL partial unique index enforces at most one active/grace reservation per item: `WHERE status IN ('active', 'expired_grace')`.
-  * **Zero Spoilers for Owner:** The wishlist owner never sees `active`, `expired_grace`, or `purchased_secret` states.
-  * **Unified Status for Other Friends:** Other friends with access see a single unified `"Reserved / Unavailable"` state whenever an item is reserved or secretly purchased.
-  * **No Third-Party Override:** A third-party friend cannot mark an already-reserved item as gifted or override another friend's active reservation. Only the active reserver can mark it purchased/delivered, OR the **wishlist owner** can mark *"I already received this"* (`received_confirmed`), which closes the reservation and notifies the reserver.
-  * **72-Hour Expiration Grace Window:** When `estimated_date` elapses in the reserver's `time_zone`, status transitions to `expired_grace` and the reserver is notified. If not extended or marked purchased within 72 hours, it transitions to `auto_released`.
+  * **Zero Spoilers for Owner:** The wishlist owner never sees `active`, `expired_grace`, or `purchased_secret` states. Reservation create/extend/cancel/grace/auto-release **must not** mutate `items.updated_at`.
+  * **Viewer-relative availability (O3A, Sprint 5):** Non-owner item payloads expose `availability`: `available` | `reserved_by_me` | `unavailable` (never the reserver's identity). The field is **omitted** for the owner. Sprint 6 may map secretly purchased items onto the same `unavailable` value for third parties.
+  * **Unified Status for Other Friends (Sprint 6 gift path):** Other friends with access see a single unified unavailable state whenever an item is reserved or secretly purchased (`REQ-GIFT-002`).
+  * **No Third-Party Override:** A third-party friend cannot mark an already-reserved item as gifted or override another friend's active reservation. Only the active reserver can mark it purchased/delivered, OR the **wishlist owner** can mark *"I already received this"* (`received_confirmed`), which closes the reservation and notifies the reserver. **Mark purchased / gift dual-path is Sprint 6** — not available in Sprint 5.
+  * **72-Hour Expiration Grace Window (O2A / O5A / O6A / O7A):** When `estimated_date` elapses in the reserver's `time_zone`, a Solid Queue recurring sweep (`ReservationGraceSweepJob`) moves the hold to `expired_grace` and notifies the reserver. During active or grace, the reserver may **extend** (`estimated_date` ≥ today in their zone → back to `active`) or **voluntarily cancel**. If the grace window elapses without action, status becomes `auto_released`. The SPEC “mark purchased during grace” escape is completed in Sprint 6 with gift fulfillment.
+  * **Hotwire Secret Link parity (O4B):** Logged-in sharees on `/s/:share_token` get the same reserve/extend/cancel actions as Flutter. Guests remain invitation/view + login/`return_to` before reserving.
+  * **Notification foundation (O1A / O8A):** Sprint 5 ships `Notification`, `NotificationPreference` (defaults all-on), and a single `NotificationDispatcher` (in-app + email enqueue; **push send is no-op** until Sprint 9 / Notifications MVP). S5 events: grace started, auto-released, reserved item critically edited or soft-deleted.
+* **Value Objects:** `ReservationStatus`, `EstimatedDate` (calendar date in reserver TZ).
 
 ### 4.6 `Activity`, `ActivityParticipant` & `ActivityExclusion` (v1)
 * **Responsibility:** Group gift exchanges (`secret_santa` 1->1 or `open_gifting`), external activity link access (scoped strictly to that activity), 5 budget modes (`none`, `fixed`, `min_only`, `max_only`, `range`), default 1 active reservation per participant in Secret Santa, pair exclusions, and blind dropout recovery.
@@ -86,10 +90,11 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
   * Draw algorithm enforces a **single Hamiltonian cycle** (no 2-person `A <-> B` sub-loops when >= 3 participants exist) and validates exclusion graph solvability before committing.
   * If a participant drops out after the draw, the creator chooses between **Blind Auto-Bridge** (server heals `A -> B -> C` into `A -> C` and notifies `A` without ever showing the creator who gifts whom) or **Full Redraw**.
 
-### 4.7 `Report`, `AuditEvent`, `NotificationPreference` & `DeviceToken`
-* **Responsibility:** Polymorphic abuse reports (`User`, `Wishlist`), immutable admin audit trail (`AuditEvent`), per-event notification toggles (`in_app`, `email`, `push`), and `api_token`-bound FCM `DeviceToken` (automatically unbound on logout/revocation).
+### 4.7 `Report`, `AuditEvent`, `Notification`, `NotificationPreference` & `DeviceToken`
+* **Responsibility:** Polymorphic abuse reports (`User`, `Wishlist`), immutable admin audit trail (`AuditEvent`), in-app `Notification` rows, per-event notification toggles (`in_app`, `email`, `push`), and `api_token`-bound FCM `DeviceToken` (automatically unbound on logout/revocation).
 * **Invariants:**
   * A user cannot report themselves, and partial unique index (`WHERE status = 'pending'`) prevents duplicate pending reports by the same reporter on the same target.
+  * All user-facing notification fan-out goes through `NotificationDispatcher`. Missing preference rows mean defaults-on for Sprint 5 events. Push preference is stored; send remains a no-op until Sprint 9.
 * **Value Objects:** `ReportReason` (`spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`).
 
 ---
