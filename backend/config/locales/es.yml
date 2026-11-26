@@ -52,8 +52,17 @@ es:
       not_deliverable: "el regalo no se puede marcar como entregado"
       not_confirmable: "el regalo no se puede confirmar"
       item_required: "se requiere el ítem"
-
+      invalid_thank_you: "nota de agradecimiento inválida"
   notifications:
+    gift:
+      delivered_pending_confirmation:
+        title: "Alguien marcó un ítem como entregado"
+        body: "¿Confirmas haber recibido \"%{item}\"?"
+      received_confirmed_to_gifter:
+        title: "Regalo recibido"
+        body: "El dueño confirmó la recepción de \"%{item}\"."
+      thank_you:
+        title: "Nota de agradecimiento"
     reservation:
       grace_started:
         title: "Inicio del período de gracia"

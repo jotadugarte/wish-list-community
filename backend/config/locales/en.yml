@@ -52,8 +52,17 @@ en:
       not_deliverable: "gift cannot be marked delivered"
       not_confirmable: "gift cannot be confirmed"
       item_required: "item required"
-
+      invalid_thank_you: "invalid thank-you note"
   notifications:
+    gift:
+      delivered_pending_confirmation:
+        title: "Someone marked an item as delivered"
+        body: "Confirm receipt of \"%{item}\"?"
+      received_confirmed_to_gifter:
+        title: "Gift received"
+        body: "The owner confirmed receipt of \"%{item}\"."
+      thank_you:
+        title: "Thank you note"
     reservation:
       grace_started:
         title: "Reservation grace started"
