@@ -165,14 +165,14 @@ BM-ITEM-001..010 planned→automated with tests.
     <step id="4" status="complete">Implement ActiveStorage install migrations + `items`/`item_links` migrations + models until step 3 green. Add WebMock to test Gemfile group. No controllers yet.</step>
     <step id="5" status="complete">Write failing specs for Wishlist soft_delete/restore cascading Items (documented no-op reservation cancel hook). Trace `[REQ-LIFE-001]`.</step>
     <step id="6" status="complete">Implement Wishlist→Item SoftDeletable hooks until step 5 green.</step>
-    <step id="7" status="pending">Write failing `ItemPolicy` specs: owner CRUD; wishlist viewers can read; strangers/blocked deny; restore owner-only. Trace `[REQ-WISH-001]`, `[REQ-BLOCK-001]`, `[REQ-ITEM-001]`.</step>
-    <step id="8" status="pending">Implement `ItemPolicy` until step 7 green.</step>
-    <step id="9" status="pending">Write failing specs for image processing: reject oversize/>3; resize ≤1600; WebP; EXIF/GPS stripped. Trace `[REQ-ITEM-002]`.</step>
-    <step id="10" status="pending">Implement image processing (ActiveStorage + libvips) until step 9 green.</step>
-    <step id="11" status="pending">Write failing specs for sync OpenGraph preview + `POST /api/v1/link_previews` (mocked success; SSRF rejects; timeout empty; auth). Trace `[REQ-ITEM-006]`.</step>
-    <step id="12" status="pending">Implement OpenGraph preview service + link_previews endpoint until step 11 green (O2A/O3A).</step>
-    <step id="13" status="pending">Write failing request specs for items API CRUD/restore/multipart/reorder/links/price/Pundit 404. Trace `[REQ-ITEM-001..003]`, `[REQ-ITEM-005]`, `[REQ-ARCH-002]`, `[REQ-LIFE-001]`.</step>
-    <step id="14" status="pending">Implement API controllers/routes/serializers until step 13 green (O4A/O8A; O3A confirmed preview apply).</step>
+    <step id="7" status="complete">Write failing `ItemPolicy` specs: owner CRUD; wishlist viewers can read; strangers/blocked deny; restore owner-only. Trace `[REQ-WISH-001]`, `[REQ-BLOCK-001]`, `[REQ-ITEM-001]`.</step>
+    <step id="8" status="complete">Implement `ItemPolicy` until step 7 green.</step>
+    <step id="9" status="complete">Write failing specs for image processing: reject oversize/>3; resize ≤1600; WebP; EXIF/GPS stripped. Trace `[REQ-ITEM-002]`.</step>
+    <step id="10" status="complete">Implement image processing (ActiveStorage + libvips) until step 9 green.</step>
+    <step id="11" status="complete">Write failing specs for sync OpenGraph preview + `POST /api/v1/link_previews` (mocked success; SSRF rejects; timeout empty; auth). Trace `[REQ-ITEM-006]`.</step>
+    <step id="12" status="complete">Implement OpenGraph preview service + link_previews endpoint until step 11 green (O2A/O3A).</step>
+    <step id="13" status="complete">Write failing request specs for items API CRUD/restore/multipart/reorder/links/price/Pundit 404. Trace `[REQ-ITEM-001..003]`, `[REQ-ITEM-005]`, `[REQ-ARCH-002]`, `[REQ-LIFE-001]`.</step>
+    <step id="14" status="complete">Implement API controllers/routes/serializers until step 13 green (O4A/O8A; O3A confirmed preview apply).</step>
     <step id="15" status="pending">Write failing specs for Hotwire `/s/:share_token`: guest OG invitation-only; authorized viewer read-only items. Trace `[REQ-WISH-005]`, `[REQ-ITEM-001]`, O1A.</step>
     <step id="16" status="pending">Implement Hotwire Secret Link read-only items until step 15 green.</step>
     <step id="17" status="pending">Write failing Flutter tests for item list/add/edit/preview/price/specs/bilingual. Trace REQ-ITEM-*.</step>

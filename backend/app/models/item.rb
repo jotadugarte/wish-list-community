@@ -47,13 +47,22 @@ class Item < ApplicationRecord
       position: position,
       discarded_at: discarded_at,
       links: item_links.limit(50).map(&:as_api_json),
-      image_ids: images.attachments.limit(MAX_IMAGES).map(&:id),
+      images: images.attachments.limit(MAX_IMAGES).map { |att| image_as_json(att) },
       created_at: created_at,
       updated_at: updated_at
     }
   end
 
   private
+
+  def image_as_json(attachment)
+    {
+      id: attachment.id,
+      content_type: attachment.blob.content_type,
+      byte_size: attachment.blob.byte_size,
+      url: Rails.application.routes.url_helpers.rails_blob_path(attachment, only_path: true)
+    }
+  end
 
   def apply_default_priority
     self.priority = ItemPriority.default.value if priority.blank?

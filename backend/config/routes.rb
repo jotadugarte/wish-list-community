@@ -30,7 +30,16 @@ Rails.application.routes.draw do
         end
         post "share_token/rotate", to: "wishlists#rotate_share_token", on: :member
         resources :shares, only: %i[create destroy], controller: "wishlist_shares"
+        resources :items, only: %i[index create], controller: "items"
+        patch "items/reorder", to: "items#reorder"
       end
+      resources :items, only: %i[show update destroy] do
+        member do
+          post :restore
+          delete "images/:image_id", action: :destroy_image
+        end
+      end
+      resources :link_previews, only: %i[create]
       get "shared_wishlists" => "shared_wishlists#index"
     end
   end
