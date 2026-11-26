@@ -66,11 +66,18 @@ RSpec.describe WishlistPolicy do
       wishlist = create(:wishlist, :shared, owner: owner)
       expect(policy_for(owner, wishlist).update?).to be(true)
       expect(policy_for(owner, wishlist).destroy?).to be(true)
-      expect(policy_for(owner, wishlist).restore?).to be(true)
+      expect(policy_for(owner, wishlist).restore?).to be(false)
       expect(policy_for(owner, wishlist).rotate_share_token?).to be(true)
       expect(policy_for(owner, wishlist).manage_shares?).to be(true)
       expect(policy_for(friend, wishlist).update?).to be(false)
       expect(policy_for(friend, wishlist).manage_shares?).to be(false)
+
+      wishlist.soft_delete!(actor: owner)
+      expect(policy_for(owner, wishlist).update?).to be(false)
+      expect(policy_for(owner, wishlist).destroy?).to be(false)
+      expect(policy_for(owner, wishlist).rotate_share_token?).to be(false)
+      expect(policy_for(owner, wishlist).manage_shares?).to be(false)
+      expect(policy_for(owner, wishlist).restore?).to be(true)
     end
   end
 

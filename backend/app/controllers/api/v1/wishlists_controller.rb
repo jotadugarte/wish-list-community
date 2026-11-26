@@ -6,6 +6,7 @@ module Api
     # Traceability: [REQ-WISH-001], [REQ-WISH-002], [REQ-WISH-004], [REQ-WISH-006],
     # [REQ-LIFE-001], [REQ-ARCH-003]
     class WishlistsController < BaseController
+      skip_after_action :verify_policy_scoped
       MAX_INDEX = 100
 
       # [REQ-WISH-001] Lists the current user's kept wishlists.

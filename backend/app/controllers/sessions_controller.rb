@@ -29,7 +29,7 @@ class SessionsController < ApplicationController
   def destroy
     if cookies.signed[:session_id].present?
       Session.where(id: cookies.signed[:session_id]).destroy_all
-      cookies.delete(:session_id)
+      clear_web_session_cookie!
     end
     redirect_to root_path
   end

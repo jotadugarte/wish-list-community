@@ -43,9 +43,9 @@ class WebSignupsController < ApplicationController
       time_zone: params[:time_zone].presence || "UTC",
       terms_accepted_at: Time.current
     )
-  rescue ArgumentError => e
+  rescue ArgumentError
     user = User.new
-    user.errors.add(:base, e.message)
+    user.errors.add(:base, I18n.t("api.v1.errors.signup_invalid"))
     user
   end
 end

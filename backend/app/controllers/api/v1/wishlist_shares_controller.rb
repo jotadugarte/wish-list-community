@@ -5,6 +5,7 @@ module Api
     # Manages explicit friend shares on shared-mode wishlists.
     # Traceability: [REQ-WISH-003], [REQ-WISH-001]
     class WishlistSharesController < BaseController
+      skip_after_action :verify_policy_scoped
       # [REQ-WISH-003] Creates an explicit share for an accepted friend.
       def create
         wishlist = current_user.wishlists.kept.find(params[:wishlist_id])

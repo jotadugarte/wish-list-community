@@ -29,6 +29,30 @@ class User < ApplicationRecord
     user_record.sessions.delete_all
   end
 
+  # [REQ-LIFE-002] Cascade soft-delete owned wishlists so Secret Links die with the account.
+  register_soft_delete_hook(:cascade_soft_delete_wishlists) do |user_record|
+    ::Wishlist
+    user_record.wishlists.kept.limit(500).find_each do |wishlist|
+      wishlist.soft_delete!(actor: user_record)
+    end
+  end
+
+  # [REQ-LIFE-002] Restore wishlists cascade-deleted with the account (not earlier intentional deletes).
+  register_restore_hook(:cascade_restore_wishlists) do |user_record|
+    ::Wishlist
+    ::AuditEvent
+    event = AuditEvent.where(auditable_type: "User", auditable_id: user_record.id, action: "user.soft_deleted")
+                      .order(created_at: :desc)
+                      .limit(1)
+                      .first
+    next if event.nil?
+
+    window = (event.created_at - 1.minute)..(event.created_at + 1.minute)
+    user_record.wishlists.discarded.where(discarded_at: window).limit(500).find_each do |wishlist|
+      wishlist.restore!(actor: user_record)
+    end
+  end
+
   # [REQ-AUTH-001] Authenticates an active (non-discarded) user by normalized email and password.
   def self.authenticate_active(raw_email, raw_password)
     authenticate_within_scope(kept, raw_email, raw_password)

@@ -5,6 +5,7 @@ module Api
     # Returns the authenticated user's profile on /api/v1/me.
     # Traceability: [REQ-AUTH-001], [REQ-USER-001]
     class ProfilesController < BaseController
+      skip_after_action :verify_policy_scoped
       # [REQ-AUTH-001] Returns current user profile.
       def show
         authorize current_user, :show?

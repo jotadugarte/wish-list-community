@@ -5,6 +5,7 @@ module Api
     # Handles user and wishlist abuse report submissions for the moderation queue.
     # Traceability: [REQ-SOC-001], [REQ-DISC-001], [REQ-ADM-001]
     class ReportsController < BaseController
+      skip_after_action :verify_policy_scoped
       ALLOWED_REPORTABLE_TYPES = {
         "User" => User
       }.freeze

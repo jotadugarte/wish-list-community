@@ -5,6 +5,7 @@ module Api
     # Creates directional user blocks enforcing "Block Wins" and AuditEvent logging.
     # Traceability: [REQ-BLOCK-001], [REQ-BLOCK-002], [REQ-ADM-001], [REQ-ARCH-003]
     class UserBlocksController < BaseController
+      skip_after_action :verify_policy_scoped
       # [REQ-BLOCK-001] [REQ-BLOCK-002] Blocks target user by @username.
       def create
         handle_vo = Username.new(params[:blocked_username])

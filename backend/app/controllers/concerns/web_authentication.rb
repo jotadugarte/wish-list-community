@@ -9,9 +9,16 @@ module WebAuthentication
 
   included do
     helper_method :current_user, :logged_in? if respond_to?(:helper_method)
+    before_action :set_web_locale
   end
 
   private
+
+  # [REQ-USER-002] Sets I18n.locale from the signed-in user; guests keep the app default.
+  def set_web_locale
+    locale = current_user&.locale&.to_sym
+    I18n.locale = I18n.available_locales.include?(locale) ? locale : I18n.default_locale
+  end
 
   # [REQ-AUTH-001] Resolves the signed session cookie to an active User.
   def current_user
@@ -35,15 +42,23 @@ module WebAuthentication
       ip_address: request.remote_ip,
       user_agent: request.user_agent
     )
-    cookies.signed.permanent[:session_id] = {
-      value: web_session.id,
-      httponly: true,
-      same_site: :lax
-    }
+    cookies.signed.permanent[:session_id] = session_cookie_options.merge(value: web_session.id)
     @current_user = user
     raise "Post-condition failed: session cookie missing" if cookies.signed[:session_id].blank?
 
     web_session
+  end
+
+  def session_cookie_options
+    {
+      httponly: true,
+      same_site: :lax,
+      secure: Rails.env.production?
+    }
+  end
+
+  def clear_web_session_cookie!
+    cookies.delete(:session_id, session_cookie_options.except(:value))
   end
 
   # [REQ-WISH-005] Allowlists same-origin Secret Link return_to paths only.

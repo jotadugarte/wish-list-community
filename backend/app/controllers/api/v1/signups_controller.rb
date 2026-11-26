@@ -7,6 +7,7 @@ module Api
     class SignupsController < BaseController
       skip_before_action :authenticate_api_token!, only: :create
       skip_after_action :verify_authorized
+      skip_after_action :verify_policy_scoped
       rate_limit to: 10, within: 3.minutes, only: :create
 
       # [REQ-AUTH-001] [REQ-AUTH-002] Creates a user when terms are accepted and returns a raw bearer token once.

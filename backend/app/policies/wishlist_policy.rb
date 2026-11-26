@@ -36,7 +36,7 @@ class WishlistPolicy < ApplicationPolicy
 
   # [REQ-LIFE-001] Only the owner may restore within SoftDeletable grace.
   def restore?
-    owner_active?
+    owner_of_record? && record.discarded?
   end
 
   # [REQ-WISH-002] [REQ-WISH-006] Only the owner may rotate the Secret Link token.
@@ -105,8 +105,12 @@ class WishlistPolicy < ApplicationPolicy
     record.owner_id == user.id
   end
 
-  def owner_active?
+  def owner_of_record?
     user.present? && !user.discarded? && record.present? && owner?
+  end
+
+  def owner_active?
+    owner_of_record? && !record.discarded?
   end
 
   def friends_mode_access?
