@@ -52,6 +52,22 @@ class Wishlist < ApplicationRecord
     self
   end
 
+  # [REQ-WISH-001] [REQ-WISH-006] Serializes the empty wishlist shell for API clients.
+  def as_api_json
+    {
+      id: id,
+      title: title,
+      privacy_mode: privacy_mode,
+      share_token: share_token,
+      event_date: event_date,
+      max_reservations_per_user: max_reservations_per_user,
+      owner: owner.public_profile_json,
+      discarded_at: discarded_at,
+      created_at: created_at,
+      updated_at: updated_at
+    }
+  end
+
   # [REQ-WISH-002] [REQ-WISH-006] Rotates share_token while remaining shared (O4A).
   def rotate_share_token!
     raise ArgumentError, "Pre-condition failed: must be shared" unless privacy_mode_vo.shared?

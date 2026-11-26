@@ -1,0 +1,34 @@
+<section class="w-full max-w-md mx-auto space-y-4">
+  <h1 class="text-2xl font-semibold"><%= t("web_auth.signup_title") %></h1>
+  <% if @user&.errors&.any? %>
+    <ul class="text-red-600">
+      <% @user.errors.full_messages.first(20).each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+  <%= form_with url: signup_path, method: :post do |f| %>
+    <%= hidden_field_tag :return_to, @return_to if @return_to.present? %>
+    <div>
+      <%= label_tag :email_address, t("web_auth.email") %>
+      <%= email_field_tag :email_address, params[:email_address], required: true %>
+    </div>
+    <div>
+      <%= label_tag :username, t("web_auth.username") %>
+      <%= text_field_tag :username, params[:username], required: true %>
+    </div>
+    <div>
+      <%= label_tag :password, t("web_auth.password") %>
+      <%= password_field_tag :password, nil, required: true %>
+    </div>
+    <div>
+      <%= label_tag :password_confirmation, t("web_auth.password_confirmation") %>
+      <%= password_field_tag :password_confirmation, nil, required: true %>
+    </div>
+    <div>
+      <%= check_box_tag :terms_accepted, "1", false %>
+      <%= label_tag :terms_accepted, t("web_auth.terms") %>
+    </div>
+    <%= submit_tag t("web_auth.signup_submit") %>
+  <% end %>
+</section>

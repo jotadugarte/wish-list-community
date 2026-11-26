@@ -13,3 +13,20 @@ es:
         report_invalid: "No se pudo enviar el reporte"
       passwords:
         reset_sent: "Si ese correo electrónico está en nuestro sistema, hemos enviado las instrucciones para restablecer la contraseña."
+  secret_links:
+    invitation_title: "Lista de deseos de @%{username}"
+    og_description: "Te invitaron a ver una lista de deseos privada. Inicia sesión para continuar."
+    guest_body: "Esta es una invitación privada. Inicia sesión o regístrate para abrir la lista."
+    login_cta: "Iniciar sesión"
+    signup_cta: "Crear cuenta"
+    authenticated_empty_shell: "Lista de deseos de @%{username}. Los ítems llegan en un sprint posterior."
+  web_auth:
+    login_title: "Iniciar sesión"
+    signup_title: "Crear cuenta"
+    email: "Correo electrónico"
+    username: "Nombre de usuario"
+    password: "Contraseña"
+    password_confirmation: "Confirmar contraseña"
+    terms: "Acepto los Términos de Uso"
+    login_submit: "Iniciar sesión"
+    signup_submit: "Crear cuenta"

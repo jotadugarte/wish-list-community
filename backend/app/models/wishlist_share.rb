@@ -46,6 +46,18 @@ class WishlistShare < ApplicationRecord
     record
   end
 
+  # [REQ-WISH-003] Serializes a share row for API responses.
+  def as_api_json
+    {
+      id: id,
+      wishlist_id: wishlist_id,
+      user_id: user_id,
+      source: source,
+      user: user.public_profile_json,
+      created_at: created_at
+    }
+  end
+
   # [REQ-BLOCK-002] Deletes all shares between a pair of users (either as owner or sharee).
   def self.delete_between!(user_a, user_b)
     raise ArgumentError, "Pre-condition failed: both users required" if user_a.nil? || user_b.nil?
