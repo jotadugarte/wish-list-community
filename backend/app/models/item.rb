@@ -11,6 +11,7 @@ class Item < ApplicationRecord
 
   belongs_to :wishlist
   has_many :item_links, -> { order(:position, :id) }, dependent: :destroy, inverse_of: :item
+  has_many :gift_records, dependent: :restrict_with_exception
   has_many_attached :images
 
   # [REQ-LIFE-001] Permanently cancel active/grace reservations on soft-delete (no ghosts on restore).
@@ -20,6 +21,7 @@ class Item < ApplicationRecord
     Reservation.cancel_active_holds_for_item!(item_record.id)
     Reservation.notify_item_deleted!(reservation: hold) if hold
   end
+
 
   before_validation :apply_default_priority, on: :create
   before_validation :normalize_currency
@@ -56,23 +58,42 @@ class Item < ApplicationRecord
       created_at: created_at,
       updated_at: updated_at
     }
+    payload[:received_gift] = received_confirmed?
     return payload if viewer.nil? || viewer.id == wishlist.owner_id
 
-    payload[:availability] = availability_for(viewer, holds_by_item_id: holds_by_item_id)
+    payload[:availability] = availability_for(
+      viewer,
+      holds_by_item_id: holds_by_item_id,
+      open_gifts_by_item_id: nil
+    )
     payload
   end
 
-  # [REQ-RES-002] O3A: available | reserved_by_me | unavailable (never exposes reserver identity).
-  def availability_for(viewer, holds_by_item_id: nil)
+  # [REQ-RES-002] [REQ-GIFT-002] O3A/FC2: available | reserved_by_me | unavailable.
+  # Blocks on active/grace hold OR open GiftRecord; gifter sees reserved_by_me for their open gift.
+  def availability_for(viewer, holds_by_item_id: nil, open_gifts_by_item_id: nil)
     hold = if holds_by_item_id
       holds_by_item_id[id]
     else
       Reservation.find_by(item_id: id, status: ReservationStatus::ACTIVE_HOLD)
     end
-    return "available" if hold.nil?
-    return "reserved_by_me" if hold.user_id == viewer.id
+    open_gift = if open_gifts_by_item_id
+      open_gifts_by_item_id[id]
+    else
+      GiftRecord.where(item_id: id, status: GiftStatus::OPEN).limit(1).first
+    end
 
-    "unavailable"
+    return "reserved_by_me" if hold && hold.user_id == viewer.id
+    return "unavailable" if hold
+    return "reserved_by_me" if open_gift && open_gift.gifter_id == viewer.id
+    return "unavailable" if open_gift
+
+    "available"
+  end
+
+  # [REQ-ITEM-004] True when this item has a received_confirmed GiftRecord.
+  def received_confirmed?
+    GiftRecord.where(item_id: id, status: "received_confirmed").limit(1).exists?
   end
 
   # [REQ-RES-002] Batch-load active/grace holds for a page of items (bounded lists).
@@ -84,6 +105,26 @@ class Item < ApplicationRecord
                .limit(200)
                .index_by(&:item_id)
   end
+
+  # [REQ-GIFT-002] Batch-load open gifts for a page of items (bounded lists).
+  def self.open_gifts_by_item_id(item_ids)
+    ids = Array(item_ids).first(200)
+    return {} if ids.empty?
+
+    GiftRecord.where(item_id: ids, status: GiftStatus::OPEN)
+              .limit(200)
+              .index_by(&:item_id)
+  end
+
+  # [REQ-ITEM-004] Item ids in a wishlist that belong in the Received Gifts section.
+  def self.received_gift_item_ids_for(wishlist_id)
+    joins(:gift_records)
+      .where(wishlist_id: wishlist_id, gift_records: { status: "received_confirmed" }, discarded_at: nil)
+      .limit(500)
+      .distinct
+      .pluck(:id)
+  end
+
 
   private
 

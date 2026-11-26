@@ -215,4 +215,3 @@ class GiftService
   end
   private_class_method :notify_gifter_thank_you!
 end
-
