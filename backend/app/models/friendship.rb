@@ -101,6 +101,8 @@ class Friendship < ApplicationRecord
     transaction do
       WishlistShare
       WishlistShare.delete_between!(requester, addressee)
+      Reservation
+      Reservation.cancel_between_users!(requester, addressee)
       AuditEvent.record!(
         actor: actor,
         action: "friendship.removed",

@@ -276,8 +276,8 @@
     <step id="8" status="complete">Implement My Reservations endpoint until step 7 green.</step>
     <step id="9" status="complete">Write failing specs for item `availability` (`available`|`reserved_by_me`|`unavailable`) for non-owners; omitted for owner; reservation paths do not change `items.updated_at`. Trace `[REQ-RES-002]`, O3A.</step>
     <step id="10" status="complete">Implement item serialization branching for `availability` until step 9 green.</step>
-    <step id="11" status="pending">Write failing specs: soft-delete cancels active/grace; block cancels between pair; friendship remove cancels between pair. Trace `[REQ-LIFE-001]`, `[REQ-BLOCK-002]`.</step>
-    <step id="12" status="pending">Implement SoftDeletable / UserBlock / Friendship cleanup hooks until step 11 green.</step>
+    <step id="11" status="complete">Write failing specs: soft-delete cancels active/grace; block cancels between pair; friendship remove cancels between pair. Trace `[REQ-LIFE-001]`, `[REQ-BLOCK-002]`.</step>
+    <step id="12" status="complete">Implement SoftDeletable / UserBlock / Friendship cleanup hooks until step 11 green.</step>
     <step id="13" status="pending">Write failing specs for notification foundation: `Notification`, `NotificationPreference` (defaults all-on), `NotificationDispatcher` (in-app + email enqueue + push no-op); `GET/PATCH /notification_preferences`; `GET /notifications` (+ mark read). Trace `[REQ-NOTIF-001]`, O1A, O8A.</step>
     <step id="14" status="pending">Implement notification models, dispatcher, mailers/jobs stubs, preference/notification API until step 13 green.</step>
     <step id="15" status="pending">Write failing specs wiring S5 events: critical edit or soft-delete of reserved item notifies reserver; grace entered; auto-released. Trace `[REQ-RES-003]`, `[REQ-RES-006]`.</step>
