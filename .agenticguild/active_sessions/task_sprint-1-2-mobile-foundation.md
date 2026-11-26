@@ -52,7 +52,7 @@ Build the complete Flutter mobile foundation (`mobile/`) covering **MVP Sprint 1
 
 ## QA reviewer record — 2026-11-26
 
-**Delivery:** not posted
+**Delivery:** posted
 
 **Environment:** Cloud agent VM; Flutter 3.50.1 stable; headless `flutter_test` only; mocked ApiClient (no staging API).
 
@@ -80,3 +80,6 @@ Build the complete Flutter mobile foundation (`mobile/`) covering **MVP Sprint 1
 **Test mistakes:** none  
 **Not run:** O1, O2 (owner-only per qa_profile)
 
+
+## Harvest-rules (2026-11-26)
+No new rule candidates written. Owner skipped optional `.cursorrules` / DATA_FLOW_MAP; no review_ledger entries.
