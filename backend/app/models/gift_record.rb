@@ -16,10 +16,25 @@ class GiftRecord < ApplicationRecord
     GiftStatus.new(status)
   end
 
+  # [REQ-GIFT-001] API JSON for clients — never leaks purchase_link_ref (admin-only).
+  def as_api_json
+    {
+      id: id,
+      item_id: item_id,
+      wishlist_id: item.wishlist_id,
+      gifter_id: gifter_id,
+      status: status,
+      thank_you_note: thank_you_note,
+      created_at: created_at,
+      updated_at: updated_at
+    }
+  end
+
   # [REQ-GIFT-002] Open gifts that block availability for third parties.
   def self.open_for_item(item_id)
     where(item_id: item_id, status: GiftStatus::OPEN).limit(5)
   end
+
 
   # [REQ-LIFE-001] O8D: void open gifts on an item; optionally notify gifter; never touch received_confirmed.
   def self.void_open_for_item!(item_id, notify_gifter:, actor:)

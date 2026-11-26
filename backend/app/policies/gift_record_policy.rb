@@ -2,7 +2,7 @@
 
 # Pundit policy for GiftRecord mutations and reads (Sprint 6).
 # Traceability: [REQ-GIFT-001], [REQ-GIFT-002], [REQ-GIFT-003], [REQ-BLOCK-001]
-class GiftPolicy < ApplicationPolicy
+class GiftRecordPolicy < ApplicationPolicy
   # [REQ-GIFT-001] Gifter may mark delivered on their purchased_secret gift.
   def mark_delivered?
     gifter_on_status?("purchased_secret")

@@ -12,12 +12,29 @@ module Api
         target_user = User.where(discarded_at: nil).find_by!("LOWER(username) = ?", handle_vo.value)
 
         authorize target_user, policy_class: UserBlockPolicy
+        if gifter_open_gift_needs_confirm?(target_user)
+          return render json: { errors: [ I18n.t("gifts.errors.confirm_void_required") ] },
+                        status: :unprocessable_content
+        end
         UserBlock.block!(blocker: current_user, blocked: target_user)
 
         render json: { blocked_username: target_user.username }, status: :created
       rescue ArgumentError
         raise ActiveRecord::RecordNotFound
       end
+
+      private
+
+      # [REQ-GIFT-002] O8D: gifter must confirm before voiding their open gifts via block.
+      def gifter_open_gift_needs_confirm?(target_user)
+        return false if ActiveModel::Type::Boolean.new.cast(params[:confirm_void_gifts])
+
+        GiftRecord.where(status: GiftStatus::OPEN, gifter_id: current_user.id).limit(50).any? do |gift|
+          gift.item.wishlist.owner_id == target_user.id
+        end
+      end
     end
   end
 end
+
+

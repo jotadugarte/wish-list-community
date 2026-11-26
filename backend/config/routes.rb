@@ -45,9 +45,19 @@ Rails.application.routes.draw do
           delete "images/:image_id", action: :destroy_image
         end
         resources :reservations, only: %i[create], controller: "reservations"
+        post "mark_received", to: "item_gifts#create"
       end
-      resources :reservations, only: %i[update destroy]
+      resources :reservations, only: %i[update destroy] do
+        post "mark_purchased", to: "reservation_gifts#create"
+      end
+      resources :gifts, only: [] do
+        member do
+          post :mark_delivered
+          post :confirm_received
+        end
+      end
       get "my_reservations" => "my_reservations#index"
+
       resource :notification_preferences, only: %i[show update]
       resources :notifications, only: %i[index] do
         member do
