@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_211000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -119,6 +119,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_210000) do
     t.index ["wishlist_id"], name: "index_items_on_wishlist_id"
   end
 
+  create_table "notification_preferences", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.jsonb "channels", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "event_key", null: false
+    t.string "title", null: false
+    t.text "body"
+    t.jsonb "payload", default: {}, null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "created_at"], name: "index_notifications_on_user_id_and_created_at"
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "reports", force: :cascade do |t|
     t.bigint "reporter_id", null: false
     t.string "reportable_type", null: false
@@ -144,7 +166,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_210000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_reservations_on_item_id"
-    t.index ["item_id"], name: "index_reservations_one_active_hold_per_item", unique: true, where: "((status)::text = ANY ((ARRAY['active'::character varying, 'expired_grace'::character varying])::text[]))"
+    t.index ["item_id"], name: "index_reservations_one_active_hold_per_item", unique: true, where: "((status)::text = ANY (ARRAY[('active'::character varying)::text, ('expired_grace'::character varying)::text]))"
     t.index ["user_id", "status"], name: "index_reservations_on_user_id_and_status"
     t.index ["user_id"], name: "index_reservations_on_user_id"
   end
@@ -236,6 +258,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_210000) do
   add_foreign_key "friendships", "users", column: "requester_id", on_delete: :cascade
   add_foreign_key "item_links", "items"
   add_foreign_key "items", "wishlists"
+  add_foreign_key "notification_preferences", "users"
+  add_foreign_key "notifications", "users"
   add_foreign_key "reports", "users", column: "reporter_id", on_delete: :cascade
   add_foreign_key "reservations", "items"
   add_foreign_key "reservations", "users"

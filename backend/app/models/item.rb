@@ -16,7 +16,9 @@ class Item < ApplicationRecord
   # [REQ-LIFE-001] Permanently cancel active/grace reservations on soft-delete (no ghosts on restore).
   register_soft_delete_hook(:cancel_active_reservations) do |item_record|
     Reservation
+    hold = Reservation.find_by(item_id: item_record.id, status: ReservationStatus::ACTIVE_HOLD)
     Reservation.cancel_active_holds_for_item!(item_record.id)
+    Reservation.notify_item_deleted!(item: item_record) if hold
   end
 
   before_validation :apply_default_priority, on: :create

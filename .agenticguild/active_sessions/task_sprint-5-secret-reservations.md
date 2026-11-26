@@ -278,12 +278,12 @@
     <step id="10" status="complete">Implement item serialization branching for `availability` until step 9 green.</step>
     <step id="11" status="complete">Write failing specs: soft-delete cancels active/grace; block cancels between pair; friendship remove cancels between pair. Trace `[REQ-LIFE-001]`, `[REQ-BLOCK-002]`.</step>
     <step id="12" status="complete">Implement SoftDeletable / UserBlock / Friendship cleanup hooks until step 11 green.</step>
-    <step id="13" status="pending">Write failing specs for notification foundation: `Notification`, `NotificationPreference` (defaults all-on), `NotificationDispatcher` (in-app + email enqueue + push no-op); `GET/PATCH /notification_preferences`; `GET /notifications` (+ mark read). Trace `[REQ-NOTIF-001]`, O1A, O8A.</step>
-    <step id="14" status="pending">Implement notification models, dispatcher, mailers/jobs stubs, preference/notification API until step 13 green.</step>
-    <step id="15" status="pending">Write failing specs wiring S5 events: critical edit or soft-delete of reserved item notifies reserver; grace entered; auto-released. Trace `[REQ-RES-003]`, `[REQ-RES-006]`.</step>
-    <step id="16" status="pending">Implement event hooks + services until step 15 green.</step>
-    <step id="17" status="pending">Write failing specs for Solid Queue sweep job (O7A): due active→expired_grace + notify; due grace→auto_released + notify; idempotent; TZ-aware. Configure `recurring.yml`.</step>
-    <step id="18" status="pending">Implement sweep job + recurring schedule until step 17 green.</step>
+    <step id="13" status="complete">Write failing specs for notification foundation: `Notification`, `NotificationPreference` (defaults all-on), `NotificationDispatcher` (in-app + email enqueue + push no-op); `GET/PATCH /notification_preferences`; `GET /notifications` (+ mark read). Trace `[REQ-NOTIF-001]`, O1A, O8A.</step>
+    <step id="14" status="complete">Implement notification models, dispatcher, mailers/jobs stubs, preference/notification API until step 13 green.</step>
+    <step id="15" status="complete">Write failing specs wiring S5 events: critical edit or soft-delete of reserved item notifies reserver; grace entered; auto-released. Trace `[REQ-RES-003]`, `[REQ-RES-006]`.</step>
+    <step id="16" status="complete">Implement event hooks + services until step 15 green.</step>
+    <step id="17" status="complete">Write failing specs for Solid Queue sweep job (O7A): due active→expired_grace + notify; due grace→auto_released + notify; idempotent; TZ-aware. Configure `recurring.yml`.</step>
+    <step id="18" status="complete">Implement sweep job + recurring schedule until step 17 green.</step>
     <step id="19" status="pending">Write failing system/request specs for Hotwire Secret Link reservation parity (O4B): logged-in sharee reserve/extend/cancel + availability; guest cannot reserve; owner sees no spoilers. Trace `[REQ-WISH-002]`, `[REQ-RES-001]`, O4B.</step>
     <step id="20" status="pending">Implement Hotwire Turbo reservation actions/UI until step 19 green.</step>
     <step id="21" status="pending">Write failing Flutter tests: reserve/extend/cancel; availability badges; My Reservations; light prefs/inbox; AppStrings; DesignTokens. Trace REQ-RES-*.</step>

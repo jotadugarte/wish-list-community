@@ -42,6 +42,12 @@ Rails.application.routes.draw do
       end
       resources :reservations, only: %i[update destroy]
       get "my_reservations" => "my_reservations#index"
+      resource :notification_preferences, only: %i[show update]
+      resources :notifications, only: %i[index] do
+        member do
+          post :mark_read
+        end
+      end
       resources :link_previews, only: %i[create]
       get "shared_wishlists" => "shared_wishlists#index"
     end

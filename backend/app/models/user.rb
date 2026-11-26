@@ -17,6 +17,8 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :api_tokens, dependent: :destroy
   has_many :device_tokens, dependent: :destroy
+  has_many :notifications, dependent: :destroy
+  has_one :notification_preference, dependent: :destroy
   has_many :requested_friendships, class_name: "Friendship", foreign_key: :requester_id, dependent: :destroy
   has_many :received_friendships, class_name: "Friendship", foreign_key: :addressee_id, dependent: :destroy
   has_many :submitted_reports, class_name: "Report", foreign_key: :reporter_id, dependent: :destroy

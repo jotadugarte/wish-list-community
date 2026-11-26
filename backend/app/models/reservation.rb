@@ -45,6 +45,36 @@ class Reservation < ApplicationRecord
     end
   end
 
+
+  # [REQ-RES-003] Notify the reserver when the owner edits critical item fields.
+  def self.notify_critical_edit!(item:)
+    hold = find_by(item_id: item.id, status: ReservationStatus::ACTIVE_HOLD)
+    return if hold.nil?
+
+    NotificationDispatcher.dispatch!(
+      user: hold.user,
+      event_key: "reservation.item_critical_edit",
+      title: "Reserved item updated",
+      body: "An item you reserved was edited by the owner.",
+      payload: { reservation_id: hold.id, item_id: item.id }
+    )
+  end
+
+  # [REQ-RES-003] Notify the reserver when a reserved item is soft-deleted.
+  def self.notify_item_deleted!(item:)
+    # Holds already canceled by soft-delete hook; find recently canceled for this item by this cascade.
+    recent = where(item_id: item.id, status: "canceled").order(updated_at: :desc).limit(1).first
+    return if recent.nil?
+
+    NotificationDispatcher.dispatch!(
+      user: recent.user,
+      event_key: "reservation.item_deleted",
+      title: "Reserved item deleted",
+      body: "An item you reserved was deleted by the owner.",
+      payload: { reservation_id: recent.id, item_id: item.id }
+    )
+  end
+
   # [REQ-RES-001] [REQ-RES-004] JSON payload for the reserver (never for owner spoilers).
   def as_api_json
     {
