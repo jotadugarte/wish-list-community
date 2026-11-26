@@ -100,6 +100,71 @@ void main() {
         expect(msg, equals('Instructions sent'));
       });
 
+      test('signUp posts terms acceptance, stores Bearer token, and returns UserProfile [REQ-AUTH-001] [REQ-AUTH-002]', () async {
+        final client = buildMockClient((req) {
+          expect(req.method, equals('POST'));
+          expect(req.path, equals('/api/v1/signup'));
+          expect(req.body?['email_address'], equals('nata@example.com'));
+          expect(req.body?['username'], equals('ceci_nata'));
+          expect(req.body?['terms_accepted'], isTrue);
+          expect(req.body?['locale'], equals('es'));
+          expect(req.body?['time_zone'], equals('America/Costa_Rica'));
+          expect(req.headers.containsKey('Authorization'), isFalse);
+          return const ApiResponse(
+            statusCode: 201,
+            body: {
+              'token': 'signup_token_456',
+              'user': {
+                'id': 12,
+                'username': 'ceci_nata',
+                'created_at': '2026-11-26T15:00:00Z',
+              },
+            },
+          );
+        });
+
+        final repo = AuthRepository(
+          apiClient: client,
+          tokenStorage: tokenStorage,
+        );
+        final user = await repo.signUp(
+          rawEmail: '  Nata@Example.com ',
+          rawUsername: 'Ceci_Nata',
+          password: 'Password123!',
+          locale: 'es',
+          timeZone: 'America/Costa_Rica',
+          termsAccepted: true,
+          deviceName: 'iPhone 16',
+        );
+
+        expect(user.id, equals(12));
+        expect(user.username.value, equals('ceci_nata'));
+        expect(await tokenStorage.readToken(), equals('signup_token_456'));
+      });
+
+      test('signUp rejects missing terms acceptance before calling the API [REQ-AUTH-002]', () async {
+        final client = buildMockClient((_) {
+          fail('API must not be called when terms are not accepted');
+        });
+        final repo = AuthRepository(
+          apiClient: client,
+          tokenStorage: tokenStorage,
+        );
+
+        expect(
+          () => repo.signUp(
+            rawEmail: 'nata@example.com',
+            rawUsername: 'ceci_nata',
+            password: 'Password123!',
+            locale: 'es',
+            timeZone: 'UTC',
+            termsAccepted: false,
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+        expect(await tokenStorage.readToken(), isNull);
+      });
+
       test('softDeleteAccount and restoreAccount handle 30-day account lifecycle [REQ-LIFE-002]', () async {
         await tokenStorage.saveToken('token_to_delete');
         final client = buildMockClient((req) {
