@@ -5,6 +5,7 @@ import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/auth/account_restore_screen.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/auth/password_reset_screen.dart';
+import 'package:wish_list_mobile/features/auth/sign_up_screen.dart';
 
 // Login screen powered by DesignTokens, AppStrings, and AuthRepository.
 // Traceability: [REQ-AUTH-001], [REQ-AUTH-003], [REQ-LIFE-002], [REQ-USER-002]
@@ -62,6 +63,23 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  // [REQ-AUTH-002] Opens the registration screen with mandatory terms acceptance.
+  void _openSignUp() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => SignUpScreen(
+          tokens: widget.tokens,
+          strings: widget.strings,
+          authRepository: widget.authRepository,
+          onRegistered: (profile) {
+            Navigator.of(context).pop();
+            widget.onAuthenticated(profile);
+          },
+        ),
+      ),
+    );
   }
 
   // [REQ-AUTH-003] Opens the anti-enumeration password reset screen.
@@ -162,6 +180,11 @@ class _LoginScreenState extends State<LoginScreen> {
         key: const Key('login_submit_button'),
         onPressed: _isLoading ? null : _submitLogin,
         child: Text(_isLoading ? s.signingInButton : s.signInButton),
+      ),
+      TextButton(
+        key: const Key('signup_link'),
+        onPressed: _openSignUp,
+        child: Text(s.signUpLink),
       ),
       TextButton(
         key: const Key('forgot_password_link'),

@@ -37,6 +37,51 @@ class AuthRepository {
       },
     );
 
+    return _persistSession(response);
+  }
+
+  // [REQ-AUTH-001] [REQ-AUTH-002] Registers via POST /api/v1/signup with mandatory terms acceptance.
+  Future<UserProfile> signUp({
+    required String rawEmail,
+    required String rawUsername,
+    required String password,
+    required String locale,
+    required String timeZone,
+    required bool termsAccepted,
+    String? deviceName,
+    String? fcmToken,
+  }) async {
+    if (!termsAccepted) {
+      throw ArgumentError('Pre-condition failed: terms must be accepted');
+    }
+    if (password.isEmpty) {
+      throw ArgumentError('Pre-condition failed: password cannot be empty');
+    }
+
+    final emailVo = EmailAddressVo(rawEmail);
+    final usernameVo = UsernameVo(rawUsername);
+
+    final response = await apiClient.request(
+      method: 'POST',
+      path: '/api/v1/signup',
+      authenticated: false,
+      body: {
+        'email_address': emailVo.value,
+        'username': usernameVo.value,
+        'password': password,
+        'password_confirmation': password,
+        'locale': locale,
+        'time_zone': timeZone,
+        'terms_accepted': true,
+        'device_name': ?deviceName,
+        'device_token': ?fcmToken,
+      },
+    );
+
+    return _persistSession(response);
+  }
+
+  Future<UserProfile> _persistSession(ApiResponse response) async {
     final token = response.body['token'] as String;
     await tokenStorage.saveToken(token);
 

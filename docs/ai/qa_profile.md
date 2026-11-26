@@ -32,7 +32,7 @@ Project-owned. Not overwritten by agentic:guild sync. Updated only with owner co
 | QA test command (API) | `cd backend && bundle exec rspec` (only when matrix includes API rows) |
 | Project suite (regression) | `cd mobile && flutter test` and `flutter analyze` |
 | Screenshots | `tmp/qa-screenshots/` — **never committed** |
-| First surfaces to cover | `LoginScreen`, `PasswordResetScreen`, `AccountRestoreScreen`, `FriendsListScreen`, `UserSearchScreen`, `ProfileSettingsScreen` |
+| First surfaces to cover | `LoginScreen`, `SignUpScreen`, `PasswordResetScreen`, `AccountRestoreScreen`, `FriendsListScreen`, `UserSearchScreen`, `ProfileSettingsScreen` |
 | Locales | `es` (default), `en` (second-locale rule) |
 
 ## Section D. Limits

@@ -16,6 +16,18 @@ void main() {
         AppStrings.forLocale('en').accountRestoreTitle,
         equals('Restore Account'),
       );
+      expect(
+        AppStrings.forLocale('es').signUpTitle,
+        equals('Crear Cuenta'),
+      );
+      expect(
+        AppStrings.forLocale('en').signUpLink,
+        equals('Create an account'),
+      );
+      expect(
+        AppStrings.forLocale('es').termsAcceptedLabel,
+        equals('Acepto los Términos de Uso'),
+      );
     });
 
     test('maps errors to friendly localized messages without leaking technical text [REQ-USER-002]', () {
