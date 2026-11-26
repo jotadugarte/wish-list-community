@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_193834) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -134,6 +134,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_193834) do
     t.index ["status"], name: "index_reports_on_status"
   end
 
+  create_table "reservations", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.bigint "user_id", null: false
+    t.string "status", default: "active", null: false
+    t.date "estimated_date", null: false
+    t.string "private_note"
+    t.datetime "grace_expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_reservations_on_item_id"
+    t.index ["item_id"], name: "index_reservations_one_active_hold_per_item", unique: true, where: "((status)::text = ANY ((ARRAY['active'::character varying, 'expired_grace'::character varying])::text[]))"
+    t.index ["user_id", "status"], name: "index_reservations_on_user_id_and_status"
+    t.index ["user_id"], name: "index_reservations_on_user_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "ip_address"
@@ -222,6 +237,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_193834) do
   add_foreign_key "item_links", "items"
   add_foreign_key "items", "wishlists"
   add_foreign_key "reports", "users", column: "reporter_id", on_delete: :cascade
+  add_foreign_key "reservations", "items"
+  add_foreign_key "reservations", "users"
   add_foreign_key "sessions", "users", on_delete: :cascade
   add_foreign_key "user_blocks", "users", column: "blocked_id", on_delete: :cascade
   add_foreign_key "user_blocks", "users", column: "blocker_id", on_delete: :cascade
