@@ -355,3 +355,24 @@ Body: `{ "url": "https://..." }` → `{ "title", "image_url", "source_url" }` (b
 - `GET /api/v1/notifications` · `POST /api/v1/notifications/:id/mark_read`
 - `GET/PATCH /api/v1/notification_preferences`
 
+## 6. Gifts (Sprint 6)
+
+Dual-path fulfillment via `GiftRecord` (`purchased_secret` → `delivered_pending_confirmation` → `received_confirmed`; `voided` for O8D). Optional `purchase_link_ref` is admin-only and **never** returned in owner/friend/gifter API JSON. Optional anonymous thank-you on confirm ([REQ-GIFT-001], [REQ-GIFT-004], [REQ-ADM-001]).
+
+### Gift API
+- `POST /api/v1/reservations/:id/mark_purchased` — Path 1 start from `active`|`expired_grace`; body optional `{ "gift": { "purchase_link_ref" } }`; reservation → `completed_by_gift`; **409** if open gift exists ([REQ-GIFT-001], [REQ-GIFT-002], [REQ-RES-006] O6A)
+- `POST /api/v1/gifts/:id/mark_delivered` — gifter only; notifies owner anonymously (`gift.delivered_pending_confirmation`) ([REQ-GIFT-001], [REQ-NOTIF-001] O7A)
+- `POST /api/v1/gifts/:id/confirm_received` — owner; optional `{ "gift": { "thank_you_note" } }` ([REQ-GIFT-001], [REQ-GIFT-004] O5A)
+- `POST /api/v1/items/:id/mark_received` — Path 2 owner 1-step; closes hold/open gift or FC1 free item with no gifter ([REQ-GIFT-003])
+- `GET /api/v1/my_reservations` — also returns `open_gifts` for the current gifter ([REQ-GIFT-001])
+- Item payloads may include `received_gift: true` when `received_confirmed`; open gifts map to the same `availability` enum (gifter → `reserved_by_me`, others → `unavailable`) ([REQ-GIFT-002], [REQ-ITEM-004], FC2)
+
+### Hotwire Secret Link gift parity (O3C)
+- `POST /s/:share_token/reservations/:reservation_id/mark_purchased`
+- `POST /s/:share_token/gifts/:id/mark_delivered`
+- `POST /s/:share_token/gifts/:id/confirm_received`
+- `POST /s/:share_token/items/:item_id/mark_received`
+
+### Relationship guards (O8D)
+- `POST /api/v1/user_blocks` and `DELETE /api/v1/friendships/:id` require `confirm_void_gifts=true` when the actor is the gifter with an open gift toward the other user; otherwise **422**.
+

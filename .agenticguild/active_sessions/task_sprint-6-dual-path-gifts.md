@@ -167,7 +167,7 @@
     <step id="16" status="complete">Implement Hotwire controllers/views/Stimulus until step 15 green (importmap only; no SPA frameworks).</step>
     <step id="17" status="complete">Write failing Flutter tests: mark purchased/delivered from My Reservations/item; owner Path 2 + optional thank-you; Received Gifts section; warn before block/unfriend with open gift; AppStrings es/en; DesignTokens defaults. Trace matching REQ-GIFT-* / REQ-ITEM-004.</step>
     <step id="18" status="complete">Implement Flutter repositories/screens/navigation until step 17 green (full parity with web per O3C + durable client-parity preference).</step>
-    <step id="19" status="pending">Update living docs as feature work: docs/core/API_CONTRACT.md gift endpoints; ROADMAP Sprint 6 checkboxes only when verified on this branch; ADR only if an architecture law would otherwise be violated. This plan ends at local green suites only.</step>
-    <step id="20" status="pending">Run full backend RSpec + flutter analyze/flutter test; fix until green. End of start-task implementation scope.</step>
+    <step id="19" status="complete">Update living docs as feature work: docs/core/API_CONTRACT.md gift endpoints; ROADMAP Sprint 6 checkboxes only when verified on this branch; ADR only if an architecture law would otherwise be violated. This plan ends at local green suites only.</step>
+    <step id="20" status="complete">Run full backend RSpec + flutter analyze/flutter test; fix until green. End of start-task implementation scope.</step>
   </implementation_plan>
 </task_session>

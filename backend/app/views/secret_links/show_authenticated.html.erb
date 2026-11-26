@@ -23,6 +23,13 @@
             <p class="text-sm bg-slate-50 p-2 mt-1"><%= item.specifications %></p>
           <% end %>
           <p class="text-xs uppercase tracking-wide mt-1"><%= item.priority %></p>
+          <% if item.item_links.any? %>
+            <ul class="mt-2 text-sm space-y-1">
+              <% item.item_links.limit(20).each do |link| %>
+                <li><a href="<%= link.url %>" rel="noopener noreferrer" target="_blank" class="underline"><%= link.url %></a></li>
+              <% end %>
+            </ul>
+          <% end %>
 
           <% if is_owner %>
             <% if pending_delivery %>
