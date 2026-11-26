@@ -7,8 +7,8 @@
   </metadata>
 
   <implementation_plan>
-    <step id="1" status="pending">Write failing RSpec model/VO specs for `Wishlist` + `ShareToken`/`PrivacyMode`: defaults (`privacy_mode=friends`, `share_token` nil), `shared` mints unique URL-safe token, `shared`→`friends` wipes token, SoftDeletable discard/restore within grace, optional `event_date`, nullable `activity_id` + `max_reservations_per_user` columns present. Trace `[REQ-WISH-001]`, `[REQ-WISH-002]`, `[REQ-WISH-004]`, `[REQ-WISH-006]`, `[REQ-ARCH-002]`, `[REQ-LIFE-001]`.</step>
-    <step id="2" status="pending">Implement migrations + models minimally to make step 1 green (`wishlists`, `wishlist_shares` with unique `(wishlist_id, user_id)`, indexes on `share_token` unique where present, SoftDeletable on Wishlist). No controllers yet.</step>
+    <step id="1" status="complete">Write failing RSpec model/VO specs for `Wishlist` + `ShareToken`/`PrivacyMode`: defaults (`privacy_mode=friends`, `share_token` nil), `shared` mints unique URL-safe token, `shared`→`friends` wipes token, SoftDeletable discard/restore within grace, optional `event_date`, nullable `activity_id` + `max_reservations_per_user` columns present. Trace `[REQ-WISH-001]`, `[REQ-WISH-002]`, `[REQ-WISH-004]`, `[REQ-WISH-006]`, `[REQ-ARCH-002]`, `[REQ-LIFE-001]`.</step>
+    <step id="2" status="complete">Implement migrations + models minimally to make step 1 green (`wishlists`, `wishlist_shares` with unique `(wishlist_id, user_id)`, indexes on `share_token` unique where present, SoftDeletable on Wishlist). No controllers yet.</step>
     <step id="3" status="pending">Write failing RSpec for `WishlistShare` invariants + `UserBlock` cleanup hook deleting shares between the pair; friendship `remove!` also deletes shares between the pair (S3 risk mitigation). Trace `[REQ-WISH-003]`, `[REQ-BLOCK-002]`.</step>
     <step id="4" status="pending">Implement `WishlistShare` + register cleanup hooks (Zeitwerk-safe constant reference) until step 3 green.</step>
     <step id="5" status="pending">Write failing `WishlistPolicy` / Scope specs for the 4-actor matrix (stranger, accepted friend on `friends`/`shared`+explicit, secret_link share, blocked either direction) plus owner. Trace `[REQ-WISH-001]`, `[REQ-BLOCK-001]`.</step>
@@ -152,6 +152,8 @@
 | Block cleanup Zeitwerk | Register `WishlistShare` hook and reference constant in `UserBlock.execute_cleanup_hooks!` pattern like Friendship |
 
 ## Domain Model (CbC draft)
+
+**Confirmed for start-task (hands-off) 2026-11-26:** `Wishlist` + `ShareToken`/`PrivacyMode`; `WishlistShare` + `source` enum; no Item/Reservation in S3.
 
 ### Entity: `Wishlist`
 - **Responsibility:** Owned collection of desired items (items themselves in S4) with anti-stalking privacy and optional event date.

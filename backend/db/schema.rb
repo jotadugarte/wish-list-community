@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_25_101500) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -127,6 +127,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_25_101500) do
     t.index ["discarded_at"], name: "index_users_on_discarded_at"
   end
 
+  create_table "wishlist_shares", force: :cascade do |t|
+    t.bigint "wishlist_id", null: false
+    t.bigint "user_id", null: false
+    t.string "source", default: "explicit", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_wishlist_shares_on_user_id"
+    t.index ["wishlist_id", "user_id"], name: "index_wishlist_shares_on_wishlist_id_and_user_id", unique: true
+    t.index ["wishlist_id"], name: "index_wishlist_shares_on_wishlist_id"
+  end
+
+  create_table "wishlists", force: :cascade do |t|
+    t.bigint "owner_id", null: false
+    t.string "title", null: false
+    t.string "privacy_mode", default: "friends", null: false
+    t.string "share_token"
+    t.date "event_date"
+    t.bigint "activity_id"
+    t.integer "max_reservations_per_user"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id"], name: "index_wishlists_on_activity_id"
+    t.index ["discarded_at"], name: "index_wishlists_on_discarded_at"
+    t.index ["owner_id", "discarded_at"], name: "index_wishlists_on_owner_id_and_discarded_at"
+    t.index ["owner_id"], name: "index_wishlists_on_owner_id"
+    t.index ["share_token"], name: "index_wishlists_on_share_token_unique", unique: true, where: "(share_token IS NOT NULL)"
+  end
+
   add_foreign_key "api_tokens", "users", on_delete: :cascade
   add_foreign_key "audit_events", "users", column: "actor_id", on_delete: :nullify
   add_foreign_key "device_tokens", "api_tokens", on_delete: :cascade
@@ -138,4 +167,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_25_101500) do
   add_foreign_key "user_blocks", "users", column: "blocked_id", on_delete: :cascade
   add_foreign_key "user_blocks", "users", column: "blocker_id", on_delete: :cascade
   add_foreign_key "username_reservations", "users", column: "previous_user_id", on_delete: :cascade
+  add_foreign_key "wishlist_shares", "users", on_delete: :cascade
+  add_foreign_key "wishlist_shares", "wishlists", on_delete: :cascade
+  add_foreign_key "wishlists", "users", column: "owner_id", on_delete: :cascade
 end
