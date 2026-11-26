@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_193834) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "api_tokens", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -62,6 +90,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_140000) do
     t.index ["addressee_id"], name: "index_friendships_on_addressee_id"
     t.index ["requester_id"], name: "index_friendships_on_requester_id"
     t.index ["status"], name: "index_friendships_on_status"
+  end
+
+  create_table "item_links", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.string "url", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id", "position"], name: "index_item_links_on_item_id_and_position"
+    t.index ["item_id"], name: "index_item_links_on_item_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.bigint "wishlist_id", null: false
+    t.string "title", null: false
+    t.text "specifications"
+    t.string "priority", default: "medium", null: false
+    t.integer "price_cents"
+    t.string "currency"
+    t.integer "position", default: 0, null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_items_on_discarded_at"
+    t.index ["wishlist_id", "discarded_at"], name: "index_items_on_wishlist_id_and_discarded_at"
+    t.index ["wishlist_id", "position"], name: "index_items_on_wishlist_id_and_position"
+    t.index ["wishlist_id"], name: "index_items_on_wishlist_id"
   end
 
   create_table "reports", force: :cascade do |t|
@@ -156,12 +211,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_140000) do
     t.index ["share_token"], name: "index_wishlists_on_share_token_unique", unique: true, where: "(share_token IS NOT NULL)"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_tokens", "users", on_delete: :cascade
   add_foreign_key "audit_events", "users", column: "actor_id", on_delete: :nullify
   add_foreign_key "device_tokens", "api_tokens", on_delete: :cascade
   add_foreign_key "device_tokens", "users", on_delete: :cascade
   add_foreign_key "friendships", "users", column: "addressee_id", on_delete: :cascade
   add_foreign_key "friendships", "users", column: "requester_id", on_delete: :cascade
+  add_foreign_key "item_links", "items"
+  add_foreign_key "items", "wishlists"
   add_foreign_key "reports", "users", column: "reporter_id", on_delete: :cascade
   add_foreign_key "sessions", "users", on_delete: :cascade
   add_foreign_key "user_blocks", "users", column: "blocked_id", on_delete: :cascade

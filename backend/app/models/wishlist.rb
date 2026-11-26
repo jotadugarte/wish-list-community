@@ -11,6 +11,7 @@ class Wishlist < ApplicationRecord
 
   belongs_to :owner, class_name: "User"
   has_many :wishlist_shares, dependent: :destroy
+  has_many :items, dependent: :destroy, inverse_of: :wishlist
 
   before_validation :apply_default_privacy_mode, on: :create
 
