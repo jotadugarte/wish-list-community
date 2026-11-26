@@ -6,7 +6,7 @@
 
   <execution_context>
     <active_skill>finish-branch</active_skill>
-    <current_phase>Phase 1: Interactive Local Review (code-review Phase 2)</current_phase>
-    <current_step>Step 2.1</current_step>
+    <current_phase>Phase 1: Interactive Local Review (code-review Phase 1)</current_phase>
+    <current_step>Step 1.1</current_step>
   </execution_context>
 </agent_state>
