@@ -13,6 +13,35 @@ class Wishlist < ApplicationRecord
   has_many :wishlist_shares, dependent: :destroy
   has_many :items, dependent: :destroy, inverse_of: :wishlist
 
+  # [REQ-LIFE-001] Cascade soft-delete to Items so restore leaves a clean slate for S5 reservations.
+  register_soft_delete_hook(:cascade_soft_delete_items) do |wishlist_record|
+    ::Item
+    cascaded_ids = []
+    wishlist_record.items.kept.limit(500).find_each do |item|
+      item.soft_delete!(actor: wishlist_record.owner)
+      cascaded_ids << item.id
+    end
+    wishlist_record.merge_soft_delete_audit_metadata!("cascaded_item_ids" => cascaded_ids)
+  end
+
+  # [REQ-LIFE-001] Restore only items cascaded in the matching soft-delete AuditEvent.
+  register_restore_hook(:cascade_restore_items) do |wishlist_record|
+    ::Item
+    ::AuditEvent
+    event = AuditEvent.where(auditable_type: "Wishlist", auditable_id: wishlist_record.id, action: "wishlist.soft_deleted")
+                      .order(created_at: :desc)
+                      .limit(1)
+                      .first
+    next if event.nil?
+
+    cascaded_ids = Array(event.metadata["cascaded_item_ids"]).map(&:to_i).first(500)
+    next if cascaded_ids.empty?
+
+    wishlist_record.items.discarded.where(id: cascaded_ids).limit(500).find_each do |item|
+      item.restore!(actor: wishlist_record.owner)
+    end
+  end
+
   before_validation :apply_default_privacy_mode, on: :create
 
   validates :title, presence: true

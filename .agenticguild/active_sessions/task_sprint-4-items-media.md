@@ -163,8 +163,8 @@ BM-ITEM-001..010 planned→automated with tests.
     <step id="2" status="complete">Implement `ExternalUrl` and `ItemPriority` minimally until step 1 green.</step>
     <step id="3" status="complete">Write failing RSpec for `Item` + `ItemLink` models: belongs_to wishlist, SoftDeletable, priority default medium, price pair invariant, position default append, links, `has_many_attached :images` (max 3). Trace `[REQ-ITEM-001]`, `[REQ-ITEM-002]`, `[REQ-ITEM-003]`, `[REQ-ITEM-005]`, `[REQ-ARCH-002]`, `[REQ-LIFE-001]`.</step>
     <step id="4" status="complete">Implement ActiveStorage install migrations + `items`/`item_links` migrations + models until step 3 green. Add WebMock to test Gemfile group. No controllers yet.</step>
-    <step id="5" status="pending">Write failing specs for Wishlist soft_delete/restore cascading Items (documented no-op reservation cancel hook). Trace `[REQ-LIFE-001]`.</step>
-    <step id="6" status="pending">Implement Wishlist→Item SoftDeletable hooks until step 5 green.</step>
+    <step id="5" status="complete">Write failing specs for Wishlist soft_delete/restore cascading Items (documented no-op reservation cancel hook). Trace `[REQ-LIFE-001]`.</step>
+    <step id="6" status="complete">Implement Wishlist→Item SoftDeletable hooks until step 5 green.</step>
     <step id="7" status="pending">Write failing `ItemPolicy` specs: owner CRUD; wishlist viewers can read; strangers/blocked deny; restore owner-only. Trace `[REQ-WISH-001]`, `[REQ-BLOCK-001]`, `[REQ-ITEM-001]`.</step>
     <step id="8" status="pending">Implement `ItemPolicy` until step 7 green.</step>
     <step id="9" status="pending">Write failing specs for image processing: reject oversize/>3; resize ≤1600; WebP; EXIF/GPS stripped. Trace `[REQ-ITEM-002]`.</step>

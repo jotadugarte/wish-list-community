@@ -13,6 +13,11 @@ class Item < ApplicationRecord
   has_many :item_links, -> { order(:position, :id) }, dependent: :destroy, inverse_of: :item
   has_many_attached :images
 
+  # [REQ-LIFE-001] Placeholder for Sprint 5: permanently cancel active/grace reservations on soft-delete.
+  register_soft_delete_hook(:cancel_active_reservations_noop) do |_item_record|
+    # No Reservation model in Sprint 4 — hook keeps registry contract for S5.
+  end
+
   before_validation :apply_default_priority, on: :create
   before_validation :normalize_currency
   before_create :assign_append_position
