@@ -27,6 +27,25 @@ class AppStrings {
   final String navFriends;
   final String navSearch;
   final String navProfile;
+  final String navWishlists;
+  final String navShared;
+  final String myWishlistsTitle;
+  final String sharedWithMeTitle;
+  final String friendWishlistsTitle;
+  final String wishlistDetailTitle;
+  final String wishlistTitleLabel;
+  final String createWishlistButton;
+  final String noWishlistsYet;
+  final String noSharedWishlists;
+  final String noFriendWishlists;
+  final String wishlistEmptyShellHint;
+  final String privacyModeLabel;
+  final String privacyFriendsLabel;
+  final String privacySharedLabel;
+  final String secretLinkLabel;
+  final String copySecretLinkButton;
+  final String rotateSecretLinkButton;
+  final String viewWishlistsAction;
   final String incomingRequestsTitle;
   final String myFriendsTitle;
   final String connectedFriendSubtitle;
@@ -74,6 +93,25 @@ class AppStrings {
     required this.navFriends,
     required this.navSearch,
     required this.navProfile,
+    required this.navWishlists,
+    required this.navShared,
+    required this.myWishlistsTitle,
+    required this.sharedWithMeTitle,
+    required this.friendWishlistsTitle,
+    required this.wishlistDetailTitle,
+    required this.wishlistTitleLabel,
+    required this.createWishlistButton,
+    required this.noWishlistsYet,
+    required this.noSharedWishlists,
+    required this.noFriendWishlists,
+    required this.wishlistEmptyShellHint,
+    required this.privacyModeLabel,
+    required this.privacyFriendsLabel,
+    required this.privacySharedLabel,
+    required this.secretLinkLabel,
+    required this.copySecretLinkButton,
+    required this.rotateSecretLinkButton,
+    required this.viewWishlistsAction,
     required this.incomingRequestsTitle,
     required this.myFriendsTitle,
     required this.connectedFriendSubtitle,
@@ -152,6 +190,25 @@ class AppStrings {
     navFriends: 'Amigos',
     navSearch: 'Buscar',
     navProfile: 'Perfil',
+    navWishlists: 'Listas',
+    navShared: 'Compartidas',
+    myWishlistsTitle: 'Mis listas de deseos',
+    sharedWithMeTitle: 'Compartidas conmigo',
+    friendWishlistsTitle: 'Listas del amigo',
+    wishlistDetailTitle: 'Lista de deseos',
+    wishlistTitleLabel: 'Título de la lista',
+    createWishlistButton: 'Crear lista',
+    noWishlistsYet: 'Aún no tienes listas',
+    noSharedWishlists: 'Nadie ha compartido listas contigo todavía',
+    noFriendWishlists: 'No hay listas visibles',
+    wishlistEmptyShellHint: 'Los ítems llegarán en un sprint posterior.',
+    privacyModeLabel: 'Privacidad',
+    privacyFriendsLabel: 'Amigos',
+    privacySharedLabel: 'Compartida',
+    secretLinkLabel: 'Enlace secreto',
+    copySecretLinkButton: 'Copiar enlace',
+    rotateSecretLinkButton: 'Rotar enlace',
+    viewWishlistsAction: 'Ver listas',
     incomingRequestsTitle: 'Solicitudes Recibidas',
     myFriendsTitle: 'Mis Amigos',
     connectedFriendSubtitle: 'Amigo conectado',
@@ -201,6 +258,25 @@ class AppStrings {
     navFriends: 'Friends',
     navSearch: 'Search',
     navProfile: 'Profile',
+    navWishlists: 'Lists',
+    navShared: 'Shared',
+    myWishlistsTitle: 'My wishlists',
+    sharedWithMeTitle: 'Shared with me',
+    friendWishlistsTitle: "Friend's wishlists",
+    wishlistDetailTitle: 'Wishlist',
+    wishlistTitleLabel: 'Wishlist title',
+    createWishlistButton: 'Create list',
+    noWishlistsYet: 'You have no wishlists yet',
+    noSharedWishlists: 'Nothing shared with you yet',
+    noFriendWishlists: 'No visible wishlists',
+    wishlistEmptyShellHint: 'Items arrive in a later sprint.',
+    privacyModeLabel: 'Privacy',
+    privacyFriendsLabel: 'Friends',
+    privacySharedLabel: 'Shared',
+    secretLinkLabel: 'Secret link',
+    copySecretLinkButton: 'Copy link',
+    rotateSecretLinkButton: 'Rotate link',
+    viewWishlistsAction: 'View wishlists',
     incomingRequestsTitle: 'Incoming Requests',
     myFriendsTitle: 'My Friends',
     connectedFriendSubtitle: 'Connected friend',

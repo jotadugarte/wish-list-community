@@ -6,6 +6,7 @@ module Api
     # never personal wishlists or email_address, and returns 404 if blocked).
     # Traceability: [REQ-USER-001], [REQ-BLOCK-001], [REQ-WISH-001]
     class UsersController < BaseController
+      skip_after_action :verify_policy_scoped
       # [REQ-SOC-001] [REQ-WISH-001] [REQ-BLOCK-001] Anti-stalking @username prefix search.
       def search
         authorize User, :search?

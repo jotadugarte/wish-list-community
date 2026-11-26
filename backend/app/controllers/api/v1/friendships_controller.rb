@@ -6,6 +6,7 @@ module Api
     # Pundit FriendshipPolicy and "Block Wins".
     # Traceability: [REQ-SOC-001], [REQ-BLOCK-001]
     class FriendshipsController < BaseController
+      skip_after_action :verify_policy_scoped
       MAX_LIST_LIMIT = 500
 
       # [REQ-SOC-001] Lists accepted friends, pending incoming requests, and pending outgoing requests.

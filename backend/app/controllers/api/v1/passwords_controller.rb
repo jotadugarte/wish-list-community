@@ -8,6 +8,7 @@ module Api
     class PasswordsController < BaseController
       skip_before_action :authenticate_api_token!, only: :create
       skip_after_action :verify_authorized
+      skip_after_action :verify_policy_scoped
       rate_limit to: 5, within: 3.minutes, only: :create
 
       # [REQ-AUTH-003] Never reveals whether an email address is registered.

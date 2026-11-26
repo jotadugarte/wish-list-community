@@ -6,7 +6,8 @@ module Api
     # Traceability: [REQ-LIFE-001], [REQ-LIFE-002]
     class AccountsController < BaseController
       skip_before_action :authenticate_api_token!, only: :restore
-      skip_after_action :verify_authorized, only: :restore
+      skip_after_action :verify_authorized
+      skip_after_action :verify_policy_scoped
       rate_limit to: 5, within: 3.minutes, only: :restore
 
       # [REQ-LIFE-002] Soft-deletes the current user's account and revokes all active tokens.

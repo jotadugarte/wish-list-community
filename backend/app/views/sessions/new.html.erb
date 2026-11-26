@@ -1,0 +1,16 @@
+<section class="w-full max-w-md mx-auto space-y-4">
+  <h1 class="text-2xl font-semibold"><%= t("web_auth.login_title") %></h1>
+  <% if flash[:alert].present? %><p class="text-red-600"><%= flash[:alert] %></p><% end %>
+  <%= form_with url: session_path, method: :post do |f| %>
+    <%= hidden_field_tag :return_to, @return_to if @return_to.present? %>
+    <div>
+      <%= label_tag :email_address, t("web_auth.email") %>
+      <%= email_field_tag :email_address, params[:email_address], required: true %>
+    </div>
+    <div>
+      <%= label_tag :password, t("web_auth.password") %>
+      <%= password_field_tag :password, nil, required: true %>
+    </div>
+    <%= submit_tag t("web_auth.login_submit") %>
+  <% end %>
+</section>

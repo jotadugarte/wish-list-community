@@ -43,4 +43,18 @@ class ApplicationPolicy
   def blocked_between?(target_user)
     UserBlock.blocked_between?(user, target_user)
   end
+
+  # Base Scope for Pundit policy scopes (default-deny empty relation).
+  class Scope
+    attr_reader :user, :scope
+
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
+
+    def resolve
+      scope.none
+    end
+  end
 end

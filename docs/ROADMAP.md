@@ -34,19 +34,20 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Flutter `SignUpScreen` + `AuthRepository.signUp` consuming signup API (`REQ-AUTH-001`, `REQ-AUTH-002`)
   - [x] `API_CONTRACT` / ROADMAP / testing docs updated for signup Done
 
+- [x] **MVP Sprint 3 — Wishlists (Anti-Stalking Privacy + Secret Links)** — 2026-11-26 — Branch: `cursor/feat-sprint-3-wishlists`
+  - [x] Wishlist CRUD with optional `event_date`, immutable URLs (`/wishlists/:id` and `/s/:share_token` independent of `@username`), and v1-ready nullable `activity_id` (`REQ-WISH-004`, `REQ-WISH-006`, `REQ-ARCH-002`) — 2026-11-26
+  - [x] Soft-delete/restore for wishlists via `SoftDeletable` (item/reservation cascade deferred to Sprint 4/5) (`REQ-LIFE-001`) — 2026-11-26
+  - [x] Anti-stalking privacy per personal wishlist (`REQ-WISH-001`, `REQ-WISH-002`, `REQ-WISH-003`):
+    - [x] `friends`: visible to accepted friends only (never exposed to strangers searching `@username`)
+    - [x] `shared`: visible to specific selected friends + anyone opening the Secret Link (`share_token`)
+  - [x] Secret link lifecycle: invalidated on `friends`; OG invitation without items; `return_to` login/signup; Shared-with-me upsert; token rotate (O4A) (`REQ-WISH-002`, `REQ-WISH-003`, `REQ-WISH-005`, `REQ-WISH-006`) — 2026-11-26
+  - [x] Guests view Secret Link invitation only; must log in for Shared-with-me (reserve/gift remains Sprint 5) (`REQ-WISH-001`, `REQ-WISH-002`) — 2026-11-26
+  - [x] API v1 endpoints + Flutter wishlist screens for this sprint — 2026-11-26
+
 ## In Progress
 *(No items currently in progress)*
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 3 — Wishlists (Anti-Stalking Privacy + Secret Links)**
-  - [ ] Wishlist CRUD with optional `event_date`, immutable URLs (`/wishlists/:id` and `/s/:share_token` independent of `@username`), and v1-ready nullable `activity_id` (`REQ-WISH-004`, `REQ-WISH-006`, `REQ-ARCH-002`)
-  - [ ] Soft-delete/restore cascade for wishlists via `SoftDeletable` hooks (infra Ready; entity cascade Pending) (`REQ-LIFE-001`)
-  - [ ] Anti-stalking privacy per personal wishlist (`REQ-WISH-001`, `REQ-WISH-002`, `REQ-WISH-003`):
-    - [ ] `friends`: visible to accepted friends only (never exposed to strangers searching `@username`)
-    - [ ] `shared`: visible to specific selected friends + anyone opening the Secret Link (`share_token`)
-  - [ ] Secret link lifecycle: automatically invalidated when switched to `friends`-only; renders safe OpenGraph invitation preview on WhatsApp without leaking items to bots; preserves `return_to` across login/sign-up; auto-saves to *"Shared with me"* for logged-in viewers (`REQ-WISH-002`, `REQ-WISH-003`, `REQ-WISH-005`)
-  - [ ] Guests can view an explicitly shared link preview/activity link as permitted, but must log in to reserve/gift (`REQ-WISH-001`, `REQ-WISH-002`)
-  - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 4 — Items + Media + Automatic Store Image Extraction**
   - [ ] Item CRUD (`1 item = 1 unit`), prominent `specifications` note below the image (for exact color/size/variant clarifications), `priority` desire levels (`low`, `medium`, `high`, `must_have`), multiple `http/https` purchase links (`ItemLink`), and v1-ready nullable `price_cents`/`currency` (`REQ-ITEM-001`, `REQ-ITEM-003`, `REQ-ITEM-005`, `REQ-ARCH-002`)
   - [ ] Soft-delete/restore cascade for items (no ghost reservations on restore) via `SoftDeletable` hooks (`REQ-LIFE-001`)

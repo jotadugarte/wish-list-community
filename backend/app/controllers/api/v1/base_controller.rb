@@ -12,6 +12,7 @@ module Api
       before_action :authenticate_api_token!
       before_action :set_user_locale
       after_action :verify_authorized
+      after_action :verify_policy_scoped
 
       rescue_from ActiveRecord::RecordNotUnique, with: :handle_record_not_unique
       rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
@@ -39,17 +40,20 @@ module Api
 
       # [REQ-ARCH-003] Prevents 500 errors on concurrent mobile double-taps.
       def handle_record_not_unique
+        skip_policy_scope
         render json: { error: I18n.t("api.v1.errors.conflict") }, status: :conflict
       end
 
       # [REQ-BLOCK-001] Returns 404 Not Found when a target record does not exist.
       def handle_not_found
         skip_authorization
+        skip_policy_scope
         render json: { error: I18n.t("api.v1.errors.not_found") }, status: :not_found
       end
 
       # [REQ-BLOCK-001] Returns 404 Not Found on unauthorized/blocked resources to prevent existence leaks.
       def handle_not_authorized
+        skip_policy_scope
         render json: { error: I18n.t("api.v1.errors.not_found") }, status: :not_found
       end
     end

@@ -90,7 +90,8 @@ class Friendship < ApplicationRecord
     self
   end
 
-  # [REQ-SOC-001] [REQ-ADM-001] Declines, cancels, or removes a friendship and records an AuditEvent.
+  # [REQ-SOC-001] [REQ-ADM-001] [REQ-BLOCK-002] Declines, cancels, or removes a friendship,
+  # deletes WishlistShares between the pair, and records an AuditEvent.
   def remove!(actor:)
     raise ArgumentError, "Pre-condition failed: friendship must be persisted" unless persisted?
     unless actor && (actor.id == requester_id || actor.id == addressee_id)
@@ -98,6 +99,8 @@ class Friendship < ApplicationRecord
     end
 
     transaction do
+      WishlistShare
+      WishlistShare.delete_between!(requester, addressee)
       AuditEvent.record!(
         actor: actor,
         action: "friendship.removed",

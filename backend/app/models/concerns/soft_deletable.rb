@@ -57,23 +57,32 @@ module SoftDeletable
   end
 
   # [REQ-LIFE-001] [REQ-LIFE-002] Soft-deletes the record, runs registered on_soft_delete hooks,
-  # and logs an immutable AuditEvent.
+  # and logs an immutable AuditEvent (hooks may contribute metadata via merge_soft_delete_audit_metadata!).
   def soft_delete!(actor: nil)
     raise ArgumentError, "Pre-condition failed: record must be persisted" unless persisted?
 
     transaction do
+      @soft_delete_audit_metadata = {}
       update!(discarded_at: Time.current)
       run_lifecycle_hooks!(self.class.soft_delete_hooks)
       AuditEvent.record!(
         actor: actor || (is_a?(User) ? self : nil),
         action: "#{model_name.singular}.soft_deleted",
-        auditable: self
+        auditable: self,
+        metadata: soft_delete_audit_metadata
       )
     end
 
     raise "Post-condition failed: discarded_at must be present" unless discarded?
 
     true
+  end
+
+  # [REQ-LIFE-002] Lets soft-delete hooks attach bounded metadata (e.g. cascaded wishlist ids).
+  def merge_soft_delete_audit_metadata!(extra)
+    raise ArgumentError, "Pre-condition failed: metadata must be a Hash" unless extra.is_a?(Hash)
+
+    @soft_delete_audit_metadata = soft_delete_audit_metadata.merge(extra)
   end
 
   # [REQ-LIFE-001] [REQ-LIFE-002] Restores a soft-deleted record within the 30-day restoration window,
@@ -107,6 +116,10 @@ module SoftDeletable
   end
 
   private
+
+  def soft_delete_audit_metadata
+    @soft_delete_audit_metadata || {}
+  end
 
   def run_lifecycle_hooks!(registry)
     hooks = registry.values.first(MAX_LIFECYCLE_HOOKS)

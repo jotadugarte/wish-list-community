@@ -20,11 +20,42 @@ class User < ApplicationRecord
   has_many :requested_friendships, class_name: "Friendship", foreign_key: :requester_id, dependent: :destroy
   has_many :received_friendships, class_name: "Friendship", foreign_key: :addressee_id, dependent: :destroy
   has_many :submitted_reports, class_name: "Report", foreign_key: :reporter_id, dependent: :destroy
+  has_many :wishlists, foreign_key: :owner_id, dependent: :destroy, inverse_of: :owner
+  has_many :wishlist_shares, dependent: :destroy
 
   register_soft_delete_hook(:revoke_all_user_credentials) do |user_record|
     user_record.device_tokens.delete_all
     user_record.api_tokens.delete_all
     user_record.sessions.delete_all
+  end
+
+  # [REQ-LIFE-002] Cascade soft-delete owned wishlists so Secret Links die with the account.
+  register_soft_delete_hook(:cascade_soft_delete_wishlists) do |user_record|
+    ::Wishlist
+    cascaded_ids = []
+    user_record.wishlists.kept.limit(500).find_each do |wishlist|
+      wishlist.soft_delete!(actor: user_record)
+      cascaded_ids << wishlist.id
+    end
+    user_record.merge_soft_delete_audit_metadata!("cascaded_wishlist_ids" => cascaded_ids)
+  end
+
+  # [REQ-LIFE-002] Restore only wishlists recorded in the soft-delete AuditEvent metadata.
+  register_restore_hook(:cascade_restore_wishlists) do |user_record|
+    ::Wishlist
+    ::AuditEvent
+    event = AuditEvent.where(auditable_type: "User", auditable_id: user_record.id, action: "user.soft_deleted")
+                      .order(created_at: :desc)
+                      .limit(1)
+                      .first
+    next if event.nil?
+
+    cascaded_ids = Array(event.metadata["cascaded_wishlist_ids"]).map(&:to_i).first(500)
+    next if cascaded_ids.empty?
+
+    user_record.wishlists.discarded.where(id: cascaded_ids).limit(500).find_each do |wishlist|
+      wishlist.restore!(actor: user_record)
+    end
   end
 
   # [REQ-AUTH-001] Authenticates an active (non-discarded) user by normalized email and password.
