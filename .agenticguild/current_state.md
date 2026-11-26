@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>finish-branch</active_skill>
     <current_phase>4</current_phase>
-    <current_step>4.3</current_step>
+    <current_step>4.5</current_step>
   </execution_context>
 </agent_state>
