@@ -22,15 +22,20 @@ RSpec.describe "API v1 Account Soft-Delete & 30-Day Restoration", type: :request
   describe "DELETE /api/v1/account and POST /api/v1/account/restore [REQ-LIFE-001] [REQ-LIFE-002]" do
     it "soft-deletes the account on DELETE /api/v1/account and restores it within 30 days on POST /api/v1/account/restore [REQ-LIFE-002]" do
       freeze_time
-      wishlist = Wishlist.create!(owner: user, title: "Keep me")
-      wishlist.switch_privacy_mode!(PrivacyMode.new("shared"))
-      expect(wishlist.share_token).to be_present
+      kept_list = Wishlist.create!(owner: user, title: "Keep me")
+      kept_list.switch_privacy_mode!(PrivacyMode.new("shared"))
+      intentional = Wishlist.create!(owner: user, title: "Already gone")
+      intentional.switch_privacy_mode!(PrivacyMode.new("shared"))
+      intentional.soft_delete!(actor: user)
+      expect(kept_list.share_token).to be_present
       _api_token, raw_token = ApiToken.issue_for!(user, fcm_token: "fcm_acc_1")
 
       delete "/api/v1/account", headers: { "Authorization" => "Bearer #{raw_token}" }
       expect(response).to have_http_status(:no_content)
       expect(user.reload.discarded?).to be(true)
-      expect(wishlist.reload).to be_discarded
+      expect(kept_list.reload).to be_discarded
+      event = AuditEvent.where(action: "user.soft_deleted", auditable: user).order(created_at: :desc).first
+      expect(event.metadata["cascaded_wishlist_ids"]).to contain_exactly(kept_list.id)
 
       # Token is immediately invalidated
       get "/api/v1/me", headers: { "Authorization" => "Bearer #{raw_token}" }
@@ -46,8 +51,9 @@ RSpec.describe "API v1 Account Soft-Delete & 30-Day Restoration", type: :request
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body["token"]).to be_present
       expect(user.reload.discarded?).to be(false)
-      expect(wishlist.reload).not_to be_discarded
-      expect(wishlist.share_token).to be_present
+      expect(kept_list.reload).not_to be_discarded
+      expect(kept_list.share_token).to be_present
+      expect(intentional.reload).to be_discarded
     end
 
     it "rejects account restoration after the 30-day grace window has elapsed [REQ-LIFE-002]" do

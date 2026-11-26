@@ -32,12 +32,15 @@ class User < ApplicationRecord
   # [REQ-LIFE-002] Cascade soft-delete owned wishlists so Secret Links die with the account.
   register_soft_delete_hook(:cascade_soft_delete_wishlists) do |user_record|
     ::Wishlist
+    cascaded_ids = []
     user_record.wishlists.kept.limit(500).find_each do |wishlist|
       wishlist.soft_delete!(actor: user_record)
+      cascaded_ids << wishlist.id
     end
+    user_record.merge_soft_delete_audit_metadata!("cascaded_wishlist_ids" => cascaded_ids)
   end
 
-  # [REQ-LIFE-002] Restore wishlists cascade-deleted with the account (not earlier intentional deletes).
+  # [REQ-LIFE-002] Restore only wishlists recorded in the soft-delete AuditEvent metadata.
   register_restore_hook(:cascade_restore_wishlists) do |user_record|
     ::Wishlist
     ::AuditEvent
@@ -47,8 +50,10 @@ class User < ApplicationRecord
                       .first
     next if event.nil?
 
-    window = (event.created_at - 1.minute)..(event.created_at + 1.minute)
-    user_record.wishlists.discarded.where(discarded_at: window).limit(500).find_each do |wishlist|
+    cascaded_ids = Array(event.metadata["cascaded_wishlist_ids"]).map(&:to_i).first(500)
+    next if cascaded_ids.empty?
+
+    user_record.wishlists.discarded.where(id: cascaded_ids).limit(500).find_each do |wishlist|
       wishlist.restore!(actor: user_record)
     end
   end
