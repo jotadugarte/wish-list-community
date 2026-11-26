@@ -63,6 +63,9 @@ en:
         body: "The owner confirmed receipt of \"%{item}\"."
       thank_you:
         title: "Thank you note"
+      voided_by_owner_delete:
+        title: "Gift canceled"
+        body: "The owner removed \"%{item}\", so your open gift was voided."
     reservation:
       grace_started:
         title: "Reservation grace started"

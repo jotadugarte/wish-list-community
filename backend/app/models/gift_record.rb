@@ -21,7 +21,83 @@ class GiftRecord < ApplicationRecord
     where(item_id: item_id, status: GiftStatus::OPEN).limit(5)
   end
 
+  # [REQ-LIFE-001] O8D: void open gifts on an item; optionally notify gifter; never touch received_confirmed.
+  def self.void_open_for_item!(item_id, notify_gifter:, actor:)
+    where(item_id: item_id, status: GiftStatus::OPEN).limit(50).find_each do |gift|
+      void_gift!(gift, notify_gifter: notify_gifter, actor: actor, reason: "owner_delete")
+    end
+  end
+
+  # [REQ-BLOCK-002] O8D: void open gifts between a pair (owner↔gifter) without reopen on restore.
+  def self.void_between_users!(user_a, user_b, notify_gifter:, actor:)
+    raise ArgumentError, "users required" if user_a.nil? || user_b.nil?
+
+    ids = [ user_a.id, user_b.id ]
+    where(status: GiftStatus::OPEN, gifter_id: ids).limit(200).find_each do |gift|
+      owner_id = gift.item.wishlist.owner_id
+      next unless ids.include?(owner_id)
+
+      void_gift!(gift, notify_gifter: notify_gifter, actor: actor, reason: "relationship_end")
+    end
+  end
+
+  # [REQ-GIFT-002] True when an open gift exists between the pair (for warn/confirm UX).
+  def self.open_between_users?(user_a, user_b)
+    return false if user_a.nil? || user_b.nil?
+
+    ids = [ user_a.id, user_b.id ]
+    where(status: GiftStatus::OPEN, gifter_id: ids).limit(50).any? do |gift|
+      ids.include?(gift.item.wishlist.owner_id)
+    end
+  end
+
+  def self.void_gift!(gift, notify_gifter:, actor:, reason:)
+    was_delivered = gift.status == "delivered_pending_confirmation"
+    gift.update!(status: "voided")
+    clear_owner_delivery_prompts!(gift) if was_delivered
+    AuditEvent.record!(
+      actor: actor,
+      action: "gift.voided",
+      auditable: gift,
+      metadata: { item_id: gift.item_id, reason: reason, notify_gifter: notify_gifter }
+    )
+    notify_gifter_voided!(gift) if notify_gifter
+  end
+  private_class_method :void_gift!
+
+  def self.clear_owner_delivery_prompts!(gift)
+    owner = gift.item.wishlist.owner
+    return if owner.nil?
+
+    Notification.where(
+      user_id: owner.id,
+      event_key: "gift.delivered_pending_confirmation"
+    ).limit(50).find_each do |note|
+      next unless note.payload.is_a?(Hash) && note.payload["gift_id"] == gift.id
+
+      note.destroy!
+    end
+  end
+  private_class_method :clear_owner_delivery_prompts!
+
+  def self.notify_gifter_voided!(gift)
+    gifter = gift.gifter
+    return if gifter.nil? || gifter.discarded?
+
+    I18n.with_locale(gifter.locale.presence || I18n.default_locale) do
+      NotificationDispatcher.dispatch!(
+        user: gifter,
+        event_key: "gift.voided_by_owner_delete",
+        title: I18n.t("notifications.gift.voided_by_owner_delete.title"),
+        body: I18n.t("notifications.gift.voided_by_owner_delete.body", item: gift.item.title),
+        payload: { gift_id: gift.id, item_id: gift.item_id }
+      )
+    end
+  end
+  private_class_method :notify_gifter_voided!
+
   private
+
 
   def status_must_be_allowed
     GiftStatus.new(status)
@@ -44,4 +120,9 @@ class GiftRecord < ApplicationRecord
   rescue ArgumentError
     errors.add(:purchase_link_ref, "is invalid")
   end
+end
+
+UserBlock.register_cleanup_hook(:void_gifts) do |blocker, blocked|
+  GiftRecord
+  GiftRecord.void_between_users!(blocker, blocked, notify_gifter: false, actor: blocker)
 end

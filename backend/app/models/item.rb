@@ -22,6 +22,13 @@ class Item < ApplicationRecord
     Reservation.notify_item_deleted!(reservation: hold) if hold
   end
 
+  # [REQ-LIFE-001] O8D: void open gifts and notify gifter; restore never reopens.
+  register_soft_delete_hook(:void_open_gifts) do |item_record|
+    GiftRecord
+    GiftRecord.void_open_for_item!(item_record.id, notify_gifter: true, actor: item_record.wishlist.owner)
+  end
+
+
 
   before_validation :apply_default_priority, on: :create
   before_validation :normalize_currency

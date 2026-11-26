@@ -63,6 +63,9 @@ es:
         body: "El dueño confirmó la recepción de \"%{item}\"."
       thank_you:
         title: "Nota de agradecimiento"
+      voided_by_owner_delete:
+        title: "Regalo cancelado"
+        body: "El dueño eliminó \"%{item}\", así que tu regalo abierto se anuló."
     reservation:
       grace_started:
         title: "Inicio del período de gracia"
