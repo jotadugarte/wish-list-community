@@ -17,10 +17,10 @@ Things done and things left to do. Update this when finishing branches; use `roa
 - [x] **MVP Sprint 1 (Backend Foundation) — Base + Auth + API + Core Policies** — 2026-11-24
   - [x] Monorepo setup: `backend/` (Rails 8 + PostgreSQL + Solid Queue + Hotwire/Tailwind CSS + RSpec + Pundit) and `mobile/` skeleton (`REQ-ARCH-001`) — 2026-11-24
   - [x] Versioned API `/api/v1` with SHA-256 `api_tokens` authentication and `RecordNotUnique` idempotency handling; web uses cookie sessions (`REQ-AUTH-001`, `REQ-ARCH-003`) — 2026-11-24
-  - [x] Authentication (sign up with `terms_accepted_at`, login, logout, sessions), anti-enumeration password reset (always generic `200 OK`), and Rails 8 `rate_limit` on auth endpoints (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`) — 2026-11-24
+  - [x] Authentication (login, logout, sessions), anti-enumeration password reset (always generic `200 OK`), and Rails 8 `rate_limit` on auth endpoints; User model requires `terms_accepted_at` (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-AUTH-003`) — 2026-11-24
   - [x] Public profile: unique `@username` (email stays strictly private), 30-day change cooldown + 30-day quarantine on previous `@username`, preferred `locale` (`es`/`en`), and `time_zone` (`REQ-USER-001`, `REQ-USER-002`, `REQ-USER-003`, `REQ-USER-004`) — 2026-11-24
   - [x] Central Pundit permissions layer (*default-deny*) + Block users ("block wins": immediately cuts access and transactionally destroys friendship, shares, and active reservations) + immutable `AuditEvent` foundation (`REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-24
-  - [x] Soft-delete + restore (30-day account restoration window before PII purge; wishlist restore cascades to items and leaves zero "ghost reservations") (`REQ-LIFE-001`, `REQ-LIFE-002`) — 2026-11-24
+  - [x] Soft-delete + restore infrastructure (`SoftDeletable` concern + 30-day account restoration window before PII purge) (`REQ-LIFE-001`, `REQ-LIFE-002`) — 2026-11-24 — *Wishlist/item cascade Pending until those entities exist (Sprint 3/4)*
 - [x] **MVP Sprint 2 (Backend) — Social & Anti-Stalking Profile Search** — 2026-11-25
   - [x] Search users by `@username` via `SearchQuery` Value Object (`GET /api/v1/users/search` and `GET /api/v1/users/:username`, anti-stalking: non-friends only see `@username` and `friendship_status`, never personal wishlists or `email_address`, with batched zero-`N+1` status loading) (`REQ-SOC-001`, `REQ-WISH-001`, `REQ-BLOCK-001`) — 2026-11-25
   - [x] Friend requests + accept/decline/remove + friends list (`Friendship` & `FriendshipPolicy`, enforced by unordered unique pair index in PostgreSQL, 20-pending outgoing anti-spam cap, and automatic `UserBlock` cleanup hook) (`REQ-SOC-001`, `REQ-BLOCK-001`, `REQ-BLOCK-002`, `REQ-ADM-001`) — 2026-11-25
@@ -34,8 +34,13 @@ Things done and things left to do. Update this when finishing branches; use `roa
 *(No items currently in progress)*
 
 ## Pending (by priority)
+- [ ] **Chore P0 — Signup (before Sprint 3)** — *not Done until this PR lands*
+  - [ ] Registration endpoint(s) (`/api/v1` + web as needed) creating users with required `terms_accepted_at` + Rails 8 `rate_limit` (`REQ-AUTH-001`, `REQ-AUTH-002`)
+  - [ ] Flutter `SignUpScreen` consuming signup API (`REQ-AUTH-001`, `REQ-AUTH-002`, `REQ-MOB-001`)
+  - [ ] Update `API_CONTRACT` / ROADMAP to mark signup Done only after merge
 - [ ] **MVP Sprint 3 — Wishlists (Anti-Stalking Privacy + Secret Links)**
   - [ ] Wishlist CRUD with optional `event_date`, immutable URLs (`/wishlists/:id` and `/s/:share_token` independent of `@username`), and v1-ready nullable `activity_id` (`REQ-WISH-004`, `REQ-WISH-006`, `REQ-ARCH-002`)
+  - [ ] Soft-delete/restore cascade for wishlists via `SoftDeletable` hooks (infra Ready; entity cascade Pending) (`REQ-LIFE-001`)
   - [ ] Anti-stalking privacy per personal wishlist (`REQ-WISH-001`, `REQ-WISH-002`, `REQ-WISH-003`):
     - [ ] `friends`: visible to accepted friends only (never exposed to strangers searching `@username`)
     - [ ] `shared`: visible to specific selected friends + anyone opening the Secret Link (`share_token`)
@@ -44,6 +49,7 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 4 — Items + Media + Automatic Store Image Extraction**
   - [ ] Item CRUD (`1 item = 1 unit`), prominent `specifications` note below the image (for exact color/size/variant clarifications), `priority` desire levels (`low`, `medium`, `high`, `must_have`), multiple `http/https` purchase links (`ItemLink`), and v1-ready nullable `price_cents`/`currency` (`REQ-ITEM-001`, `REQ-ITEM-003`, `REQ-ITEM-005`, `REQ-ARCH-002`)
+  - [ ] Soft-delete/restore cascade for items (no ghost reservations on restore) via `SoftDeletable` hooks (`REQ-LIFE-001`)
   - [ ] Automatic best-effort extraction of product image and title (`og:image`, `og:title` with SSRF protection) when pasting or sharing a store link (e.g., Amazon, MercadoLibre) (`REQ-ITEM-006`)
   - [ ] Up to 3 images per item (`REQ-ITEM-002`):
     - [ ] Max 2MB each, max 1600px on the longest side
