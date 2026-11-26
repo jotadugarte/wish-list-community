@@ -80,6 +80,16 @@ class AppStrings {
   final String invalidDataError;
   final String invalidInputError;
   final String genericError;
+  final String myReservationsTitle;
+  final String noReservationsYet;
+  final String reserveButton;
+  final String extendReservationButton;
+  final String cancelReservationButton;
+  final String estimatedDateLabel;
+  final String availabilityAvailable;
+  final String availabilityReservedByMe;
+  final String availabilityUnavailable;
+  final String openMyReservationsAction;
 
   const AppStrings({
     required this.locale,
@@ -159,6 +169,16 @@ class AppStrings {
     required this.invalidDataError,
     required this.invalidInputError,
     required this.genericError,
+    required this.myReservationsTitle,
+    required this.noReservationsYet,
+    required this.reserveButton,
+    required this.extendReservationButton,
+    required this.cancelReservationButton,
+    required this.estimatedDateLabel,
+    required this.availabilityAvailable,
+    required this.availabilityReservedByMe,
+    required this.availabilityUnavailable,
+    required this.openMyReservationsAction,
   });
 
   // [REQ-USER-002] Resolves localized strings for 'es' (default) or 'en'.
@@ -269,6 +289,16 @@ class AppStrings {
     invalidDataError: 'Los datos enviados no son válidos.',
     invalidInputError: 'Revisa los datos ingresados.',
     genericError: 'Algo salió mal. Inténtalo de nuevo.',
+    myReservationsTitle: 'Mis reservaciones',
+    noReservationsYet: 'Aún no tienes reservaciones',
+    reserveButton: 'Reservar',
+    extendReservationButton: 'Extender',
+    cancelReservationButton: 'Cancelar reservación',
+    estimatedDateLabel: 'Fecha estimada',
+    availabilityAvailable: 'Disponible',
+    availabilityReservedByMe: 'Reservado por mí',
+    availabilityUnavailable: 'No disponible',
+    openMyReservationsAction: 'Mis reservaciones',
   );
 
   static const AppStrings _en = AppStrings(
@@ -350,5 +380,15 @@ class AppStrings {
     invalidDataError: 'The submitted data is not valid.',
     invalidInputError: 'Please check the data you entered.',
     genericError: 'Something went wrong. Please try again.',
+    myReservationsTitle: 'My reservations',
+    noReservationsYet: 'You have no reservations yet',
+    reserveButton: 'Reserve',
+    extendReservationButton: 'Extend',
+    cancelReservationButton: 'Cancel reservation',
+    estimatedDateLabel: 'Estimated date',
+    availabilityAvailable: 'Available',
+    availabilityReservedByMe: 'Reserved by me',
+    availabilityUnavailable: 'Unavailable',
+    openMyReservationsAction: 'My reservations',
   );
 }

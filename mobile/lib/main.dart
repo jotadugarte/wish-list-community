@@ -16,6 +16,7 @@ import 'package:wish_list_mobile/features/social/user_search_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/my_wishlists_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/shared_wishlists_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
+import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
 
 // Entry point for Wish List Community mobile app (iOS & Android).
 // Run with: flutter run --dart-define=API_BASE_URL=https://your-server
@@ -38,6 +39,7 @@ void main() {
   );
   final socialRepo = SocialRepository(apiClient: apiClient);
   final wishlistRepo = WishlistRepository(apiClient: apiClient);
+  final reservationRepo = ReservationRepository(apiClient: apiClient);
 
   runApp(
     WishListApp(
@@ -45,6 +47,7 @@ void main() {
       authRepository: authRepo,
       socialRepository: socialRepo,
       wishlistRepository: wishlistRepo,
+      reservationRepository: reservationRepo,
     ),
   );
 }
@@ -54,6 +57,7 @@ class WishListApp extends StatefulWidget {
   final AuthRepository authRepository;
   final SocialRepository socialRepository;
   final WishlistRepository wishlistRepository;
+  final ReservationRepository reservationRepository;
 
   const WishListApp({
     super.key,
@@ -61,6 +65,7 @@ class WishListApp extends StatefulWidget {
     required this.authRepository,
     required this.socialRepository,
     required this.wishlistRepository,
+    required this.reservationRepository,
   });
 
   @override
@@ -164,12 +169,14 @@ class _WishListAppState extends State<WishListApp> {
           tokens: widget.tokens,
           strings: s,
           wishlistRepository: widget.wishlistRepository,
+          reservationRepository: widget.reservationRepository,
         );
       case 1:
         return SharedWishlistsScreen(
           tokens: widget.tokens,
           strings: s,
           wishlistRepository: widget.wishlistRepository,
+          reservationRepository: widget.reservationRepository,
         );
       case 2:
         return FriendsListScreen(
@@ -177,6 +184,7 @@ class _WishListAppState extends State<WishListApp> {
           strings: s,
           socialRepository: widget.socialRepository,
           wishlistRepository: widget.wishlistRepository,
+          reservationRepository: widget.reservationRepository,
         );
       case 3:
         return UserSearchScreen(

@@ -7,6 +7,7 @@ import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
+import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
 import 'package:wish_list_mobile/main.dart';
 
 typedef _Responder = ApiResponse Function(RecordedApiRequest req);
@@ -139,6 +140,7 @@ void main() {
         ),
         socialRepository: SocialRepository(apiClient: client),
         wishlistRepository: WishlistRepository(apiClient: client),
+        reservationRepository: ReservationRepository(apiClient: client),
       );
     }
 

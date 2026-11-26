@@ -27,7 +27,7 @@ RSpec.describe "Wishlist Item SoftDeletable cascade [REQ-LIFE-001]" do
     expect(item.reload).not_to be_discarded
   end
 
-  it "registers a no-op reservation cancel hook name for Sprint 5 fill-in [REQ-LIFE-001]" do
-    expect(Item.soft_delete_hooks).to have_key(:cancel_active_reservations_noop)
+  it "registers reservation cancel hook on soft-delete [REQ-LIFE-001]" do
+    expect(Item.soft_delete_hooks).to have_key(:cancel_active_reservations)
   end
 end

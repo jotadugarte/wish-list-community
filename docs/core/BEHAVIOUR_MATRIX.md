@@ -34,3 +34,13 @@
 | BM-ITEM-010 | Invalid priority | Create item | RecordInvalid | Domain | REQ-ITEM-003 | `spec/models/item_spec.rb` | automated |
 | BM-ITEM-011 | Guest Secret Link + items exist | `GET /s/:token` | Invitation OG; no item titles | Web | REQ-WISH-005 | `spec/requests/secret_links_items_spec.rb` | automated |
 | BM-ITEM-012 | Logged-in sharee | `GET /s/:token` | Read-only item list | Web | REQ-ITEM-001, O1A | `spec/requests/secret_links_items_spec.rb` | automated |
+
+| BM-RES-001 | Friend with access; item free | `POST .../reservations` | Creates active reservation | API | REQ-RES-001 | `spec/requests/api/v1/reservations_spec.rb` | automated |
+| BM-RES-002 | Item already held | Second user reserves | **409** Conflict | API | REQ-ARCH-003 | `spec/requests/api/v1/reservations_spec.rb` | automated |
+| BM-RES-003 | Non-owner viewer | Item JSON | `availability` present; owner omits | API | REQ-RES-002 | `spec/models/item_availability_spec.rb` | automated |
+| BM-RES-004 | Reserver | `GET /my_reservations` | Lists active/grace | API | REQ-RES-004 | `spec/requests/api/v1/my_reservations_spec.rb` | automated |
+| BM-RES-005 | Soft-delete reserved item | Soft-delete | Hold canceled; no ghost on restore | Domain | REQ-LIFE-001 | `spec/models/reservation_cleanup_spec.rb` | automated |
+| BM-RES-006 | Due estimated_date | Sweep job | → expired_grace + notify | Job | REQ-RES-006 | `spec/jobs/reservation_grace_sweep_job_spec.rb` | automated |
+| BM-RES-007 | Logged-in Secret Link sharee | Reserve/extend/cancel on `/s/:token` | Parity with API (O4B) | Web | REQ-RES-001 | `spec/requests/secret_link_reservations_spec.rb` | automated |
+| BM-NOTIF-001 | Dispatcher | dispatch S5 event | In-app + email enqueue; push no-op | Service | REQ-NOTIF-001 | `spec/services/notification_dispatcher_spec.rb` | automated |
+

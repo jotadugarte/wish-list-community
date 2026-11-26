@@ -54,6 +54,7 @@ class WishlistItem {
   final int position;
   final List<ItemLinkModel> links;
   final List<ItemImageModel> images;
+  final String? availability;
 
   const WishlistItem({
     required this.id,
@@ -66,6 +67,7 @@ class WishlistItem {
     this.currency,
     this.links = const [],
     this.images = const [],
+    this.availability,
   });
 
   factory WishlistItem.fromJson(Map<String, dynamic> json) {
@@ -92,6 +94,7 @@ class WishlistItem {
           .whereType<Map<String, dynamic>>()
           .map(ItemImageModel.fromJson)
           .toList(growable: false),
+      availability: json['availability'] as String?,
     );
   }
 }

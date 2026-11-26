@@ -5,6 +5,7 @@ import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/friend_wishlists_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
+import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
 
 // Displays accepted friends and incoming/outgoing pending friend requests.
 // Traceability: [REQ-SOC-001], [REQ-BLOCK-001], [REQ-DISC-001], [REQ-USER-002], [REQ-WISH-001]
@@ -13,6 +14,7 @@ class FriendsListScreen extends StatefulWidget {
   final AppStrings strings;
   final SocialRepository socialRepository;
   final WishlistRepository? wishlistRepository;
+  final ReservationRepository? reservationRepository;
 
   const FriendsListScreen({
     super.key,
@@ -20,6 +22,7 @@ class FriendsListScreen extends StatefulWidget {
     required this.strings,
     required this.socialRepository,
     this.wishlistRepository,
+    this.reservationRepository,
   });
 
   @override
@@ -161,6 +164,7 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
                         tokens: widget.tokens,
                         strings: s,
                         wishlistRepository: widget.wishlistRepository!,
+                        reservationRepository: widget.reservationRepository,
                         username: item.friend.username.value,
                       ),
                     ),
