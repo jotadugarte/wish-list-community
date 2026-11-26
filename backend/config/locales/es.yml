@@ -41,6 +41,18 @@ es:
       not_cancelable: "no se puede cancelar"
       limit_must_be_positive: "el límite debe ser positivo"
       limit_reached: "se alcanzó el límite de reservaciones para esta lista"
+  gifts:
+    errors:
+      reservation_required: "se requiere la reservación"
+      actor_required: "se requiere el actor"
+      not_purchasable: "la reservación no se puede marcar como comprada"
+      open_gift_exists: "ya existe un regalo abierto para este ítem"
+      invalid_purchase_link: "referencia de enlace de compra inválida"
+      gift_required: "se requiere el regalo"
+      not_deliverable: "el regalo no se puede marcar como entregado"
+      not_confirmable: "el regalo no se puede confirmar"
+      item_required: "se requiere el ítem"
+
   notifications:
     reservation:
       grace_started:

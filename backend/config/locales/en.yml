@@ -41,6 +41,18 @@ en:
       not_cancelable: "not cancelable"
       limit_must_be_positive: "limit must be positive"
       limit_reached: "reservation limit reached for this wishlist"
+  gifts:
+    errors:
+      reservation_required: "reservation required"
+      actor_required: "actor required"
+      not_purchasable: "reservation cannot be marked purchased"
+      open_gift_exists: "an open gift already exists for this item"
+      invalid_purchase_link: "invalid purchase link reference"
+      gift_required: "gift required"
+      not_deliverable: "gift cannot be marked delivered"
+      not_confirmable: "gift cannot be confirmed"
+      item_required: "item required"
+
   notifications:
     reservation:
       grace_started:
