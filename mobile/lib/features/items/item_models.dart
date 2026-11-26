@@ -55,6 +55,7 @@ class WishlistItem {
   final List<ItemLinkModel> links;
   final List<ItemImageModel> images;
   final String? availability;
+  final bool receivedGift;
 
   const WishlistItem({
     required this.id,
@@ -68,7 +69,9 @@ class WishlistItem {
     this.links = const [],
     this.images = const [],
     this.availability,
+    this.receivedGift = false,
   });
+
 
   factory WishlistItem.fromJson(Map<String, dynamic> json) {
     final rawId = json['id'];
@@ -95,9 +98,11 @@ class WishlistItem {
           .map(ItemImageModel.fromJson)
           .toList(growable: false),
       availability: json['availability'] as String?,
+      receivedGift: json['received_gift'] == true,
     );
   }
 }
+
 
 class LinkPreview {
   final String title;

@@ -85,6 +85,13 @@ class AppStrings {
   final String reserveButton;
   final String extendReservationButton;
   final String cancelReservationButton;
+  final String markPurchasedButton;
+  final String markDeliveredButton;
+  final String markReceivedButton;
+  final String confirmReceivedButton;
+  final String thankYouOptionalLabel;
+  final String receivedGiftsTitle;
+  final String confirmVoidGiftsMessage;
   final String estimatedDateLabel;
   final String availabilityAvailable;
   final String availabilityReservedByMe;
@@ -174,6 +181,13 @@ class AppStrings {
     required this.reserveButton,
     required this.extendReservationButton,
     required this.cancelReservationButton,
+    required this.markPurchasedButton,
+    required this.markDeliveredButton,
+    required this.markReceivedButton,
+    required this.confirmReceivedButton,
+    required this.thankYouOptionalLabel,
+    required this.receivedGiftsTitle,
+    required this.confirmVoidGiftsMessage,
     required this.estimatedDateLabel,
     required this.availabilityAvailable,
     required this.availabilityReservedByMe,
@@ -294,6 +308,13 @@ class AppStrings {
     reserveButton: 'Reservar',
     extendReservationButton: 'Extender',
     cancelReservationButton: 'Cancelar reservación',
+    markPurchasedButton: 'Marcar como comprado',
+    markDeliveredButton: 'Marcar como entregado',
+    markReceivedButton: 'Ya recibí esto',
+    confirmReceivedButton: 'Confirmar recepción',
+    thankYouOptionalLabel: 'Nota de agradecimiento opcional',
+    receivedGiftsTitle: 'Regalos recibidos',
+    confirmVoidGiftsMessage: 'Tienes un regalo abierto. Confirma para anularlo al bloquear/deshacer amistad.',
     estimatedDateLabel: 'Fecha estimada',
     availabilityAvailable: 'Disponible',
     availabilityReservedByMe: 'Reservado por mí',
@@ -385,6 +406,13 @@ class AppStrings {
     reserveButton: 'Reserve',
     extendReservationButton: 'Extend',
     cancelReservationButton: 'Cancel reservation',
+    markPurchasedButton: 'Mark purchased',
+    markDeliveredButton: 'Mark delivered',
+    markReceivedButton: 'I already received this',
+    confirmReceivedButton: 'Confirm receipt',
+    thankYouOptionalLabel: 'Optional thank-you note',
+    receivedGiftsTitle: 'Received Gifts',
+    confirmVoidGiftsMessage: 'You have an open gift. Confirm to void it when blocking/unfriending.',
     estimatedDateLabel: 'Estimated date',
     availabilityAvailable: 'Available',
     availabilityReservedByMe: 'Reserved by me',

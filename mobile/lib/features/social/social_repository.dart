@@ -89,28 +89,42 @@ class SocialRepository {
     );
   }
 
-  // [REQ-SOC-001] Declines, cancels, or removes a friendship.
-  Future<void> removeFriendship({required int friendshipId}) async {
+  // [REQ-SOC-001] [REQ-GIFT-002] Declines, cancels, or removes a friendship.
+  Future<void> removeFriendship({
+    required int friendshipId,
+    bool confirmVoidGifts = false,
+  }) async {
     if (friendshipId <= 0) {
       throw ArgumentError('Pre-condition failed: friendshipId must be > 0');
     }
     await apiClient.request(
       method: 'DELETE',
       path: '/api/v1/friendships/$friendshipId',
+      body: {'confirm_void_gifts': confirmVoidGifts},
     );
   }
 
-  // [REQ-BLOCK-001] [REQ-BLOCK-002] Blocks a user via POST /api/v1/user_blocks.
-  Future<void> blockUser({required int blockedUserId}) async {
+  // [REQ-BLOCK-001] [REQ-BLOCK-002] [REQ-GIFT-002] Blocks a user via POST /api/v1/user_blocks.
+  Future<void> blockUser({
+    required int blockedUserId,
+    String? blockedUsername,
+    bool confirmVoidGifts = false,
+  }) async {
     if (blockedUserId <= 0) {
       throw ArgumentError('Pre-condition failed: blockedUserId must be > 0');
     }
     await apiClient.request(
       method: 'POST',
       path: '/api/v1/user_blocks',
-      body: {'blocked_id': blockedUserId},
+      body: {
+        'blocked_id': blockedUserId,
+        'blocked_username': ?blockedUsername,
+        'confirm_void_gifts': confirmVoidGifts,
+      },
     );
   }
+
+
 
   // [REQ-SOC-001] [REQ-DISC-001] Submits a user abuse report validated by ReportReasonVo.
   Future<void> reportUser({

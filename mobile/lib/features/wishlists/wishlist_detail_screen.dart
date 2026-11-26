@@ -6,16 +6,18 @@ import 'package:wish_list_mobile/features/items/item_form_screen.dart';
 import 'package:wish_list_mobile/features/items/item_models.dart';
 import 'package:wish_list_mobile/features/items/item_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
+import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
 
 // Wishlist detail with item list, specs box, and optional Secret Link management.
-// Traceability: [REQ-WISH-001], [REQ-WISH-002], [REQ-WISH-006], [REQ-ITEM-001]
+// Traceability: [REQ-WISH-001], [REQ-WISH-002], [REQ-WISH-006], [REQ-ITEM-001], [REQ-GIFT-003], [REQ-ITEM-004]
 class WishlistDetailScreen extends StatefulWidget {
   final DesignTokens tokens;
   final AppStrings strings;
   final WishlistRepository wishlistRepository;
   final ItemRepository itemRepository;
   final ReservationRepository? reservationRepository;
+  final GiftRepository? giftRepository;
   final int wishlistId;
   final bool canManage;
 
@@ -26,9 +28,11 @@ class WishlistDetailScreen extends StatefulWidget {
     required this.wishlistRepository,
     required this.itemRepository,
     this.reservationRepository,
+    this.giftRepository,
     required this.wishlistId,
     required this.canManage,
   });
+
 
   @override
   State<WishlistDetailScreen> createState() => _WishlistDetailScreenState();
@@ -183,12 +187,23 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                 ],
                 if (_items.isEmpty)
                   Text(s.noItemsYet)
-                else
-                  ..._items.map(_itemTile),
+                else ...[
+                  ..._items.where((i) => !i.receivedGift).map(_itemTile),
+                  if (_items.any((i) => i.receivedGift)) ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      s.receivedGiftsTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    ..._items.where((i) => i.receivedGift).map(_itemTile),
+                  ],
+                ],
               ],
             ),
     );
   }
+
 
   Future<void> _reserve(WishlistItem item) async {
     final repo = widget.reservationRepository;
@@ -253,9 +268,26 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                   child: Text(widget.strings.reserveButton),
                 ),
             ],
+            if (widget.canManage && !item.receivedGift)
+              TextButton(
+                onPressed: () => _ownerMarkReceived(item),
+                child: Text(widget.strings.markReceivedButton),
+              ),
           ],
         ),
       ),
     );
   }
+
+  Future<void> _ownerMarkReceived(WishlistItem item) async {
+    final gifts = widget.giftRepository;
+    if (gifts == null) return;
+    try {
+      await gifts.ownerMarkReceived(itemId: item.id);
+      await _load();
+    } catch (e) {
+      if (mounted) setState(() => _error = widget.strings.errorMessage(e));
+    }
+  }
 }
+

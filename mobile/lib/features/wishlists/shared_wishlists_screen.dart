@@ -5,6 +5,7 @@ import 'package:wish_list_mobile/features/wishlists/wishlist_detail_screen.dart'
 import 'package:wish_list_mobile/features/items/item_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
+import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
 
 // Shared-with-me list of wishlist shells opened via Secret Link or explicit share.
 // Traceability: [REQ-WISH-003], [REQ-USER-002]
@@ -13,6 +14,7 @@ class SharedWishlistsScreen extends StatefulWidget {
   final AppStrings strings;
   final WishlistRepository wishlistRepository;
   final ReservationRepository? reservationRepository;
+  final GiftRepository? giftRepository;
 
   const SharedWishlistsScreen({
     super.key,
@@ -20,6 +22,7 @@ class SharedWishlistsScreen extends StatefulWidget {
     required this.strings,
     required this.wishlistRepository,
     this.reservationRepository,
+    this.giftRepository,
   });
 
   @override
@@ -73,6 +76,7 @@ class _SharedWishlistsScreenState extends State<SharedWishlistsScreen> {
                 MaterialPageRoute<void>(
                   builder: (_) => WishlistDetailScreen(
                         reservationRepository: widget.reservationRepository,
+                        giftRepository: widget.giftRepository,
                     tokens: widget.tokens,
                     strings: s,
                     wishlistRepository: widget.wishlistRepository,

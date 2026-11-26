@@ -6,6 +6,7 @@ import 'package:wish_list_mobile/features/items/item_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
 import 'package:wish_list_mobile/features/reservations/my_reservations_screen.dart';
+import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
 
 // Lists the owner's wishlists and supports create with default friends privacy.
 // Traceability: [REQ-WISH-001], [REQ-USER-002]
@@ -14,6 +15,7 @@ class MyWishlistsScreen extends StatefulWidget {
   final AppStrings strings;
   final WishlistRepository wishlistRepository;
   final ReservationRepository? reservationRepository;
+  final GiftRepository? giftRepository;
 
   const MyWishlistsScreen({
     super.key,
@@ -21,6 +23,7 @@ class MyWishlistsScreen extends StatefulWidget {
     required this.strings,
     required this.wishlistRepository,
     this.reservationRepository,
+    this.giftRepository,
   });
 
   @override
@@ -91,6 +94,7 @@ class _MyWishlistsScreenState extends State<MyWishlistsScreen> {
                     tokens: widget.tokens,
                     strings: widget.strings,
                     reservationRepository: widget.reservationRepository!,
+                    giftRepository: widget.giftRepository,
                   ),
                 ),
               );
@@ -122,6 +126,7 @@ class _MyWishlistsScreenState extends State<MyWishlistsScreen> {
                 MaterialPageRoute<void>(
                   builder: (_) => WishlistDetailScreen(
                       reservationRepository: widget.reservationRepository,
+                      giftRepository: widget.giftRepository,
                     tokens: widget.tokens,
                     strings: s,
                     wishlistRepository: widget.wishlistRepository,
