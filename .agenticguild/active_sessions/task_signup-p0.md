@@ -24,3 +24,38 @@
     Owner prefs: start_task_mode hands-off; finish_branch_mode stepped.
   </working_notes>
 </task_session>
+
+
+## Code review pass 1 (2026-11-26)
+
+### MUST FIX
+None
+
+### STRONGLY RECOMMENDED
+1. `SignUpScreen` hardcodes `timeZone: 'UTC'` (`mobile/lib/features/auth/sign_up_screen.dart`) — new accounts ignore device/local TZ (`REQ-USER-003`). Fix: pass a real timezone (device/local) or collect it on the form.
+2. No password confirmation field on `SignUpScreen` — typos are only caught if the API rejects weak/blank passwords; confirmation never mismatches because the repo mirrors `password`. Fix: add confirm field and client-side match check.
+
+### NICE TO IMPROVE
+3. Submit button stays enabled when terms checkbox is unchecked (fails via ArgumentError → friendly error). Prefer disable until checked.
+4. Signup rate_limit request example only asserts source/`respond_to?(:rate_limit)` because test `cache_store` is `:null_store` (same limitation as other auth endpoints).
+5. `AuthRepository` file header traceability comment still omits `REQ-AUTH-002`.
+
+### Sync-docs candidate list (await owner accept/reject)
+- `docs/core/TESTING_STRATEGY_MATRIX.md` — add SignUpScreen / signup repo coverage
+- `docs/ai/qa_profile.md` — add SignUpScreen to first surfaces
+- Already updated in-branch (chore Done): `docs/core/API_CONTRACT.md`, `docs/ROADMAP.md`, `docs/core/SYSTEM_ARCHITECTURE.md`
+
+## QA reviewer record (2026-11-26) — not posted
+
+Environment: local Ruby 3.4.13 + Flutter stable; Postgres test DB; mocked ApiClient for mobile.
+
+| ID | Surface | Result |
+| :--- | :--- | :--- |
+| Q1 | `bundle exec rspec` (78 examples incl. signup) | passed |
+| Q2 | `flutter test` (42 examples incl. signup flow) | passed |
+| Q3 | `flutter analyze` | passed |
+| Q4 | Login → SignUp → POST /api/v1/signup widget | passed |
+| Q5 | AuthRepository.signUp terms gate | passed |
+| O1 | Device/simulator visual signup | owner to run |
+
+Status: not posted
