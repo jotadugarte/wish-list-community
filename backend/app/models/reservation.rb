@@ -24,6 +24,22 @@ class Reservation < ApplicationRecord
     estimated_date > event_date
   end
 
+  # [REQ-RES-001] [REQ-RES-004] JSON payload for the reserver (never for owner spoilers).
+  def as_api_json
+    {
+      id: id,
+      item_id: item_id,
+      wishlist_id: item.wishlist_id,
+      status: status,
+      estimated_date: estimated_date&.iso8601,
+      private_note: private_note,
+      grace_expires_at: grace_expires_at,
+      warn_event_date_exceeded: warn_event_date_exceeded?,
+      created_at: created_at,
+      updated_at: updated_at
+    }
+  end
+
   private
 
   def status_must_be_allowed

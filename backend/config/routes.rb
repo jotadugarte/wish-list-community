@@ -38,7 +38,9 @@ Rails.application.routes.draw do
           post :restore
           delete "images/:image_id", action: :destroy_image
         end
+        resources :reservations, only: %i[create], controller: "reservations"
       end
+      resources :reservations, only: %i[update destroy]
       resources :link_previews, only: %i[create]
       get "shared_wishlists" => "shared_wishlists#index"
     end
