@@ -14,7 +14,7 @@ module Api
         wishlists = policy_scope(Wishlist.kept.where(id: share_ids, privacy_mode: "shared"))
                       .includes(:owner)
                       .limit(MAX_INDEX)
-        render json: { wishlists: wishlists.map(&:as_api_json) }, status: :ok
+        render json: { wishlists: wishlists.map { |w| w.as_api_json(viewer: current_user) } }, status: :ok
       end
     end
   end

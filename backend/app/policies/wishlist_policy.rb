@@ -12,6 +12,7 @@ class WishlistPolicy < ApplicationPolicy
   # or sharee on shared mode — never when blocked either direction.
   def show?
     return false if user.nil? || user.discarded? || record.nil? || record.discarded?
+    return false if record.owner.discarded?
     return true if owner?
     return false if blocked_between?(record.owner)
 
@@ -56,11 +57,11 @@ class WishlistPolicy < ApplicationPolicy
     def resolve
       return scope.none if user.nil? || user.discarded?
 
-      owned = scope.kept.where(owner_id: user.id)
+      kept_with_active_owner = scope.kept.where(owner_id: User.kept.select(:id))
+      owned = kept_with_active_owner.where(owner_id: user.id)
       friend_ids = accepted_friend_ids
-      friends_mode = scope.kept.where(owner_id: friend_ids, privacy_mode: "friends")
-      shared_ids = WishlistShare.where(user_id: user.id).limit(MAX_SCOPE_ROWS).select(:wishlist_id)
-      shared_mode = scope.kept.where(id: shared_ids, privacy_mode: "shared")
+      friends_mode = kept_with_active_owner.where(owner_id: friend_ids, privacy_mode: "friends")
+      shared_mode = shared_mode_for_viewer(kept_with_active_owner)
 
       owned.or(friends_mode).or(shared_mode).limit(MAX_SCOPE_ROWS)
     end
@@ -81,6 +82,20 @@ class WishlistPolicy < ApplicationPolicy
                          .flat_map { |b| [ b.blocker_id, b.blocked_id ] }
                          .uniq
       ids - blocked - [ user.id ]
+    end
+
+    def shared_mode_for_viewer(kept_with_active_owner)
+      shared_ids = WishlistShare.where(user_id: user.id).limit(MAX_SCOPE_ROWS).select(:wishlist_id)
+      relation = kept_with_active_owner.where(id: shared_ids, privacy_mode: "shared")
+      owner_ids = relation.limit(MAX_SCOPE_ROWS).distinct.pluck(:owner_id)
+      return relation.none if owner_ids.empty?
+
+      blocked_owner_ids = UserBlock.where(blocker_id: user.id, blocked_id: owner_ids)
+                                   .or(UserBlock.where(blocked_id: user.id, blocker_id: owner_ids))
+                                   .limit(MAX_SCOPE_ROWS)
+                                   .flat_map { |b| [ b.blocker_id, b.blocked_id ] }
+                                   .uniq - [ user.id ]
+      relation.where.not(owner_id: blocked_owner_ids)
     end
   end
 

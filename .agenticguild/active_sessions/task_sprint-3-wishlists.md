@@ -228,5 +228,38 @@ No remaining Open owner forks. Pitfalls recorded as risks / Locked mitigations a
 - Product wishlist code still absent until start-task.
 - `API_CONTRACT.md` wishlist section = plan step 17.
 - `docs/core/BEHAVIOUR_MATRIX.md` seeded for Sprint 3 access actors.
+
+
+## QA reviewer record — 2026-11-26 (Sprint 3 Wishlists)
+
+**Delivery:** not posted
+
+**Environment:** Cloud agent VM; Ruby 3.4.13; Flutter 3.50.1; PostgreSQL 16 test DB; mocked Flutter ApiClient; no live staging API; no simulator.
+
+**Prerequisites:** qa_profile ready; ruby/flutter/postgres ready; wishlist + user factories ready.
+
+**Results:**
+| ID | Result | Evidence |
+| :--- | :--- | :--- |
+| QA-S1 | passed | `flutter test test_qa/qa_sprint3_wishlists_test.dart` (MyWishlists create→friends) |
+| QA-S2 | passed | same file (SharedWishlists shows shell) |
+| QA-S3 | passed | same file (login → Mis listas de deseos) |
+| QA-F1 | passed | `rspec spec/requests/api/v1/wishlists_spec.rb` 3/0 |
+| QA-F2 | passed | `rspec spec/requests/api/v1/shared_and_user_wishlists_spec.rb` 3/0 |
+| QA-F3 | passed | `rspec spec/requests/secret_links_spec.rb` 4/0 |
+| QA-F4 | passed | `rspec spec/requests/secret_link_return_to_spec.rb` 3/0 |
+| QA-F5 | passed | `rspec spec/policies/wishlist_policy_spec.rb` 7/0 |
+| QA-F6 | passed | `flutter test test/features/wishlists/` 4/0 |
+| QA-L1 | passed | `flutter test test/core/i18n/app_strings_test.dart` + es/en wishlist keys verified |
+| QA-R1 | passed | `flutter test test/features/app_screens_test.dart` 9/0 |
+| QA-R2 | passed | `bundle exec rspec` 113/0; `flutter analyze` clean; `flutter test` 46/0 |
+| QA-O1 | owner to run | Simulator/device UX for My/Shared/Secret Link — not run on cloud VM |
+
+**Not run:** QA-O1 (owner-only device/simulator per qa_profile).
+
+**Product bugs:** none found this pass.
+
+**Temporary files removed:** `mobile/test_qa/qa_sprint3_wishlists_test.dart`
+
   </working_notes>
 </task_session>

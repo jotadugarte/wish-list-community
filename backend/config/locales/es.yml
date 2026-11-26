@@ -11,6 +11,8 @@ es:
         invalid_search_query: "La búsqueda debe tener entre 2 y 30 caracteres válidos de @username"
         friendship_invalid: "No se pudo procesar la solicitud de amistad"
         report_invalid: "No se pudo enviar el reporte"
+        wishlist_invalid: "No se pudo actualizar la lista de deseos"
+        wishlist_share_invalid: "No se pudo compartir la lista de deseos"
       passwords:
         reset_sent: "Si ese correo electrónico está en nuestro sistema, hemos enviado las instrucciones para restablecer la contraseña."
   secret_links:

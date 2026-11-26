@@ -18,6 +18,6 @@
 | BM-WISH-010 | Wishlist `shared`; owner rotates token (O4A) | Old URL; new URL; explicit shares | Old 404; new works; explicit shares kept; secret_link shares revoked | Domain / API | REQ-WISH-002, REQ-WISH-006 | `spec/requests/api/v1/wishlists_spec.rb` | automated |
 | BM-WISH-011 | Owner creates wishlist (no privacy override) | `POST /api/v1/wishlists` | `privacy_mode=friends`; `share_token` nil | API | REQ-WISH-001 (O2A) | `spec/requests/api/v1/wishlists_spec.rb` | automated |
 | BM-WISH-012 | Soft-deleted wishlist; valid former token | `GET /s/:token` or API show | 404; no OG private leak | Web / API | REQ-LIFE-001, REQ-WISH-005 | `spec/requests/secret_links_spec.rb` | automated |
-| BM-WISH-013 | Explicit share exists; users unfriend | Friendship remove | `WishlistShare`s between pair deleted | Domain | REQ-BLOCK-002 (parity), L-unfriend-shares | `spec/models/friendship_spec.rb` | automated |
+| BM-WISH-013 | Explicit share exists; users unfriend | Friendship remove | `WishlistShare`s between pair deleted | Domain | REQ-BLOCK-002 (parity), L-unfriend-shares | `spec/models/wishlist_share_spec.rb` | automated |
 | BM-WISH-014 | Owner opens own Secret Link while logged in | `GET /s/:own_token` | Owner shell; **no** self `WishlistShare` row | Web | REQ-WISH-003 | `spec/requests/secret_links_spec.rb` | automated |
 | BM-WISH-015 | Attacker crafts `return_to=//evil` or off-allowlist path | Web login/signup | Reject; no open redirect | Web | REQ-WISH-005 | `spec/requests/secret_link_return_to_spec.rb` | automated |

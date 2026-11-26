@@ -215,6 +215,7 @@ Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harass
 ## 3. Wishlists (`Sprint 3`)
 
 Empty wishlist shells (no items). Privacy modes: `friends` | `shared`. Default on create: `friends` with `share_token: null`.
+`share_token` is included only in owner-facing payloads (create/index/show/update/rotate for the owner). Shared-with-me and friend discovery responses omit it so non-owners cannot redistribute the Secret Link.
 
 ### Wishlist JSON shell
 ```json

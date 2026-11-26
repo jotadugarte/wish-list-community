@@ -49,6 +49,16 @@ RSpec.describe WishlistPolicy do
       UserBlock.block!(blocker: owner, blocked: friend)
       expect(policy_for(friend, wishlist).show?).to be(false)
     end
+
+    it "denies friends and sharees when the owner is soft-deleted [REQ-LIFE-001]" do
+      wishlist = create(:wishlist, owner: owner, privacy_mode: "friends")
+      shared = create(:wishlist, :shared, owner: owner)
+      WishlistShare.upsert_explicit!(wishlist: shared, user: sharee)
+      owner.soft_delete!(actor: owner)
+
+      expect(policy_for(friend, wishlist).show?).to be(false)
+      expect(policy_for(sharee, shared).show?).to be(false)
+    end
   end
 
   describe "owner mutations [REQ-WISH-001]" do
@@ -80,6 +90,25 @@ RSpec.describe WishlistPolicy do
 
       stranger_scope = described_class::Scope.new(stranger, Wishlist.kept).resolve
       expect(stranger_scope).to be_empty
+    end
+
+    it "excludes shared wishlists whose owners are blocked from the viewer [REQ-BLOCK-001]" do
+      shared_list = create(:wishlist, :shared, owner: owner, title: "OrphanShare")
+      WishlistShare.upsert_explicit!(wishlist: shared_list, user: sharee)
+      UserBlock.block!(blocker: owner, blocked: sharee)
+      # Simulate a leftover share row after a cleanup miss
+      WishlistShare.insert_all([
+        {
+          wishlist_id: shared_list.id,
+          user_id: sharee.id,
+          source: "explicit",
+          created_at: Time.current,
+          updated_at: Time.current
+        }
+      ])
+
+      sharee_scope = described_class::Scope.new(sharee, Wishlist.kept).resolve
+      expect(sharee_scope).not_to include(shared_list)
     end
   end
 end

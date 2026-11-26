@@ -53,6 +53,31 @@ RSpec.describe "Api::V1::Wishlists", type: :request do
     end
   end
 
+  describe "GET show share_token visibility [REQ-WISH-006]" do
+    it "omits share_token for non-owner viewers [REQ-WISH-006]" do
+      wishlist = create(:wishlist, :shared, owner: owner)
+      WishlistShare.upsert_explicit!(wishlist: wishlist, user: friend)
+      friend_headers = { "Authorization" => "Bearer #{ApiToken.issue_for!(friend).last}" }
+
+      get "/api/v1/wishlists/#{wishlist.id}", headers: friend_headers
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["wishlist"]).not_to have_key("share_token")
+
+      get "/api/v1/wishlists/#{wishlist.id}", headers: headers
+      expect(response.parsed_body["wishlist"]["share_token"]).to eq(wishlist.share_token)
+    end
+
+    it "returns 404 when updating a soft-deleted wishlist [REQ-LIFE-001]" do
+      wishlist = create(:wishlist, owner: owner)
+      wishlist.soft_delete!(actor: owner)
+
+      patch "/api/v1/wishlists/#{wishlist.id}",
+            params: { wishlist: { title: "Nope" } },
+            headers: headers
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   describe "POST share_token/rotate and shares [REQ-WISH-002] [REQ-WISH-003] [REQ-WISH-006]" do
     it "rotates the token and manages explicit shares [REQ-WISH-002] [REQ-WISH-003] [REQ-WISH-006]" do
       wishlist = create(:wishlist, :shared, owner: owner)

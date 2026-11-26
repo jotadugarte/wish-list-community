@@ -59,6 +59,40 @@ RSpec.describe Wishlist do
       expect(wishlist.reload.privacy_mode).to eq("friends")
       expect(wishlist.share_token).to be_nil
     end
+
+    it "no-ops when switching to the current mode and does not remint the token [REQ-WISH-002]" do
+      wishlist = described_class.create!(owner: owner, title: "Lista")
+      wishlist.switch_privacy_mode!(PrivacyMode.new("shared"))
+      token = wishlist.reload.share_token
+
+      wishlist.switch_privacy_mode!(PrivacyMode.new("shared"))
+
+      expect(wishlist.reload.share_token).to eq(token)
+    end
+
+    it "revokes secret_link shares when wiping or rotating the token [REQ-WISH-002] [REQ-WISH-006]" do
+      wishlist = described_class.create!(owner: owner, title: "Lista")
+      wishlist.switch_privacy_mode!(PrivacyMode.new("shared"))
+      viewer = create(:user)
+      WishlistShare.upsert_secret_link!(wishlist: wishlist, user: viewer)
+
+      wishlist.rotate_share_token!
+      expect(WishlistShare.where(wishlist: wishlist, source: "secret_link")).not_to exist
+
+      WishlistShare.upsert_secret_link!(wishlist: wishlist, user: viewer)
+      wishlist.switch_privacy_mode!(PrivacyMode.new("friends"))
+      expect(WishlistShare.where(wishlist: wishlist, source: "secret_link")).not_to exist
+    end
+
+    it "includes share_token in as_api_json only for the owner [REQ-WISH-006]" do
+      wishlist = described_class.create!(owner: owner, title: "Lista")
+      wishlist.switch_privacy_mode!(PrivacyMode.new("shared"))
+      stranger = create(:user)
+
+      expect(wishlist.as_api_json(viewer: owner)).to include(share_token: wishlist.share_token)
+      expect(wishlist.as_api_json(viewer: stranger)).not_to have_key(:share_token)
+      expect(wishlist.as_api_json).not_to have_key(:share_token)
+    end
   end
 
   describe "SoftDeletable lifecycle [REQ-LIFE-001]" do

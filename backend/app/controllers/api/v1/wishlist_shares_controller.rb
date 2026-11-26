@@ -12,8 +12,8 @@ module Api
         target = User.kept.find(params[:user_id])
         share = WishlistShare.upsert_explicit!(wishlist: wishlist, user: target)
         render json: { share: share.as_api_json }, status: :created
-      rescue ArgumentError, ActiveRecord::RecordInvalid => e
-        render json: { errors: [ e.message ] }, status: :unprocessable_content
+      rescue ArgumentError, ActiveRecord::RecordInvalid
+        render json: { errors: [ I18n.t("api.v1.errors.wishlist_share_invalid") ] }, status: :unprocessable_content
       end
 
       # [REQ-WISH-003] Removes an explicit (or any) share for a user.

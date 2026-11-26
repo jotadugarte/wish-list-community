@@ -26,6 +26,7 @@ class SecretLinksController < ApplicationController
     token_vo = ShareToken.new(params[:share_token])
     wishlist = Wishlist.kept.find_by(share_token: token_vo.value, privacy_mode: "shared")
     raise ActiveRecord::RecordNotFound if wishlist.nil?
+    raise ActiveRecord::RecordNotFound if wishlist.owner.discarded?
     if logged_in? && UserBlock.blocked_between?(current_user, wishlist.owner)
       raise ActiveRecord::RecordNotFound
     end
@@ -39,6 +40,8 @@ class SecretLinksController < ApplicationController
     return if current_user.id == wishlist.owner_id
 
     WishlistShare.upsert_secret_link!(wishlist: wishlist, user: current_user)
+  rescue ArgumentError
+    raise ActiveRecord::RecordNotFound
   end
 
   def invitation_title(wishlist)

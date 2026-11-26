@@ -32,9 +32,11 @@ class Wishlist < ApplicationRecord
   end
 
   # [REQ-WISH-001] [REQ-WISH-002] Switches privacy mode, minting or wiping share_token.
+  # No-op when the requested mode already matches (avoids reminting without O4A rotate).
   def switch_privacy_mode!(mode_vo)
     raise ArgumentError, "Pre-condition failed: mode must be PrivacyMode" unless mode_vo.is_a?(PrivacyMode)
     raise ArgumentError, "Pre-condition failed: wishlist must be persisted" unless persisted?
+    return self if privacy_mode == mode_vo.value
 
     transaction do
       if mode_vo.shared?
@@ -48,17 +50,18 @@ class Wishlist < ApplicationRecord
     raise "Post-condition failed: privacy_mode mismatch" unless privacy_mode == mode_vo.value
     raise "Post-condition failed: friends must wipe share_token" if mode_vo.friends? && share_token.present?
     raise "Post-condition failed: shared must mint share_token" if mode_vo.shared? && share_token.blank?
+    assert_secret_link_shares_revoked! if mode_vo.friends?
 
     self
   end
 
   # [REQ-WISH-001] [REQ-WISH-006] Serializes the empty wishlist shell for API clients.
-  def as_api_json
-    {
+  # share_token is owner-only so non-owners cannot redistribute the Secret Link (O4A).
+  def as_api_json(viewer: nil)
+    payload = {
       id: id,
       title: title,
       privacy_mode: privacy_mode,
-      share_token: share_token,
       event_date: event_date,
       max_reservations_per_user: max_reservations_per_user,
       owner: owner.public_profile_json,
@@ -66,6 +69,8 @@ class Wishlist < ApplicationRecord
       created_at: created_at,
       updated_at: updated_at
     }
+    payload[:share_token] = share_token if viewer.present? && viewer.id == owner_id
+    payload
   end
 
   # [REQ-WISH-002] [REQ-WISH-006] Rotates share_token while remaining shared (O4A).
@@ -80,6 +85,7 @@ class Wishlist < ApplicationRecord
     end
 
     raise "Post-condition failed: token must change" if share_token == previous || share_token.blank?
+    assert_secret_link_shares_revoked!
 
     self
   end
@@ -110,5 +116,10 @@ class Wishlist < ApplicationRecord
 
   def revoke_secret_link_shares!
     wishlist_shares.where(source: "secret_link").limit(10_000).delete_all
+  end
+
+  def assert_secret_link_shares_revoked!
+    remaining = wishlist_shares.where(source: "secret_link").exists?
+    raise "Post-condition failed: secret_link shares must be revoked" if remaining
   end
 end
