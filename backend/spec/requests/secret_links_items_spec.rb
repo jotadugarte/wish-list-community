@@ -26,7 +26,7 @@ RSpec.describe "Secret Links item list (O1A)", type: :request do
       expect(response.body).not_to include("specifications")
     end
 
-    it "shows a read-only item list to authorized logged-in viewers [REQ-ITEM-001]" do
+    it "shows item list with reservation actions to authorized logged-in viewers [REQ-ITEM-001] [REQ-RES-001]" do
       create(:item, wishlist: wishlist, title: "Secret Gadget XYZ", specifications: "Talla M", priority: "high")
       create(:item_link, item: Item.last, url: "https://shop.example/g")
 
@@ -37,7 +37,8 @@ RSpec.describe "Secret Links item list (O1A)", type: :request do
       expect(response.body).to include("Secret Gadget XYZ")
       expect(response.body).to include("Talla M")
       expect(response.body).to include("https://shop.example/g")
-      expect(response.body).not_to include("reserve")
+      expect(response.body).to include("available")
+      expect(response.body).to include("Reserve")
     end
   end
 end
