@@ -17,6 +17,7 @@ class DeepLinkRouteDecision {
 }
 
 // Maps DeepLinkTarget to in-app route decisions (staging host configurable O9B).
+// Traceability: [REQ-MOB-001], [REQ-WISH-005], [REQ-SOC-001]
 class DeepLinkRouter {
   final Set<String> allowedHosts;
 

@@ -1,4 +1,5 @@
 // Staging/public host for deep links + legal URLs (O8A/O9B).
+// Traceability: [REQ-MOB-001], [REQ-AUTH-002]
 // Swap to production host before App Store / Play submit.
 class PublicHostConfig {
   static const String stagingHost = String.fromEnvironment(

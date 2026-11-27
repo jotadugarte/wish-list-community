@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Client-side best-effort compress toward ≤1600px / ≤2MB before multipart (O5A).
+// Traceability: [REQ-ITEM-002]
 // Server libvips remains mandatory.
 export default class extends Controller {
   static targets = ["input"]

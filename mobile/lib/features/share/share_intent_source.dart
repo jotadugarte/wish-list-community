@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 // Abstraction over OS share intents for headless tests (O4B).
+// Traceability: [REQ-MOB-001], [REQ-MOB-002]
 abstract class ShareIntentSource {
   Stream<String> get sharedTextStream;
   Future<String?> getInitialSharedText();
