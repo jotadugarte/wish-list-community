@@ -136,3 +136,27 @@ See updated Domain Model block under Final check section above (O1A–O5A locked
 - Spec **locked**. Archive-ready explore session.
 - **Next:** coordinator/owner runs **`start-task`** (hands-off) on a **new worker**. This explore agent does **not** write product code.
 
+## QA reviewer record — 2026-11-26 (Sprint 7 Anti-Spam)
+
+**Delivery:** not posted
+
+**What was tested**
+- Wishlist ReportPolicy / Report.submit! (O1A/O4A/O5A/FC1)
+- POST /api/v1/reports Wishlist + rate_limit declaration
+- API + Hotwire mutation rate_limit coverage (auth/preview/restore caps preserved)
+- Hotwire Secret Link Reportar lista (non-owner / guest return_to / owner hidden)
+- Flutter wishlist detail report + bilingual 429/dup/unavailable messaging
+- Regression: flutter analyze, app_screens_test, full RSpec 304
+
+**Results**
+- Cloud rows QA-S7-01..13: **passed**
+- QA-S7-14 real-device report UX: **owner to run**
+- QA-S7-15 live email/FCM / Admin triage: **out of scope / owner**
+
+**Environment**
+- Branch `cursor/feat-sprint-7-anti-spam-72e9`
+- Headless Flutter 3.50.1 + RSpec on Postgres; no computerUse / no live SMTP/FCM
+
+**Not run**
+- Real-device Flutter + Hotwire report form under load
+- Admin moderation UI (Sprint 8)
