@@ -1,6 +1,29 @@
 en:
   hello: "Hello world"
   member:
+    errors:
+      not_found: "Not found"
+    wishlists:
+      new: "New wishlist"
+      create: "Create"
+      edit: "Edit"
+      save: "Save"
+      delete: "Delete"
+      confirm_delete: "Delete this wishlist?"
+      empty: "No wishlists yet."
+      created: "Wishlist created."
+      updated: "Wishlist updated."
+      deleted: "Wishlist deleted."
+      privacy: "Privacy"
+      secret_link: "Secret Link"
+      rotate: "Rotate Secret Link"
+      token_rotated: "Secret Link rotated."
+      shares: "Shared with"
+      share_user_id: "Friend user id"
+      add_share: "Add share"
+      remove_share: "Remove"
+      share_added: "Share added."
+      share_removed: "Share removed."
     shell:
       app_name: "Wish List Community"
       nav_label: "Member navigation"

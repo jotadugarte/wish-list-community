@@ -1,0 +1,15 @@
+<section class="space-y-4 max-w-md">
+  <h1 class="text-2xl font-semibold"><%= t("member.wishlists.edit") %></h1>
+  <% if flash[:alert].present? %><p class="text-red-600"><%= flash[:alert] %></p><% end %>
+  <%= form_with model: @wishlist, url: member_wishlist_path(@wishlist), method: :patch do |f| %>
+    <div>
+      <%= f.label :title %>
+      <%= f.text_field :title, required: true %>
+    </div>
+    <div>
+      <%= f.label :privacy_mode %>
+      <%= f.select :privacy_mode, options_for_select(%w[friends shared], @wishlist.privacy_mode) %>
+    </div>
+    <%= f.submit t("member.wishlists.save") %>
+  <% end %>
+</section>

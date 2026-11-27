@@ -10,7 +10,12 @@ Rails.application.routes.draw do
 
   namespace :member, path: "app" do
     root to: "home#show"
-    get "wishlists", to: "shell#show", defaults: { section: "wishlists" }, as: :wishlists
+    resources :wishlists, only: %i[index show new create edit update destroy] do
+      member do
+        post :rotate_share_token
+      end
+      resources :shares, only: %i[create destroy], controller: "wishlist_shares"
+    end
     get "shared", to: "shell#show", defaults: { section: "shared" }, as: :shared
     get "friends", to: "shell#show", defaults: { section: "friends" }, as: :friends
     get "reservations", to: "shell#show", defaults: { section: "reservations" }, as: :reservations

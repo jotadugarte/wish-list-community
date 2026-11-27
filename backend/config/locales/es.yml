@@ -1,6 +1,29 @@
 es:
   hello: "Hola mundo"
   member:
+    errors:
+      not_found: "No encontrado"
+    wishlists:
+      new: "Nueva lista"
+      create: "Crear"
+      edit: "Editar"
+      save: "Guardar"
+      delete: "Eliminar"
+      confirm_delete: "¿Eliminar esta lista?"
+      empty: "Aún no hay listas."
+      created: "Lista creada."
+      updated: "Lista actualizada."
+      deleted: "Lista eliminada."
+      privacy: "Privacidad"
+      secret_link: "Enlace secreto"
+      rotate: "Rotar enlace secreto"
+      token_rotated: "Enlace secreto rotado."
+      shares: "Compartida con"
+      share_user_id: "Id de amistad"
+      add_share: "Agregar"
+      remove_share: "Quitar"
+      share_added: "Compartido agregado."
+      share_removed: "Compartido quitado."
     shell:
       app_name: "Wish List Community"
       nav_label: "Navegación de miembro"

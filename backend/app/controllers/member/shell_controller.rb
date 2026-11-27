@@ -7,6 +7,7 @@ module Member
     SECTIONS = %w[wishlists shared friends reservations notifications settings].freeze
 
     def show
+      skip_authorization
       @section = params[:section].to_s
       raise ActiveRecord::RecordNotFound unless SECTIONS.include?(@section)
 
