@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('Platform deep-link config for app_links [REQ-WISH-005]', () {
+  group('Platform deep-link config for app_links [REQ-MOB-001] [REQ-WISH-005]', () {
     test('iOS disables Flutter built-in deep linking', () {
       final plist = File('ios/Runner/Info.plist').readAsStringSync();
       expect(

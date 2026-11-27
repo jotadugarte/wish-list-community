@@ -5,7 +5,7 @@ import 'package:image/image.dart' as img;
 import 'package:wish_list_mobile/features/items/image_compressor.dart';
 
 void main() {
-  group('ImageCompressor [REQ-ITEM-002] O5A', () {
+  group('ImageCompressor [REQ-ITEM-002] [REQ-MOB-001] O5A', () {
     test('resizes long side to at most 1600 and encodes jpeg', () {
       final raw = img.Image(width: 2000, height: 1000);
       final png = Uint8List.fromList(img.encodePng(raw));

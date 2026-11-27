@@ -9,7 +9,9 @@ module Member
     def index
       authorize Wishlist, :index?
       share_ids = current_user.wishlist_shares.limit(MAX_INDEX).select(:wishlist_id)
-      @wishlists = policy_scope(Wishlist.kept.where(id: share_ids, privacy_mode: "shared"))
+      @wishlists = policy_scope(
+        Wishlist.kept.where(id: share_ids, privacy_mode: PrivacyMode.new("shared").value)
+      )
                      .includes(:owner)
                      .order(updated_at: :desc)
                      .limit(MAX_INDEX)

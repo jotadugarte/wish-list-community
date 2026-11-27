@@ -2,7 +2,7 @@
 
 module Member
   # Hotwire account settings + soft-delete + legal links.
-  # Traceability: [REQ-LIFE-001], [REQ-AUTH-002] O8A
+  # Traceability: [REQ-LIFE-002], [REQ-AUTH-002] O8A
   class SettingsController < BaseController
     rate_limit to: 10, within: 3.minutes, only: :destroy_account,
                name: "member_account_destroy",
