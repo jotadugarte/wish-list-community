@@ -106,9 +106,10 @@ class User < ApplicationRecord
     true
   end
 
-  # [REQ-AUTH-001] Authenticates an active (non-discarded) user by normalized email and password.
+  # [REQ-AUTH-001] [REQ-ADM-001] Authenticates an active (non-discarded, non-suspended) user by email/password.
+  # Suspended accounts fail with the same nil result as bad credentials (FC2 GENERIC).
   def self.authenticate_active(raw_email, raw_password)
-    authenticate_within_scope(kept, raw_email, raw_password)
+    authenticate_within_scope(kept.where(suspended_at: nil), raw_email, raw_password)
   end
 
   # [REQ-LIFE-002] Authenticates a discarded user by email and password for account restoration.

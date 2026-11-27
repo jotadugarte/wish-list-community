@@ -26,7 +26,7 @@ module WebAuthentication
 
     session_id = cookies.signed[:session_id]
     @current_user = session_id.present? ? Session.find_by(id: session_id)&.user : nil
-    @current_user = nil if @current_user&.discarded?
+    @current_user = nil if @current_user&.discarded? || @current_user&.suspended?
     @current_user
   end
 
