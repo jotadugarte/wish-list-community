@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>3.2 Step 13 docs</current_step>
+    <current_step>3.2 Step 14 full suite</current_step>
   </execution_context>
 </agent_state>

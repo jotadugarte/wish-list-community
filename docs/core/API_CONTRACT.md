@@ -184,8 +184,9 @@ Directionally blocks `blocked_id`, transactionally destroying any existing `Frie
 - **Response (`201 Created`):** `{ "blocked_id": 3, "status": "blocked" }`
 
 ### `POST /api/v1/reports` (`[REQ-SOC-001]`, `[REQ-DISC-001]`, `[REQ-ADM-001]`)
-Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`) and records an `AuditEvent` (`"report.created"`).
+Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`) and records an `AuditEvent` (`"report.created"`). Allowed `reportable_type` values: `User` (Sprint 2) and `Wishlist` (Sprint 7). Wishlist reports require the reporter to currently pass `WishlistPolicy#show?` and **not** be the owner; soft-deleted / inaccessible lists return `404` (anti-existence leak). Duplicate pending reports return `422`. Enqueue-only — no owner notification and no auto-hide (admin triage is Sprint 8).
 - **Auth Required:** Yes.
+- **Rate limit:** `20` requests / `3` minutes → `429` with `{ "error": "..." }`.
 - **Request Body:**
   ```json
   {
@@ -195,6 +196,7 @@ Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harass
     "details": "Optional context up to 1000 characters"
   }
   ```
+  Wishlist example: `{ "reportable_type": "Wishlist", "reportable_id": 12, "reason": "spam" }`.
 - **Response (`201 Created`):**
   ```json
   {
@@ -209,6 +211,12 @@ Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harass
     }
   }
   ```
+
+### Mutation `rate_limit` (`[REQ-DISC-001]`, Sprint 7)
+Rails 8 `rate_limit` applies to API v1 **write** mutations (friendships, blocks, wishlists/shares, items, reservations, gifts, notification preferences update, session/account destroy, reports) and Hotwire Secret Link mutations, typically `10–20` / `3` minutes within the O2A tuning band. Existing auth (`login`/`signup`/`passwords`), account restore, and link-preview caps remain unchanged. Exceeding a cap returns `429`.
+
+### Hotwire Secret Link report (`[REQ-DISC-001]`, `[REQ-WISH-002]`)
+- **`POST /s/:share_token/report`** — cookie session + CSRF; creates a pending Wishlist report for authenticated non-owners (same reasons). Guests are redirected to login with `return_to`. Soft-deleted / invalid token → `404`.
 
 ---
 
