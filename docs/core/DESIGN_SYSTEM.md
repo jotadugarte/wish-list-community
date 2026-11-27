@@ -6,6 +6,8 @@
 - **Live Exploration Artifact:** [`docs/estudio_diseno_visual_ceci_nata.html`](../estudio_diseno_visual_ceci_nata.html)
 - **Status:** Awaiting final visual selection file (`diseno_visual_nata_completado.html`) from co-founder **Ceci Pinilla ("Ñata")**.
 - **Interim policy (D2b, 2026-11-26):** Ship and iterate with current `DesignTokens` / theme defaults until Ñata’s final HTML lands; retokenize afterward. Do not block sprints on design lock.
+- **Shared file (O6A / O7A):** `design/design_tokens.json` (version stamp `version`) holds today's palettes, typography, icon styles, and nav structures. Update that file once when the final HTML lands. Flutter reads it with `SharedDesignTokenCatalog` and still falls back to the hardcoded `DesignTokens` maps. Do not retokenize by rewriting those maps in the same change as Sprint 9.
+- **Admin guide (O1A / O4R / O9A):** Hotwire `GET /admin/style_guide` shows the tokens, light/dark, es/en, a web sample, and an HTML/CSS phone mock. The mock is not Flutter Web and is not pixel-identical. Print CSS hides the toggles. This does not theme the member web app.
 
 ## 2. Token Architecture (Parameterized for Web & Flutter)
 Both clients consume the following semantic design tokens so the entire visual identity updates from a single definition:

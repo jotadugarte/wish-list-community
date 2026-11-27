@@ -408,6 +408,7 @@ Cookie session + `role=admin` only. Non-admins receive **404** (no panel leak). 
 - `GET /admin/audit_events` — filterable AuditEvent viewer (`action_filter`)
 - `POST /admin/audit_events/:id/revert` — unsuspend / restore soft-delete (30-day window) / reopen dismissed→pending
 - `GET /admin/gifts/:id` — read-only gifter `@username` + email + `purchase_link_ref`
+- `GET /admin/style_guide` — admin-only brand/style guide (cookie `role=admin`, others **404**). Query `preview=web|app`, `appearance=light|dark`, `copy=es|en`. Web preview and HTML/CSS phone mock are inert. Print CSS is on the page. Colors come from `design/design_tokens.json` (version stamp on the page). No secret URL and no `/api/v1` equivalent.
 
 Suspended accounts fail web/API login with the same generic invalid-credentials copy as bad passwords (FC2). Self soft-delete restore within 30 days is unchanged; **admin-enforced** soft-deletes fail restore with that same generic `401` (member must not learn moderation status from restore).
 

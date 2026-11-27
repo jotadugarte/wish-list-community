@@ -16,7 +16,7 @@
     <step id="6" status="complete">Failing request spec, then web preview: inert sample flows, button states, a11y notes, do/don't. No live mutations.</step>
     <step id="7" status="complete">Failing request spec, then mobile preview: HTML/CSS phone mock from the shared tokens (O4R, O9A). Not Flutter Web and not pixel-identical.</step>
     <step id="8" status="complete">Failing request spec, then print CSS so the guide can be printed or saved as PDF (O3A). Hover may flatten.</step>
-    <step id="9" status="pending">Document the shared file and the Admin guide in architecture and the API contract.</step>
+    <step id="9" status="complete">Document the shared file and the Admin guide in architecture and the API contract.</step>
     <step id="10" status="pending">Run the Rails and Flutter suites and record that they are green. End of the implementation plan. Do not start QA, finish-branch, or a PR.</step>
   </implementation_plan>
 
