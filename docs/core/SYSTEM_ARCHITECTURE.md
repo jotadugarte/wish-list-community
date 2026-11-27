@@ -14,7 +14,7 @@
 * **Authorization Engine:** Pundit (`ApplicationPolicy` with mandatory `after_action :verify_authorized` and `after_action :verify_policy_scoped` default-deny enforcement)
 * **Image Processing:** ActiveStorage + `image_processing` (`libvips`) with mandatory server-side resize (<= 1600px), WebP encoding, and full EXIF/GPS metadata stripping
 * **Testing Suite:** RSpec + FactoryBot (`backend/`), `flutter_test` (`mobile/`) with CI job `flutter_test` (`flutter analyze` + `flutter test`)
-* **Mobile Client Surfaces (Flutter thin client):** Auth, social, wishlist, and item screens live under `mobile/lib/features/` and consume `/api/v1` only — `LoginScreen`, `SignUpScreen`, `PasswordResetScreen`, `AccountRestoreScreen`, `ProfileSettingsScreen`, `FriendsListScreen`, `UserSearchScreen`, `MyWishlistsScreen`, `SharedWishlistsScreen`, `FriendWishlistsScreen`, `WishlistDetailScreen` (item list + specs), `ItemFormScreen` (paste-URL preview confirm, optional price, priority, links), plus bilingual `AppStrings` (`es` / `en`). Visual identity is centralized in `DesignTokens` / `AppTheme` / `AppNavigationShell`. Gallery multipart image picker for items is not shipped yet (API multipart remains in scope).
+* **Mobile Client Surfaces (Flutter thin client):** Auth, social, wishlist, and item screens live under `mobile/lib/features/` and consume `/api/v1` only — `LoginScreen`, `SignUpScreen`, `PasswordResetScreen`, `AccountRestoreScreen`, `ProfileSettingsScreen`, `FriendsListScreen`, `UserSearchScreen`, `MyWishlistsScreen`, `SharedWishlistsScreen`, `FriendWishlistsScreen`, `WishlistDetailScreen` (item list + specs + non-owner wishlist report), `ItemFormScreen` (paste-URL preview confirm, optional price, priority, links), plus bilingual `AppStrings` (`es` / `en`). Visual identity is centralized in `DesignTokens` / `AppTheme` / `AppNavigationShell`. Gallery multipart image picker for items is not shipped yet (API multipart remains in scope).
 
 ## 2. Architectural Paradigm
 * **Server-First Authority:** 100% of business logic, authorization policies, privacy rules, reservation concurrency, and budget validations reside on the Rails 8 server. Both the Web UI and Flutter mobile apps act strictly as clients.
@@ -33,6 +33,10 @@
   * Single active reservation per item enforced at the PostgreSQL level via partial unique index (`WHERE status IN ('active', 'expired_grace')`).
   * Unordered unique pair index on friendships (`LEAST(requester_id, addressee_id), GREATEST(requester_id, addressee_id)`).
   * Base controllers gracefully trap `ActiveRecord::RecordNotUnique` and return deterministic `409 Conflict` / idempotent responses.
+* **Rails 8 `rate_limit` Naming:** When a controller declares more than one `rate_limit`, each declaration MUST include a distinct `name:` so the cache buckets do not share a key (unnamed dual limits silently throttle unrelated actions).
+* **Hotwire Rate-Limit Redirect Status:** Cookie-session mutation `rate_limit` `with:` callbacks that redirect MUST use a 3xx status (`:see_other`) with the wait flash — never `:too_many_requests` on a redirect — so Turbo follows and the user sees the wait copy. JSON `/api/v1` may still render `429`.
+* **Authenticated Mutation Rate-Limit Keying:** Authenticated write `rate_limit` declarations MUST key `by:` the current user id with IP only as fallback (`current_user&.id || request.remote_ip`), not IP alone (shared NAT false-throttles; IP rotation bypasses per-account caps).
+* **Client Mapping of Validation Errors:** Clients MUST NOT map every HTTP `422` to a single user-facing string when the API distinguishes cases (for example duplicate pending vs invalid payload). Prefer the server error body / dedicated copy per case.
 
 ## 3. The "Kill List" (Forbidden Patterns)
 *AI Agents MUST NOT use or suggest the following under any circumstances:*

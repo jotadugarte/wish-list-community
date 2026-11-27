@@ -138,7 +138,7 @@ See updated Domain Model block under Final check section above (O1A–O5A locked
 
 ## QA reviewer record — 2026-11-26 (Sprint 7 Anti-Spam)
 
-**Delivery:** not posted
+**Delivery:** posted
 
 **What was tested**
 - Wishlist ReportPolicy / Report.submit! (O1A/O4A/O5A/FC1)
