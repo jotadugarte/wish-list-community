@@ -1,0 +1,23 @@
+<% content_for :title, "Admin Reports" %>
+<h1>Reports</h1>
+<p>Pending abuse reports (User and Wishlist).</p>
+
+<% if @reports.empty? %>
+  <p>No pending reports.</p>
+<% else %>
+  <ul>
+    <% @reports.each do |report| %>
+      <li>
+        <%= link_to admin_report_path(report) do %>
+          <%= report.reportable_type %> —
+          <% if report.reportable_type == "User" %>
+            @<%= report.reportable.username %>
+          <% else %>
+            <%= report.reportable.title %>
+          <% end %>
+          (<%= report.reason %>)
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

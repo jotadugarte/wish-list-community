@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Admin" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body>
+    <header class="container mx-auto px-5 py-4 border-b">
+      <nav class="flex gap-4 items-center">
+        <strong>Admin</strong>
+        <%= link_to "Reports", admin_reports_path %>
+      </nav>
+      <% if flash[:notice].present? %>
+        <p class="mt-2"><%= flash[:notice] %></p>
+      <% end %>
+      <% if flash[:alert].present? %>
+        <p class="mt-2"><%= flash[:alert] %></p>
+      <% end %>
+    </header>
+    <main class="container mx-auto mt-8 px-5">
+      <%= yield %>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<% content_for :title, "Report ##{@report.id}" %>
+<h1>Report #<%= @report.id %></h1>
+
+<p>
+  Type: <strong><%= @report.reportable_type %></strong><br>
+  Reason: <%= @report.reason %><br>
+  Reporter: @<%= @report.reporter.username %><br>
+  Status: <%= @report.status %>
+</p>
+
+<% if @report.reportable_type == "User" %>
+  <p>Target user: @<%= @report.reportable.username %></p>
+<% else %>
+  <p>Target wishlist: <%= @report.reportable.title %> (owner @<%= @report.reportable.owner.username %>)</p>
+<% end %>
+
+<% if @report.status == "pending" %>
+  <div class="flex flex-col gap-3 mt-6">
+    <%= button_to "Dismiss", dismiss_admin_report_path(@report), method: :post %>
+
+    <% if @report.reportable_type == "User" %>
+      <%= button_to "Suspend", suspend_admin_report_path(@report), method: :post %>
+      <%= button_to "Soft-delete account", soft_delete_user_admin_report_path(@report), method: :post %>
+    <% else %>
+      <%= button_to "Suspend owner", suspend_admin_report_path(@report), method: :post %>
+      <%= button_to "Soft-delete account (owner)", soft_delete_user_admin_report_path(@report), method: :post %>
+      <%= button_to "Soft-delete wishlist", soft_delete_wishlist_admin_report_path(@report), method: :post %>
+    <% end %>
+  </div>
+<% end %>
+
+<p class="mt-6"><%= link_to "Back to Reports", admin_reports_path %></p>
