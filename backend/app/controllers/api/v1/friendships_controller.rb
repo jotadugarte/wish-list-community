@@ -55,9 +55,25 @@ module Api
       def destroy
         friendship = Friendship.find(params[:id])
         authorize friendship, :destroy?
+        other = friendship.requester_id == current_user.id ? friendship.addressee : friendship.requester
+        if gifter_open_gift_needs_confirm?(other)
+          return render json: { errors: [ I18n.t("gifts.errors.confirm_void_required") ] },
+                        status: :unprocessable_content
+        end
 
         friendship.remove!(actor: current_user)
         head :no_content
+      end
+
+      private
+
+      # [REQ-GIFT-002] O8D: gifter must confirm before voiding open gifts via unfriend.
+      def gifter_open_gift_needs_confirm?(other_user)
+        return false if ActiveModel::Type::Boolean.new.cast(params[:confirm_void_gifts])
+
+        GiftRecord.where(status: GiftStatus::OPEN, gifter_id: current_user.id).limit(50).any? do |gift|
+          gift.item.wishlist.owner_id == other_user.id
+        end
       end
     end
   end

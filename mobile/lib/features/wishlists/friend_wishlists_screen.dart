@@ -5,6 +5,7 @@ import 'package:wish_list_mobile/features/wishlists/wishlist_detail_screen.dart'
 import 'package:wish_list_mobile/features/items/item_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
+import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
 
 // Policy-scoped wishlists for a friend's @username (O3A).
 // Traceability: [REQ-WISH-001]
@@ -13,6 +14,7 @@ class FriendWishlistsScreen extends StatefulWidget {
   final AppStrings strings;
   final WishlistRepository wishlistRepository;
   final ReservationRepository? reservationRepository;
+  final GiftRepository? giftRepository;
   final String username;
 
   const FriendWishlistsScreen({
@@ -21,6 +23,7 @@ class FriendWishlistsScreen extends StatefulWidget {
     required this.strings,
     required this.wishlistRepository,
     this.reservationRepository,
+    this.giftRepository,
     required this.username,
   });
 
@@ -77,6 +80,7 @@ class _FriendWishlistsScreenState extends State<FriendWishlistsScreen> {
                         MaterialPageRoute<void>(
                           builder: (_) => WishlistDetailScreen(
                         reservationRepository: widget.reservationRepository,
+                        giftRepository: widget.giftRepository,
                             tokens: widget.tokens,
                             strings: s,
                             wishlistRepository: widget.wishlistRepository,

@@ -1,14 +1,16 @@
 import 'package:wish_list_mobile/core/network/api_client.dart';
+import 'package:wish_list_mobile/features/gifts/gift_models.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_models.dart';
 
 // Repository for secret reservations and My Reservations.
-// Traceability: [REQ-RES-001], [REQ-RES-004], [REQ-RES-006]
+// Traceability: [REQ-RES-001], [REQ-RES-004], [REQ-RES-006], [REQ-GIFT-001]
 class ReservationRepository {
   static const int maxList = 200;
 
   final ApiClient apiClient;
 
   const ReservationRepository({required this.apiClient});
+
 
   // [REQ-RES-001] Creates a reservation on an item.
   Future<ReservationModel> create({
@@ -86,4 +88,19 @@ class ReservationRepository {
         .map(ReservationModel.fromJson)
         .toList(growable: false);
   }
+
+  // [REQ-GIFT-001] Lists open gifts returned alongside my_reservations.
+  Future<List<GiftModel>> fetchMineOpenGifts() async {
+    final response = await apiClient.request(
+      method: 'GET',
+      path: '/api/v1/my_reservations',
+    );
+    final raw = response.body['open_gifts'] as List<dynamic>? ?? const [];
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .take(maxList)
+        .map(GiftModel.fromJson)
+        .toList(growable: false);
+  }
 }
+

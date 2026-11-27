@@ -103,7 +103,10 @@ class Friendship < ApplicationRecord
       WishlistShare.delete_between!(requester, addressee)
       Reservation
       Reservation.cancel_between_users!(requester, addressee)
+      GiftRecord
+      GiftRecord.void_between_users!(requester, addressee, notify_gifter: false, actor: actor)
       AuditEvent.record!(
+
         actor: actor,
         action: "friendship.removed",
         auditable: self,

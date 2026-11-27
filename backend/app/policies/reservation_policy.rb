@@ -29,10 +29,16 @@ class ReservationPolicy < ApplicationPolicy
     reserver_active_hold?
   end
 
+  # [REQ-GIFT-001] O6A: only the reserver on an active/grace hold may mark purchased.
+  def mark_purchased?
+    reserver_active_hold?
+  end
+
   # [REQ-RES-004] Show own reservation rows.
   def show?
     user.present? && !user.discarded? && record.user_id == user.id
   end
+
 
   class Scope < ApplicationPolicy::Scope
     MAX_SCOPE_ROWS = 500

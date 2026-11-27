@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
+import 'package:wish_list_mobile/core/network/api_client.dart';
 import 'package:wish_list_mobile/core/theme/app_icon_badge.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/friend_wishlists_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
+import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
 
 // Displays accepted friends and incoming/outgoing pending friend requests.
 // Traceability: [REQ-SOC-001], [REQ-BLOCK-001], [REQ-DISC-001], [REQ-USER-002], [REQ-WISH-001]
@@ -15,6 +17,7 @@ class FriendsListScreen extends StatefulWidget {
   final SocialRepository socialRepository;
   final WishlistRepository? wishlistRepository;
   final ReservationRepository? reservationRepository;
+  final GiftRepository? giftRepository;
 
   const FriendsListScreen({
     super.key,
@@ -23,6 +26,7 @@ class FriendsListScreen extends StatefulWidget {
     required this.socialRepository,
     this.wishlistRepository,
     this.reservationRepository,
+    this.giftRepository,
   });
 
   @override
@@ -165,6 +169,7 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
                         strings: s,
                         wishlistRepository: widget.wishlistRepository!,
                         reservationRepository: widget.reservationRepository,
+                        giftRepository: widget.giftRepository,
                         username: item.friend.username.value,
                       ),
                     ),
@@ -176,9 +181,7 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
               tooltip: s.blockUserAction,
               icon: const Icon(Icons.block),
               onPressed: () => _runFriendAction(() async {
-                await widget.socialRepository.blockUser(
-                  blockedUserId: item.friend.id,
-                );
+                await _blockFriendWithOptionalVoidConfirm(item);
               }),
             ),
             IconButton(
@@ -196,5 +199,45 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
         ),
       ),
     );
+  }
+
+  // [REQ-GIFT-002] Prompt void-confirm only when the API requires confirm_void_gifts.
+  Future<void> _blockFriendWithOptionalVoidConfirm(FriendshipItem item) async {
+    try {
+      await widget.socialRepository.blockUser(
+        blockedUserId: item.friend.id,
+        blockedUsername: item.friend.username.value,
+      );
+      return;
+    } on ApiException catch (e) {
+      if (!_needsVoidGiftsConfirm(e)) rethrow;
+    }
+    if (!mounted) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(widget.strings.confirmVoidGiftsMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await widget.socialRepository.blockUser(
+      blockedUserId: item.friend.id,
+      blockedUsername: item.friend.username.value,
+      confirmVoidGifts: true,
+    );
+  }
+
+  bool _needsVoidGiftsConfirm(ApiException e) {
+    return e.statusCode == 422 && e.message.contains('confirm_void_gifts');
   }
 }

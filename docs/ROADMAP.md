@@ -62,21 +62,22 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Notification foundation: in-app + email enqueue + push no-op; preferences defaults-on (O1A/O8A) (`REQ-NOTIF-001`) — 2026-11-26
   - [x] Hotwire Secret Link reserve/extend/cancel parity with Flutter (O4B) (`REQ-WISH-002`, `REQ-RES-001`) — 2026-11-26
   - [x] API v1 endpoints + Flutter screens for this sprint — 2026-11-26
+  - [x] **MVP Sprint 6 — Dual-Path Gift Fulfillment + Anonymous Thank-You Note** — Draft PR #13 — 2026-11-26
+  - [x] Unified `"Reserved / Unavailable"` status shown to other friends for both reserved and secretly purchased items; third-party friends cannot override another friend's active reservation (`REQ-GIFT-002`) — 2026-11-26
+  - [x] Dual-path fulfillment (`REQ-GIFT-001`, `REQ-GIFT-003`):
+    - [x] Path 1 (Gifter-initiated): Reserver marks `purchased_secret` (hidden from owner) -> marks `delivered_pending_confirmation` (sends anonymous prompt to owner) -> owner confirms `received_confirmed` — 2026-11-26
+    - [x] Path 2 (Owner 1-step): Owner directly marks any item as `received_confirmed` in 1 step (closing any active reservation and notifying the reserver) — 2026-11-26
+  - [x] Visual separation of `received_confirmed` items into a *"Received Gifts"* section at the bottom of the wishlist (`REQ-ITEM-004`) — 2026-11-26
+  - [x] Optional anonymous *"Thank You"* note from owner upon confirming receipt, delivered privately to the gifter without revealing the gifter's identity (`REQ-GIFT-004`) — 2026-11-26
+  - [x] Store reference to the purchase link used for an online gift (visible to admin audit only) (`REQ-ADM-001`) — 2026-11-26
+  - [x] API v1 endpoints + Flutter screens for this sprint (Hotwire Secret Link gift parity O3C included) — 2026-11-26
 
 ## In Progress
-*(No items currently in progress)*
+_(none)_
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 6 — Dual-Path Gift Fulfillment + Anonymous Thank-You Note**
-  - [ ] Unified `"Reserved / Unavailable"` status shown to other friends for both reserved and secretly purchased items; third-party friends cannot override another friend's active reservation (`REQ-GIFT-002`)
-  - [ ] Dual-path fulfillment (`REQ-GIFT-001`, `REQ-GIFT-003`):
-    - [ ] Path 1 (Gifter-initiated): Reserver marks `purchased_secret` (hidden from owner) -> marks `delivered_pending_confirmation` (sends anonymous prompt to owner) -> owner confirms `received_confirmed`
-    - [ ] Path 2 (Owner 1-step): Owner directly marks any item as `received_confirmed` in 1 step (closing any active reservation and notifying the reserver)
-  - [ ] Visual separation of `received_confirmed` items into a *"Received Gifts"* section at the bottom of the wishlist (`REQ-ITEM-004`)
-  - [ ] Optional anonymous *"Thank You"* note from owner upon confirming receipt, delivered privately to the gifter without revealing the gifter's identity (`REQ-GIFT-004`)
-  - [ ] Store reference to the purchase link used for an online gift (visible to admin audit only) (`REQ-ADM-001`)
-  - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 7 — Anti-Spam, Rate Limits & Wishlist Reports**
+
   - [ ] Rails 8 `rate_limit` anti-spam protection across mutation and report endpoints + report wishlist (`REQ-DISC-001`)
   - [ ] Sensitive content handled through reports queue (`REQ-DISC-001`)
   - [ ] API v1 endpoints + Flutter screens for this sprint

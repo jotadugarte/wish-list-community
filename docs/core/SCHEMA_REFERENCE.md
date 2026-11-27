@@ -1,6 +1,6 @@
 # Database Schema Reference (`SCHEMA_REFERENCE.md`)
 
-> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_26_193834`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
+> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_26_220000`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
 
 ---
 
@@ -233,25 +233,43 @@ Rails ActiveStorage tables for item images (Disk service in local/test). Blobs s
 ---
 
 ## 15. `reservations` (`[REQ-RES-001]`, `[REQ-RES-002]`, `[REQ-RES-006]`)
-Secret holds on one item by one reserver. Gift completion statuses (`completed_by_gift`) and purchase path fields arrive in Sprint 6.
+Secret holds on one item by one reserver. Mark purchased completes the hold as `completed_by_gift` and creates a `gift_records` row (Sprint 6).
 
 | Column | Type | Null | Default | Business Semantics |
 | :--- | :--- | :--- | :--- | :--- |
 | `id` | `bigint` | `false` | PK | Primary identifier. |
 | `item_id` | `bigint` | `false` | FK (`items`) | Held item. |
 | `user_id` | `bigint` | `false` | FK (`users`) | Reserver (never the wishlist owner). |
-| `status` | `string` | `false` | `"active"` | `ReservationStatus`: Sprint 5 uses `active`, `expired_grace`, `auto_released`, `canceled`. |
+| `status` | `string` | `false` | `"active"` | `ReservationStatus`: `active`, `expired_grace`, `auto_released`, `canceled`, `completed_by_gift`. |
 | `estimated_date` | `date` | `false` | — | Private calendar date interpreted in the reserver's `time_zone` (`EstimatedDate` VO). |
 | `private_note` | `string` | `true` | `nil` | Private note visible only to the reserver. |
 | `grace_expires_at` | `datetime` | `true` | `nil` | Set when entering `expired_grace`; cleared on extend back to `active` or terminal cancel/auto-release. |
 | `created_at` / `updated_at` | `datetime` | `false` | — | Row timestamps. Mutations must not touch `items.updated_at`. |
 
 * **Indexes:** `index_reservations_on_item_id`, `index_reservations_on_user_id`, `index_reservations_on_user_id_and_status`, partial unique `index_reservations_one_active_hold_per_item` on `item_id` **where** `status IN ('active','expired_grace')`.
-* **Why/when:** Created when a friend/sharee reserves; extended or canceled by the reserver; swept by `ReservationGraceSweepJob`; canceled on item soft-delete, block, unfriend, or account soft-delete of the reserver.
+* **Why/when:** Created when a friend/sharee reserves; extended or canceled by the reserver; swept by `ReservationGraceSweepJob`; canceled on item soft-delete, block, unfriend, or account soft-delete of the reserver; completed when the reserver marks purchased.
 
 ---
 
-## 16. `notifications` (`[REQ-NOTIF-001]`)
+## 16. `gift_records` (`[REQ-GIFT-001]`, `[REQ-GIFT-002]`, `[REQ-GIFT-003]`, `[REQ-GIFT-004]`, `[REQ-ADM-001]`)
+Dual-path gift fulfillment rows. Open statuses block third-party availability; owner confirmations never leak `gifter_id` in owner-facing API JSON.
+
+| Column | Type | Null | Default | Business Semantics |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `bigint` | `false` | PK | Primary identifier. |
+| `item_id` | `bigint` | `false` | FK (`items`) | Gifted item. |
+| `gifter_id` | `bigint` | `true` | FK (`users`) | Path 1 gifter; `nil` for Path 2 free-item receive (FC1). Admin-only identity. |
+| `status` | `string` | `false` | `"purchased_secret"` | `GiftStatus`: `purchased_secret`, `delivered_pending_confirmation`, `received_confirmed`, `voided`. |
+| `thank_you_note` | `string` | `true` | `nil` | Optional anonymous thank-you (`ThankYouNote` VO); delivered privately to gifter. |
+| `purchase_link_ref` | `string` | `true` | `nil` | Optional online purchase URL (`PurchaseLinkRef` VO); admin audit only — never in client JSON. |
+| `created_at` / `updated_at` | `datetime` | `false` | — | Row timestamps. Must not mutate `items.updated_at`. |
+
+* **Indexes:** `index_gift_records_on_item_id`, `index_gift_records_on_gifter_id`, `(gifter_id, status)`, partial unique `index_gift_records_one_open_gift_per_item` on `item_id` **where** `status IN ('purchased_secret','delivered_pending_confirmation')`.
+* **Why/when:** Created on mark purchased (Path 1) or owner mark received (Path 2); delivered/confirmed via `GiftService`; voided on item soft-delete, block, or unfriend (O8D) without reopen on restore.
+
+---
+
+## 17. `notifications` (`[REQ-NOTIF-001]`)
 In-app notification inbox rows created by `NotificationDispatcher`.
 
 | Column | Type | Null | Default | Business Semantics |
@@ -269,7 +287,7 @@ In-app notification inbox rows created by `NotificationDispatcher`.
 
 ---
 
-## 17. `notification_preferences` (`[REQ-NOTIF-001]`, O8A)
+## 18. `notification_preferences` (`[REQ-NOTIF-001]`, O8A)
 Per-user channel toggles. Missing row = defaults all-on for Sprint 5 events.
 
 | Column | Type | Null | Default | Business Semantics |

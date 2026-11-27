@@ -32,6 +32,17 @@ es:
       available: "Disponible"
       reserved_by_me: "Reservado por mí"
       unavailable: "No disponible"
+    mark_purchased: "Marcar como comprado"
+    mark_delivered: "Marcar como entregado"
+    mark_received: "Ya recibí esto"
+    confirm_received: "Confirmar recepción"
+    thank_you_optional: "Nota de agradecimiento opcional"
+    received_gifts: "Regalos recibidos"
+    marked_purchased: "Marcado como comprado"
+    marked_delivered: "Marcado como entregado"
+    confirmed_received: "Recepción confirmada"
+    marked_received: "Marcado como recibido"
+
   reservations:
     errors:
       item_required: "se requiere el ítem"
@@ -41,7 +52,33 @@ es:
       not_cancelable: "no se puede cancelar"
       limit_must_be_positive: "el límite debe ser positivo"
       limit_reached: "se alcanzó el límite de reservaciones para esta lista"
+  gifts:
+    errors:
+      reservation_required: "se requiere la reservación"
+      actor_required: "se requiere el actor"
+      not_purchasable: "la reservación no se puede marcar como comprada"
+      open_gift_exists: "ya existe un regalo abierto para este ítem"
+      invalid_purchase_link: "referencia de enlace de compra inválida"
+      gift_required: "se requiere el regalo"
+      not_deliverable: "el regalo no se puede marcar como entregado"
+      not_confirmable: "el regalo no se puede confirmar"
+      item_required: "se requiere el ítem"
+      invalid_thank_you: "nota de agradecimiento inválida"
+      invalid_status: "no está incluido en la lista"
+      confirm_void_required: "se requiere confirm_void_gifts porque tienes un regalo abierto con este usuario"
   notifications:
+    gift:
+      delivered_pending_confirmation:
+        title: "Alguien marcó un ítem como entregado"
+        body: "¿Confirmas haber recibido \"%{item}\"?"
+      received_confirmed_to_gifter:
+        title: "Regalo recibido"
+        body: "El dueño confirmó la recepción de \"%{item}\"."
+      thank_you:
+        title: "Nota de agradecimiento"
+      voided_by_owner_delete:
+        title: "Regalo cancelado"
+        body: "El dueño eliminó \"%{item}\", así que tu regalo abierto se anuló."
     reservation:
       grace_started:
         title: "Inicio del período de gracia"

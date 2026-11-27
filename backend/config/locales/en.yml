@@ -32,6 +32,17 @@ en:
       available: "Available"
       reserved_by_me: "Reserved by me"
       unavailable: "Unavailable"
+    mark_purchased: "Mark purchased"
+    mark_delivered: "Mark delivered"
+    mark_received: "I already received this"
+    confirm_received: "Confirm receipt"
+    thank_you_optional: "Optional thank-you note"
+    received_gifts: "Received Gifts"
+    marked_purchased: "Marked as purchased"
+    marked_delivered: "Marked as delivered"
+    confirmed_received: "Receipt confirmed"
+    marked_received: "Marked as received"
+
   reservations:
     errors:
       item_required: "item required"
@@ -41,7 +52,33 @@ en:
       not_cancelable: "not cancelable"
       limit_must_be_positive: "limit must be positive"
       limit_reached: "reservation limit reached for this wishlist"
+  gifts:
+    errors:
+      reservation_required: "reservation required"
+      actor_required: "actor required"
+      not_purchasable: "reservation cannot be marked purchased"
+      open_gift_exists: "an open gift already exists for this item"
+      invalid_purchase_link: "invalid purchase link reference"
+      gift_required: "gift required"
+      not_deliverable: "gift cannot be marked delivered"
+      not_confirmable: "gift cannot be confirmed"
+      item_required: "item required"
+      invalid_thank_you: "invalid thank-you note"
+      invalid_status: "is not included in the list"
+      confirm_void_required: "confirm_void_gifts is required because you have an open gift with this user"
   notifications:
+    gift:
+      delivered_pending_confirmation:
+        title: "Someone marked an item as delivered"
+        body: "Confirm receipt of \"%{item}\"?"
+      received_confirmed_to_gifter:
+        title: "Gift received"
+        body: "The owner confirmed receipt of \"%{item}\"."
+      thank_you:
+        title: "Thank you note"
+      voided_by_owner_delete:
+        title: "Gift canceled"
+        body: "The owner removed \"%{item}\", so your open gift was voided."
     reservation:
       grace_started:
         title: "Reservation grace started"

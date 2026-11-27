@@ -16,6 +16,7 @@ import 'package:wish_list_mobile/features/social/user_search_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/my_wishlists_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/shared_wishlists_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
+import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
 
 // Entry point for Wish List Community mobile app (iOS & Android).
@@ -40,6 +41,7 @@ void main() {
   final socialRepo = SocialRepository(apiClient: apiClient);
   final wishlistRepo = WishlistRepository(apiClient: apiClient);
   final reservationRepo = ReservationRepository(apiClient: apiClient);
+  final giftRepo = GiftRepository(apiClient: apiClient);
 
   runApp(
     WishListApp(
@@ -48,6 +50,7 @@ void main() {
       socialRepository: socialRepo,
       wishlistRepository: wishlistRepo,
       reservationRepository: reservationRepo,
+      giftRepository: giftRepo,
     ),
   );
 }
@@ -58,6 +61,7 @@ class WishListApp extends StatefulWidget {
   final SocialRepository socialRepository;
   final WishlistRepository wishlistRepository;
   final ReservationRepository reservationRepository;
+  final GiftRepository giftRepository;
 
   const WishListApp({
     super.key,
@@ -66,7 +70,9 @@ class WishListApp extends StatefulWidget {
     required this.socialRepository,
     required this.wishlistRepository,
     required this.reservationRepository,
+    required this.giftRepository,
   });
+
 
   @override
   State<WishListApp> createState() => _WishListAppState();
@@ -170,6 +176,7 @@ class _WishListAppState extends State<WishListApp> {
           strings: s,
           wishlistRepository: widget.wishlistRepository,
           reservationRepository: widget.reservationRepository,
+          giftRepository: widget.giftRepository,
         );
       case 1:
         return SharedWishlistsScreen(
@@ -177,6 +184,7 @@ class _WishListAppState extends State<WishListApp> {
           strings: s,
           wishlistRepository: widget.wishlistRepository,
           reservationRepository: widget.reservationRepository,
+          giftRepository: widget.giftRepository,
         );
       case 2:
         return FriendsListScreen(
@@ -185,6 +193,7 @@ class _WishListAppState extends State<WishListApp> {
           socialRepository: widget.socialRepository,
           wishlistRepository: widget.wishlistRepository,
           reservationRepository: widget.reservationRepository,
+          giftRepository: widget.giftRepository,
         );
       case 3:
         return UserSearchScreen(

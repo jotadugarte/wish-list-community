@@ -95,8 +95,10 @@ class ApiClient {
       onUnauthorized?.call();
     }
     if (!response.isSuccess) {
-      final errMsg = (response.body['error'] ?? 'Request failed').toString();
-      throw ApiException(statusCode: response.statusCode, message: errMsg);
+      throw ApiException(
+        statusCode: response.statusCode,
+        message: _errorMessageFromBody(response.body),
+      );
     }
     return response;
   }
@@ -161,5 +163,18 @@ class ApiClient {
     } on FormatException {
       return <String, dynamic>{};
     }
+  }
+
+  // Prefers singular `error`, then first entry of `errors` (API 4xx shapes).
+  static String _errorMessageFromBody(Map<String, dynamic> body) {
+    final single = body['error'];
+    if (single != null && single.toString().isNotEmpty) {
+      return single.toString();
+    }
+    final list = body['errors'];
+    if (list is List && list.isNotEmpty) {
+      return list.first.toString();
+    }
+    return 'Request failed';
   }
 }
