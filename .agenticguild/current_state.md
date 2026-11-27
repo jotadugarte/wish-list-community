@@ -5,7 +5,7 @@
 
   <execution_context>
     <active_skill>start-task</active_skill>
-    <current_phase>3</current_phase>
-    <current_step>3.2</current_step>
+    <current_phase>3-complete</current_phase>
+    <current_step>done</current_step>
   </execution_context>
 </agent_state>
