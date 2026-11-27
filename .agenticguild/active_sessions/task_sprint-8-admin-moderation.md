@@ -168,3 +168,12 @@ Results: All cloud matrix rows QA-S8-01–13 **passed**. QA-S8-14 owner to run (
 Environment: Ruby 3.4.13, Flutter 3.50.1, Postgres 16, branch cursor/sprint-8-admin-moderation-f6bf. No computerUse; no live SMTP/FCM.
 
 Product bugs: none.
+
+## Review disposition
+
+### Code review pass 7 (CONTINUE → compliance)
+- Accepted NICE 1: remaining REQ tags on some report_triage / suspended_auth examples (describe-level coverage remains).
+- Accepted NICE 2: API_CONTRACT.md admin-enforced restore 401 wording lag (docs sync can catch in finish-branch sync-docs).
+
+## Compliance CLOSED
+Owner CONTINUE 2026-11-27 — clean pass 1; proceeding to full check / draft PR.
