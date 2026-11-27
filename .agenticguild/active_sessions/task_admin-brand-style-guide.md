@@ -17,7 +17,7 @@
     <step id="7" status="complete">Failing request spec, then mobile preview: HTML/CSS phone mock from the shared tokens (O4R, O9A). Not Flutter Web and not pixel-identical.</step>
     <step id="8" status="complete">Failing request spec, then print CSS so the guide can be printed or saved as PDF (O3A). Hover may flatten.</step>
     <step id="9" status="complete">Document the shared file and the Admin guide in architecture and the API contract.</step>
-    <step id="10" status="pending">Run the Rails and Flutter suites and record that they are green. End of the implementation plan. Do not start QA, finish-branch, or a PR.</step>
+    <step id="10" status="complete">Run the Rails and Flutter suites and record that they are green. End of the implementation plan. Do not start QA, finish-branch, or a PR.</step>
   </implementation_plan>
 
   ## Domain Model
@@ -26,5 +26,7 @@
 
   <working_notes>
   Sprint 9 branch cursor/sprint-9-mobile-wrap-up-5dfd does not currently change design_tokens.dart. It does change main.dart, pubspec.yaml, routes.rb, locales, ROADMAP, API_CONTRACT, and SYSTEM_ARCHITECTURE. This task stays additive and does not merge that branch.
+  Suites 2026-11-27: RSpec 388 examples, 0 failures. RuboCop 213 files, no offenses. flutter analyze clean. flutter test all passed (theme folder includes the shared catalog reader).
+  Paused before QA, finish-branch, and any PR.
   </working_notes>
 </task_session>
