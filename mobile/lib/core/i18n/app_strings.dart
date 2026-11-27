@@ -69,6 +69,13 @@ class AppStrings {
   final String antiStalkingSubtitle;
   final String blockUserAction;
   final String reportUserAction;
+  final String reportWishlistAction;
+  final String reportWishlistSuccess;
+  final String reportWishlistDuplicate;
+  final String reportWishlistUnavailable;
+  final String reportReasonLabel;
+  final String reportSubmitButton;
+  final String rateLimitedError;
   final String signOutButton;
   final String softDeleteAccountButton;
   final String languageLabel;
@@ -165,6 +172,13 @@ class AppStrings {
     required this.antiStalkingSubtitle,
     required this.blockUserAction,
     required this.reportUserAction,
+    required this.reportWishlistAction,
+    required this.reportWishlistSuccess,
+    required this.reportWishlistDuplicate,
+    required this.reportWishlistUnavailable,
+    required this.reportReasonLabel,
+    required this.reportSubmitButton,
+    required this.rateLimitedError,
     required this.signOutButton,
     required this.softDeleteAccountButton,
     required this.languageLabel,
@@ -216,6 +230,8 @@ class AppStrings {
           return conflictError;
         case 422:
           return invalidDataError;
+        case 429:
+          return rateLimitedError;
         default:
           return genericError;
       }
@@ -292,6 +308,13 @@ class AppStrings {
     antiStalkingSubtitle: 'Solo perfil básico visible (Anti-Stalking)',
     blockUserAction: 'Bloquear usuario',
     reportUserAction: 'Reportar usuario',
+    reportWishlistAction: 'Reportar lista',
+    reportWishlistSuccess: 'Reporte enviado. Gracias.',
+    reportWishlistDuplicate: 'Ya reportaste esta lista.',
+    reportWishlistUnavailable: 'Esta lista no está disponible.',
+    reportReasonLabel: 'Motivo',
+    reportSubmitButton: 'Enviar reporte',
+    rateLimitedError: 'Demasiadas solicitudes. Espera unos minutos.',
     signOutButton: 'Cerrar Sesión',
     softDeleteAccountButton: 'Desactivar Cuenta (30 días para restaurar)',
     languageLabel: 'Idioma',
@@ -390,6 +413,13 @@ class AppStrings {
     antiStalkingSubtitle: 'Basic profile card only (Anti-Stalking)',
     blockUserAction: 'Block user',
     reportUserAction: 'Report user',
+    reportWishlistAction: 'Report list',
+    reportWishlistSuccess: 'Report submitted. Thank you.',
+    reportWishlistDuplicate: 'You already reported this list.',
+    reportWishlistUnavailable: 'This list is unavailable.',
+    reportReasonLabel: 'Reason',
+    reportSubmitButton: 'Submit report',
+    rateLimitedError: 'Too many requests. Please wait a few minutes.',
     signOutButton: 'Sign Out',
     softDeleteAccountButton: 'Deactivate Account (30-day restore window)',
     languageLabel: 'Language',

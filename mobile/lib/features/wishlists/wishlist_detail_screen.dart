@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
+import 'package:wish_list_mobile/core/network/api_client.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
+import 'package:wish_list_mobile/core/values/domain_values.dart';
 import 'package:wish_list_mobile/features/items/item_form_screen.dart';
 import 'package:wish_list_mobile/features/items/item_models.dart';
 import 'package:wish_list_mobile/features/items/item_repository.dart';
@@ -104,6 +106,68 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
     await Clipboard.setData(ClipboardData(text: '/s/$token'));
   }
 
+  Future<void> _reportWishlist() async {
+    final s = widget.strings;
+    String? selected;
+    final reason = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(title: Text(s.reportReasonLabel)),
+                  ...ReportReasonVo.allowedReasons.map(
+                    (reason) => ListTile(
+                      title: Text(reason),
+                      selected: selected == reason,
+                      onTap: () => setModalState(() => selected = reason),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        key: const Key('report_wishlist_submit'),
+                        onPressed: selected == null
+                            ? null
+                            : () => Navigator.of(ctx).pop(selected),
+                        child: Text(s.reportSubmitButton),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+    if (reason == null || !mounted) return;
+    try {
+      await widget.wishlistRepository.reportWishlist(
+        wishlistId: widget.wishlistId,
+        rawReason: reason,
+      );
+      if (mounted) setState(() => _error = s.reportWishlistSuccess);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      final message = switch (e.statusCode) {
+        422 => s.reportWishlistDuplicate,
+        404 => s.reportWishlistUnavailable,
+        429 => s.rateLimitedError,
+        _ => s.errorMessage(e),
+      };
+      setState(() => _error = message);
+    } catch (e) {
+      if (mounted) setState(() => _error = s.errorMessage(e));
+    }
+  }
+
   Future<void> _openForm({WishlistItem? existing}) async {
     final saved = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -183,6 +247,17 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                       ],
                     ),
                   ],
+                  const SizedBox(height: 16),
+                ] else ...[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      key: const Key('report_wishlist'),
+                      onPressed: _reportWishlist,
+                      icon: const Icon(Icons.flag_outlined),
+                      label: Text(s.reportWishlistAction),
+                    ),
+                  ),
                   const SizedBox(height: 16),
                 ],
                 if (_items.isEmpty)

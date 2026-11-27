@@ -123,6 +123,28 @@ class WishlistRepository {
     );
   }
 
+  // [REQ-DISC-001] Submits a wishlist abuse report validated by ReportReasonVo.
+  Future<void> reportWishlist({
+    required int wishlistId,
+    required String rawReason,
+    String? details,
+  }) async {
+    if (wishlistId <= 0) {
+      throw ArgumentError('Pre-condition failed: wishlistId must be > 0');
+    }
+    final reasonVo = ReportReasonVo(rawReason);
+    await apiClient.request(
+      method: 'POST',
+      path: '/api/v1/reports',
+      body: {
+        'reportable_type': 'Wishlist',
+        'reportable_id': wishlistId,
+        'reason': reasonVo.value,
+        'details': ?details,
+      },
+    );
+  }
+
   List<WishlistShell> _parseList(Object? raw) {
     final items = (raw as List<dynamic>? ?? const []).take(maxList);
     final list = items
