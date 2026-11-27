@@ -66,6 +66,46 @@ class User < ApplicationRecord
     end
   end
 
+  # [REQ-ADM-001] Returns true when the account is suspended (login ban) but still SoftDeletable kept.
+  def suspended?
+    suspended_at.present?
+  end
+
+  # [REQ-ADM-001] Suspends the account: sets suspended_at, revokes credentials (R1), records AuditEvent.
+  # Does not soft-delete (O3A). Rejects self-suspend and suspending the last remaining admin.
+  def suspend!(actor:)
+    raise ArgumentError, "Pre-condition failed: actor must be persisted" unless actor&.persisted?
+    raise ArgumentError, "Pre-condition failed: user must be persisted" unless persisted?
+    raise ArgumentError, "Pre-condition failed: cannot suspend yourself" if actor.id == id
+    raise ArgumentError, "Pre-condition failed: cannot suspend the last remaining admin" if last_unsuspended_admin?
+
+    transaction do
+      update!(suspended_at: Time.current)
+      revoke_all_credentials!
+      AuditEvent.record!(actor: actor, action: "user.suspended", auditable: self)
+    end
+
+    raise "Post-condition failed: suspended_at must be present" unless suspended?
+
+    true
+  end
+
+  # [REQ-ADM-001] Clears suspension and records a compensating AuditEvent.
+  def unsuspend!(actor:)
+    raise ArgumentError, "Pre-condition failed: actor must be persisted" unless actor&.persisted?
+    raise ArgumentError, "Pre-condition failed: user must be persisted" unless persisted?
+    raise ArgumentError, "Pre-condition failed: user must be suspended" unless suspended?
+
+    transaction do
+      update!(suspended_at: nil)
+      AuditEvent.record!(actor: actor, action: "user.unsuspended", auditable: self)
+    end
+
+    raise "Post-condition failed: suspended_at must be nil" if suspended?
+
+    true
+  end
+
   # [REQ-AUTH-001] Authenticates an active (non-discarded) user by normalized email and password.
   def self.authenticate_active(raw_email, raw_password)
     authenticate_within_scope(kept, raw_email, raw_password)
@@ -184,6 +224,18 @@ class User < ApplicationRecord
   end
 
   private
+
+  def revoke_all_credentials!
+    device_tokens.delete_all
+    api_tokens.delete_all
+    sessions.delete_all
+  end
+
+  def last_unsuspended_admin?
+    return false unless role == "admin" && !suspended?
+
+    self.class.kept.where(role: "admin").where(suspended_at: nil).where.not(id: id).limit(1).none?
+  end
 
   def cooldown_active?
     username_changed_at.present? && username_changed_at > USERNAME_COOLDOWN_DURATION.ago

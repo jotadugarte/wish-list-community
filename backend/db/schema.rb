@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_051505) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -103,7 +103,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_220000) do
     t.index ["gifter_id", "status"], name: "index_gift_records_on_gifter_id_and_status"
     t.index ["gifter_id"], name: "index_gift_records_on_gifter_id"
     t.index ["item_id"], name: "index_gift_records_on_item_id"
-    t.index ["item_id"], name: "index_gift_records_one_open_gift_per_item", unique: true, where: "((status)::text = ANY ((ARRAY['purchased_secret'::character varying, 'delivered_pending_confirmation'::character varying])::text[]))"
+    t.index ["item_id"], name: "index_gift_records_one_open_gift_per_item", unique: true, where: "((status)::text = ANY (ARRAY[('purchased_secret'::character varying)::text, ('delivered_pending_confirmation'::character varying)::text]))"
   end
 
   create_table "item_links", force: :cascade do |t|
@@ -228,9 +228,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_220000) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "suspended_at"
     t.index "lower((email_address)::text)", name: "idx_users_on_lower_email_address", unique: true
     t.index "lower((username)::text)", name: "idx_users_on_lower_username", unique: true
     t.index ["discarded_at"], name: "index_users_on_discarded_at"
+    t.index ["suspended_at"], name: "index_users_on_suspended_at"
   end
 
   create_table "wishlist_shares", force: :cascade do |t|
