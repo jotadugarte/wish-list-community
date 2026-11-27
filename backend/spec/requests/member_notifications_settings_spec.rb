@@ -64,5 +64,8 @@ RSpec.describe "Hotwire inbox prefs and account settings [REQ-NOTIF-001] [REQ-LI
 
     delete "/app/settings/account"
     expect(user.reload.discarded_at).to be_present
+    expect(response).to redirect_to(new_session_path)
+    follow_redirect!
+    expect(response.body).to include(I18n.t("member.settings.account_deleted", locale: user.locale.to_sym))
   end
 end

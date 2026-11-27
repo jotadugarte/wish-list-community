@@ -21,7 +21,7 @@ module Member
       authorize current_user, :destroy?
       current_user.soft_delete!(actor: current_user)
       clear_web_session_cookie!
-      redirect_to root_path, notice: I18n.t("member.settings.account_deleted"), status: :see_other
+      redirect_to new_session_path, notice: I18n.t("member.settings.account_deleted"), status: :see_other
     end
   end
 end

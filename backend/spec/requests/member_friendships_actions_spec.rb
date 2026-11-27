@@ -17,6 +17,10 @@ RSpec.describe "Hotwire friendship accept/decline [REQ-SOC-001]", type: :request
     patch "/app/friendships/#{friendship.id}"
     expect(response).to redirect_to(member_friends_path)
     expect(friendship.reload.status).to eq("accepted")
+    follow_redirect!
+    expect(response.body).to include(
+      I18n.t("member.friends.accepted_notice", locale: viewer.locale.to_sym)
+    )
   end
 
   it "declines an incoming request" do
