@@ -1,0 +1,58 @@
+import 'dart:typed_data';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:wish_list_mobile/core/network/api_client.dart';
+import 'package:wish_list_mobile/core/network/token_storage.dart';
+import 'package:wish_list_mobile/features/items/image_compressor.dart';
+import 'package:wish_list_mobile/features/items/item_repository.dart';
+
+void main() {
+  test('ItemRepository createItem uploads compressed images multipart [REQ-ITEM-002]', () async {
+    final tokenStorage = InMemoryTokenStorage();
+    await tokenStorage.saveToken('t');
+    RecordedApiRequest? captured;
+    final client = ApiClient(
+      baseUrl: 'https://api.wishlist.test',
+      tokenStorage: tokenStorage,
+      transport: (req) async {
+        captured = req;
+        return const ApiResponse(
+          statusCode: 201,
+          body: {
+            'item': {
+              'id': 11,
+              'wishlist_id': 2,
+              'title': 'Foto',
+              'specifications': null,
+              'priority': 'medium',
+              'price_cents': null,
+              'currency': null,
+              'position': 0,
+              'links': [],
+              'images': [
+                {'id': 1, 'url': 'https://cdn.example/1.webp'},
+              ],
+            },
+          },
+        );
+      },
+    );
+    final repo = ItemRepository(apiClient: client);
+    final blob = CompressedImageBlob(
+      bytes: Uint8List.fromList([1, 2, 3, 4]),
+      filename: 'shot.jpg',
+      contentType: 'image/jpeg',
+    );
+
+    final created = await repo.createItem(
+      wishlistId: 2,
+      title: 'Foto',
+      images: [blob],
+    );
+
+    expect(created.id, 11);
+    expect(created.images, isNotEmpty);
+    expect(captured?.headers['Content-Type'], contains('multipart/form-data'));
+    expect(captured?.body?['multipart'], isTrue);
+  });
+}
