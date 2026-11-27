@@ -16,7 +16,7 @@ cursor:
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>3.1 Step 5 — failing API rate_limit specs</current_step>
+    <current_step>3.2 Step 6 — add API rate_limit declarations</current_step>
     <awaiting>hands-off TDD in progress</awaiting>
   </execution_context>
 
@@ -108,7 +108,7 @@ See updated Domain Model block under Final check section above (O1A–O5A locked
     <step id="2" status="complete">Implement the minimal domain/policy changes to make step 1 green (extend `Report` / `ReportPolicy` for Wishlist; reuse existing VO + pending unique index). No new controllers yet.</step>
     <step id="3" status="complete">Write failing request specs for `POST /api/v1/reports` with `reportable_type: "Wishlist"`: happy path for friend / sharee; owner rejected; stranger/blocked/soft-deleted → unavailable (404/422 aligned with existing patterns); duplicate pending error; response shape matches user reports; declare `rate_limit` on `ReportsController#create`. Trace `[REQ-DISC-001]`, `[REQ-ARCH-003]`.</step>
     <step id="4" status="complete">Implement API wiring until step 3 green: add `Wishlist` to `ALLOWED_REPORTABLE_TYPES`; resolve only non-discarded wishlists; authorize via updated policy; keep thin controller.</step>
-    <step id="5" status="pending">Write failing specs that assert Rails 8 `rate_limit` is declared on every API v1 **write** action lacking it today (friendships create/update/destroy, user_blocks create, wishlists create/update/destroy/rotate, wishlist_shares create/destroy, items create/update/destroy/destroy_image, reservations create/update/destroy, gifts/reservation_gifts/item_gifts creates, notification_preferences update, sessions destroy, accounts destroy, reports create) within O2A/R1 band (~10–30 per few minutes). Keep existing auth/preview/restore caps unchanged. Trace `[REQ-DISC-001]`.</step>
+    <step id="5" status="complete">Write failing specs that assert Rails 8 `rate_limit` is declared on every API v1 **write** action lacking it today (friendships create/update/destroy, user_blocks create, wishlists create/update/destroy/rotate, wishlist_shares create/destroy, items create/update/destroy/destroy_image, reservations create/update/destroy, gifts/reservation_gifts/item_gifts creates, notification_preferences update, sessions destroy, accounts destroy, reports create) within O2A/R1 band (~10–30 per few minutes). Keep existing auth/preview/restore caps unchanged. Trace `[REQ-DISC-001]`.</step>
     <step id="6" status="pending">Add the missing API `rate_limit` declarations until step 5 green (no behavior change beyond 429 when exceeded).</step>
     <step id="7" status="pending">Write failing specs declaring `rate_limit` on Hotwire mutation controllers (Secret Link reservations/gifts mark-purchased/delivered/confirm/mark-received, and any other cookie-session write actions that mutate state) in the same O2A/R1 band. Trace `[REQ-DISC-001]`.</step>
     <step id="8" status="pending">Implement Hotwire `rate_limit` declarations until step 7 green.</step>
