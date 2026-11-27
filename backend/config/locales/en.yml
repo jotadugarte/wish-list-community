@@ -79,6 +79,13 @@ en:
       invalid_status: "is not included in the list"
       confirm_void_required: "confirm_void_gifts is required because you have an open gift with this user"
   notifications:
+    friend:
+      request_received:
+        title: "New friend request"
+        body: "@%{username} sent you a friend request."
+      request_accepted:
+        title: "Friend request accepted"
+        body: "@%{username} accepted your friend request."
     gift:
       delivered_pending_confirmation:
         title: "Someone marked an item as delivered"

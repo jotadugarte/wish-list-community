@@ -68,6 +68,8 @@ class Friendship < ApplicationRecord
 
     raise "Post-condition failed: friendship must be pending" unless record.persisted? && record.status == "pending"
 
+    # [REQ-NOTIF-001] Notify addressee of incoming friend request.
+    record.notify_request_received!
     record
   end
 
@@ -87,6 +89,8 @@ class Friendship < ApplicationRecord
 
     raise "Post-condition failed: friendship must be accepted" unless status == "accepted"
 
+    # [REQ-NOTIF-001] Notify requester that their request was accepted.
+    notify_request_accepted!
     self
   end
 
@@ -151,6 +155,28 @@ class Friendship < ApplicationRecord
     raise ArgumentError, "Pre-condition failed: pending outgoing requests limit (#{MAX_PENDING_OUTGOING}) reached"
   end
   private_class_method :validate_request_preconditions!
+
+  # [REQ-NOTIF-001] Dispatches friend.request_received to the addressee.
+  def notify_request_received!
+    NotificationDispatcher.dispatch!(
+      user: addressee,
+      event_key: "friend.request_received",
+      title: I18n.t("notifications.friend.request_received.title"),
+      body: I18n.t("notifications.friend.request_received.body", username: requester.username),
+      payload: { friendship_id: id, requester_id: requester_id }
+    )
+  end
+
+  # [REQ-NOTIF-001] Dispatches friend.request_accepted to the requester.
+  def notify_request_accepted!
+    NotificationDispatcher.dispatch!(
+      user: requester,
+      event_key: "friend.request_accepted",
+      title: I18n.t("notifications.friend.request_accepted.title"),
+      body: I18n.t("notifications.friend.request_accepted.body", username: addressee.username),
+      payload: { friendship_id: id, addressee_id: addressee_id }
+    )
+  end
 
   private
 

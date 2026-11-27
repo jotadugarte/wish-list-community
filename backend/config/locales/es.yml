@@ -79,6 +79,13 @@ es:
       invalid_status: "no está incluido en la lista"
       confirm_void_required: "se requiere confirm_void_gifts porque tienes un regalo abierto con este usuario"
   notifications:
+    friend:
+      request_received:
+        title: "Nueva solicitud de amistad"
+        body: "@%{username} te envió una solicitud de amistad."
+      request_accepted:
+        title: "Solicitud de amistad aceptada"
+        body: "@%{username} aceptó tu solicitud de amistad."
     gift:
       delivered_pending_confirmation:
         title: "Alguien marcó un ítem como entregado"
