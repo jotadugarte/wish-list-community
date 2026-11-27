@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe "Hotwire mutation rate_limit declarations [REQ-DISC-001]" do
-  MUTATION_RATE_LIMITS = {
+  HOTWIRE_MUTATION_RATE_LIMITS = {
     "secret_link_reservations_controller.rb" => {
       controller: SecretLinkReservationsController,
       actions: %i[create update destroy]
@@ -18,7 +18,7 @@ RSpec.describe "Hotwire mutation rate_limit declarations [REQ-DISC-001]" do
     }
   }.freeze
 
-  PRESERVED_CAPS = {
+  HOTWIRE_PRESERVED_CAPS = {
     "sessions_controller.rb" => /rate_limit\s+to:\s*10,\s*within:\s*3\.minutes,\s*only:\s*:create/,
     "web_signups_controller.rb" => /rate_limit\s+to:\s*10,\s*within:\s*3\.minutes,\s*only:\s*:create/
   }.freeze
@@ -42,7 +42,7 @@ RSpec.describe "Hotwire mutation rate_limit declarations [REQ-DISC-001]" do
     covered
   end
 
-  MUTATION_RATE_LIMITS.each do |filename, config|
+  HOTWIRE_MUTATION_RATE_LIMITS.each do |filename, config|
     it "declares rate_limit covering #{config[:actions].join(', ')} on #{filename}" do
       source = File.read(Rails.root.join("app/controllers", filename))
       covered = actions_covered(source)
@@ -56,7 +56,7 @@ RSpec.describe "Hotwire mutation rate_limit declarations [REQ-DISC-001]" do
     end
   end
 
-  PRESERVED_CAPS.each do |filename, pattern|
+  HOTWIRE_PRESERVED_CAPS.each do |filename, pattern|
     it "keeps existing Hotwire auth cap unchanged in #{filename}" do
       source = File.read(Rails.root.join("app/controllers", filename))
       expect(source).to match(pattern)

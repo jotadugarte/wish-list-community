@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe "API v1 mutation rate_limit declarations [REQ-DISC-001]" do
   # O2A/R1: ~10–30 per few minutes on write mutations; auth/preview/restore caps stay as-is.
-  MUTATION_RATE_LIMITS = {
+  API_MUTATION_RATE_LIMITS = {
     "friendships_controller.rb" => {
       controller: Api::V1::FriendshipsController,
       actions: %i[create update destroy]
@@ -59,7 +59,7 @@ RSpec.describe "API v1 mutation rate_limit declarations [REQ-DISC-001]" do
     }
   }.freeze
 
-  PRESERVED_CAPS = {
+  API_PRESERVED_CAPS = {
     "sessions_controller.rb" => /rate_limit\s+to:\s*10,\s*within:\s*3\.minutes,\s*only:\s*:create/,
     "signups_controller.rb" => /rate_limit\s+to:\s*10,\s*within:\s*3\.minutes,\s*only:\s*:create/,
     "passwords_controller.rb" => /rate_limit\s+to:\s*5,\s*within:\s*3\.minutes,\s*only:\s*:create/,
@@ -91,7 +91,7 @@ RSpec.describe "API v1 mutation rate_limit declarations [REQ-DISC-001]" do
     covered
   end
 
-  MUTATION_RATE_LIMITS.each do |filename, config|
+  API_MUTATION_RATE_LIMITS.each do |filename, config|
     it "declares rate_limit covering #{config[:actions].join(', ')} on #{filename}" do
       path = Rails.root.join("app/controllers/api/v1", filename)
       source = File.read(path)
@@ -106,7 +106,7 @@ RSpec.describe "API v1 mutation rate_limit declarations [REQ-DISC-001]" do
     end
   end
 
-  PRESERVED_CAPS.each do |filename, pattern|
+  API_PRESERVED_CAPS.each do |filename, pattern|
     it "keeps existing auth/preview/restore cap unchanged in #{filename}" do
       source = File.read(Rails.root.join("app/controllers/api/v1", filename))
       expect(source).to match(pattern)
