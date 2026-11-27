@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Single entrypoint for in-app + email enqueue + push no-op (S5 foundation).
+# Single entrypoint for in-app + email enqueue + push via PushNotifier adapter.
 # Traceability: [REQ-NOTIF-001], [REQ-NOTIF-002]
 class NotificationDispatcher
   MAX_DEVICE_TOKENS = 20
@@ -28,12 +28,25 @@ class NotificationDispatcher
       NotificationMailer.event_email(user.id, event_key.to_s, title, body).deliver_later
     end
 
-    # [REQ-NOTIF-002] Push send is no-op in S5; preference is still honored for future S9.
-    if prefs["push"] != false
-      DeviceToken.where(user_id: user.id).limit(MAX_DEVICE_TOKENS).pluck(:id)
-      # Intentionally no FCM network call in Sprint 5 (O1A).
-    end
+    # [REQ-NOTIF-001] [REQ-NOTIF-002] Push via adapter when tokens exist (NullAdapter in CI / O10B).
+    deliver_push!(user: user, prefs: prefs, event_key: event_key, title: title, body: body, payload: payload)
 
     notification
   end
+
+  def self.deliver_push!(user:, prefs:, event_key:, title:, body:, payload:)
+    return if prefs["push"] == false
+
+    tokens = DeviceToken.where(user_id: user.id).limit(MAX_DEVICE_TOKENS).pluck(:token)
+    return if tokens.blank?
+
+    PushNotifier.deliver!(
+      tokens: tokens,
+      title: title,
+      body: body,
+      event_key: event_key,
+      payload: payload || {}
+    )
+  end
+  private_class_method :deliver_push!
 end

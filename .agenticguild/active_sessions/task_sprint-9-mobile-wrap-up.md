@@ -148,8 +148,8 @@ Términos y Privacidad bilingües es+en desde el día uno (placeholders hasta te
   <step id="2" status="complete">Implement catalog + API serialization minimally until step 1 green (no FCM network yet).</step>
   <step id="3" status="complete">Write failing model/service specs: Friendship request! / accept! dispatch NotificationDispatcher for received/accepted to the right user; honor prefs; bilingual titles via I18n. Trace [REQ-NOTIF-001], [REQ-SOC-001].</step>
   <step id="4" status="complete">Implement Friendship notification hooks until step 3 green.</step>
-  <step id="5" status="pending">Write failing specs for NotificationDispatcher push path (O1A/O6A/O10B): when push enabled and DeviceTokens exist, enqueue/send via injectable FCM client double; when no tokens/keys, no crash and in-app/email still work; logout still destroys tokens [REQ-NOTIF-002].</step>
-  <step id="6" status="pending">Implement real push send wiring behind the double/adapter until step 5 green (no live Google calls in CI).</step>
+  <step id="5" status="complete">Write failing specs for NotificationDispatcher push path (O1A/O6A/O10B): when push enabled and DeviceTokens exist, enqueue/send via injectable FCM client double; when no tokens/keys, no crash and in-app/email still work; logout still destroys tokens [REQ-NOTIF-002].</step>
+  <step id="6" status="complete">Implement real push send wiring behind the double/adapter until step 5 green (no live Google calls in CI).</step>
   <step id="7" status="pending">Write failing request/system specs for public Hotwire `GET /terms` and `GET /privacy` (O8A/O13A): 200 public, es+en content (placeholder OK), linked from signup/profile. Trace [REQ-AUTH-002], [REQ-LIFE-002] publication readiness.</step>
   <step id="8" status="pending">Implement legal pages + visible links (web) until step 7 green.</step>
   <step id="9" status="pending">Write failing system specs for logged-in Hotwire **MemberWebShell** (O12A/O2B): nav sections Mis listas, Compartidas, Amigos, Reservaciones, Avisos, Ajustes; unauthenticated redirected to login.</step>
