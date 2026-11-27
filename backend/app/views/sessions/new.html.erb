@@ -13,4 +13,8 @@
     </div>
     <%= submit_tag t("web_auth.login_submit") %>
   <% end %>
+  <p class="text-sm space-x-3">
+    <%= link_to t("legal.links.terms"), terms_path %>
+    <%= link_to t("legal.links.privacy"), privacy_path %>
+  </p>
 </section>

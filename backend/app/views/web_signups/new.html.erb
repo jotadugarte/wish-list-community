@@ -29,6 +29,10 @@
       <%= check_box_tag :terms_accepted, "1", false %>
       <%= label_tag :terms_accepted, t("web_auth.terms") %>
     </div>
+    <p class="text-sm space-x-3">
+      <%= link_to t("legal.links.terms"), terms_path %>
+      <%= link_to t("legal.links.privacy"), privacy_path %>
+    </p>
     <%= submit_tag t("web_auth.signup_submit") %>
   <% end %>
 </section>

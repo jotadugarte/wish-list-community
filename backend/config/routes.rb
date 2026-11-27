@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   resource :session, only: %i[new create destroy]
   resource :signup, only: %i[new create], controller: "web_signups"
+  get "terms", to: "legal_pages#terms", as: :terms
+  get "privacy", to: "legal_pages#privacy", as: :privacy
 
   namespace :admin do
     root to: "reports#index"

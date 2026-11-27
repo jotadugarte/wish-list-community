@@ -1,5 +1,18 @@
 es:
   hello: "Hola mundo"
+  legal:
+    placeholder_notice: "Texto provisional pendiente de aprobación legal del propietario."
+    terms:
+      heading: "Términos de Uso"
+      body_es: "Estos Términos de Uso son un marcador de posición. El texto legal definitivo se publicará cuando el propietario lo apruebe."
+      body_en: "These Terms of Use are a placeholder. Final legal copy will be published when the owner approves it."
+    privacy:
+      heading: "Política de Privacidad"
+      body_es: "Esta Política de Privacidad es un marcador de posición. El texto legal definitivo se publicará cuando el propietario lo apruebe."
+      body_en: "This Privacy Policy is a placeholder. Final legal copy will be published when the owner approves it."
+    links:
+      terms: "Términos de Uso"
+      privacy: "Privacidad"
   api:
     v1:
       errors:

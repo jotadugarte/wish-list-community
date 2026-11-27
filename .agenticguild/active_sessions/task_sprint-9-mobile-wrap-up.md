@@ -150,8 +150,8 @@ Términos y Privacidad bilingües es+en desde el día uno (placeholders hasta te
   <step id="4" status="complete">Implement Friendship notification hooks until step 3 green.</step>
   <step id="5" status="complete">Write failing specs for NotificationDispatcher push path (O1A/O6A/O10B): when push enabled and DeviceTokens exist, enqueue/send via injectable FCM client double; when no tokens/keys, no crash and in-app/email still work; logout still destroys tokens [REQ-NOTIF-002].</step>
   <step id="6" status="complete">Implement real push send wiring behind the double/adapter until step 5 green (no live Google calls in CI).</step>
-  <step id="7" status="pending">Write failing request/system specs for public Hotwire `GET /terms` and `GET /privacy` (O8A/O13A): 200 public, es+en content (placeholder OK), linked from signup/profile. Trace [REQ-AUTH-002], [REQ-LIFE-002] publication readiness.</step>
-  <step id="8" status="pending">Implement legal pages + visible links (web) until step 7 green.</step>
+  <step id="7" status="complete">Write failing request/system specs for public Hotwire `GET /terms` and `GET /privacy` (O8A/O13A): 200 public, es+en content (placeholder OK), linked from signup/profile. Trace [REQ-AUTH-002], [REQ-LIFE-002] publication readiness.</step>
+  <step id="8" status="complete">Implement legal pages + visible links (web) until step 7 green.</step>
   <step id="9" status="pending">Write failing system specs for logged-in Hotwire **MemberWebShell** (O12A/O2B): nav sections Mis listas, Compartidas, Amigos, Reservaciones, Avisos, Ajustes; unauthenticated redirected to login.</step>
   <step id="10" status="pending">Implement MemberWebShell layout/nav until step 9 green (empty section shells OK if wired).</step>
   <step id="11" status="pending">Write failing system specs for Hotwire wishlist parity: list/create/edit privacy/secret-link rotate/shares/soft-delete aligned with existing API rules [REQ-WISH-*].</step>
