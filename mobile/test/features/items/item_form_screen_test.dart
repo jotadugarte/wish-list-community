@@ -44,6 +44,9 @@ void main() {
         },
       );
 
+      await tester.binding.setSurfaceSize(const Size(800, 1600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
       await tester.pumpWidget(
         MaterialApp(
           home: ItemFormScreen(
@@ -60,6 +63,8 @@ void main() {
         find.text('Especificaciones (color, talla, variante)'),
         findsOneWidget,
       );
+      expect(find.byKey(const Key('item_gallery_button')), findsOneWidget);
+      expect(find.byKey(const Key('item_camera_button')), findsOneWidget);
       await tester.enterText(
         find.widgetWithText(TextField, 'Pegar enlace de tienda'),
         'https://shop.example/p/1',

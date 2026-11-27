@@ -115,6 +115,9 @@ class AppStrings {
   final String termsLinkLabel;
   final String privacyLinkLabel;
   final String openLegalLinkAction;
+  final String addPhotosGalleryButton;
+  final String addPhotoCameraButton;
+  final String selectedPhotosLabel;
 
   const AppStrings({
     required this.locale,
@@ -228,6 +231,9 @@ class AppStrings {
     required this.termsLinkLabel,
     required this.privacyLinkLabel,
     required this.openLegalLinkAction,
+    required this.addPhotosGalleryButton,
+    required this.addPhotoCameraButton,
+    required this.selectedPhotosLabel,
   });
 
   // [REQ-USER-002] Resolves localized strings for 'es' (default) or 'en'.
@@ -392,6 +398,9 @@ class AppStrings {
     termsLinkLabel: 'Términos de uso',
     privacyLinkLabel: 'Privacidad',
     openLegalLinkAction: 'Abrir',
+    addPhotosGalleryButton: 'Galería',
+    addPhotoCameraButton: 'Cámara',
+    selectedPhotosLabel: 'Fotos listas',
   );
 
   static const AppStrings _en = AppStrings(
@@ -507,5 +516,8 @@ class AppStrings {
     termsLinkLabel: 'Terms of Use',
     privacyLinkLabel: 'Privacy Policy',
     openLegalLinkAction: 'Open',
+    addPhotosGalleryButton: 'Gallery',
+    addPhotoCameraButton: 'Camera',
+    selectedPhotosLabel: 'Photos ready',
   );
 }

@@ -3,8 +3,8 @@
 require "rails_helper"
 
 RSpec.describe "Friendship notification dispatch [REQ-NOTIF-001] [REQ-SOC-001]" do
-  let(:alice) { create(:user, username: "alice_s9") }
-  let(:bob) { create(:user, username: "bob_s9") }
+  let(:alice) { create(:user, username: "alice_s9_#{SecureRandom.hex(4)}") }
+  let(:bob) { create(:user, username: "bob_s9_#{SecureRandom.hex(4)}") }
 
   it "notifies addressee on request! with friend.request_received" do
     expect do
@@ -38,10 +38,13 @@ RSpec.describe "Friendship notification dispatch [REQ-NOTIF-001] [REQ-SOC-001]" 
   end
 
   it "uses bilingual I18n titles for friend events" do
-    I18n.with_locale(:es) do
+    bob.update!(locale: "es")
+    alice.update!(locale: "en")
+    I18n.with_locale(:en) do
       Friendship.request!(requester: alice, addressee: bob)
       note = bob.notifications.find_by!(event_key: "friend.request_received")
-      expect(note.title).to eq(I18n.t("notifications.friend.request_received.title"))
+      expect(note.title).to eq(I18n.t("notifications.friend.request_received.title", locale: :es))
     end
   end
 end
+

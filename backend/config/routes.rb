@@ -31,8 +31,8 @@ Rails.application.routes.draw do
         post :confirm_received
       end
     end
-    get "shared", to: "shell#show", defaults: { section: "shared" }, as: :shared
-    get "friends", to: "shell#show", defaults: { section: "friends" }, as: :friends
+    get "shared", to: "shared#index", as: :shared
+    get "friends", to: "friends#index", as: :friends
     resources :notifications, only: %i[index], controller: "notifications" do
       member do
         post :mark_read

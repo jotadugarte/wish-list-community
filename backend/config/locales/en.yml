@@ -3,6 +3,7 @@ en:
   member:
     errors:
       not_found: "Not found"
+      action_failed: "That action could not be completed."
     notifications:
       empty: "No notifications yet."
       mark_read: "Mark read"
@@ -67,24 +68,31 @@ en:
       remove_share: "Remove"
       share_added: "Share added."
       share_removed: "Share removed."
+    shared:
+      empty: "Nothing shared with you yet."
+    friends:
+      incoming: "Incoming requests"
+      incoming_empty: "No pending requests."
+      accepted: "Friends"
+      empty: "No friends yet."
     shell:
       app_name: "Wish List Community"
       nav_label: "Member navigation"
       empty_shell: "This section is ready — content arrives next."
       nav:
-        wishlists: "Mis listas"
-        shared: "Compartidas"
-        friends: "Amigos"
-        reservations: "Reservaciones"
-        notifications: "Avisos"
-        settings: "Ajustes"
+        wishlists: "My wishlists"
+        shared: "Shared"
+        friends: "Friends"
+        reservations: "Reservations"
+        notifications: "Notifications"
+        settings: "Settings"
       sections:
-        wishlists: "Mis listas"
-        shared: "Compartidas"
-        friends: "Amigos"
-        reservations: "Reservaciones"
-        notifications: "Avisos"
-        settings: "Ajustes"
+        wishlists: "My wishlists"
+        shared: "Shared"
+        friends: "Friends"
+        reservations: "Reservations"
+        notifications: "Notifications"
+        settings: "Settings"
   legal:
     placeholder_notice: "Placeholder text pending owner legal approval."
     terms:

@@ -191,3 +191,34 @@ Términos y Privacidad bilingües es+en desde el día uno (placeholders hasta te
 - Phase 2 validation: Feature + TDD test-first steps; architecture OK; no wrapping/release steps; ends at local RSpec + flutter test.
 - Spec locked. Coordinator/owner runs **`start-task`** (hands-off) on a **new worker**.
 - **This explore agent does not write product code.**
+
+## QA reviewer record — 2026-11-27
+
+**Delivery:** `not posted`  
+**Branch:** `cursor/sprint-9-mobile-wrap-up-5dfd`  
+**Profile:** `docs/ai/qa_profile.md` (Accept)  
+**Matrix:** `/cursor/stores/self/internal/sprint-9-qa-matrix.md`  
+**Pass report:** `/cursor/stores/self/internal/sprint-9-qa-pass-report.md`
+
+### Environment
+- Flutter beta 3.51 / Dart (cloud VM headless)
+- Ruby 3.4.13 + RSpec 3.13; transactional factories; no live SMTP/FCM
+- Temporary `mobile/test_qa/` created for smoke/surfaces then removed
+
+### Results summary
+- Prerequisites: ready (flutter, ruby, factories, test DB)
+- Cloud rows QA-S9-01 … QA-S9-22: **passed**
+- Owner-to-run QA-S9-23 … QA-S9-26: **not run** (device Share sheet, App Links, real FCM, browser Hotwire walk)
+- Product bugs: **none**
+- Test mistakes: **none**
+
+### What was not run
+- Real iOS/Android Share-to-App sheet
+- Universal/App Links on physical device
+- Live FCM push after Google keys
+- Manual browser walk of `/app` and legal pages
+
+## Review disposition
+
+### 2026-11-27 — Owner deferred device QA (finish-branch)
+- **Deferred (do not block finish-branch):** QA-S9-23 Share sheet, QA-S9-24 App Links, QA-S9-25 real FCM, QA-S9-26 browser Hotwire walk — after remaining roadmap sprints + Ñata design.

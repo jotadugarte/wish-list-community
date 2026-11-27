@@ -1,8 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:wish_list_mobile/core/network/token_storage.dart';
+
+class MultipartFilePart {
+  final String fieldName;
+  final String filename;
+  final String contentType;
+  final Uint8List bytes;
+
+  const MultipartFilePart({
+    required this.fieldName,
+    required this.filename,
+    required this.contentType,
+    required this.bytes,
+  });
+}
 
 class RecordedApiRequest {
   final String method;
@@ -10,6 +25,7 @@ class RecordedApiRequest {
   final Map<String, String> headers;
   final Map<String, dynamic>? queryParams;
   final Map<String, dynamic>? body;
+  final List<MultipartFilePart>? files;
 
   const RecordedApiRequest({
     required this.method,
@@ -17,7 +33,10 @@ class RecordedApiRequest {
     required this.headers,
     this.queryParams,
     this.body,
+    this.files,
   });
+
+  bool get isMultipart => files != null && files!.isNotEmpty;
 }
 
 class ApiResponse {
@@ -75,6 +94,7 @@ class ApiClient {
     Map<String, dynamic>? body,
     bool authenticated = true,
     bool multipart = false,
+    List<MultipartFilePart>? files,
   }) async {
     if (!path.startsWith('/api/v1/')) {
       throw ArgumentError(
@@ -82,17 +102,15 @@ class ApiClient {
       );
     }
 
-    final headers = await _buildHeaders(authenticated, multipart: multipart);
-    final payload = multipart && body != null
-        ? <String, dynamic>{...body, 'multipart': true}
-        : body;
-
+    final useMultipart = multipart || (files != null && files.isNotEmpty);
+    final headers = await _buildHeaders(authenticated, multipart: useMultipart);
     final req = RecordedApiRequest(
       method: method.toUpperCase(),
       path: path,
       headers: headers,
       queryParams: queryParams,
-      body: payload,
+      body: body,
+      files: useMultipart ? (files ?? const []) : null,
     );
 
     final response = await _send(req);
@@ -115,8 +133,8 @@ class ApiClient {
   }) async {
     final headers = <String, String>{
       'Accept': 'application/json',
+      // Multipart sets Content-Type with boundary in the transport.
       if (!multipart) 'Content-Type': 'application/json',
-      if (multipart) 'Content-Type': 'multipart/form-data',
     };
     if (authenticated) {
       final token = await tokenStorage.readToken();
@@ -149,7 +167,9 @@ class ApiClient {
         );
         final httpReq = await client.openUrl(req.method, uri);
         req.headers.forEach(httpReq.headers.set);
-        if (req.body != null) {
+        if (req.isMultipart) {
+          await _writeMultipart(httpReq, req.body, req.files!);
+        } else if (req.body != null) {
           httpReq.write(jsonEncode(req.body));
         }
         final httpRes = await httpReq.close();
@@ -162,6 +182,64 @@ class ApiClient {
         client.close(force: true);
       }
     };
+  }
+
+  // [REQ-ITEM-002] Writes nested form fields + binary file parts with a boundary.
+  static Future<void> _writeMultipart(
+    HttpClientRequest httpReq,
+    Map<String, dynamic>? body,
+    List<MultipartFilePart> files,
+  ) async {
+    final boundary = 'wl-${DateTime.now().millisecondsSinceEpoch}';
+    httpReq.headers.set(
+      HttpHeaders.contentTypeHeader,
+      'multipart/form-data; boundary=$boundary',
+    );
+    final sink = httpReq;
+    for (final entry in flattenFormFields(body)) {
+      sink.write('--$boundary\r\n');
+      sink.write(
+        'Content-Disposition: form-data; name="${entry.key}"\r\n\r\n',
+      );
+      sink.write('${entry.value}\r\n');
+    }
+    for (final file in files) {
+      sink.write('--$boundary\r\n');
+      sink.write(
+        'Content-Disposition: form-data; name="${file.fieldName}"; '
+        'filename="${file.filename}"\r\n',
+      );
+      sink.write('Content-Type: ${file.contentType}\r\n\r\n');
+      sink.add(file.bytes);
+      sink.write('\r\n');
+    }
+    sink.write('--$boundary--\r\n');
+  }
+
+  // Flattens nested JSON-ish maps into Rails-style multipart field names.
+  static List<MapEntry<String, String>> flattenFormFields(
+    Map<String, dynamic>? body, [
+    String prefix = '',
+  ]) {
+    final out = <MapEntry<String, String>>[];
+    if (body == null) return out;
+    body.forEach((key, value) {
+      final name = prefix.isEmpty ? key : '$prefix[$key]';
+      if (value is Map<String, dynamic>) {
+        out.addAll(flattenFormFields(value, name));
+      } else if (value is List) {
+        for (final item in value) {
+          if (item is Map<String, dynamic>) {
+            out.addAll(flattenFormFields(item, '$name[]'));
+          } else if (item != null) {
+            out.add(MapEntry('$name[]', item.toString()));
+          }
+        }
+      } else if (value != null) {
+        out.add(MapEntry(name, value.toString()));
+      }
+    });
+    return out;
   }
 
   // Tolerates empty or non-JSON bodies (e.g. HTML 502 pages from a proxy).

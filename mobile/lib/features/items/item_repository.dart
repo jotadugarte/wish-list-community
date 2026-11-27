@@ -51,10 +51,20 @@ class ItemRepository {
       throw ArgumentError('Pre-condition failed: at most ${CompressedImageBlob.maxImages} images');
     }
     final useMultipart = images.isNotEmpty;
+    final files = [
+      for (final img in images.take(CompressedImageBlob.maxImages))
+        MultipartFilePart(
+          fieldName: 'images[]',
+          filename: img.filename,
+          contentType: img.contentType,
+          bytes: img.bytes,
+        ),
+    ];
     final response = await apiClient.request(
       method: 'POST',
       path: '/api/v1/wishlists/$wishlistId/items',
       multipart: useMultipart,
+      files: useMultipart ? files : null,
       body: {
         'item': {
           'title': cleaned.isEmpty ? previewTitle : cleaned,
@@ -72,15 +82,6 @@ class ItemRepository {
             'image_url': confirmedPreview.imageUrl,
             'source_url': confirmedPreview.sourceUrl,
           },
-        if (useMultipart)
-          'images': [
-            for (final img in images.take(CompressedImageBlob.maxImages))
-              {
-                'filename': img.filename,
-                'content_type': img.contentType,
-                'bytes_length': img.bytes.lengthInBytes,
-              },
-          ],
       },
     );
     return WishlistItem.fromJson(

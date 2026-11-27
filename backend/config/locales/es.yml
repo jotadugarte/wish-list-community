@@ -3,6 +3,7 @@ es:
   member:
     errors:
       not_found: "No encontrado"
+      action_failed: "No se pudo completar esa acción."
     notifications:
       empty: "Aún no hay avisos."
       mark_read: "Marcar leído"
@@ -67,6 +68,13 @@ es:
       remove_share: "Quitar"
       share_added: "Compartido agregado."
       share_removed: "Compartido quitado."
+    shared:
+      empty: "Aún no hay listas compartidas contigo."
+    friends:
+      incoming: "Solicitudes recibidas"
+      incoming_empty: "No hay solicitudes pendientes."
+      accepted: "Amigos"
+      empty: "Aún no tienes amigos."
     shell:
       app_name: "Wish List Community"
       nav_label: "Navegación de miembro"

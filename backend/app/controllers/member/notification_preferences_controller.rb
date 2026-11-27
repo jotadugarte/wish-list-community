@@ -24,7 +24,8 @@ module Member
       pref = NotificationPreference.find_or_initialize_by(user_id: current_user.id)
       channels = pref.channels.is_a?(Hash) ? pref.channels.deep_dup : {}
       raw = params.dig(:notification_preference, :channels) || {}
-      raw.each do |event_key, channel_hash|
+      NotificationPreference::DEFAULT_EVENTS.each do |event_key|
+        channel_hash = raw[event_key] || raw[event_key.to_s] || {}
         next unless channel_hash.is_a?(ActionController::Parameters) || channel_hash.is_a?(Hash)
 
         channels[event_key.to_s] = normalize_channels(channel_hash)
@@ -37,9 +38,16 @@ module Member
     private
 
     def normalize_channels(channel_hash)
-      hash = channel_hash.to_unsafe_h.stringify_keys.slice(*NotificationPreference::CHANNELS)
+      raw_hash = if channel_hash.is_a?(ActionController::Parameters)
+        channel_hash.to_unsafe_h
+      else
+        channel_hash.to_h
+      end
+      hash = raw_hash.stringify_keys.slice(*NotificationPreference::CHANNELS)
       NotificationPreference::CHANNELS.index_with do |channel|
-        ActiveModel::Type::Boolean.new.cast(hash[channel]) == true
+        raw = hash[channel]
+        raw = raw.last if raw.is_a?(Array)
+        ActiveModel::Type::Boolean.new.cast(raw) == true
       end
     end
   end

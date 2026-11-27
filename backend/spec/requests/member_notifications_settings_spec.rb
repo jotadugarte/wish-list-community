@@ -25,6 +25,7 @@ RSpec.describe "Hotwire inbox prefs and account settings [REQ-NOTIF-001] [REQ-LI
     get "/app/settings/notification_preferences"
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("friend.request_received")
+    expect(response.body).to include('type="hidden"')
 
     patch "/app/settings/notification_preferences", params: {
       notification_preference: {
@@ -35,6 +36,24 @@ RSpec.describe "Hotwire inbox prefs and account settings [REQ-NOTIF-001] [REQ-LI
     pref = NotificationPreference.find_by!(user_id: user.id)
     expect(pref.enabled_channels_for("friend.request_received")["email"]).to eq(false)
   end
+
+  it "turns all channels off when every checkbox is unchecked [REQ-NOTIF-001]" do
+    NotificationPreference.create!(
+      user: user,
+      channels: { "friend.request_received" => { "email" => true, "in_app" => true, "push" => true } }
+    )
+    all_off = NotificationPreference::DEFAULT_EVENTS.index_with do |_event|
+      NotificationPreference::CHANNELS.index_with { |_c| "0" }
+    end
+    patch "/app/settings/notification_preferences", params: {
+      notification_preference: { channels: all_off }
+    }
+    expect(response).to be_redirect
+    pref = NotificationPreference.find_by!(user_id: user.id)
+    channels = pref.enabled_channels_for("friend.request_received")
+    expect(channels.values).to all(eq(false))
+  end
+
 
   it "settings page links to legal pages and supports account soft-delete" do
     get "/app/settings"

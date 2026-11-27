@@ -18,13 +18,19 @@ module Member
 
     def index
       authorize Wishlist, :index?
-      @wishlists = current_user.wishlists.kept.order(created_at: :desc).limit(MAX_INDEX)
+      @wishlists = policy_scope(Wishlist).where(owner_id: current_user.id)
+                                        .order(created_at: :desc)
+                                        .limit(MAX_INDEX)
     end
 
     def show
-      @wishlist = current_user.wishlists.kept.find(params[:id])
+      @wishlist = policy_scope(Wishlist).find(params[:id])
       authorize @wishlist, :show?
-      @shares = @wishlist.wishlist_shares.includes(:user).limit(50)
+      @shares = if @wishlist.owner_id == current_user.id
+        @wishlist.wishlist_shares.includes(:user).limit(50)
+      else
+        []
+      end
       @items = @wishlist.items.kept.order(:position, :id).limit(200)
     end
 

@@ -10,6 +10,7 @@ module Member
     layout "member"
     before_action :require_member_login!
     after_action :verify_authorized
+    after_action :verify_policy_scoped, if: -> { action_name == "index" }
     rescue_from Pundit::NotAuthorizedError, with: :hide_member_resource
 
     private

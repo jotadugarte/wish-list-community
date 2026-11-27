@@ -52,7 +52,12 @@ void main() {
 
     expect(created.id, 11);
     expect(created.images, isNotEmpty);
-    expect(captured?.headers['Content-Type'], contains('multipart/form-data'));
-    expect(captured?.body?['multipart'], isTrue);
+    expect(captured?.isMultipart, isTrue);
+    expect(captured?.files, isNotNull);
+    expect(captured!.files!, hasLength(1));
+    expect(captured!.files!.first.fieldName, 'images[]');
+    expect(captured!.files!.first.filename, 'shot.jpg');
+    expect(captured!.files!.first.bytes, [1, 2, 3, 4]);
+    expect(captured?.body?['images'], isNull);
   });
 }

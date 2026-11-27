@@ -35,8 +35,10 @@ module Member
         private_note: params[:private_note]
       )
       redirect_to member_reservations_path, notice: I18n.t("member.reservations.created")
-    rescue ReservationService::Error, ArgumentError, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
+    rescue ReservationService::Error => e
       redirect_back fallback_location: member_reservations_path, alert: e.message
+    rescue ArgumentError, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+      redirect_back fallback_location: member_reservations_path, alert: I18n.t("member.errors.action_failed")
     end
 
     def destroy
@@ -53,8 +55,10 @@ module Member
       authorize reservation, :mark_purchased?
       GiftService.mark_purchased!(reservation: reservation, actor: current_user)
       redirect_to member_reservations_path, notice: I18n.t("member.gifts.purchased")
-    rescue GiftService::Error, ArgumentError => e
+    rescue GiftService::Error => e
       redirect_to member_reservations_path, alert: e.message
+    rescue ArgumentError
+      redirect_to member_reservations_path, alert: I18n.t("member.errors.action_failed")
     end
   end
 end

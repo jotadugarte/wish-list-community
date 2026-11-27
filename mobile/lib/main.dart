@@ -184,6 +184,13 @@ class _WishListAppState extends State<WishListApp> {
     } catch (_) {
       restored = null;
     }
+    if (restored != null) {
+      try {
+        await widget.pushRegistration.registerAfterLogin();
+      } catch (_) {
+        // Push bind is best-effort; inbox/email still work (O10B).
+      }
+    }
     if (!mounted) return;
     setState(() {
       _currentUser = restored;

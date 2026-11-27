@@ -1,0 +1,27 @@
+<section class="space-y-4">
+  <h1 class="text-2xl font-semibold"><%= t("member.shell.sections.friends") %></h1>
+
+  <h2 class="text-lg font-medium"><%= t("member.friends.incoming") %></h2>
+  <% if @incoming.empty? %>
+    <p class="text-stone-600"><%= t("member.friends.incoming_empty") %></p>
+  <% else %>
+    <ul class="space-y-2 mb-6">
+      <% @incoming.each do |friendship| %>
+        <% requester = friendship.requester %>
+        <li>@<%= requester.username %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <h2 class="text-lg font-medium"><%= t("member.friends.accepted") %></h2>
+  <% if @friends.empty? %>
+    <p class="text-stone-600"><%= t("member.friends.empty") %></p>
+  <% else %>
+    <ul class="space-y-2">
+      <% @friends.each do |friendship| %>
+        <% other = friendship.requester_id == current_user.id ? friendship.addressee : friendship.requester %>
+        <li>@<%= other.username %></li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

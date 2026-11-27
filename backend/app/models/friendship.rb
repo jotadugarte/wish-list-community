@@ -158,27 +158,36 @@ class Friendship < ApplicationRecord
 
   # [REQ-NOTIF-001] Dispatches friend.request_received to the addressee.
   def notify_request_received!
-    NotificationDispatcher.dispatch!(
-      user: addressee,
-      event_key: "friend.request_received",
-      title: I18n.t("notifications.friend.request_received.title"),
-      body: I18n.t("notifications.friend.request_received.body", username: requester.username),
-      payload: { friendship_id: id, requester_id: requester_id }
-    )
+    I18n.with_locale(recipient_locale(addressee)) do
+      NotificationDispatcher.dispatch!(
+        user: addressee,
+        event_key: "friend.request_received",
+        title: I18n.t("notifications.friend.request_received.title"),
+        body: I18n.t("notifications.friend.request_received.body", username: requester.username),
+        payload: { friendship_id: id, requester_id: requester_id }
+      )
+    end
   end
 
   # [REQ-NOTIF-001] Dispatches friend.request_accepted to the requester.
   def notify_request_accepted!
-    NotificationDispatcher.dispatch!(
-      user: requester,
-      event_key: "friend.request_accepted",
-      title: I18n.t("notifications.friend.request_accepted.title"),
-      body: I18n.t("notifications.friend.request_accepted.body", username: addressee.username),
-      payload: { friendship_id: id, addressee_id: addressee_id }
-    )
+    I18n.with_locale(recipient_locale(requester)) do
+      NotificationDispatcher.dispatch!(
+        user: requester,
+        event_key: "friend.request_accepted",
+        title: I18n.t("notifications.friend.request_accepted.title"),
+        body: I18n.t("notifications.friend.request_accepted.body", username: addressee.username),
+        payload: { friendship_id: id, addressee_id: addressee_id }
+      )
+    end
   end
 
   private
+
+  def recipient_locale(user)
+    locale = user&.locale&.to_sym
+    I18n.available_locales.include?(locale) ? locale : I18n.default_locale
+  end
 
   def validate_accept_preconditions!(actor)
     raise ArgumentError, "Pre-condition failed: friendship must be pending" unless persisted? && status == "pending"
