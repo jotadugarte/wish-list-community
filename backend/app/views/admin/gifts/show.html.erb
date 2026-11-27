@@ -1,0 +1,3 @@
+<% content_for :title, "Admin Gift ##{@gift.id}" %>
+<%= render "admin/gifts/detail", gift: @gift %>
+<p><%= link_to "Back to Audit", admin_audit_events_path %></p>

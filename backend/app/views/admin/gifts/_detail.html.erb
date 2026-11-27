@@ -1,0 +1,12 @@
+<section>
+  <h2>Gift #<%= gift.id %></h2>
+  <p>Item: <%= gift.item.title %></p>
+  <p>Status: <%= gift.status %></p>
+  <% if gift.gifter.present? %>
+    <p>Gifter: @<%= gift.gifter.username %></p>
+    <p>Gifter email: <%= gift.gifter.email_address %></p>
+  <% else %>
+    <p>Gifter: (none)</p>
+  <% end %>
+  <p>Purchase link: <%= gift.purchase_link_ref.presence || "(none)" %></p>
+</section>

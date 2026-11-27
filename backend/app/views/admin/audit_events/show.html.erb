@@ -6,6 +6,10 @@
   Actor id: <%= @audit_event.actor_id %><br>
   Created: <%= @audit_event.created_at %>
 </p>
+<% if @audit_event.auditable_type == "GiftRecord" && @audit_event.auditable.present? %>
+  <%= render "admin/gifts/detail", gift: @audit_event.auditable %>
+  <p><%= link_to "Open gift detail", admin_gift_path(@audit_event.auditable) %></p>
+<% end %>
 <% if @revertable %>
   <%= button_to "Revert", revert_admin_audit_event_path(@audit_event), method: :post %>
 <% end %>

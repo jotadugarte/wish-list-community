@@ -21,6 +21,7 @@ Rails.application.routes.draw do
         post :revert
       end
     end
+    resources :gifts, only: %i[show]
   end
 
   get "s/:share_token", to: "secret_links#show", as: :secret_link,
