@@ -5,6 +5,8 @@ import 'package:wish_list_mobile/core/network/api_client.dart';
 import 'package:wish_list_mobile/core/network/token_storage.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
+import 'package:wish_list_mobile/features/notifications/notification_repository.dart';
+import 'package:wish_list_mobile/features/notifications/push_registration.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
@@ -111,6 +113,23 @@ ApiResponse _defaultResponder(RecordedApiRequest req) {
       },
     );
   }
+  if (req.path == '/api/v1/notifications' && req.method == 'GET') {
+    return const ApiResponse(statusCode: 200, body: {'notifications': []});
+  }
+  if (req.path == '/api/v1/notification_preferences') {
+    return const ApiResponse(
+      statusCode: 200,
+      body: {
+        'notification_preference': {
+          'channels': {},
+          'defaults_events': [
+            'friend.request_received',
+            'friend.request_accepted',
+          ],
+        },
+      },
+    );
+  }
   return const ApiResponse(statusCode: 204, body: {});
 }
 
@@ -143,6 +162,12 @@ void main() {
         wishlistRepository: WishlistRepository(apiClient: client),
         reservationRepository: ReservationRepository(apiClient: client),
         giftRepository: GiftRepository(apiClient: client),
+        notificationRepository: NotificationRepository(apiClient: client),
+        pushRegistration: PushRegistration(
+          tokenSource: FakePushTokenSource(null),
+          bindSession: (_) async {},
+          clearSession: () async {},
+        ),
       );
     }
 

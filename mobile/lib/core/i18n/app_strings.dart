@@ -105,6 +105,16 @@ class AppStrings {
   final String availabilityReservedByMe;
   final String availabilityUnavailable;
   final String openMyReservationsAction;
+  final String navInbox;
+  final String inboxTitle;
+  final String noNotificationsYet;
+  final String notificationPrefsTitle;
+  final String pushChannelLabel;
+  final String emailChannelLabel;
+  final String inAppChannelLabel;
+  final String termsLinkLabel;
+  final String privacyLinkLabel;
+  final String openLegalLinkAction;
 
   const AppStrings({
     required this.locale,
@@ -208,6 +218,16 @@ class AppStrings {
     required this.availabilityReservedByMe,
     required this.availabilityUnavailable,
     required this.openMyReservationsAction,
+    required this.navInbox,
+    required this.inboxTitle,
+    required this.noNotificationsYet,
+    required this.notificationPrefsTitle,
+    required this.pushChannelLabel,
+    required this.emailChannelLabel,
+    required this.inAppChannelLabel,
+    required this.termsLinkLabel,
+    required this.privacyLinkLabel,
+    required this.openLegalLinkAction,
   });
 
   // [REQ-USER-002] Resolves localized strings for 'es' (default) or 'en'.
@@ -362,6 +382,16 @@ class AppStrings {
     availabilityReservedByMe: 'Reservado por mí',
     availabilityUnavailable: 'No disponible',
     openMyReservationsAction: 'Mis reservaciones',
+    navInbox: 'Avisos',
+    inboxTitle: 'Avisos',
+    noNotificationsYet: 'Aún no tienes avisos',
+    notificationPrefsTitle: 'Preferencias de avisos',
+    pushChannelLabel: 'Teléfono',
+    emailChannelLabel: 'Correo',
+    inAppChannelLabel: 'Campanita',
+    termsLinkLabel: 'Términos de uso',
+    privacyLinkLabel: 'Privacidad',
+    openLegalLinkAction: 'Abrir',
   );
 
   static const AppStrings _en = AppStrings(
@@ -467,5 +497,15 @@ class AppStrings {
     availabilityReservedByMe: 'Reserved by me',
     availabilityUnavailable: 'Unavailable',
     openMyReservationsAction: 'My reservations',
+    navInbox: 'Inbox',
+    inboxTitle: 'Notifications',
+    noNotificationsYet: 'No notifications yet',
+    notificationPrefsTitle: 'Notification preferences',
+    pushChannelLabel: 'Push',
+    emailChannelLabel: 'Email',
+    inAppChannelLabel: 'In-app',
+    termsLinkLabel: 'Terms of Use',
+    privacyLinkLabel: 'Privacy Policy',
+    openLegalLinkAction: 'Open',
   );
 }

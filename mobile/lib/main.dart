@@ -10,6 +10,9 @@ import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/auth/login_screen.dart';
 import 'package:wish_list_mobile/features/auth/profile_settings_screen.dart';
+import 'package:wish_list_mobile/features/notifications/inbox_screen.dart';
+import 'package:wish_list_mobile/features/notifications/notification_repository.dart';
+import 'package:wish_list_mobile/features/notifications/push_registration.dart';
 import 'package:wish_list_mobile/features/social/friends_list_screen.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/social/user_search_screen.dart';
@@ -42,6 +45,17 @@ void main() {
   final wishlistRepo = WishlistRepository(apiClient: apiClient);
   final reservationRepo = ReservationRepository(apiClient: apiClient);
   final giftRepo = GiftRepository(apiClient: apiClient);
+  final notificationRepo = NotificationRepository(apiClient: apiClient);
+  final pushRegistration = PushRegistration(
+    tokenSource: FirebasePushTokenSource(),
+    bindSession: (_) async {
+      // Token is bound on next login/signup via AuthRepository fcmToken;
+      // refresh path is no-op until session update endpoint is used.
+    },
+    clearSession: () async {
+      // Server unbinds device_token on DELETE /api/v1/session (REQ-NOTIF-002).
+    },
+  );
 
   runApp(
     WishListApp(
@@ -51,6 +65,8 @@ void main() {
       wishlistRepository: wishlistRepo,
       reservationRepository: reservationRepo,
       giftRepository: giftRepo,
+      notificationRepository: notificationRepo,
+      pushRegistration: pushRegistration,
     ),
   );
 }
@@ -62,6 +78,8 @@ class WishListApp extends StatefulWidget {
   final WishlistRepository wishlistRepository;
   final ReservationRepository reservationRepository;
   final GiftRepository giftRepository;
+  final NotificationRepository notificationRepository;
+  final PushRegistration pushRegistration;
 
   const WishListApp({
     super.key,
@@ -71,6 +89,8 @@ class WishListApp extends StatefulWidget {
     required this.wishlistRepository,
     required this.reservationRepository,
     required this.giftRepository,
+    required this.notificationRepository,
+    required this.pushRegistration,
   });
 
 
@@ -149,6 +169,7 @@ class _WishListAppState extends State<WishListApp> {
         tokens: t,
         strings: s,
         authRepository: widget.authRepository,
+        resolveFcmToken: () => widget.pushRegistration.tokenSource.getToken(),
         onAuthenticated: (profile) => setState(() => _currentUser = profile),
       );
     }
@@ -208,10 +229,15 @@ class _WishListAppState extends State<WishListApp> {
           strings: s,
           user: _currentUser!,
           authRepository: widget.authRepository,
-          onSignedOut: () => setState(() {
-            _currentUser = null;
-            _selectedIndex = 0;
-          }),
+          notificationRepository: widget.notificationRepository,
+          onSignedOut: () async {
+            await widget.pushRegistration.unregisterOnLogout();
+            if (!mounted) return;
+            setState(() {
+              _currentUser = null;
+              _selectedIndex = 0;
+            });
+          },
         );
     }
   }
