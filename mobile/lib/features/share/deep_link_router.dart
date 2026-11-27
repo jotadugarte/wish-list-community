@@ -23,11 +23,14 @@ class DeepLinkRouter {
       : allowedHosts = allowedHosts ?? PublicHostConfig.allowedDeepLinkHosts;
 
   DeepLinkRouteDecision resolve(Uri uri) {
+    final normalized = normalizeCustomScheme(uri);
     // O9B: only configured public/staging hosts may open in-app routes.
-    if (uri.host.isNotEmpty && !allowedHosts.contains(uri.host.toLowerCase())) {
+    // Custom-scheme links are hostless after normalize (wishlist://u/… → /u/…).
+    if (normalized.host.isNotEmpty &&
+        !allowedHosts.contains(normalized.host.toLowerCase())) {
       return const DeepLinkRouteDecision(route: DeepLinkRoute.safeFailure);
     }
-    final target = DeepLinkTarget.parse(uri);
+    final target = DeepLinkTarget.parse(normalized);
     switch (target.kind) {
       case DeepLinkKind.friendProfile:
         return DeepLinkRouteDecision(route: DeepLinkRoute.friendProfile, username: target.username);
@@ -36,5 +39,16 @@ class DeepLinkRouter {
       case DeepLinkKind.unsupported:
         return const DeepLinkRouteDecision(route: DeepLinkRoute.safeFailure);
     }
+  }
+
+  /// Maps `wishlist://u/alice` / `wishlist://s/tok` into path-style URIs
+  /// (`/u/alice`, `/s/tok`) so host allowlisting does not treat `u`/`s` as hosts.
+  static Uri normalizeCustomScheme(Uri uri) {
+    if (uri.scheme.toLowerCase() != 'wishlist') return uri;
+    final host = uri.host.toLowerCase();
+    if (host != 'u' && host != 's') return uri;
+    final tail = uri.pathSegments.where((s) => s.isNotEmpty).join('/');
+    final path = tail.isEmpty ? '/$host' : '/$host/$tail';
+    return Uri(scheme: 'wishlist', path: path);
   }
 }

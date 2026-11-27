@@ -26,5 +26,25 @@ void main() {
       final d = router.resolve(Uri.parse('https://evil.example/u/bob_user'));
       expect(d.route, DeepLinkRoute.safeFailure);
     });
+
+    test('routes wishlist://u/username custom scheme [REQ-SOC-001]', () {
+      final d = router.resolve(Uri.parse('wishlist://u/alice_01'));
+      expect(d.route, DeepLinkRoute.friendProfile);
+      expect(d.username, 'alice_01');
+    });
+
+    test('routes wishlist://s/token custom scheme [REQ-WISH-005]', () {
+      final d = router.resolve(Uri.parse('wishlist://s/tok_Ab-12'));
+      expect(d.route, DeepLinkRoute.secretLink);
+      expect(d.shareToken, 'tok_Ab-12');
+    });
+
+    test('normalizeCustomScheme rewrites host-style wishlist URIs', () {
+      final normalized = DeepLinkRouter.normalizeCustomScheme(
+        Uri.parse('wishlist://u/bob_user'),
+      );
+      expect(normalized.host, isEmpty);
+      expect(normalized.path, '/u/bob_user');
+    });
   });
 }

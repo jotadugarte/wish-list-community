@@ -30,9 +30,9 @@ module Member
         attach_uploaded_images!(@item)
       end
       redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.items.created"), status: :see_other
-    rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error => e
+    rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error
       @item = @wishlist.items.new(item_attrs)
-      flash.now[:alert] = e.message.presence || I18n.t("member.items.invalid")
+      flash.now[:alert] = I18n.t("member.items.invalid")
       render :new, status: :unprocessable_content
     end
 
@@ -52,8 +52,8 @@ module Member
         attach_uploaded_images!(@item)
       end
       redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.items.updated"), status: :see_other
-    rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error => e
-      flash.now[:alert] = e.message.presence || I18n.t("member.items.invalid")
+    rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error
+      flash.now[:alert] = I18n.t("member.items.invalid")
       render :edit, status: :unprocessable_content
     end
 
@@ -114,8 +114,8 @@ module Member
       end
     rescue ArgumentError
       raise
-    rescue ImageProcessing::Error, Vips::Error => e
-      raise ArgumentError, e.message.presence || "image could not be processed"
+    rescue ImageProcessing::Error, Vips::Error
+      raise ArgumentError, I18n.t("member.items.invalid")
     end
   end
 end

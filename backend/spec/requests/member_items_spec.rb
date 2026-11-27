@@ -71,4 +71,13 @@ RSpec.describe "Hotwire member items [REQ-ITEM-001] [REQ-ITEM-002]", type: :requ
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("data-controller=\"image-compress\"")
   end
+
+  it "shows a localized invalid alert instead of raw processor errors [REQ-ITEM-002]" do
+    post "/app/wishlists/#{wishlist.id}/items", params: {
+      item: { title: "" }
+    }
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include(I18n.t("member.items.invalid", locale: owner.locale.to_sym))
+    expect(response.body).not_to include("Validation failed")
+  end
 end
