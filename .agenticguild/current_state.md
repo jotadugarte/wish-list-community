@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>3.1 Step 3 failing API report specs</current_step>
+    <current_step>3.2 Step 4 API Wishlist wiring</current_step>
   </execution_context>
 </agent_state>
