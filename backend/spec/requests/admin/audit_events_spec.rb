@@ -32,7 +32,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
   before { sign_in(admin) }
 
   describe "list / filter" do
-    it "lists AuditEvents for admins" do
+    it "lists AuditEvents for admins [REQ-ADM-001]" do
       member.suspend!(actor: admin)
       get "/admin/audit_events"
       expect(response).to have_http_status(:ok)
@@ -40,7 +40,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(response.body).to include("Audit")
     end
 
-    it "filters by action" do
+    it "filters by action [REQ-ADM-001]" do
       member.suspend!(actor: admin)
       Report.submit!(reporter: reporter, reportable: member, reason: "spam").dismiss!(actor: admin)
 
@@ -50,7 +50,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(response.body).not_to include("user.suspended")
     end
 
-    it "hides the viewer from non-admins" do
+    it "hides the viewer from non-admins [REQ-ADM-001]" do
       delete "/session"
       post "/session", params: { email_address: member.email_address, password: password }
       get "/admin/audit_events"
@@ -59,7 +59,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
   end
 
   describe "1-click revert buttons (O4A)" do
-    it "unsuspends from the viewer and records a compensating AuditEvent" do
+    it "unsuspends from the viewer and records a compensating AuditEvent [REQ-ADM-001]" do
       member.suspend!(actor: admin)
       event = AuditEvent.find_by!(action: "user.suspended", auditable: member)
 
@@ -69,7 +69,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(AuditEvent.where(action: "user.unsuspended", auditable: member).count).to eq(1)
     end
 
-    it "restores an admin soft-deleted user within the SoftDeletable window" do
+    it "restores an admin soft-deleted user within the SoftDeletable window [REQ-ADM-001]" do
       member.soft_delete!(actor: admin)
       event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
 
@@ -79,7 +79,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(AuditEvent.where(action: "user.restored", auditable: member).count).to eq(1)
     end
 
-    it "reopens a dismissed report to pending" do
+    it "reopens a dismissed report to pending [REQ-ADM-001]" do
       report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
       report.dismiss!(actor: admin)
       event = AuditEvent.find_by!(action: "report.dismissed", auditable: report)
@@ -92,7 +92,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
   end
 
   describe "rate_limit on revert writes" do
-    it "declares rate_limit covering revert" do
+    it "declares rate_limit covering revert [REQ-ADM-001]" do
       source = File.read(Rails.root.join("app/controllers/admin/audit_events_controller.rb"))
       expect(source).to match(/rate_limit[\s\S]*revert/)
       expect(source).to include("current_user&.id || request.remote_ip")
@@ -100,7 +100,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
   end
 
   describe "admin soft-delete gate + domain errors" do
-    it "does not show Revert for a member self soft-delete" do
+    it "does not show Revert for a member self soft-delete [REQ-ADM-001]" do
       member.soft_delete!(actor: member)
       event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
       get "/admin/audit_events/#{event.id}"
@@ -108,7 +108,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(response.body).not_to include(I18n.t("admin.actions.revert"))
     end
 
-    it "rejects revert of a member self soft-delete" do
+    it "rejects revert of a member self soft-delete [REQ-ADM-001]" do
       member.soft_delete!(actor: member)
       event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
       post "/admin/audit_events/#{event.id}/revert"
@@ -117,7 +117,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(member.reload.discarded?).to be(true)
     end
 
-    it "redirects with a clear alert when restoring an already-restored soft-delete" do
+    it "redirects with a clear alert when restoring an already-restored soft-delete [REQ-ADM-001]" do
       member.soft_delete!(actor: admin)
       event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
       member.restore!(actor: admin)
@@ -128,7 +128,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(flash[:alert]).not_to match(/30 days|expired/i)
     end
 
-    it "redirects reopen uniqueness conflicts instead of 500" do
+    it "redirects reopen uniqueness conflicts instead of 500 [REQ-ADM-001]" do
       report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
       report.dismiss!(actor: admin)
       event = AuditEvent.find_by!(action: "report.dismissed", auditable: report)
@@ -143,7 +143,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
   end
 
   describe "stale admin soft-delete cannot revert a later member self soft-delete" do
-    it "hides Revert and rejects revert on a superseded admin soft-delete event" do
+    it "hides Revert and rejects revert on a superseded admin soft-delete event [REQ-ADM-001]" do
       member.soft_delete!(actor: admin)
       admin_event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
       post "/admin/audit_events/#{admin_event.id}/revert"
@@ -161,7 +161,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
   end
 
   describe "stale user.suspended cannot unsuspend a later re-suspend" do
-    it "hides Revert on an older suspend event after re-suspend" do
+    it "hides Revert on an older suspend event after re-suspend [REQ-ADM-001]" do
       member.suspend!(actor: admin)
       first = AuditEvent.find_by!(action: "user.suspended", auditable: member)
       post "/admin/audit_events/#{first.id}/revert"
@@ -178,7 +178,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
   end
 
   describe "dismissed report is not revertable after reopen" do
-    it "hides Revert once the report is pending again" do
+    it "hides Revert once the report is pending again [REQ-ADM-001]" do
       report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
       report.dismiss!(actor: admin)
       event = AuditEvent.find_by!(action: "report.dismissed", auditable: report)
@@ -198,7 +198,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
 
     after { travel_back }
 
-    it "hides Revert after the 30-day SoftDeletable window" do
+    it "hides Revert after the 30-day SoftDeletable window [REQ-ADM-001]" do
       freeze_time
       member.soft_delete!(actor: admin)
       event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
@@ -210,7 +210,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
   end
 
   describe "dismiss revert requires the latest dismiss event" do
-    it "hides Revert on an older dismiss after dismiss → reopen → dismiss" do
+    it "hides Revert on an older dismiss after dismiss → reopen → dismiss [REQ-ADM-001]" do
       report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
       report.dismiss!(actor: admin)
       first = AuditEvent.where(action: "report.dismissed", auditable: report).order(:id).first

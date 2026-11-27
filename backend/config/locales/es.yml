@@ -179,6 +179,8 @@ es:
       report_must_be_dismissed: "El reporte debe estar descartado."
       cannot_enforce_against_yourself: "No puedes aplicar una sanción contra ti mismo."
       already_soft_deleted: "El registro ya está eliminado temporalmente."
+      unsupported_reportable: "Tipo de reportable no soportado."
+      reportable_must_be_wishlist: "El reportable debe ser una lista de deseos."
       actor_must_be_admin: "Solo un admin puede realizar esta acción."
       cannot_suspend_yourself: "No puedes suspenderte a ti mismo."
       cannot_suspend_last_admin: "No se puede suspender al último admin restante."
@@ -188,3 +190,8 @@ es:
       target_must_match_reportable: "El usuario objetivo debe coincidir con la cuenta o dueño reportado."
       wishlist_must_match_reportable: "La lista debe coincidir con la lista reportada."
       domain_generic: "%{message}"
+  soft_deletable:
+    errors:
+      not_soft_deleted: "El registro no está eliminado temporalmente"
+      window_expired: "La ventana de restauración de 30 días ha expirado"
+      admin_enforcement: "Una eliminación administrativa solo puede restaurarla un admin"

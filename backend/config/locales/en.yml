@@ -179,6 +179,8 @@ en:
       report_must_be_dismissed: "Report must be dismissed."
       cannot_enforce_against_yourself: "You cannot enforce against yourself."
       already_soft_deleted: "Record is already soft-deleted."
+      unsupported_reportable: "Unsupported reportable type."
+      reportable_must_be_wishlist: "Reportable must be a wishlist."
       actor_must_be_admin: "Only an admin can perform this action."
       cannot_suspend_yourself: "You cannot suspend yourself."
       cannot_suspend_last_admin: "Cannot suspend the last remaining admin."
@@ -188,3 +190,8 @@ en:
       target_must_match_reportable: "Target user must match the reported account or wishlist owner."
       wishlist_must_match_reportable: "Wishlist must match the reported wishlist."
       domain_generic: "%{message}"
+  soft_deletable:
+    errors:
+      not_soft_deleted: "Record is not soft-deleted"
+      window_expired: "Restoration window of 30 days has expired"
+      admin_enforcement: "Admin soft-delete can only be restored by an admin"

@@ -96,22 +96,22 @@ module SoftDeletable
 
   # [REQ-LIFE-001] [REQ-LIFE-002] Restores a soft-deleted record within the 30-day restoration window,
   # runs registered on_restore hooks (which leave reservations untouched), and logs an AuditEvent.
-  # [REQ-ADM-001] Member actors cannot restore a soft-delete whose latest AuditEvent actor was an admin (O4A).
+  # [REQ-ADM-001] Admin-enforced soft-deletes (admin_enforcement metadata) require an active admin actor (O4A).
   def restore!(actor: nil)
     raise ArgumentError, "Pre-condition failed: record must be persisted" unless persisted?
 
     unless discarded?
-      errors.add(:base, "Record is not soft-deleted")
+      errors.add(:base, I18n.t("soft_deletable.errors.not_soft_deleted"))
       return false
     end
 
     unless restorable?
-      errors.add(:base, "Restoration window of 30 days has expired")
+      errors.add(:base, I18n.t("soft_deletable.errors.window_expired"))
       return false
     end
 
     if soft_deleted_by_admin? && !moderating_admin_can_restore?(actor)
-      errors.add(:base, "Admin soft-delete can only be restored by an admin")
+      errors.add(:base, I18n.t("soft_deletable.errors.admin_enforcement"))
       return false
     end
 

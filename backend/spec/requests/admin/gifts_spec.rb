@@ -40,7 +40,7 @@ RSpec.describe "Admin gift detail O5A [REQ-ADM-001] [REQ-GIFT-001]", type: :requ
   end
 
   describe "Hotwire admin gift detail" do
-    it "shows gifter @username, email, and purchase_link_ref read-only" do
+    it "shows gifter @username, email, and purchase_link_ref read-only [REQ-ADM-001]" do
       sign_in(admin)
       get "/admin/gifts/#{gift.id}"
       expect(response).to have_http_status(:ok)
@@ -49,14 +49,14 @@ RSpec.describe "Admin gift detail O5A [REQ-ADM-001] [REQ-GIFT-001]", type: :requ
       expect(response.body).to include("https://store.example/libro")
     end
 
-    it "returns not-found for non-admins" do
+    it "returns not-found for non-admins [REQ-ADM-001]" do
       sign_in(gifter)
       get "/admin/gifts/#{gift.id}"
       expect(response).to have_http_status(:not_found)
       expect(response.body).not_to include("secret_gifter@example.com")
     end
 
-    it "shows the same fields from an audit gift detail context" do
+    it "shows the same fields from an audit gift detail context [REQ-ADM-001]" do
       AuditEvent.record!(actor: gifter, action: "gift.purchased", auditable: gift)
       event = AuditEvent.order(:id).last
       sign_in(admin)
@@ -69,7 +69,7 @@ RSpec.describe "Admin gift detail O5A [REQ-ADM-001] [REQ-GIFT-001]", type: :requ
   end
 
   describe "member API never leaks admin-only gift fields" do
-    it "omits purchase_link_ref, gifter email, and gifter username even for admin API tokens" do
+    it "omits purchase_link_ref, gifter email, and gifter username even for admin API tokens [REQ-ADM-001]" do
       post "/api/v1/session", params: {
         email_address: admin.email_address,
         password: password

@@ -11,7 +11,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
   after { travel_back }
 
   describe "User#unsuspend! compensating AuditEvent (O4A)" do
-    it "clears suspension with a new AuditEvent and never mutates old rows" do
+    it "clears suspension with a new AuditEvent and never mutates old rows [REQ-ADM-001]" do
       member.suspend!(actor: admin)
       original = AuditEvent.find_by!(action: "user.suspended", auditable: member)
       original_attrs = original.attributes.except("updated_at")
@@ -24,7 +24,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
   end
 
   describe "restore admin soft-deleted user/wishlist within window (O4A/FC3)" do
-    it "restores a soft-deleted user within 30 days with a new AuditEvent" do
+    it "restores a soft-deleted user within 30 days with a new AuditEvent [REQ-ADM-001]" do
       member.soft_delete!(actor: admin)
       original = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
 
@@ -34,7 +34,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(AuditEvent.where(action: "user.restored", auditable: member).count).to eq(1)
     end
 
-    it "restores a soft-deleted wishlist within 30 days with a new AuditEvent" do
+    it "restores a soft-deleted wishlist within 30 days with a new AuditEvent [REQ-ADM-001]" do
       wishlist = create(:wishlist, owner: member)
       wishlist.soft_delete!(actor: admin)
       original = AuditEvent.find_by!(action: "wishlist.soft_deleted", auditable: wishlist)
@@ -45,7 +45,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(AuditEvent.where(action: "wishlist.restored", auditable: wishlist).count).to eq(1)
     end
 
-    it "denies restore after the 30-day SoftDeletable window" do
+    it "denies restore after the 30-day SoftDeletable window [REQ-ADM-001]" do
       freeze_time
       member.soft_delete!(actor: admin)
       travel 31.days
@@ -58,7 +58,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
     let(:reporter) { create(:user, username: "reopen_reporter", email_address: "reopen_reporter@example.com") }
     let!(:report) { Report.submit!(reporter: reporter, reportable: member, reason: "spam") }
 
-    it "reopens a dismissed report to pending with a new AuditEvent and does not mutate old rows" do
+    it "reopens a dismissed report to pending with a new AuditEvent and does not mutate old rows [REQ-ADM-001]" do
       report.dismiss!(actor: admin)
       dismissed_event = AuditEvent.find_by!(action: "report.dismissed", auditable: report)
       dismissed_attrs = dismissed_event.attributes.except("updated_at")
@@ -69,7 +69,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(AuditEvent.where(action: "report.reopened", auditable: report).count).to eq(1)
     end
 
-    it "respects the unique pending index when another pending report already exists" do
+    it "respects the unique pending index when another pending report already exists [REQ-ADM-001]" do
       report.dismiss!(actor: admin)
       other_reporter = create(:user, username: "other_rep", email_address: "other_rep@example.com")
       Report.submit!(reporter: other_reporter, reportable: member, reason: "harassment")
@@ -84,22 +84,22 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
   end
 
   describe "member cannot restore admin soft-delete (O4A)" do
-    it "blocks member restore of an admin soft-deleted user" do
+    it "blocks member restore of an admin soft-deleted user [REQ-ADM-001]" do
       member.soft_delete!(actor: admin)
       expect(member.restore!(actor: member)).to be(false)
-      expect(member.errors[:base].join).to match(/admin/i)
+      expect(member.errors[:base]).to include(I18n.t("soft_deletable.errors.admin_enforcement"))
       expect(member.reload.discarded?).to be(true)
     end
 
-    it "blocks member restore of an admin soft-deleted wishlist" do
+    it "blocks member restore of an admin soft-deleted wishlist [REQ-ADM-001]" do
       wishlist = create(:wishlist, owner: member)
       wishlist.soft_delete!(actor: admin)
       expect(wishlist.restore!(actor: member)).to be(false)
-      expect(wishlist.errors[:base].join).to match(/admin/i)
+      expect(wishlist.errors[:base]).to include(I18n.t("soft_deletable.errors.admin_enforcement"))
       expect(wishlist.reload.discarded?).to be(true)
     end
 
-    it "still allows member restore of a self soft-delete" do
+    it "still allows member restore of a self soft-delete [REQ-ADM-001]" do
       member.soft_delete!(actor: member)
       expect(member.restore!(actor: member)).to be(true)
       expect(member.reload.discarded?).to be(false)
@@ -107,20 +107,20 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
   end
 
   describe "admin_enforcement snapshot on soft-delete (O4A)" do
-    it "stores admin_enforcement metadata and blocks member restore after the admin is demoted" do
+    it "stores admin_enforcement metadata and blocks member restore after the admin is demoted [REQ-ADM-001]" do
       member.soft_delete!(actor: admin)
       event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
       expect(event.metadata["admin_enforcement"]).to eq(true)
 
       admin.update!(role: "user")
       expect(member.restore!(actor: member)).to be(false)
-      expect(member.errors[:base].join).to match(/admin/i)
+      expect(member.errors[:base]).to include(I18n.t("soft_deletable.errors.admin_enforcement"))
       expect(member.reload.discarded?).to be(true)
     end
   end
 
   describe "User#suspend! admin gate and idempotency [REQ-ADM-001]" do
-    it "rejects a non-admin actor" do
+    it "rejects a non-admin actor [REQ-ADM-001]" do
       other = create(:user, username: "not_admin_actor", email_address: "not_admin_actor@example.com")
       expect do
         member.suspend!(actor: other)
@@ -128,7 +128,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(member.reload.suspended?).to be(false)
     end
 
-    it "is idempotent when already suspended" do
+    it "is idempotent when already suspended [REQ-ADM-001]" do
       member.suspend!(actor: admin)
       expect do
         expect(member.suspend!(actor: admin)).to be(true)
@@ -138,7 +138,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
   end
 
   describe "soft-deleted admin cannot self-restore admin enforcement (O4A)" do
-    it "blocks a soft-deleted admin from restoring their own admin-enforced soft-delete" do
+    it "blocks a soft-deleted admin from restoring their own admin-enforced soft-delete [REQ-ADM-001]" do
       peer = create(:user, role: "admin", username: "peer_admin", email_address: "peer_admin@example.com")
       peer.soft_delete!(actor: admin)
       expect(peer.soft_deleted_by_admin?).to be(true)
@@ -148,7 +148,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(peer.reload.discarded?).to be(false)
     end
 
-    it "does not stamp admin_enforcement on cascade soft-deletes of an admin owner wishlist" do
+    it "does not stamp admin_enforcement on cascade soft-deletes of an admin owner wishlist [REQ-ADM-001]" do
       peer = create(:user, role: "admin", username: "cascade_admin", email_address: "cascade_admin@example.com")
       wishlist = create(:wishlist, owner: peer)
       peer.soft_delete!(actor: admin)
@@ -158,7 +158,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
   end
 
   describe "soft_delete! rejects already-discarded records" do
-    it "raises instead of writing a second soft_deleted AuditEvent" do
+    it "raises instead of writing a second soft_deleted AuditEvent [REQ-ADM-001]" do
       member.soft_delete!(actor: admin)
       expect do
         member.soft_delete!(actor: admin)
@@ -168,7 +168,7 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
   end
 
   describe "admin-owned wishlist triage stamps admin_enforcement (O4A)" do
-    it "stamps enforcement when triage soft-deletes a wishlist owned by the moderating admin" do
+    it "stamps enforcement when triage soft-deletes a wishlist owned by the moderating admin [REQ-ADM-001]" do
       wishlist = create(:wishlist, owner: admin)
       reporter = create(:user, username: "rep_own_wl", email_address: "rep_own_wl@example.com")
       Friendship.request!(requester: admin, addressee: reporter).accept!(actor: reporter)

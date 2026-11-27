@@ -21,10 +21,14 @@ module Api
         head :no_content
       end
 
-      # [REQ-LIFE-002] Restores a soft-deleted account within the 30-day grace window.
+      # [REQ-LIFE-002] [REQ-ADM-001] Restores a soft-deleted account within the 30-day grace window.
+      # Admin-enforced soft-deletes fail with the same generic credentials error (no moderation leak).
       def restore
         user = User.authenticate_discarded(params[:email_address], params[:password])
         return render json: { error: I18n.t("api.v1.errors.invalid_credentials") }, status: :unauthorized if user.nil?
+        if user.soft_deleted_by_admin?
+          return render json: { error: I18n.t("api.v1.errors.invalid_credentials") }, status: :unauthorized
+        end
 
         if user.restore!(actor: user)
           _api_token, raw_token = ApiToken.issue_for!(user, device_name: params[:device_name])

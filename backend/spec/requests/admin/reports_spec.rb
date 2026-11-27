@@ -31,21 +31,21 @@ RSpec.describe "Admin reports queue [REQ-ADM-001]", type: :request do
   end
 
   describe "admin gate (O1A/O6A)" do
-    it "allows role=admin cookie session to reach /admin" do
+    it "allows role=admin cookie session to reach /admin [REQ-ADM-001]" do
       sign_in(admin)
       get "/admin"
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(I18n.t("admin.nav.reports"))
     end
 
-    it "returns not-found for non-admin members without revealing the panel" do
+    it "returns not-found for non-admin members without revealing the panel [REQ-ADM-001]" do
       sign_in(member)
       get "/admin"
       expect(response).to have_http_status(:not_found)
       expect(response.body).not_to match(/pending report|Suspend|Dismiss/i)
     end
 
-    it "returns not-found for guests" do
+    it "returns not-found for guests [REQ-ADM-001]" do
       get "/admin"
       expect(response).to have_http_status(:not_found)
     end
@@ -62,7 +62,7 @@ RSpec.describe "Admin reports queue [REQ-ADM-001]", type: :request do
 
     before { sign_in(admin) }
 
-    it "lists pending User and Wishlist reports" do
+    it "lists pending User and Wishlist reports [REQ-ADM-001]" do
       get "/admin/reports"
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("@#{member.username}")
@@ -71,7 +71,7 @@ RSpec.describe "Admin reports queue [REQ-ADM-001]", type: :request do
       expect(response.body).to include("Wishlist")
     end
 
-    it "shows a User report with clear user action targets" do
+    it "shows a User report with clear user action targets [REQ-ADM-001]" do
       get "/admin/reports/#{user_report.id}"
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(I18n.t("admin.actions.dismiss"))
@@ -80,7 +80,7 @@ RSpec.describe "Admin reports queue [REQ-ADM-001]", type: :request do
       expect(response.body).to include("@#{member.username}")
     end
 
-    it "shows a Wishlist report with wishlist soft-delete action" do
+    it "shows a Wishlist report with wishlist soft-delete action [REQ-ADM-001]" do
       get "/admin/reports/#{wishlist_report.id}"
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(I18n.t("admin.actions.soft_delete_wishlist"))
@@ -91,27 +91,27 @@ RSpec.describe "Admin reports queue [REQ-ADM-001]", type: :request do
   describe "triage actions" do
     before { sign_in(admin) }
 
-    it "dismisses a pending report" do
+    it "dismisses a pending report [REQ-ADM-001]" do
       post "/admin/reports/#{user_report.id}/dismiss"
       expect(response).to redirect_to("/admin/reports")
       expect(user_report.reload.status).to eq("dismissed")
     end
 
-    it "suspends the reported user" do
+    it "suspends the reported user [REQ-ADM-001]" do
       post "/admin/reports/#{user_report.id}/suspend"
       expect(response).to redirect_to("/admin/reports")
       expect(user_report.reload.status).to eq("reviewed")
       expect(member.reload.suspended?).to be(true)
     end
 
-    it "soft-deletes the reported user account" do
+    it "soft-deletes the reported user account [REQ-ADM-001]" do
       post "/admin/reports/#{user_report.id}/soft_delete_user"
       expect(response).to redirect_to("/admin/reports")
       expect(user_report.reload.status).to eq("reviewed")
       expect(member.reload.discarded?).to be(true)
     end
 
-    it "soft-deletes the reported wishlist" do
+    it "soft-deletes the reported wishlist [REQ-ADM-001]" do
       owner = create(:user, username: "sd_owner", email_address: "sd_owner@example.com")
       friend = create(:user, username: "sd_friend", email_address: "sd_friend@example.com")
       wishlist = create(:wishlist, owner: owner, privacy_mode: "friends")
@@ -126,7 +126,7 @@ RSpec.describe "Admin reports queue [REQ-ADM-001]", type: :request do
   end
 
   describe "rate_limit on admin writes" do
-    it "declares rate_limit covering dismiss, suspend, soft_delete_user, soft_delete_wishlist" do
+    it "declares rate_limit covering dismiss, suspend, soft_delete_user, soft_delete_wishlist [REQ-ADM-001]" do
       source = File.read(Rails.root.join("app/controllers/admin/reports_controller.rb"))
       %w[dismiss suspend soft_delete_user soft_delete_wishlist].each do |action|
         expect(source).to match(/rate_limit[\s\S]*#{action}/)

@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>finish-branch</active_skill>
     <current_phase>1</current_phase>
-    <current_step>2.1 — code-review FIX all pass 5; verifying then pass 6</current_step>
+    <current_step>2.1 — code-review FIX all pass 6; verifying then pass 7</current_step>
   </execution_context>
 </agent_state>

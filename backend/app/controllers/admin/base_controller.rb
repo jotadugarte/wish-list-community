@@ -22,7 +22,9 @@ module Admin
       "Pre-condition failed: user must be suspended" => "admin.errors.user_must_be_suspended",
       "Pre-condition failed: target_user must match reportable" => "admin.errors.target_must_match_reportable",
       "Pre-condition failed: wishlist must match reportable" => "admin.errors.wishlist_must_match_reportable",
-      "Pre-condition failed: record is already soft-deleted" => "admin.errors.already_soft_deleted"
+      "Pre-condition failed: record is already soft-deleted" => "admin.errors.already_soft_deleted",
+      "Pre-condition failed: unsupported reportable" => "admin.errors.unsupported_reportable",
+      "Pre-condition failed: reportable must be Wishlist" => "admin.errors.reportable_must_be_wishlist"
     }.freeze
 
     layout "admin"
