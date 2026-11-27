@@ -35,12 +35,14 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 ## 4. Core Entities, Invariants & Value Objects
 
 ### 4.1 `User`, `Session` & `ApiToken`
-* **Responsibility:** Identity, authentication credentials, public `@username`, localization (`locale`, `time_zone`), terms compliance (`terms_accepted_at`), and soft-delete lifecycle (`discarded_at`).
+* **Responsibility:** Identity, authentication credentials, public `@username`, localization (`locale`, `time_zone`), terms compliance (`terms_accepted_at`), soft-delete lifecycle (`discarded_at`), and admin moderation suspend (`suspended_at`).
 * **Invariants:**
   * `email_address` is normalized, unique, and strictly private (never serialized in public or friend payloads).
   * `username` is unique (case-insensitive), URL-safe, subject to a **30-day change cooldown** (`username_changed_at`), and old usernames are quarantined for **30 days** upon change.
   * `ApiToken` persists only `token_digest` (SHA-256), never raw tokens.
   * Soft-deleted users have a **30-day restore grace period** on login, after which a background job permanently purges/anonymizes PII.
+  * **Suspend (`suspended_at`)** bans web + API login with the **same generic** failure copy as bad credentials; immediately revokes sessions, API tokens, and device tokens; does **not** soft-delete or hide content. Soft-delete (self or admin) remains the only content-removal path. Cannot suspend/soft-delete self or the last remaining unsuspended admin.
+  * **Admin role (`role=admin`)** is provisioned only via seed / Rails console / ops (no in-app promote UI). Admin UI is Hotwire cookie-session only.
 * **Value Objects:** `EmailAddress`, `Username`, `AuthToken`.
 
 ### 4.2 `UserBlock` & `Friendship`
@@ -95,6 +97,8 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 * **Responsibility:** Polymorphic abuse reports (`User`, `Wishlist`), immutable admin audit trail (`AuditEvent`), in-app `Notification` rows, per-event notification toggles (`in_app`, `email`, `push`), and `api_token`-bound FCM `DeviceToken` (automatically unbound on logout/revocation).
 * **Invariants:**
   * A user cannot report themselves, and partial unique index (`WHERE status = 'pending'`) prevents duplicate pending reports by the same reporter on the same target.
+  * Admin Hotwire triage: **Dismiss** → `dismissed`; **Suspend** / admin soft-delete account or wishlist → `reviewed`. Each writes a new `AuditEvent`. Triage creates **no** Notifications. Member `UserBlock` is unchanged.
+  * Moderation 1-click revert (compensating action + new `AuditEvent`, never mutate old rows): unsuspend; restore admin soft-delete within the same **30-day** SoftDeletable window; reopen `dismissed` → `pending` (unique pending respected).
   * All user-facing notification fan-out goes through `NotificationDispatcher`. Missing preference rows mean defaults-on for Sprint 5 events. Push preference is stored; send remains a no-op until Sprint 9.
 * **Value Objects:** `ReportReason` (`spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`).
 
@@ -152,8 +156,8 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 * **`REQ-GIFT-004`**: Optional anonymous *"Thank You"* note when the owner confirms gift receipt, delivered privately to the actual gifter without revealing the gifter's identity to the owner.
 
 ### Moderation, Notifications, Mobile & Group Activities
-* **`REQ-DISC-001`**: Anti-stalking profile search and wishlist report system with Rails 8 `rate_limit` anti-spam protection on write mutations (API + Hotwire) and reports. Wishlist reports: any logged-in viewer with current access except the owner; enqueue `pending` + `AuditEvent` only (no auto-hide / owner notify); admin triage remains Sprint 8.
-* **`REQ-ADM-001`**: Web-only Admin panel backed by immutable `AuditEvent` records to inspect internal history, review reports, block abusive accounts, and revert erroneous/abusive state changes.
+* **`REQ-DISC-001`**: Anti-stalking profile search and wishlist report system with Rails 8 `rate_limit` anti-spam protection on write mutations (API + Hotwire) and reports. Wishlist reports: any logged-in viewer with current access except the owner; enqueue `pending` + `AuditEvent` only (no auto-hide / owner notify); Hotwire Admin triage is Sprint 8.
+* **`REQ-ADM-001`**: Web-only Hotwire Admin panel (`role=admin` cookie session, Pundit default-deny) backed by immutable `AuditEvent` records to triage reports (dismiss / suspend / soft-delete), inspect gift/audit detail (gifter `@username` + email + `purchase_link_ref` read-only; never in `/api/v1`), and 1-click moderation revert (unsuspend / restore / reopen dismissed). Ops provision admins via seed/console; no promote UI; no triage notifications.
 * **`REQ-NOTIF-001`**: Configurable per-event notifications (`in_app` + `email` + optional FCM `push`) dispatched via a single notification dispatcher.
 * **`REQ-NOTIF-002`**: FCM `device_tokens` are bound to `api_token_id` and automatically unbound/deleted on logout or token revocation to prevent spoilers on shared devices.
 * **`REQ-MOB-001`**: Full Flutter iOS/Android parity, Universal Links/App Links, client-side image compression, and native OS *"Share to App"* sheet support in MVP Sprint 9.
