@@ -17,10 +17,22 @@ Rails.application.routes.draw do
       resources :shares, only: %i[create destroy], controller: "wishlist_shares"
       resources :items, only: %i[new create], controller: "items"
     end
-    resources :items, only: %i[edit update destroy], controller: "items"
+    resources :items, only: %i[edit update destroy], controller: "items" do
+      resources :reservations, only: %i[create], controller: "reservations"
+    end
+    resources :reservations, only: %i[index destroy], controller: "reservations" do
+      member do
+        post :mark_purchased
+      end
+    end
+    resources :gifts, only: [], controller: "gifts" do
+      member do
+        post :mark_delivered
+        post :confirm_received
+      end
+    end
     get "shared", to: "shell#show", defaults: { section: "shared" }, as: :shared
     get "friends", to: "shell#show", defaults: { section: "friends" }, as: :friends
-    get "reservations", to: "shell#show", defaults: { section: "reservations" }, as: :reservations
     get "notifications", to: "shell#show", defaults: { section: "notifications" }, as: :notifications
     get "settings", to: "shell#show", defaults: { section: "settings" }, as: :settings
   end

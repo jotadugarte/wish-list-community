@@ -3,6 +3,22 @@ es:
   member:
     errors:
       not_found: "No encontrado"
+    reservations:
+      heading: "Reservaciones activas"
+      empty: "No hay reservaciones activas."
+      created: "Reservado."
+      canceled: "Reservación cancelada."
+      cancel: "Cancelar"
+    gifts:
+      heading: "Regalos abiertos"
+      empty: "No hay regalos abiertos."
+      mark_purchased: "Marcar comprado"
+      mark_delivered: "Marcar entregado"
+      confirm_received: "Confirmar recibido"
+      thank_you_placeholder: "Nota de agradecimiento opcional"
+      purchased: "Marcado como comprado."
+      delivered: "Marcado como entregado."
+      confirmed: "Regalo confirmado."
     items:
       heading: "Ítems"
       new: "Agregar ítem"

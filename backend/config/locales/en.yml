@@ -3,6 +3,22 @@ en:
   member:
     errors:
       not_found: "Not found"
+    reservations:
+      heading: "Active reservations"
+      empty: "No active reservations."
+      created: "Reserved."
+      canceled: "Reservation canceled."
+      cancel: "Cancel"
+    gifts:
+      heading: "Open gifts"
+      empty: "No open gifts."
+      mark_purchased: "Mark purchased"
+      mark_delivered: "Mark delivered"
+      confirm_received: "Confirm received"
+      thank_you_placeholder: "Optional thank-you note"
+      purchased: "Marked as purchased."
+      delivered: "Marked as delivered."
+      confirmed: "Gift confirmed."
     items:
       heading: "Items"
       new: "Add item"
