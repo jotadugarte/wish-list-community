@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/network/api_client.dart';
 import 'package:wish_list_mobile/core/network/token_storage.dart';
@@ -7,6 +8,10 @@ import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/notifications/notification_repository.dart';
 import 'package:wish_list_mobile/features/notifications/push_registration.dart';
+import 'package:wish_list_mobile/features/share/deep_link_router.dart';
+import 'package:wish_list_mobile/features/share/last_wishlist_memory.dart';
+import 'package:wish_list_mobile/features/share/share_intent_coordinator.dart';
+import 'package:wish_list_mobile/features/share/share_intent_source.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
@@ -137,10 +142,13 @@ void main() {
   group('Sprint 1 & Sprint 2 Mobile Screens [REQ-AUTH-001] [REQ-SOC-001] [REQ-WISH-001] [REQ-BLOCK-001]', () {
     late InMemoryTokenStorage tokenStorage;
     late List<RecordedApiRequest> log;
+    late LastWishlistMemory lastWishlistMemory;
 
-    setUp(() {
+    setUp(() async {
       tokenStorage = InMemoryTokenStorage();
       log = [];
+      SharedPreferences.setMockInitialValues({});
+      lastWishlistMemory = LastWishlistMemory(await SharedPreferences.getInstance());
     });
 
     Widget buildApp(_Responder responder) {
@@ -168,6 +176,14 @@ void main() {
           bindSession: (_) async {},
           clearSession: () async {},
         ),
+        shareCoordinator: ShareIntentCoordinator(
+          memory: lastWishlistMemory,
+          isLoggedIn: () => false,
+          loadOwnedWishlistIds: () async => {},
+        ),
+        shareIntentSource: FakeShareIntentSource(),
+        deepLinkRouter: DeepLinkRouter(allowedHosts: {'staging.wishlist.local'}),
+        appLinks: null,
       );
     }
 

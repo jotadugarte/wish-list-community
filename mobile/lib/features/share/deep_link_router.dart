@@ -23,8 +23,9 @@ class DeepLinkRouter {
       : allowedHosts = allowedHosts ?? PublicHostConfig.allowedDeepLinkHosts;
 
   DeepLinkRouteDecision resolve(Uri uri) {
-    if (uri.host.isNotEmpty && !allowedHosts.contains(uri.host)) {
-      // Unknown host: still parse path for tests; production association filters hosts.
+    // O9B: only configured public/staging hosts may open in-app routes.
+    if (uri.host.isNotEmpty && !allowedHosts.contains(uri.host.toLowerCase())) {
+      return const DeepLinkRouteDecision(route: DeepLinkRoute.safeFailure);
     }
     final target = DeepLinkTarget.parse(uri);
     switch (target.kind) {

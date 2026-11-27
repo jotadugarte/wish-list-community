@@ -39,7 +39,7 @@ void main() {
               timeZone: 'America/Costa_Rica',
             ),
             authRepository: auth,
-            onSignedOut: () {},
+            onSignedOut: () async {},
             onOpenLegalUri: opened.add,
           ),
         ),

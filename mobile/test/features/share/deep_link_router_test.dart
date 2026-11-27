@@ -21,5 +21,10 @@ void main() {
       final d = router.resolve(Uri.parse('https://staging.example/activities/1'));
       expect(d.route, DeepLinkRoute.safeFailure);
     });
+
+    test('safe failure for unknown host', () {
+      final d = router.resolve(Uri.parse('https://evil.example/u/bob_user'));
+      expect(d.route, DeepLinkRoute.safeFailure);
+    });
   });
 }

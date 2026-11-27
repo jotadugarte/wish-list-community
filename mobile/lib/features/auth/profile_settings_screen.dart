@@ -15,7 +15,7 @@ class ProfileSettingsScreen extends StatelessWidget {
   final AppStrings strings;
   final UserProfile user;
   final AuthRepository authRepository;
-  final VoidCallback onSignedOut;
+  final Future<void> Function() onSignedOut;
   final NotificationRepository? notificationRepository;
   final void Function(Uri uri)? onOpenLegalUri;
 
@@ -39,7 +39,7 @@ class ProfileSettingsScreen extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     try {
       await action();
-      onSignedOut();
+      await onSignedOut();
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(strings.errorMessage(e))));
     }

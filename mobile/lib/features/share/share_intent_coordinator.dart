@@ -24,8 +24,8 @@ class ShareIntentDecision {
 // Traceability: [REQ-ITEM-006] O4B / O11A
 class ShareIntentCoordinator {
   final LastWishlistMemory memory;
-  final bool Function() isLoggedIn;
-  final Future<Set<int>> Function() loadOwnedWishlistIds;
+  bool Function() isLoggedIn;
+  Future<Set<int>> Function() loadOwnedWishlistIds;
 
   ShareIntentCoordinator({
     required this.memory,
