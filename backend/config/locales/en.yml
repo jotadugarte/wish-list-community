@@ -300,6 +300,19 @@ en:
       open_gift_detail: "Open gift detail"
       back_to_reports: "Back to Reports"
       back_to_audit: "Back to Audit"
+    style_guide:
+      version: "Version %{version}"
+      copy_label: "Sample copy: English"
+      tokens_heading: "Tokens"
+      toggles:
+        label: "Guide toggles"
+        light: "Light"
+        dark: "Dark"
+        spanish: "Español"
+        english: "English"
+      columns:
+        role: "Role"
+        hex: "Hex"
     errors:
       event_not_revertable: "This audit event cannot be reverted."
       not_soft_deleted: "Record is not soft-deleted."

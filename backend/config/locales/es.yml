@@ -300,6 +300,19 @@ es:
       open_gift_detail: "Abrir detalle del regalo"
       back_to_reports: "Volver a Reportes"
       back_to_audit: "Volver a Auditoría"
+    style_guide:
+      version: "Versión %{version}"
+      copy_label: "Texto de muestra: español"
+      tokens_heading: "Tokens"
+      toggles:
+        label: "Controles de la guía"
+        light: "Claro"
+        dark: "Oscuro"
+        spanish: "Español"
+        english: "English"
+      columns:
+        role: "Rol"
+        hex: "Hex"
     errors:
       event_not_revertable: "Este evento de auditoría no se puede revertir."
       not_soft_deleted: "El registro no está eliminado temporalmente."

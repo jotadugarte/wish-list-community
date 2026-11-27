@@ -7,6 +7,7 @@ module Admin
     # [REQ-ADM-001] Shows the brand guide to a role=admin cookie session.
     def show
       authorize :admin, :show?, policy_class: AdminPolicy
+      @guide = StyleGuidePage.build(params: params)
     end
   end
 end
