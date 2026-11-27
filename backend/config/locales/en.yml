@@ -11,6 +11,7 @@ en:
         invalid_search_query: "Search query must be between 2 and 30 valid @username characters"
         friendship_invalid: "Unable to process friend request"
         report_invalid: "Unable to submit report"
+        rate_limited: "Too many requests. Please wait a few minutes and try again."
         wishlist_invalid: "Unable to save wishlist"
         wishlist_share_invalid: "Unable to share wishlist"
         signup_invalid: "Unable to create account with the provided details"
@@ -42,6 +43,17 @@ en:
     marked_delivered: "Marked as delivered"
     confirmed_received: "Receipt confirmed"
     marked_received: "Marked as received"
+    report_list: "Report list"
+    report_reason: "Reason"
+    report_details: "Details (optional)"
+    report_submit: "Submit report"
+    report_submitted: "Report submitted. Thank you."
+    report_reasons:
+      spam: "Spam"
+      harassment: "Harassment"
+      impersonation: "Impersonation"
+      inappropriate_content: "Inappropriate content"
+      scam: "Scam"
 
   reservations:
     errors:

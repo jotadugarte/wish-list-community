@@ -71,16 +71,15 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Optional anonymous *"Thank You"* note from owner upon confirming receipt, delivered privately to the gifter without revealing the gifter's identity (`REQ-GIFT-004`) — 2026-11-26
   - [x] Store reference to the purchase link used for an online gift (visible to admin audit only) (`REQ-ADM-001`) — 2026-11-26
   - [x] API v1 endpoints + Flutter screens for this sprint (Hotwire Secret Link gift parity O3C included) — 2026-11-26
+- [x] **MVP Sprint 7 — Anti-Spam, Rate Limits & Wishlist Reports** — 2026-11-26 — Branch: `cursor/feat-sprint-7-anti-spam-72e9` — Draft PR #14
+  - [x] Rails 8 `rate_limit` anti-spam protection across mutation and report endpoints + report wishlist (`REQ-DISC-001`) — 2026-11-26
+  - [x] Sensitive content handled through reports queue (`REQ-DISC-001`) — 2026-11-26
+  - [x] API v1 endpoints + Flutter screens for this sprint (Hotwire Secret Link Reportar lista parity included) — 2026-11-26
 
 ## In Progress
 _(none)_
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 7 — Anti-Spam, Rate Limits & Wishlist Reports**
-
-  - [ ] Rails 8 `rate_limit` anti-spam protection across mutation and report endpoints + report wishlist (`REQ-DISC-001`)
-  - [ ] Sensitive content handled through reports queue (`REQ-DISC-001`)
-  - [ ] API v1 endpoints + Flutter screens for this sprint
 - [ ] **MVP Sprint 8 — Admin/Moderation (Web Only)**
   - [ ] Admin panel: report queue + moderation actions (block/suspend) (`REQ-ADM-001`)
   - [ ] Admin audit log viewer (`AuditEvent` history of reservations/gifts/changes) with 1-click revert for error/abuse (`REQ-ADM-001`)

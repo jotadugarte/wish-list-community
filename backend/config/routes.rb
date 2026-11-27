@@ -22,6 +22,8 @@ Rails.application.routes.draw do
       as: :secret_link_confirm_received, constraints: { share_token: /[A-Za-z0-9\-_]+/ }
   post "s/:share_token/items/:item_id/mark_received", to: "secret_link_gifts#mark_received",
       as: :secret_link_mark_received, constraints: { share_token: /[A-Za-z0-9\-_]+/ }
+  post "s/:share_token/report", to: "secret_link_reports#create", as: :secret_link_report,
+      constraints: { share_token: /[A-Za-z0-9\-_]+/ }
 
   namespace :api do
     namespace :v1 do

@@ -152,7 +152,7 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 * **`REQ-GIFT-004`**: Optional anonymous *"Thank You"* note when the owner confirms gift receipt, delivered privately to the actual gifter without revealing the gifter's identity to the owner.
 
 ### Moderation, Notifications, Mobile & Group Activities
-* **`REQ-DISC-001`**: Anti-stalking profile search and wishlist report system with Rails 8 `rate_limit` anti-spam protection.
+* **`REQ-DISC-001`**: Anti-stalking profile search and wishlist report system with Rails 8 `rate_limit` anti-spam protection on write mutations (API + Hotwire) and reports. Wishlist reports: any logged-in viewer with current access except the owner; enqueue `pending` + `AuditEvent` only (no auto-hide / owner notify); admin triage remains Sprint 8.
 * **`REQ-ADM-001`**: Web-only Admin panel backed by immutable `AuditEvent` records to inspect internal history, review reports, block abusive accounts, and revert erroneous/abusive state changes.
 * **`REQ-NOTIF-001`**: Configurable per-event notifications (`in_app` + `email` + optional FCM `push`) dispatched via a single notification dispatcher.
 * **`REQ-NOTIF-002`**: FCM `device_tokens` are bound to `api_token_id` and automatically unbound/deleted on logout or token revocation to prevent spoilers on shared devices.

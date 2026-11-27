@@ -6,6 +6,10 @@ module Api
     # Traceability: [REQ-NOTIF-001]
     class NotificationPreferencesController < BaseController
       skip_after_action :verify_policy_scoped
+      rate_limit to: 20, within: 3.minutes, only: :update, name: "api_notification_prefs_update",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
 
       def show
         authorize :notification_preference, :show?

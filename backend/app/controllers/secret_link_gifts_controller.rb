@@ -9,6 +9,11 @@ class SecretLinkGiftsController < ApplicationController
   rescue_from Pundit::NotAuthorizedError, with: :render_not_found
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
+  rate_limit to: 20, within: 3.minutes, only: %i[mark_purchased mark_delivered confirm_received mark_received], name: "secret_link_gifts_write",
+                by: -> { current_user&.id || request.remote_ip }, with: -> {
+    redirect_back fallback_location: root_path, alert: I18n.t("api.v1.errors.rate_limited"), status: :see_other
+  }
+
   before_action :require_login!
 
   # [REQ-GIFT-001] Path 1 mark purchased from Secret Link hold.

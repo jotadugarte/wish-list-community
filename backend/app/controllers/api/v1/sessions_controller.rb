@@ -8,7 +8,11 @@ module Api
       skip_before_action :authenticate_api_token!, only: :create
       skip_after_action :verify_authorized
       skip_after_action :verify_policy_scoped
-      rate_limit to: 10, within: 3.minutes, only: :create
+      rate_limit to: 10, within: 3.minutes, only: :create, name: "api_session_create"
+      rate_limit to: 20, within: 3.minutes, only: :destroy, name: "api_session_destroy",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
 
       # [REQ-AUTH-001] [REQ-NOTIF-002] Authenticates user and returns raw bearer token once.
       def create

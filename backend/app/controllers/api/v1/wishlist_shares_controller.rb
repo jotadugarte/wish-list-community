@@ -6,6 +6,10 @@ module Api
     # Traceability: [REQ-WISH-003], [REQ-WISH-001]
     class WishlistSharesController < BaseController
       skip_after_action :verify_policy_scoped
+      rate_limit to: 20, within: 3.minutes, only: %i[create destroy], name: "api_wishlist_shares_write",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
       # [REQ-WISH-003] Creates an explicit share for an accepted friend.
       def create
         wishlist = current_user.wishlists.kept.find(params[:wishlist_id])

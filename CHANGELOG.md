@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Sprint 7 anti-spam: wishlist abuse reports for accessible non-owner viewers (API + Hotwire Secret Link Reportar lista + Flutter), pending uniqueness + `AuditEvent` `report.created` (no owner notify), Rails 8 `rate_limit` on API/Hotwire write mutations with named buckets and user-id keying, localized report reasons, clear 429 / wait UX.
 - Sprint 6 dual-path gift fulfillment: Path 1 (mark purchased → delivered → owner confirm) and Path 2 (owner mark received), optional anonymous thank-you, Received Gifts section, O8D void on item delete/block/unfriend with `confirm_void_gifts`, Hotwire Secret Link + Flutter parity, admin-only `purchase_link_ref`.
 - Sprint 5 secret reservations: create/extend/cancel with partial unique index + 409 race, viewer-relative `availability`, `GET /my_reservations`, soft-delete/block/unfriend/account cancel hooks, `ReservationGraceSweepJob` (72h grace → auto-release), notification foundation (in-app + email enqueue; push no-op), Hotwire Secret Link reserve parity (O4B), Flutter My Reservations + reserve CTA.
 - Sprint 4 items + media: `Item` / `ItemLink` CRUD + reorder, SoftDeletable cascade with wishlists, ActiveStorage images (WebP + EXIF/GPS strip), SSRF-safe OpenGraph link previews with owner confirm-before-persist, Hotwire Secret Link read-only items, Flutter wishlist detail + `ItemFormScreen`.

@@ -8,7 +8,11 @@ module Api
       skip_before_action :authenticate_api_token!, only: :restore
       skip_after_action :verify_authorized
       skip_after_action :verify_policy_scoped
-      rate_limit to: 5, within: 3.minutes, only: :restore
+      rate_limit to: 5, within: 3.minutes, only: :restore, name: "api_account_restore"
+      rate_limit to: 10, within: 3.minutes, only: :destroy, name: "api_account_destroy",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
 
       # [REQ-LIFE-002] Soft-deletes the current user's account and revokes all active tokens.
       def destroy
