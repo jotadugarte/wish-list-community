@@ -108,8 +108,24 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
 
   Future<void> _reportWishlist() async {
     final s = widget.strings;
-    String? selected;
-    final reason = await showModalBottomSheet<String>(
+    final reason = await _pickReportReason(s);
+    if (reason == null || !mounted) return;
+    try {
+      await widget.wishlistRepository.reportWishlist(
+        wishlistId: widget.wishlistId,
+        rawReason: reason.value,
+      );
+      if (mounted) setState(() => _error = s.reportWishlistSuccess);
+    } on ApiException catch (e) {
+      if (mounted) setState(() => _error = _reportApiMessage(s, e));
+    } catch (e) {
+      if (mounted) setState(() => _error = s.errorMessage(e));
+    }
+  }
+
+  Future<ReportReasonVo?> _pickReportReason(AppStrings s) async {
+    ReportReasonVo? selected;
+    return showModalBottomSheet<ReportReasonVo>(
       context: context,
       isScrollControlled: true,
       builder: (ctx) {
@@ -120,14 +136,15 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ListTile(title: Text(s.reportReasonLabel)),
-                  ...ReportReasonVo.allowedReasons.map(
-                    (reason) => ListTile(
-                      key: Key('report_reason_$reason'),
-                      title: Text(s.reportReasonLabelFor(reason)),
-                      selected: selected == reason,
-                      onTap: () => setModalState(() => selected = reason),
-                    ),
-                  ),
+                  ...ReportReasonVo.allowedReasons.map((code) {
+                    final option = ReportReasonVo(code);
+                    return ListTile(
+                      key: Key('report_reason_$code'),
+                      title: Text(s.reportReasonLabelFor(option)),
+                      selected: selected == option,
+                      onTap: () => setModalState(() => selected = option),
+                    );
+                  }),
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: SizedBox(
@@ -148,30 +165,22 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
         );
       },
     );
-    if (reason == null || !mounted) return;
-    try {
-      await widget.wishlistRepository.reportWishlist(
-        wishlistId: widget.wishlistId,
-        rawReason: reason,
-      );
-      if (mounted) setState(() => _error = s.reportWishlistSuccess);
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      final message = switch (e.statusCode) {
-        422 => _reportInvalidMessage(s, e),
-        404 => s.reportWishlistUnavailable,
-        429 => s.rateLimitedError,
-        _ => s.errorMessage(e),
-      };
-      setState(() => _error = message);
-    } catch (e) {
-      if (mounted) setState(() => _error = s.errorMessage(e));
-    }
+  }
+
+  String _reportApiMessage(AppStrings s, ApiException e) {
+    return switch (e.statusCode) {
+      422 => _reportInvalidMessage(s, e),
+      404 => s.reportWishlistUnavailable,
+      429 => s.rateLimitedError,
+      _ => s.errorMessage(e),
+    };
   }
 
   String _reportInvalidMessage(AppStrings s, ApiException e) {
     final body = e.message.toLowerCase();
-    if (body.contains('pending') || body.contains('already') || body.contains('duplicate')) {
+    if (body.contains('pending') ||
+        body.contains('already') ||
+        body.contains('duplicate')) {
       return s.reportWishlistDuplicate;
     }
     return s.invalidDataError;
@@ -208,84 +217,88 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _wishlist == null
           ? Center(child: Text(_error ?? s.notFoundError))
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Text(
-                  _wishlist!.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
-                if (_error != null) ...[
-                  Text(_error!, style: TextStyle(color: widget.tokens.accent)),
-                  const SizedBox(height: 8),
-                ],
-                if (widget.canManage) ...[
-                  Text(s.privacyModeLabel),
-                  Row(
-                    children: [
-                      ChoiceChip(
-                        label: Text(s.privacyFriendsLabel),
-                        selected: _wishlist!.isFriends,
-                        onSelected: (_) => _setPrivacy('friends'),
-                      ),
-                      const SizedBox(width: 8),
-                      ChoiceChip(
-                        label: Text(s.privacySharedLabel),
-                        selected: _wishlist!.isShared,
-                        onSelected: (_) => _setPrivacy('shared'),
-                      ),
-                    ],
-                  ),
-                  if (_wishlist!.isShared) ...[
-                    const SizedBox(height: 12),
-                    Text(s.secretLinkLabel),
-                    SelectableText('/s/${_wishlist!.shareToken ?? ''}'),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      children: [
-                        OutlinedButton(
-                          onPressed: _copyLink,
-                          child: Text(s.copySecretLinkButton),
-                        ),
-                        OutlinedButton(
-                          onPressed: _rotate,
-                          child: Text(s.rotateSecretLinkButton),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                ] else ...[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      key: const Key('report_wishlist'),
-                      onPressed: _reportWishlist,
-                      icon: const Icon(Icons.flag_outlined),
-                      label: Text(s.reportWishlistAction),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (_items.isEmpty)
-                  Text(s.noItemsYet)
-                else ...[
-                  ..._items.where((i) => !i.receivedGift).map(_itemTile),
-                  if (_items.any((i) => i.receivedGift)) ...[
-                    const SizedBox(height: 24),
-                    Text(
-                      s.receivedGiftsTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    ..._items.where((i) => i.receivedGift).map(_itemTile),
-                  ],
-                ],
-              ],
-            ),
+          : _detailList(context, s),
     );
+  }
+
+  Widget _detailList(BuildContext context, AppStrings s) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Text(_wishlist!.title, style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: 8),
+        if (_error != null) ...[
+          Text(_error!, style: TextStyle(color: widget.tokens.accent)),
+          const SizedBox(height: 8),
+        ],
+        if (widget.canManage) ..._ownerControls(s) else ..._viewerReportControls(s),
+        if (_items.isEmpty)
+          Text(s.noItemsYet)
+        else ...[
+          ..._items.where((i) => !i.receivedGift).map(_itemTile),
+          if (_items.any((i) => i.receivedGift)) ...[
+            const SizedBox(height: 24),
+            Text(s.receivedGiftsTitle, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            ..._items.where((i) => i.receivedGift).map(_itemTile),
+          ],
+        ],
+      ],
+    );
+  }
+
+  List<Widget> _ownerControls(AppStrings s) {
+    return [
+      Text(s.privacyModeLabel),
+      Row(
+        children: [
+          ChoiceChip(
+            label: Text(s.privacyFriendsLabel),
+            selected: _wishlist!.isFriends,
+            onSelected: (_) => _setPrivacy('friends'),
+          ),
+          const SizedBox(width: 8),
+          ChoiceChip(
+            label: Text(s.privacySharedLabel),
+            selected: _wishlist!.isShared,
+            onSelected: (_) => _setPrivacy('shared'),
+          ),
+        ],
+      ),
+      if (_wishlist!.isShared) ..._secretLinkControls(s),
+      const SizedBox(height: 16),
+    ];
+  }
+
+  List<Widget> _secretLinkControls(AppStrings s) {
+    return [
+      const SizedBox(height: 12),
+      Text(s.secretLinkLabel),
+      SelectableText('/s/${_wishlist!.shareToken ?? ''}'),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 8,
+        children: [
+          OutlinedButton(onPressed: _copyLink, child: Text(s.copySecretLinkButton)),
+          OutlinedButton(onPressed: _rotate, child: Text(s.rotateSecretLinkButton)),
+        ],
+      ),
+    ];
+  }
+
+  List<Widget> _viewerReportControls(AppStrings s) {
+    return [
+      Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton.icon(
+          key: const Key('report_wishlist'),
+          onPressed: _reportWishlist,
+          icon: const Icon(Icons.flag_outlined),
+          label: Text(s.reportWishlistAction),
+        ),
+      ),
+      const SizedBox(height: 16),
+    ];
   }
 
 

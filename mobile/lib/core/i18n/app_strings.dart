@@ -1,4 +1,5 @@
 import 'package:wish_list_mobile/core/network/api_client.dart';
+import 'package:wish_list_mobile/core/values/domain_values.dart';
 
 // Bilingual (es / en) localized strings dictionary for mobile screens.
 // Traceability: [REQ-USER-002]
@@ -215,9 +216,9 @@ class AppStrings {
     return normalized == 'en' ? _en : _es;
   }
 
-  // [REQ-DISC-001] Localized label for a ReportReasonVo value (codes stay English).
-  String reportReasonLabelFor(String reasonCode) {
-    switch (reasonCode) {
+  // [REQ-DISC-001] Localized label for a ReportReasonVo (wire codes stay English).
+  String reportReasonLabelFor(ReportReasonVo reason) {
+    switch (reason.value) {
       case 'spam':
         return locale == 'en' ? 'Spam' : 'Spam';
       case 'harassment':
@@ -229,7 +230,7 @@ class AppStrings {
       case 'scam':
         return locale == 'en' ? 'Scam' : 'Estafa';
       default:
-        return reasonCode;
+        return reason.value;
     }
   }
 

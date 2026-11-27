@@ -153,8 +153,9 @@ void main() {
         await tester.pumpAndSettle();
 
         for (final reason in ReportReasonVo.allowedReasons) {
+          final vo = ReportReasonVo(reason);
           expect(find.byKey(Key('report_reason_$reason')), findsOneWidget);
-          expect(find.text(strings.reportReasonLabelFor(reason)), findsOneWidget);
+          expect(find.text(strings.reportReasonLabelFor(vo)), findsOneWidget);
         }
 
         await tester.tap(find.byKey(const Key('report_reason_harassment')));
@@ -206,7 +207,10 @@ void main() {
       expect(es.reportWishlistDuplicate, isNotEmpty);
       expect(en.rateLimitedError, isNotEmpty);
       expect(es.reportWishlistUnavailable, isNotEmpty);
-      expect(es.reportReasonLabelFor('harassment'), isNot(equals(en.reportReasonLabelFor('harassment'))));
+      expect(
+        es.reportReasonLabelFor(ReportReasonVo('harassment')),
+        isNot(equals(en.reportReasonLabelFor(ReportReasonVo('harassment')))),
+      );
       expect(es.invalidDataError, isNotEmpty);
       expect(
         en.errorMessage(const ApiException(statusCode: 429, message: 'x')),

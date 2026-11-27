@@ -41,7 +41,10 @@ class SecretLinkReportsController < ApplicationController
 
   def find_shared_wishlist!
     token_vo = ShareToken.new(params[:share_token])
-    wishlist = Wishlist.kept.find_by(share_token: token_vo.value, privacy_mode: "shared")
+    wishlist = Wishlist.kept.find_by(
+      share_token: token_vo.value,
+      privacy_mode: PrivacyMode.new("shared").value
+    )
     raise ActiveRecord::RecordNotFound if wishlist.nil?
     raise ActiveRecord::RecordNotFound if wishlist.owner.discarded?
     if UserBlock.blocked_between?(current_user, wishlist.owner)
