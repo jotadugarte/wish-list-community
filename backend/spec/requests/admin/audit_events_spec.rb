@@ -192,4 +192,33 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(report.reload.status).to eq("pending")
     end
   end
+
+  describe "soft-delete Revert requires restorable window" do
+    include ActiveSupport::Testing::TimeHelpers
+
+    after { travel_back }
+
+    it "hides Revert after the 30-day SoftDeletable window" do
+      freeze_time
+      member.soft_delete!(actor: admin)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      travel 31.days
+
+      get "/admin/audit_events/#{event.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+    end
+  end
+
+  describe "dismiss revert requires the latest dismiss event" do
+    it "hides Revert on an older dismiss after dismiss → reopen → dismiss" do
+      report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
+      report.dismiss!(actor: admin)
+      first = AuditEvent.where(action: "report.dismissed", auditable: report).order(:id).first
+      report.reopen!(actor: admin)
+      report.dismiss!(actor: admin)
+
+      get "/admin/audit_events/#{first.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+    end
+  end
 end

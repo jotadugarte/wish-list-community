@@ -119,7 +119,7 @@ class Report < ApplicationRecord
     raise ArgumentError, "Pre-condition failed: cannot soft-delete the last remaining admin" if last_unsuspended_admin?(target_user)
 
     transaction do
-      target_user.soft_delete!(actor: actor)
+      target_user.soft_delete!(actor: actor, admin_enforcement: true)
       mark_reviewed!(actor: actor, metadata: { enforcement: "soft_delete_user", target_user_id: target_user.id })
     end
 
@@ -139,7 +139,7 @@ class Report < ApplicationRecord
     end
 
     transaction do
-      wishlist.soft_delete!(actor: actor)
+      wishlist.soft_delete!(actor: actor, admin_enforcement: true)
       mark_reviewed!(actor: actor, metadata: { enforcement: "soft_delete_wishlist", wishlist_id: wishlist.id })
     end
 

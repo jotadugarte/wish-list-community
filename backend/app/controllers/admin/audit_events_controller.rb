@@ -68,10 +68,11 @@ module Admin
     end
 
     def soft_delete_revertable?(event)
-      return false unless ActiveModel::Type::Boolean.new.cast(event.metadata["admin_enforcement"])
+      return false unless ActiveModel::Type::Boolean.new.cast(event.metadata["admin_enforcement"]) == true
 
       record = event.auditable
       return false unless record&.discarded?
+      return false unless record.restorable?
 
       record.latest_soft_delete_event&.id == event.id
     end
@@ -89,7 +90,13 @@ module Admin
 
     def dismiss_revertable?(event)
       report = event.auditable
-      report&.status == "dismissed"
+      return false unless report&.status == "dismissed"
+
+      latest = AuditEvent.where(auditable_type: "Report", auditable_id: event.auditable_id, action: "report.dismissed")
+                         .order(created_at: :desc, id: :desc)
+                         .limit(1)
+                         .first
+      latest&.id == event.id
     end
 
     def unsuspend_user(event)

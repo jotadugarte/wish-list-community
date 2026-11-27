@@ -4,7 +4,7 @@
 
 ## 1. Primary Request & Mutation Data Flow
 1. **Client (Hotwire Web or Flutter `/api/v1`)** submits request payload (Cookie session or `Authorization: Bearer <raw_token>`).
-2. **Authentication Layer** resolves `Current.user` (via `Session` cookie or SHA-256 `ApiToken.find_by(token_digest: ...)`), verifying `user.discarded_at.nil?`.
+2. **Authentication Layer** resolves `Current.user` (via `Session` cookie or SHA-256 `ApiToken.find_by(token_digest: ...)`), verifying `user.discarded_at.nil?` and `user.suspended_at.nil?` (suspended accounts fail with the same generic auth error as bad credentials — FC2).
 3. **Authorization Layer (Pundit)** executes policy check (`authorize`), enforcing the **"Block Wins"** law first before evaluating friendship, `WishlistShare`, or `share_token` access.
 4. **Domain Service Object** executes business logic within a PostgreSQL transaction (checking preconditions, database uniqueness constraints, and postconditions) and writes an immutable `AuditEvent` when applicable.
 5. **Notification Dispatcher (Solid Queue)** asynchronously enqueues localized (`user.locale`) in-app, email, and push notifications after transaction commit.

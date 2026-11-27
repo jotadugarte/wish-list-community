@@ -58,8 +58,10 @@ module SoftDeletable
 
   # [REQ-LIFE-001] [REQ-LIFE-002] Soft-deletes the record, runs registered on_soft_delete hooks,
   # and logs an immutable AuditEvent (hooks may contribute metadata via merge_soft_delete_audit_metadata!).
-  # [REQ-ADM-001] Snapshots admin_enforcement when a moderating admin (not the subject/owner) soft-deletes (O4A).
-  def soft_delete!(actor: nil)
+  # [REQ-ADM-001] Snapshots admin_enforcement for moderation soft-deletes (O4A).
+  # Pass admin_enforcement: true from Admin triage so owner-admin wishlist soft-deletes still stamp;
+  # cascade/self soft-deletes omit the flag and only stamp for non-subject moderating admins.
+  def soft_delete!(actor: nil, admin_enforcement: false)
     raise ArgumentError, "Pre-condition failed: record must be persisted" unless persisted?
     raise ArgumentError, "Pre-condition failed: record is already soft-deleted" if discarded?
 
@@ -69,7 +71,7 @@ module SoftDeletable
       @soft_delete_audit_metadata = {}
       update!(discarded_at: Time.current)
       run_lifecycle_hooks!(self.class.soft_delete_hooks)
-      if moderating_admin_actor?(resolved_actor)
+      if should_stamp_admin_enforcement?(resolved_actor, admin_enforcement)
         merge_soft_delete_audit_metadata!("admin_enforcement" => true)
       end
       AuditEvent.record!(
@@ -138,7 +140,7 @@ module SoftDeletable
     event = latest_soft_delete_event
     return false if event.nil?
 
-    ActiveModel::Type::Boolean.new.cast(event.metadata["admin_enforcement"])
+    ActiveModel::Type::Boolean.new.cast(event.metadata["admin_enforcement"]) == true
   end
 
   # [REQ-ADM-001] Latest soft_deleted AuditEvent for this record (used by Admin revert eligibility).
@@ -159,14 +161,18 @@ module SoftDeletable
     actor.present? && actor.respond_to?(:role) && actor.role == "admin"
   end
 
-  # Moderating admin: role=admin and not the soft-delete subject (self/owner).
-  def moderating_admin_actor?(actor)
-    admin_actor?(actor) && !soft_delete_subject?(actor)
+  def should_stamp_admin_enforcement?(actor, admin_enforcement)
+    return false unless admin_actor?(actor)
+    return true if admin_enforcement
+
+    # Default (cascade/self): stamp only when the admin is not the record subject/owner.
+    !soft_delete_subject?(actor)
   end
 
-  # Active moderating admin may restore admin-enforced soft-deletes (O4A); subject/owner cannot.
+  # Any active (kept, unsuspended) admin may restore admin-enforced soft-deletes (O4A).
+  # Discarded/suspended admins cannot (blocks soft-deleted admin self-restore).
   def moderating_admin_can_restore?(actor)
-    return false unless moderating_admin_actor?(actor)
+    return false unless admin_actor?(actor)
     return false if actor.discarded?
     return false if actor.respond_to?(:suspended?) && actor.suspended?
 

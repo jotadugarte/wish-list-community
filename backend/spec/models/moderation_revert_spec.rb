@@ -166,4 +166,19 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(AuditEvent.where(action: "user.soft_deleted", auditable: member).count).to eq(1)
     end
   end
+
+  describe "admin-owned wishlist triage stamps admin_enforcement (O4A)" do
+    it "stamps enforcement when triage soft-deletes a wishlist owned by the moderating admin" do
+      wishlist = create(:wishlist, owner: admin)
+      reporter = create(:user, username: "rep_own_wl", email_address: "rep_own_wl@example.com")
+      Friendship.request!(requester: admin, addressee: reporter).accept!(actor: reporter)
+      report = Report.submit!(reporter: reporter, reportable: wishlist, reason: "spam")
+      report.review_with_soft_delete_wishlist!(actor: admin, wishlist: wishlist)
+
+      event = AuditEvent.find_by!(action: "wishlist.soft_deleted", auditable: wishlist)
+      expect(event.metadata["admin_enforcement"]).to eq(true)
+      expect(wishlist.soft_deleted_by_admin?).to be(true)
+      expect(wishlist.restore!(actor: admin)).to be(true)
+    end
+  end
 end
