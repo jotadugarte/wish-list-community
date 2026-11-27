@@ -11,7 +11,7 @@ import 'package:wish_list_mobile/features/auth/profile_settings_screen.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('ProfileSettingsScreen shows bilingual legal links O8A/O13A', (
+  testWidgets('ProfileSettingsScreen shows bilingual legal links [REQ-AUTH-002] O8A/O13A', (
     tester,
   ) async {
     final storage = InMemoryTokenStorage();

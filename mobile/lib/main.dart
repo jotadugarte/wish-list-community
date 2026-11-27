@@ -12,6 +12,7 @@ import 'package:wish_list_mobile/core/network/secure_token_storage.dart';
 import 'package:wish_list_mobile/core/theme/app_navigation_shell.dart';
 import 'package:wish_list_mobile/core/theme/app_theme.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
+import 'package:wish_list_mobile/core/values/domain_values.dart';
 import 'package:wish_list_mobile/core/values/share_payload.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/auth/login_screen.dart';
@@ -131,7 +132,7 @@ class _WishListAppState extends State<WishListApp> {
   int _selectedIndex = 0;
   bool _restoring = true;
   SharePayload? _pendingShare;
-  String? _pendingFriendUsername;
+  UsernameVo? _pendingFriendUsername;
   InboundLinkBootstrap? _inbound;
 
   @override
@@ -317,7 +318,7 @@ class _WishListAppState extends State<WishListApp> {
     switch (decision.route) {
       case DeepLinkRoute.friendProfile:
         final username = decision.username;
-        if (username == null || username.isEmpty) return;
+        if (username == null) return;
         if (_restoring || _currentUser == null) {
           _pendingFriendUsername = username;
           if (!_restoring) {
@@ -327,15 +328,17 @@ class _WishListAppState extends State<WishListApp> {
         }
         await _openFriendWishlists(username);
       case DeepLinkRoute.secretLink:
+        final token = decision.shareToken;
+        if (token == null) return;
         final host = widget.deepLinkRouter.allowedHosts.first;
-        final uri = Uri.https(host, '/s/${decision.shareToken}');
+        final uri = Uri.https(host, '/s/${token.value}');
         await _openLegalUri(uri);
       case DeepLinkRoute.safeFailure:
         _snack(_strings.deepLinkUnsupportedSnack);
     }
   }
 
-  Future<void> _openFriendWishlists(String username) async {
+  Future<void> _openFriendWishlists(UsernameVo username) async {
     setState(() => _selectedIndex = 2);
     final nav = _navKey.currentState;
     if (nav == null) return;
@@ -347,7 +350,7 @@ class _WishListAppState extends State<WishListApp> {
           wishlistRepository: widget.wishlistRepository,
           reservationRepository: widget.reservationRepository,
           giftRepository: widget.giftRepository,
-          username: username,
+          username: username.value,
         ),
       ),
     );
@@ -361,7 +364,7 @@ class _WishListAppState extends State<WishListApp> {
 
   void _drainPendingInbound() {
     final pendingFriend = _pendingFriendUsername;
-    if (pendingFriend != null && pendingFriend.isNotEmpty) {
+    if (pendingFriend != null) {
       _pendingFriendUsername = null;
       unawaited(_openFriendWishlists(pendingFriend));
     }

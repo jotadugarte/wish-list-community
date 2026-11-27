@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wish_list_mobile/core/values/share_payload.dart';
 
 void main() {
-  group('SharePayload [REQ-ITEM-006] O4B', () {
+  group('SharePayload [REQ-ITEM-006] [REQ-MOB-002] O4B', () {
     test('extracts first https URL and leftover title hint', () {
       final payload = SharePayload.parse(
         'Cool gadget https://store.example/g?x=1 leftover text',

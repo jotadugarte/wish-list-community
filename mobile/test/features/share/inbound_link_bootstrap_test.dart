@@ -9,7 +9,7 @@ import 'package:wish_list_mobile/features/share/share_intent_source.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('InboundLinkBootstrap forwards share text to coordinator [REQ-MOB-001]', () async {
+  test('InboundLinkBootstrap forwards share text to coordinator [REQ-MOB-001] [REQ-MOB-002]', () async {
     SharedPreferences.setMockInitialValues({});
     final memory = LastWishlistMemory(await SharedPreferences.getInstance());
     final source = FakeShareIntentSource();

@@ -28,7 +28,7 @@ module Member
                                          .includes(item: :wishlist)
                                          .where(
                                            wishlists: { owner_id: current_user.id },
-                                           status: "delivered_pending_confirmation"
+                                           status: GiftStatus::DELIVERED_PENDING_CONFIRMATION
                                          )
                                          .order(updated_at: :desc)
                                          .limit(200)

@@ -205,95 +205,9 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          TextField(
-            controller: _storeUrl,
-            decoration: InputDecoration(labelText: s.pasteStoreUrlLabel),
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton(
-            onPressed: _previewLink,
-            child: Text(s.previewLinkButton),
-          ),
-          if (_preview != null) ...[
-            const SizedBox(height: 8),
-            Text('${_preview!.title}\n${_preview!.imageUrl}'),
-            TextButton(
-              onPressed: _applyPreview,
-              child: Text(s.confirmPreviewButton),
-            ),
-          ],
-          const SizedBox(height: 16),
-          TextField(
-            controller: _title,
-            decoration: InputDecoration(labelText: s.itemTitleLabel),
-          ),
-          const SizedBox(height: 8),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: widget.tokens.specBg,
-              border: Border(
-                left: BorderSide(color: widget.tokens.accent, width: 4),
-              ),
-            ),
-            child: TextField(
-              controller: _specs,
-              maxLines: 3,
-              decoration: InputDecoration(
-                labelText: s.itemSpecsLabel,
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.all(12),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(s.itemPriorityLabel),
-          Wrap(
-            spacing: 8,
-            children: [
-              for (final p in ItemRepository.allowedPriorities)
-                ChoiceChip(
-                  label: Text(p),
-                  selected: _priority == p,
-                  onSelected: (_) => setState(() => _priority = p),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _links,
-            maxLines: 3,
-            decoration: InputDecoration(labelText: s.itemLinksLabel),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _price,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: s.itemPriceLabel),
-          ),
-          TextField(
-            controller: _currency,
-            decoration: InputDecoration(labelText: s.itemCurrencyLabel),
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            children: [
-              OutlinedButton(
-                key: const Key('item_gallery_button'),
-                onPressed: _saving ? null : _pickGallery,
-                child: Text(s.addPhotosGalleryButton),
-              ),
-              OutlinedButton(
-                key: const Key('item_camera_button'),
-                onPressed: _saving ? null : _pickCamera,
-                child: Text(s.addPhotoCameraButton),
-              ),
-            ],
-          ),
-          if (_images.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text('${s.selectedPhotosLabel}: ${_images.length}'),
-          ],
+          ..._storeUrlPreviewSection(s),
+          ..._detailsSection(s),
+          ..._photosSection(s),
           if (_error != null) ...[
             const SizedBox(height: 8),
             Text(_error!, style: TextStyle(color: widget.tokens.accent)),
@@ -306,5 +220,109 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         ],
       ),
     );
+  }
+
+  List<Widget> _storeUrlPreviewSection(AppStrings s) {
+    return [
+      TextField(
+        controller: _storeUrl,
+        decoration: InputDecoration(labelText: s.pasteStoreUrlLabel),
+      ),
+      const SizedBox(height: 8),
+      OutlinedButton(
+        onPressed: _previewLink,
+        child: Text(s.previewLinkButton),
+      ),
+      if (_preview != null) ...[
+        const SizedBox(height: 8),
+        Text('${_preview!.title}\n${_preview!.imageUrl}'),
+        TextButton(
+          onPressed: _applyPreview,
+          child: Text(s.confirmPreviewButton),
+        ),
+      ],
+      const SizedBox(height: 16),
+    ];
+  }
+
+  List<Widget> _detailsSection(AppStrings s) {
+    return [
+      TextField(
+        controller: _title,
+        decoration: InputDecoration(labelText: s.itemTitleLabel),
+      ),
+      const SizedBox(height: 8),
+      DecoratedBox(
+        decoration: BoxDecoration(
+          color: widget.tokens.specBg,
+          border: Border(
+            left: BorderSide(color: widget.tokens.accent, width: 4),
+          ),
+        ),
+        child: TextField(
+          controller: _specs,
+          maxLines: 3,
+          decoration: InputDecoration(
+            labelText: s.itemSpecsLabel,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.all(12),
+          ),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(s.itemPriorityLabel),
+      Wrap(
+        spacing: 8,
+        children: [
+          for (final p in ItemRepository.allowedPriorities)
+            ChoiceChip(
+              label: Text(p),
+              selected: _priority == p,
+              onSelected: (_) => setState(() => _priority = p),
+            ),
+        ],
+      ),
+      const SizedBox(height: 8),
+      TextField(
+        controller: _links,
+        maxLines: 3,
+        decoration: InputDecoration(labelText: s.itemLinksLabel),
+      ),
+      const SizedBox(height: 8),
+      TextField(
+        controller: _price,
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(labelText: s.itemPriceLabel),
+      ),
+      TextField(
+        controller: _currency,
+        decoration: InputDecoration(labelText: s.itemCurrencyLabel),
+      ),
+      const SizedBox(height: 12),
+    ];
+  }
+
+  List<Widget> _photosSection(AppStrings s) {
+    return [
+      Wrap(
+        spacing: 8,
+        children: [
+          OutlinedButton(
+            key: const Key('item_gallery_button'),
+            onPressed: _saving ? null : _pickGallery,
+            child: Text(s.addPhotosGalleryButton),
+          ),
+          OutlinedButton(
+            key: const Key('item_camera_button'),
+            onPressed: _saving ? null : _pickCamera,
+            child: Text(s.addPhotoCameraButton),
+          ),
+        ],
+      ),
+      if (_images.isNotEmpty) ...[
+        const SizedBox(height: 8),
+        Text('${s.selectedPhotosLabel}: ${_images.length}'),
+      ],
+    ];
   }
 }

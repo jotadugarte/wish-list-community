@@ -1,12 +1,13 @@
 import 'package:wish_list_mobile/core/config/public_host_config.dart';
 import 'package:wish_list_mobile/core/values/deep_link_target.dart';
+import 'package:wish_list_mobile/core/values/domain_values.dart';
 
 enum DeepLinkRoute { friendProfile, secretLink, safeFailure }
 
 class DeepLinkRouteDecision {
   final DeepLinkRoute route;
-  final String? username;
-  final String? shareToken;
+  final UsernameVo? username;
+  final ShareTokenVo? shareToken;
 
   const DeepLinkRouteDecision({
     required this.route,
@@ -33,9 +34,15 @@ class DeepLinkRouter {
     final target = DeepLinkTarget.parse(normalized);
     switch (target.kind) {
       case DeepLinkKind.friendProfile:
-        return DeepLinkRouteDecision(route: DeepLinkRoute.friendProfile, username: target.username);
+        return DeepLinkRouteDecision(
+          route: DeepLinkRoute.friendProfile,
+          username: target.username,
+        );
       case DeepLinkKind.secretLink:
-        return DeepLinkRouteDecision(route: DeepLinkRoute.secretLink, shareToken: target.shareToken);
+        return DeepLinkRouteDecision(
+          route: DeepLinkRoute.secretLink,
+          shareToken: target.shareToken,
+        );
       case DeepLinkKind.unsupported:
         return const DeepLinkRouteDecision(route: DeepLinkRoute.safeFailure);
     }

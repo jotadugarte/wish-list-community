@@ -6,7 +6,7 @@ import 'package:wish_list_mobile/features/share/share_intent_coordinator.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('ShareIntentCoordinator O4B/O11A', () {
+  group('ShareIntentCoordinator [REQ-MOB-001] [REQ-MOB-002] O4B/O11A', () {
     late LastWishlistMemory memory;
 
     setUp(() async {

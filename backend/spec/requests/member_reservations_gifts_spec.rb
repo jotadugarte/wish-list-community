@@ -36,7 +36,7 @@ RSpec.describe "Hotwire reservations and gifts [REQ-RES-001] [REQ-RES-004] [REQ-
     expect(reservation.reload.status).to eq("canceled")
   end
 
-  it "marks purchased then delivered then owner confirms with thank-you" do
+  it "marks purchased then delivered then owner confirms with thank-you [REQ-GIFT-001] [REQ-GIFT-004]" do
     login_web!(friend)
     reservation = ReservationService.create!(item: item, user: friend, estimated_date: Date.current + 5)
     post "/app/reservations/#{reservation.id}/mark_purchased"

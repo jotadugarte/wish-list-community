@@ -5,7 +5,7 @@ import 'package:wish_list_mobile/features/share/last_wishlist_memory.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('LastWishlistMemory O11A', () {
+  group('LastWishlistMemory [REQ-MOB-001] O11A', () {
     test('remembers and reads last wishlist id', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();

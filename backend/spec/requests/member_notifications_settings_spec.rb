@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe "Hotwire inbox prefs and account settings [REQ-NOTIF-001] [REQ-LIFE-001]", type: :request do
+RSpec.describe "Hotwire inbox prefs and account settings [REQ-NOTIF-001] [REQ-LIFE-002]", type: :request do
   let(:user) { create(:user) }
 
   def login_web!(u)

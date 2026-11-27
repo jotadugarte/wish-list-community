@@ -40,17 +40,18 @@ module Member
 
     def new
       authorize Wishlist, :create?
-      @wishlist = current_user.wishlists.new(privacy_mode: "friends")
+      @wishlist = current_user.wishlists.new(privacy_mode: PrivacyMode.new("friends").value)
     end
 
     def create
       authorize Wishlist, :create?
-      @wishlist = current_user.wishlists.create!(wishlist_create_params.merge(privacy_mode: "friends"))
-      raise "Post-condition failed: default friends mode" unless @wishlist.privacy_mode == "friends"
+      friends_mode = PrivacyMode.new("friends").value
+      @wishlist = current_user.wishlists.create!(wishlist_create_params.merge(privacy_mode: friends_mode))
+      raise "Post-condition failed: default friends mode" unless @wishlist.privacy_mode == friends_mode
 
       redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.wishlists.created"), status: :see_other
     rescue ActiveRecord::RecordInvalid
-      @wishlist = current_user.wishlists.new(wishlist_create_params.merge(privacy_mode: "friends"))
+      @wishlist = current_user.wishlists.new(wishlist_create_params.merge(privacy_mode: PrivacyMode.new("friends").value))
       flash.now[:alert] = I18n.t("api.v1.errors.wishlist_invalid")
       render :new, status: :unprocessable_content
     end

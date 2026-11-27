@@ -1,20 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:wish_list_mobile/core/values/domain_values.dart';
 import 'package:wish_list_mobile/features/share/deep_link_router.dart';
 
 void main() {
-  group('DeepLinkRouter O3A/O9B', () {
+  group('DeepLinkRouter [REQ-MOB-001] [REQ-WISH-005] O3A/O9B', () {
     final router = DeepLinkRouter(allowedHosts: {'staging.example'});
+    const longToken = 'tok_AbCdEfGhIjKlMnOpQrStUv';
 
     test('routes friend profile', () {
       final d = router.resolve(Uri.parse('https://staging.example/u/bob_user'));
       expect(d.route, DeepLinkRoute.friendProfile);
-      expect(d.username, 'bob_user');
+      expect(d.username, UsernameVo('bob_user'));
     });
 
     test('routes secret link', () {
-      final d = router.resolve(Uri.parse('https://staging.example/s/tok_1'));
+      final d = router.resolve(Uri.parse('https://staging.example/s/$longToken'));
       expect(d.route, DeepLinkRoute.secretLink);
-      expect(d.shareToken, 'tok_1');
+      expect(d.shareToken, ShareTokenVo(longToken));
     });
 
     test('safe failure for unsupported', () {
@@ -30,13 +32,13 @@ void main() {
     test('routes wishlist://u/username custom scheme [REQ-SOC-001]', () {
       final d = router.resolve(Uri.parse('wishlist://u/alice_01'));
       expect(d.route, DeepLinkRoute.friendProfile);
-      expect(d.username, 'alice_01');
+      expect(d.username, UsernameVo('alice_01'));
     });
 
     test('routes wishlist://s/token custom scheme [REQ-WISH-005]', () {
-      final d = router.resolve(Uri.parse('wishlist://s/tok_Ab-12'));
+      final d = router.resolve(Uri.parse('wishlist://s/$longToken'));
       expect(d.route, DeepLinkRoute.secretLink);
-      expect(d.shareToken, 'tok_Ab-12');
+      expect(d.shareToken, ShareTokenVo(longToken));
     });
 
     test('normalizeCustomScheme rewrites host-style wishlist URIs', () {
