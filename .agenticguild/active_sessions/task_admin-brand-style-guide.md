@@ -13,7 +13,7 @@
     <step id="3" status="complete">Failing Flutter test, then a new reader that loads design/design_tokens.json and matches palette 01 against the existing DesignTokens fallback. Additive only: no edits to design_tokens.dart, design_tokens_test.dart, or main.dart (Sprint 9 owns main.dart). Do not merge cursor/sprint-9-mobile-wrap-up-5dfd.</step>
     <step id="4" status="complete">Failing request spec, then Admin gate for GET /admin/style_guide: 200 for role=admin cookie session, 404 for members and guests (O1A, O3A). No secret URL.</step>
     <step id="5" status="complete">Failing request spec, then Admin nav link, tokens table, light/dark and es/en toggles, version stamp, and CSS variables driven by the shared file. Admin guide only (not a member theme).</step>
-    <step id="6" status="pending">Failing request spec, then web preview: inert sample flows, button states, a11y notes, do/don't. No live mutations.</step>
+    <step id="6" status="complete">Failing request spec, then web preview: inert sample flows, button states, a11y notes, do/don't. No live mutations.</step>
     <step id="7" status="pending">Failing request spec, then mobile preview: HTML/CSS phone mock from the shared tokens (O4R, O9A). Not Flutter Web and not pixel-identical.</step>
     <step id="8" status="pending">Failing request spec, then print CSS so the guide can be printed or saved as PDF (O3A). Hover may flatten.</step>
     <step id="9" status="pending">Document the shared file and the Admin guide in architecture and the API contract.</step>

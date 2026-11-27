@@ -6,8 +6,9 @@ module Admin
   class StyleGuidePage
     APPEARANCES = %w[light dark].freeze
     COPIES = %w[es en].freeze
+    PREVIEWS = %w[web app].freeze
 
-    attr_reader :version, :appearance, :copy, :variables
+    attr_reader :version, :appearance, :copy, :preview, :variables
 
     # [REQ-ARCH-001] Pre-condition: catalog is loaded by the caller default.
     # Post-condition: version stamp is present.
@@ -24,6 +25,7 @@ module Admin
       @catalog = catalog
       @appearance = pick(params[:appearance], APPEARANCES, "light")
       @copy = pick(params[:copy], COPIES, fallback_copy)
+      @preview = pick(params[:preview], PREVIEWS, "web")
       @version = catalog.version
       @variables = catalog.css_variables(
         palette_id: catalog.default_palette_id,
@@ -43,8 +45,16 @@ module Admin
       built
     end
 
-    def path_for(appearance:, copy:)
-      "/admin/style_guide?appearance=#{appearance}&copy=#{copy}"
+    def path_for(appearance:, copy:, preview: @preview)
+      "/admin/style_guide?appearance=#{appearance}&copy=#{copy}&preview=#{preview}"
+    end
+
+    def web?
+      preview == "web"
+    end
+
+    def app?
+      preview == "app"
     end
 
     private

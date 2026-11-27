@@ -81,4 +81,27 @@ RSpec.describe "Admin style guide gate [REQ-ADM-001]", type: :request do
       expect(response.body).to include(I18n.t("admin.style_guide.copy_label", locale: :en))
     end
   end
+
+  describe "web preview [REQ-ARCH-001]" do
+    before { sign_in(admin) }
+
+    it "shows inert sample flows, button states, accessibility notes, and do/don't [REQ-ARCH-001]" do
+      get "/admin/style_guide", params: { preview: "web" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('data-preview="web"')
+      expect(response.body).to include(I18n.t("admin.style_guide.web.flow_title"))
+      expect(response.body).to include('type="button"')
+      expect(response.body).to include("disabled")
+      expect(response.body).to include(I18n.t("admin.style_guide.a11y.heading"))
+      expect(response.body).to include(I18n.t("admin.style_guide.do_dont.heading"))
+      expect(response.body).not_to include("<form")
+    end
+
+    it "keeps the web sample in English when copy is en [REQ-ARCH-001]" do
+      get "/admin/style_guide", params: { preview: "web", copy: "en" }
+
+      expect(response.body).to include(I18n.t("admin.style_guide.web.flow_title", locale: :en))
+    end
+  end
 end

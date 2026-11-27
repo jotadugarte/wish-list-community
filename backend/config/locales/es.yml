@@ -313,6 +313,26 @@ es:
       columns:
         role: "Rol"
         hex: "Hex"
+      tabs:
+        label: "Vistas previas"
+        web: "Vista web"
+        app: "Vista de la app"
+      web:
+        flow_title: "Lista de cumpleaños"
+        flow_note: "Muestra inerte. Aquí no se reserva ni se compra nada."
+        list_title: "Fin de semana con amigos"
+        spec: "Taza azul, grande. Esta nota es solo una muestra."
+        button_default: "Reservar"
+        button_disabled: "Reservado"
+      a11y:
+        heading: "Notas de accesibilidad"
+        contrast: "El texto y los botones usan los colores primary y text compartidos."
+        focus: "Los botones siguen siendo botones para que el foco del teclado se vea."
+        names: "Las acciones de muestra tienen nombre visible. Esta página no las envía."
+      do_dont:
+        heading: "Qué hacer y qué evitar"
+        do: "Sí: usa los tokens compartidos en botones, superficies y la nota de especificación."
+        dont: "No: inventes una segunda paleta ni escondas la nota de especificación."
     errors:
       event_not_revertable: "Este evento de auditoría no se puede revertir."
       not_soft_deleted: "El registro no está eliminado temporalmente."

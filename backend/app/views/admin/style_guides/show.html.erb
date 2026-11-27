@@ -3,6 +3,7 @@
   class="brand-guide"
   data-appearance="<%= @guide.appearance %>"
   data-copy="<%= @guide.copy %>"
+  data-preview="<%= @guide.preview %>"
   data-token-version="<%= @guide.version %>"
   style="<%= @guide.style_attribute %>"
 >
@@ -15,6 +16,13 @@
     <%= link_to t("admin.style_guide.toggles.spanish"), @guide.path_for(appearance: @guide.appearance, copy: "es") %>
     <%= link_to t("admin.style_guide.toggles.english"), @guide.path_for(appearance: @guide.appearance, copy: "en") %>
   </nav>
+  <nav class="brand-guide-tabs" aria-label="<%= t("admin.style_guide.tabs.label") %>">
+    <%= link_to t("admin.style_guide.tabs.web"), @guide.path_for(appearance: @guide.appearance, copy: @guide.copy, preview: "web") %>
+    <%= link_to t("admin.style_guide.tabs.app"), @guide.path_for(appearance: @guide.appearance, copy: @guide.copy, preview: "app") %>
+  </nav>
+  <% if @guide.web? %>
+    <%= render "admin/style_guides/web", guide: @guide %>
+  <% end %>
   <h2><%= t("admin.style_guide.tokens_heading") %></h2>
   <table>
     <thead>

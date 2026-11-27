@@ -313,6 +313,26 @@ en:
       columns:
         role: "Role"
         hex: "Hex"
+      tabs:
+        label: "Previews"
+        web: "Web preview"
+        app: "App preview"
+      web:
+        flow_title: "Birthday list"
+        flow_note: "Inert sample. Nothing here reserves or buys a gift."
+        list_title: "Weekend with friends"
+        spec: "Blue mug, large. This note is only a sample."
+        button_default: "Reserve"
+        button_disabled: "Reserved"
+      a11y:
+        heading: "Accessibility notes"
+        contrast: "Text and buttons use the shared primary and text colors."
+        focus: "Buttons stay real buttons so keyboard focus is visible."
+        names: "Sample actions have visible names. This page does not submit them."
+      do_dont:
+        heading: "Do and don't"
+        do: "Do: use the shared tokens for buttons, surfaces, and the specification note."
+        dont: "Don't: invent a second palette or hide the specification note."
     errors:
       event_not_revertable: "This audit event cannot be reverted."
       not_soft_deleted: "Record is not soft-deleted."
