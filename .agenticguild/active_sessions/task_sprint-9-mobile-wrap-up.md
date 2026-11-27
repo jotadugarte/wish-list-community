@@ -171,7 +171,7 @@ Términos y Privacidad bilingües es+en desde el día uno (placeholders hasta te
   <step id="25" status="complete">Write failing Flutter tests for FCM register-after-login, pass fcm_token on session, clear on logout; graceful when keys missing (O6A/O10B) [REQ-NOTIF-002]. Inbox + prefs screens on Flutter; legal links es+en (O13A).</step>
   <step id="26" status="complete">Implement Flutter notifications client + inbox/prefs + legal links until step 25 green.</step>
   <step id="27" status="complete">Update living docs: API_CONTRACT (any new surfaces), ROADMAP mark Sprint 9 + Notifications absorbed when verified, SYSTEM_ARCHITECTURE mobile/Hotwire surfaces, BEHAVIOUR_MATRIX new BM rows as planned, add short store-submit checklist doc under docs/ (O8A). Staging host + Google keys + legal-text-approval called out as ops risks.</step>
-  <step id="28" status="pending">Run full backend RSpec + `flutter analyze` / `flutter test` locally; fix until green. End of start-task implementation scope. (Owner-local manual: Share sheet, deep links on device, real push after keys, store forms.)</step>
+  <step id="28" status="complete">Run full backend RSpec + `flutter analyze` / `flutter test` locally; fix until green. End of start-task implementation scope. (Owner-local manual: Share sheet, deep links on device, real push after keys, store forms.)</step>
 </implementation_plan>
 
 ## Implementation risks

@@ -81,7 +81,8 @@ RSpec.describe Report do
       expect(event.action).to eq("report.created")
       expect(event.metadata["reportable_type"]).to eq("Wishlist")
       expect(event.metadata["reportable_id"]).to eq(wishlist.id)
-      expect(Notification.where(user_id: owner.id)).to be_empty
+      # Friendship hooks (Sprint 9) may leave friend.* inbox rows; reports must not notify.
+      expect(Notification.where(user_id: owner.id).where("event_key LIKE ?", "report%")).to be_empty
     end
 
     it "rejects duplicate pending wishlist reports by the same reporter [REQ-DISC-001]" do

@@ -43,7 +43,7 @@
 | BM-RES-006 | Due estimated_date | Sweep job | → expired_grace + notify | Job | REQ-RES-006 | `spec/jobs/reservation_grace_sweep_job_spec.rb` | automated |
 | BM-RES-007 | Logged-in Secret Link sharee | Reserve/extend/cancel on `/s/:token` | Parity with API (O4B) | Web | REQ-RES-001 | `spec/requests/secret_link_reservations_spec.rb` | automated |
 | BM-NOTIF-001 | Dispatcher | dispatch S5 event | In-app + email enqueue; push via adapter when tokens/keys present | Service | REQ-NOTIF-001 | `spec/services/notification_dispatcher_spec.rb`, `spec/services/notification_dispatcher_push_spec.rb` | automated |
-| BM-NOTIF-002 | Friendship request! / accept! | Dispatch | Recipient gets request_received; requester gets request_accepted; prefs honored | Domain | REQ-NOTIF-001, REQ-SOC-001 | `spec/models/friendship_notification_spec.rb` (or friendship specs) | automated |
+| BM-NOTIF-002 | Friendship request! / accept! | Dispatch | Recipient gets request_received; requester gets request_accepted; prefs honored | Domain | REQ-NOTIF-001, REQ-SOC-001 | `spec/models/friendship_notifications_spec.rb` | automated |
 | BM-NOTIF-003 | Prefs API | `GET/PATCH /notification_preferences` | O7A `defaults_events` includes friend + gift keys; channel toggles persist | API | REQ-NOTIF-001 | `spec/requests/api/v1/notifications_spec.rb` | automated |
 | BM-NOTIF-004 | Logout with FCM bound | `DELETE /session` | DeviceTokens for token destroyed | API | REQ-NOTIF-002 | session/device_token specs | automated |
 | BM-MOB-001 | Logged-in share text with https URL; last wishlist still owned | ShareIntentCoordinator | skipPicker → Add Item with payload | Flutter | REQ-MOB-001, REQ-MOB-002, REQ-ITEM-006 | `mobile/test/features/share/share_intent_coordinator_test.dart` | automated |

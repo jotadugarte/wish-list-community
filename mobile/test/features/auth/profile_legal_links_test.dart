@@ -7,7 +7,6 @@ import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/core/values/domain_values.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/auth/profile_settings_screen.dart';
-import 'package:wish_list_mobile/features/auth/user_profile.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
