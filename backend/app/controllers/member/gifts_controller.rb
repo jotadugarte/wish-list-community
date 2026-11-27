@@ -2,7 +2,7 @@
 
 module Member
   # Hotwire gift delivered / confirm-received / Path-2 mark-received actions.
-  # Traceability: [REQ-GIFT-001], [REQ-GIFT-003]
+  # Traceability: [REQ-GIFT-001], [REQ-GIFT-003], [REQ-GIFT-004]
   class GiftsController < BaseController
     rate_limit to: 20, within: 3.minutes, only: %i[mark_delivered confirm_received mark_received],
                name: "member_gifts_write",
