@@ -28,4 +28,19 @@ RSpec.describe "Api::V1::Notifications", type: :request do
     pref = NotificationPreference.find_by!(user_id: user.id)
     expect(pref.enabled_channels_for("reservation.grace_started")["email"]).to eq(false)
   end
+
+  it "returns O7A defaults_events catalog with friend + gift keys [REQ-NOTIF-001]" do
+    get "/api/v1/notification_preferences", headers: headers
+    expect(response).to have_http_status(:ok)
+    defaults = response.parsed_body.fetch("notification_preference").fetch("defaults_events")
+    expect(defaults).to include(
+      "friend.request_received",
+      "friend.request_accepted",
+      "gift.delivered_pending_confirmation",
+      "gift.received_confirmed_to_gifter",
+      "gift.thank_you",
+      "gift.voided_by_owner_delete",
+      "reservation.grace_started"
+    )
+  end
 end
