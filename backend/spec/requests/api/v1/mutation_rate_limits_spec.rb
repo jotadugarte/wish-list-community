@@ -82,6 +82,10 @@ RSpec.describe "API v1 mutation rate_limit declarations [REQ-DISC-001]" do
         next
       end
       symbols = only_clause.scan(/:([a-z0-9_]+)/).flatten.map(&:to_sym)
+      if symbols.empty?
+        percent_i = only_clause[/\%i\[([^\]]+)\]/, 1]
+        symbols = percent_i.to_s.split.map(&:to_sym) if percent_i
+      end
       covered.concat(symbols)
     end
     covered

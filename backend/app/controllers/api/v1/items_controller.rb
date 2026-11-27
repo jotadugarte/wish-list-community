@@ -7,6 +7,9 @@ module Api
     # [REQ-ARCH-002], [REQ-LIFE-001]
     class ItemsController < BaseController
       skip_after_action :verify_policy_scoped
+      rate_limit to: 20, within: 3.minutes, only: %i[create update destroy destroy_image], with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
       MAX_INDEX = 200
       MAX_LINKS = 20
 

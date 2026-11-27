@@ -6,6 +6,9 @@ module Api
     # Traceability: [REQ-GIFT-001], [REQ-RES-006], [REQ-ADM-001], [REQ-ARCH-003]
     class ReservationGiftsController < BaseController
       skip_after_action :verify_policy_scoped, only: %i[create]
+      rate_limit to: 20, within: 3.minutes, only: :create, with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
 
       # [REQ-GIFT-001] O6A mark purchased → GiftRecord purchased_secret.
       def create

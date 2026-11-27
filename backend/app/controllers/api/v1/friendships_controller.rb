@@ -7,6 +7,9 @@ module Api
     # Traceability: [REQ-SOC-001], [REQ-BLOCK-001]
     class FriendshipsController < BaseController
       skip_after_action :verify_policy_scoped
+      rate_limit to: 20, within: 3.minutes, only: %i[create update destroy], with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
       MAX_LIST_LIMIT = 500
 
       # [REQ-SOC-001] Lists accepted friends, pending incoming requests, and pending outgoing requests.

@@ -6,6 +6,9 @@ module Api
     # Traceability: [REQ-GIFT-001], [REQ-GIFT-004], [REQ-ARCH-003]
     class GiftsController < BaseController
       skip_after_action :verify_policy_scoped, only: %i[mark_delivered confirm_received]
+      rate_limit to: 20, within: 3.minutes, only: %i[mark_delivered confirm_received], with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
 
       # [REQ-GIFT-001] Gifter marks purchased_secret → delivered_pending_confirmation.
       def mark_delivered

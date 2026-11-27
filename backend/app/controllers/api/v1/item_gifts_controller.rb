@@ -6,6 +6,9 @@ module Api
     # Traceability: [REQ-GIFT-003], [REQ-GIFT-004], [REQ-ARCH-003]
     class ItemGiftsController < BaseController
       skip_after_action :verify_policy_scoped, only: %i[create]
+      rate_limit to: 20, within: 3.minutes, only: :create, with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
 
       # [REQ-GIFT-003] Owner Path 2 receive.
       def create

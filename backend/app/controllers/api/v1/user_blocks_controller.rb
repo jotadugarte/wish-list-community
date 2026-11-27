@@ -6,6 +6,9 @@ module Api
     # Traceability: [REQ-BLOCK-001], [REQ-BLOCK-002], [REQ-ADM-001], [REQ-ARCH-003]
     class UserBlocksController < BaseController
       skip_after_action :verify_policy_scoped
+      rate_limit to: 20, within: 3.minutes, only: :create, with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
       # [REQ-BLOCK-001] [REQ-BLOCK-002] Blocks target user by @username.
       def create
         handle_vo = Username.new(params[:blocked_username])
