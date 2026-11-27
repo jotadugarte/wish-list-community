@@ -33,8 +33,16 @@ Rails.application.routes.draw do
     end
     get "shared", to: "shell#show", defaults: { section: "shared" }, as: :shared
     get "friends", to: "shell#show", defaults: { section: "friends" }, as: :friends
-    get "notifications", to: "shell#show", defaults: { section: "notifications" }, as: :notifications
-    get "settings", to: "shell#show", defaults: { section: "settings" }, as: :settings
+    resources :notifications, only: %i[index], controller: "notifications" do
+      member do
+        post :mark_read
+      end
+    end
+    get "settings", to: "settings#show", as: :settings
+    delete "settings/account", to: "settings#destroy_account", as: :settings_account
+    resource :notification_preferences, only: %i[show update],
+             controller: "notification_preferences",
+             path: "settings/notification_preferences"
   end
 
   namespace :admin do

@@ -160,8 +160,8 @@ Términos y Privacidad bilingües es+en desde el día uno (placeholders hasta te
   <step id="14" status="complete">Implement Hotwire item forms + compress helper until step 13 green.</step>
   <step id="15" status="complete">Write failing system specs for Hotwire reserve / gift / my-reservations / thank-you flows matching existing API behaviour [REQ-RES-*], [REQ-GIFT-*].</step>
   <step id="16" status="complete">Implement Hotwire reservation/gift surfaces until step 15 green.</step>
-  <step id="17" status="pending">Write failing system/request specs for Hotwire notification inbox + prefs toggles + profile soft-delete/account links (O1A/O2B/O8A) [REQ-NOTIF-001], [REQ-LIFE-002].</step>
-  <step id="18" status="pending">Implement Hotwire inbox/prefs/account deletion UX until step 17 green.</step>
+  <step id="17" status="complete">Write failing system/request specs for Hotwire notification inbox + prefs toggles + profile soft-delete/account links (O1A/O2B/O8A) [REQ-NOTIF-001], [REQ-LIFE-002].</step>
+  <step id="18" status="complete">Implement Hotwire inbox/prefs/account deletion UX until step 17 green.</step>
   <step id="19" status="pending">Write failing Flutter tests for SharePayload VO + device-local LastWishlistMemory (O4B/O11A) + ItemForm gallery/camera + client compress + multipart upload (O5A). Trace [REQ-MOB-001], [REQ-MOB-002], [REQ-ITEM-002].</step>
   <step id="20" status="pending">Implement Flutter share parsing, last-wishlist memory, image picker/compress/upload until step 19 green.</step>
   <step id="21" status="pending">Write failing Flutter tests for Share-to-App entry: logged-out → login resume; logged-in → skip picker when memory safe else picker → Add Item with link-preview confirm (O4B). Trace [REQ-MOB-001], [REQ-MOB-002], [REQ-ITEM-006].</step>

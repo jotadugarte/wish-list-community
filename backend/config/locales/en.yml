@@ -3,6 +3,19 @@ en:
   member:
     errors:
       not_found: "Not found"
+    notifications:
+      empty: "No notifications yet."
+      mark_read: "Mark read"
+      marked_read: "Marked as read."
+      prefs_heading: "Notification preferences"
+      prefs_save: "Save preferences"
+      prefs_saved: "Preferences saved."
+    settings:
+      delete_heading: "Delete account"
+      delete_help: "Soft-deletes your account. You may restore within 30 days."
+      delete_account: "Delete my account"
+      delete_confirm: "Delete your account?"
+      account_deleted: "Account deleted."
     reservations:
       heading: "Active reservations"
       empty: "No active reservations."

@@ -3,6 +3,19 @@ es:
   member:
     errors:
       not_found: "No encontrado"
+    notifications:
+      empty: "Aún no hay avisos."
+      mark_read: "Marcar leído"
+      marked_read: "Marcado como leído."
+      prefs_heading: "Preferencias de avisos"
+      prefs_save: "Guardar preferencias"
+      prefs_saved: "Preferencias guardadas."
+    settings:
+      delete_heading: "Eliminar cuenta"
+      delete_help: "Borra tu cuenta de forma suave. Puedes restaurarla en 30 días."
+      delete_account: "Eliminar mi cuenta"
+      delete_confirm: "¿Eliminar tu cuenta?"
+      account_deleted: "Cuenta eliminada."
     reservations:
       heading: "Reservaciones activas"
       empty: "No hay reservaciones activas."

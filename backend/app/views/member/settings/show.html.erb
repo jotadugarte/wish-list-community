@@ -1,0 +1,20 @@
+<section class="space-y-6">
+  <h1 class="text-2xl font-semibold"><%= t("member.shell.sections.settings") %></h1>
+
+  <p>
+    <%= link_to t("member.notifications.prefs_heading"), member_notification_preferences_path %>
+  </p>
+
+  <p class="space-x-3">
+    <%= link_to t("legal.links.terms"), terms_path %>
+    <%= link_to t("legal.links.privacy"), privacy_path %>
+  </p>
+
+  <div class="border border-red-200 p-4 space-y-2">
+    <h2 class="text-lg font-semibold text-red-700"><%= t("member.settings.delete_heading") %></h2>
+    <p><%= t("member.settings.delete_help") %></p>
+    <%= button_to t("member.settings.delete_account"), member_settings_account_path,
+          method: :delete,
+          form: { data: { turbo_confirm: t("member.settings.delete_confirm") } } %>
+  </div>
+</section>

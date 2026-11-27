@@ -1,0 +1,18 @@
+<section class="space-y-4">
+  <h1 class="text-2xl font-semibold"><%= t("member.notifications.prefs_heading") %></h1>
+  <%= form_with url: member_notification_preferences_path, method: :patch do %>
+    <% @events.each do |event_key| %>
+      <% channels = @pref.enabled_channels_for(event_key) %>
+      <fieldset class="border border-stone-200 p-3 mb-3">
+        <legend class="font-medium"><%= event_key %></legend>
+        <% NotificationPreference::CHANNELS.each do |channel| %>
+          <label class="mr-4">
+            <%= check_box_tag "notification_preference[channels][#{event_key}][#{channel}]", "1", channels[channel] %>
+            <%= channel %>
+          </label>
+        <% end %>
+      </fieldset>
+    <% end %>
+    <%= submit_tag t("member.notifications.prefs_save") %>
+  <% end %>
+</section>
