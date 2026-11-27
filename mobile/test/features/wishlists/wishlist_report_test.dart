@@ -68,7 +68,7 @@ void main() {
 
   group('WishlistDetailScreen report UI [REQ-DISC-001]', () {
     testWidgets(
-      'non-owner sees reason picker, success, duplicate, unavailable, and 429 messaging [REQ-DISC-001]',
+      'non-owner sees reason picker, success, duplicate, unavailable, 429, and invalid messaging [REQ-DISC-001]',
       (tester) async {
         final tokenStorage = InMemoryTokenStorage();
         await tokenStorage.saveToken('t');
@@ -106,7 +106,7 @@ void main() {
               if (reportCalls == 2) {
                 return const ApiResponse(
                   statusCode: 422,
-                  body: {'error': 'Unable to submit report'},
+                  body: {'error': 'You already have a pending report for this target'},
                 );
               }
               if (reportCalls == 3) {
@@ -115,9 +115,15 @@ void main() {
                   body: {'error': 'Not found'},
                 );
               }
+              if (reportCalls == 4) {
+                return const ApiResponse(
+                  statusCode: 429,
+                  body: {'error': 'Too many requests'},
+                );
+              }
               return const ApiResponse(
-                statusCode: 429,
-                body: {'error': 'Too many requests'},
+                statusCode: 422,
+                body: {'error': 'Reason is invalid'},
               );
             }
             return const ApiResponse(statusCode: 404, body: {});
@@ -147,10 +153,11 @@ void main() {
         await tester.pumpAndSettle();
 
         for (final reason in ReportReasonVo.allowedReasons) {
-          expect(find.text(reason), findsWidgets);
+          expect(find.byKey(Key('report_reason_$reason')), findsOneWidget);
+          expect(find.text(strings.reportReasonLabelFor(reason)), findsOneWidget);
         }
 
-        await tester.tap(find.text('harassment').last);
+        await tester.tap(find.byKey(const Key('report_reason_harassment')));
         await tester.pumpAndSettle();
         await tester.tap(find.byKey(const Key('report_wishlist_submit')));
         await tester.pumpAndSettle();
@@ -158,7 +165,7 @@ void main() {
 
         await tester.tap(find.byKey(const Key('report_wishlist')));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('spam').last);
+        await tester.tap(find.byKey(const Key('report_reason_spam')));
         await tester.pumpAndSettle();
         await tester.tap(find.byKey(const Key('report_wishlist_submit')));
         await tester.pumpAndSettle();
@@ -166,7 +173,7 @@ void main() {
 
         await tester.tap(find.byKey(const Key('report_wishlist')));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('scam').last);
+        await tester.tap(find.byKey(const Key('report_reason_scam')));
         await tester.pumpAndSettle();
         await tester.tap(find.byKey(const Key('report_wishlist_submit')));
         await tester.pumpAndSettle();
@@ -174,11 +181,19 @@ void main() {
 
         await tester.tap(find.byKey(const Key('report_wishlist')));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('impersonation').last);
+        await tester.tap(find.byKey(const Key('report_reason_impersonation')));
         await tester.pumpAndSettle();
         await tester.tap(find.byKey(const Key('report_wishlist_submit')));
         await tester.pumpAndSettle();
         expect(find.text(strings.rateLimitedError), findsOneWidget);
+
+        await tester.tap(find.byKey(const Key('report_wishlist')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('report_reason_inappropriate_content')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('report_wishlist_submit')));
+        await tester.pumpAndSettle();
+        expect(find.text(strings.invalidDataError), findsOneWidget);
       },
     );
 
@@ -191,6 +206,8 @@ void main() {
       expect(es.reportWishlistDuplicate, isNotEmpty);
       expect(en.rateLimitedError, isNotEmpty);
       expect(es.reportWishlistUnavailable, isNotEmpty);
+      expect(es.reportReasonLabelFor('harassment'), isNot(equals(en.reportReasonLabelFor('harassment'))));
+      expect(es.invalidDataError, isNotEmpty);
       expect(
         en.errorMessage(const ApiException(statusCode: 429, message: 'x')),
         equals(en.rateLimitedError),

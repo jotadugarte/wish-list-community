@@ -48,6 +48,12 @@ en:
     report_details: "Details (optional)"
     report_submit: "Submit report"
     report_submitted: "Report submitted. Thank you."
+    report_reasons:
+      spam: "Spam"
+      harassment: "Harassment"
+      impersonation: "Impersonation"
+      inappropriate_content: "Inappropriate content"
+      scam: "Scam"
 
   reservations:
     errors:

@@ -6,7 +6,8 @@ module Api
     # Traceability: [REQ-SOC-001], [REQ-DISC-001], [REQ-ADM-001]
     class ReportsController < BaseController
       skip_after_action :verify_policy_scoped
-      rate_limit to: 20, within: 3.minutes, only: :create, with: -> {
+      rate_limit to: 20, within: 3.minutes, only: :create, name: "api_reports_create",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
         render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
       }
 

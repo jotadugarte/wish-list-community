@@ -6,6 +6,10 @@ module Api
     # Traceability: [REQ-NOTIF-001]
     class NotificationsController < BaseController
       skip_after_action :verify_policy_scoped, only: %i[mark_read]
+      rate_limit to: 20, within: 3.minutes, only: :mark_read, name: "api_notifications_mark_read",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
 
       def index
         authorize Notification, :index?

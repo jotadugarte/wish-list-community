@@ -15,7 +15,7 @@ RSpec.describe "API v1 mutation rate_limit declarations [REQ-DISC-001]" do
     },
     "wishlists_controller.rb" => {
       controller: Api::V1::WishlistsController,
-      actions: %i[create update destroy rotate_share_token]
+      actions: %i[create update destroy rotate_share_token restore]
     },
     "wishlist_shares_controller.rb" => {
       controller: Api::V1::WishlistSharesController,
@@ -23,7 +23,11 @@ RSpec.describe "API v1 mutation rate_limit declarations [REQ-DISC-001]" do
     },
     "items_controller.rb" => {
       controller: Api::V1::ItemsController,
-      actions: %i[create update destroy destroy_image]
+      actions: %i[create update destroy destroy_image restore reorder]
+    },
+    "notifications_controller.rb" => {
+      controller: Api::V1::NotificationsController,
+      actions: %i[mark_read]
     },
     "reservations_controller.rb" => {
       controller: Api::V1::ReservationsController,
@@ -103,7 +107,18 @@ RSpec.describe "API v1 mutation rate_limit declarations [REQ-DISC-001]" do
         )
       end
       expect(config[:controller]).to respond_to(:rate_limit)
+      expect(source).to match(/name:\s*["'][^"']+["']/)
+      expect(source).to include("current_user&.id || request.remote_ip")
     end
+  end
+
+  it "gives dual rate_limit declarations distinct names on sessions and accounts [REQ-DISC-001]" do
+    sessions = File.read(Rails.root.join("app/controllers/api/v1/sessions_controller.rb"))
+    accounts = File.read(Rails.root.join("app/controllers/api/v1/accounts_controller.rb"))
+    web_sessions = File.read(Rails.root.join("app/controllers/sessions_controller.rb"))
+    expect(sessions.scan(/name:\s*["']([^"']+)["']/).flatten.uniq.size).to be >= 2
+    expect(accounts.scan(/name:\s*["']([^"']+)["']/).flatten.uniq.size).to be >= 2
+    expect(web_sessions.scan(/name:\s*["']([^"']+)["']/).flatten.uniq.size).to be >= 2
   end
 
   API_PRESERVED_CAPS.each do |filename, pattern|

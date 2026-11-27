@@ -122,7 +122,8 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                   ListTile(title: Text(s.reportReasonLabel)),
                   ...ReportReasonVo.allowedReasons.map(
                     (reason) => ListTile(
-                      title: Text(reason),
+                      key: Key('report_reason_$reason'),
+                      title: Text(s.reportReasonLabelFor(reason)),
                       selected: selected == reason,
                       onTap: () => setModalState(() => selected = reason),
                     ),
@@ -157,7 +158,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
     } on ApiException catch (e) {
       if (!mounted) return;
       final message = switch (e.statusCode) {
-        422 => s.reportWishlistDuplicate,
+        422 => _reportInvalidMessage(s, e),
         404 => s.reportWishlistUnavailable,
         429 => s.rateLimitedError,
         _ => s.errorMessage(e),
@@ -166,6 +167,14 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
     } catch (e) {
       if (mounted) setState(() => _error = s.errorMessage(e));
     }
+  }
+
+  String _reportInvalidMessage(AppStrings s, ApiException e) {
+    final body = e.message.toLowerCase();
+    if (body.contains('pending') || body.contains('already') || body.contains('duplicate')) {
+      return s.reportWishlistDuplicate;
+    }
+    return s.invalidDataError;
   }
 
   Future<void> _openForm({WishlistItem? existing}) async {

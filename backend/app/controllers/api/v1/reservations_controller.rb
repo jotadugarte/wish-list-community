@@ -6,7 +6,8 @@ module Api
     # Traceability: [REQ-RES-001], [REQ-RES-004], [REQ-RES-005], [REQ-ARCH-003]
     class ReservationsController < BaseController
       skip_after_action :verify_policy_scoped, only: %i[create update destroy]
-      rate_limit to: 20, within: 3.minutes, only: %i[create update destroy], with: -> {
+      rate_limit to: 20, within: 3.minutes, only: %i[create update destroy], name: "api_reservations_write",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
         render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
       }
 

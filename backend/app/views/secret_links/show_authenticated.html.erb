@@ -16,7 +16,7 @@
           <%= t("secret_links.report_reason") %>
           <select name="reason" required class="border px-2 py-1 text-sm w-full">
             <% ReportReason::ALLOWED_REASONS.each do |reason| %>
-              <option value="<%= reason %>"><%= reason %></option>
+              <option value="<%= reason %>"><%= t("secret_links.report_reasons.#{reason}") %></option>
             <% end %>
           </select>
         </label>

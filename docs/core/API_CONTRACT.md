@@ -213,7 +213,7 @@ Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harass
   ```
 
 ### Mutation `rate_limit` (`[REQ-DISC-001]`, Sprint 7)
-Rails 8 `rate_limit` applies to API v1 **write** mutations (friendships, blocks, wishlists/shares, items, reservations, gifts, notification preferences update, session/account destroy, reports) and Hotwire Secret Link mutations, typically `10–20` / `3` minutes within the O2A tuning band. Existing auth (`login`/`signup`/`passwords`), account restore, and link-preview caps remain unchanged. Exceeding a cap returns `429`.
+Rails 8 `rate_limit` applies to API v1 **write** mutations (friendships, blocks, wishlists/shares/restore, items including restore/reorder, reservations, gifts, notification preferences update, notifications `mark_read`, session/account destroy, reports) and Hotwire Secret Link mutations (including report create), typically `10–20` / `3` minutes within the O2A tuning band. Authenticated caps key by `current_user.id` (IP fallback). Distinct `name:` per declaration when a controller has more than one. Existing auth (`login`/`signup`/`passwords`), account restore, and link-preview caps remain unchanged. Exceeding a cap returns `429` (JSON) or Hotwire redirect `:see_other` with flash wait copy.
 
 ### Hotwire Secret Link report (`[REQ-DISC-001]`, `[REQ-WISH-002]`)
 - **`POST /s/:share_token/report`** — cookie session + CSRF; creates a pending Wishlist report for authenticated non-owners (same reasons). Guests are redirected to login with `return_to`. Soft-deleted / invalid token → `404`.

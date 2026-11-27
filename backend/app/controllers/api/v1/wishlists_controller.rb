@@ -7,7 +7,8 @@ module Api
     # [REQ-LIFE-001], [REQ-ARCH-003]
     class WishlistsController < BaseController
       skip_after_action :verify_policy_scoped
-      rate_limit to: 20, within: 3.minutes, only: %i[create update destroy rotate_share_token], with: -> {
+      rate_limit to: 20, within: 3.minutes, only: %i[create update destroy rotate_share_token restore], name: "api_wishlists_write",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
         render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
       }
       MAX_INDEX = 100

@@ -7,7 +7,8 @@ module Api
     # Traceability: [REQ-SOC-001], [REQ-BLOCK-001]
     class FriendshipsController < BaseController
       skip_after_action :verify_policy_scoped
-      rate_limit to: 20, within: 3.minutes, only: %i[create update destroy], with: -> {
+      rate_limit to: 20, within: 3.minutes, only: %i[create update destroy], name: "api_friendships_write",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
         render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
       }
       MAX_LIST_LIMIT = 500

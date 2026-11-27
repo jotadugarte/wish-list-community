@@ -83,6 +83,10 @@ RSpec.describe "Secret Link Reportar lista", type: :request do
     it "declares rate_limit on create with clear wait messaging [REQ-DISC-001]" do
       source = File.read(Rails.root.join("app/controllers/secret_link_reports_controller.rb"))
       expect(source).to match(/rate_limit\s+to:\s*\d+,\s*within:/)
+      expect(source).to match(/name:\s*["']secret_link_report_create["']/)
+      expect(source).to include("current_user&.id || request.remote_ip")
+      expect(source).to match(/status:\s*:see_other/)
+      expect(source).to include("ActiveRecord::RecordNotUnique")
       expect(SecretLinkReportsController).to respond_to(:rate_limit)
       expect(I18n.t("api.v1.errors.rate_limited")).to be_present
     end

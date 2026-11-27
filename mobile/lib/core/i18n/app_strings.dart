@@ -215,6 +215,24 @@ class AppStrings {
     return normalized == 'en' ? _en : _es;
   }
 
+  // [REQ-DISC-001] Localized label for a ReportReasonVo value (codes stay English).
+  String reportReasonLabelFor(String reasonCode) {
+    switch (reasonCode) {
+      case 'spam':
+        return locale == 'en' ? 'Spam' : 'Spam';
+      case 'harassment':
+        return locale == 'en' ? 'Harassment' : 'Acoso';
+      case 'impersonation':
+        return locale == 'en' ? 'Impersonation' : 'Suplantación';
+      case 'inappropriate_content':
+        return locale == 'en' ? 'Inappropriate content' : 'Contenido inapropiado';
+      case 'scam':
+        return locale == 'en' ? 'Scam' : 'Estafa';
+      default:
+        return reasonCode;
+    }
+  }
+
   // [REQ-USER-002] Maps any thrown error to a friendly localized message, so raw
   // technical text (ApiException(...), ArgumentError: ...) never reaches the user.
   String errorMessage(Object error) {

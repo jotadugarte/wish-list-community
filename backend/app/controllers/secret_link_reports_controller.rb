@@ -9,9 +9,10 @@ class SecretLinkReportsController < ApplicationController
   rescue_from Pundit::NotAuthorizedError, with: :render_not_found
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
-  rate_limit to: 20, within: 3.minutes, only: :create, with: -> {
+  rate_limit to: 20, within: 3.minutes, only: :create, name: "secret_link_report_create",
+                by: -> { current_user&.id || request.remote_ip }, with: -> {
     redirect_back fallback_location: root_path, alert: I18n.t("api.v1.errors.rate_limited"),
-                  status: :too_many_requests
+                  status: :see_other
   }
 
   before_action :require_login!
@@ -31,7 +32,7 @@ class SecretLinkReportsController < ApplicationController
     )
     redirect_to secret_link_path(share_token: wishlist.share_token),
                 notice: I18n.t("secret_links.report_submitted")
-  rescue ArgumentError, ActiveRecord::RecordInvalid
+  rescue ArgumentError, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
     redirect_to secret_link_path(share_token: params[:share_token]),
                 alert: I18n.t("api.v1.errors.report_invalid")
   end

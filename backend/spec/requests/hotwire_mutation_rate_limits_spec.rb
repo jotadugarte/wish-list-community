@@ -15,6 +15,10 @@ RSpec.describe "Hotwire mutation rate_limit declarations [REQ-DISC-001]" do
     "sessions_controller.rb" => {
       controller: SessionsController,
       actions: %i[destroy]
+    },
+    "secret_link_reports_controller.rb" => {
+      controller: SecretLinkReportsController,
+      actions: %i[create]
     }
   }.freeze
 
@@ -53,7 +57,15 @@ RSpec.describe "Hotwire mutation rate_limit declarations [REQ-DISC-001]" do
         )
       end
       expect(config[:controller]).to respond_to(:rate_limit)
+      expect(source).to match(/name:\s*["'][^"']+["']/)
+      expect(source).to include("current_user&.id || request.remote_ip")
+      expect(source).to match(/status:\s*:see_other/)
     end
+  end
+
+  it "rescues RecordNotUnique on secret link report create [REQ-ARCH-003]" do
+    source = File.read(Rails.root.join("app/controllers/secret_link_reports_controller.rb"))
+    expect(source).to include("ActiveRecord::RecordNotUnique")
   end
 
   HOTWIRE_PRESERVED_CAPS.each do |filename, pattern|

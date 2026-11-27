@@ -6,7 +6,8 @@ module Api
     # Traceability: [REQ-GIFT-001], [REQ-GIFT-004], [REQ-ARCH-003]
     class GiftsController < BaseController
       skip_after_action :verify_policy_scoped, only: %i[mark_delivered confirm_received]
-      rate_limit to: 20, within: 3.minutes, only: %i[mark_delivered confirm_received], with: -> {
+      rate_limit to: 20, within: 3.minutes, only: %i[mark_delivered confirm_received], name: "api_gifts_write",
+                    by: -> { current_user&.id || request.remote_ip }, with: -> {
         render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
       }
 
