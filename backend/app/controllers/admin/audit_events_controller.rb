@@ -51,7 +51,7 @@ module Admin
       send(REVERTABLE.fetch(event.action), event)
     end
 
-    # Soft-delete / suspend reverts require the event still to be the active latest enforcement (O4A).
+    # Soft-delete / suspend / dismiss reverts require the event still to be active (O4A).
     def revertable_event?(event)
       return false unless REVERTABLE.key?(event.action)
 
@@ -60,8 +60,10 @@ module Admin
         soft_delete_revertable?(event)
       when "user.suspended"
         suspend_revertable?(event)
+      when "report.dismissed"
+        dismiss_revertable?(event)
       else
-        true
+        false
       end
     end
 
@@ -83,6 +85,11 @@ module Admin
                          .limit(1)
                          .first
       latest&.id == event.id
+    end
+
+    def dismiss_revertable?(event)
+      report = event.auditable
+      report&.status == "dismissed"
     end
 
     def unsuspend_user(event)

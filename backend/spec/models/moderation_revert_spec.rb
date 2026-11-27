@@ -156,4 +156,14 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(event.metadata["admin_enforcement"]).not_to eq(true)
     end
   end
+
+  describe "soft_delete! rejects already-discarded records" do
+    it "raises instead of writing a second soft_deleted AuditEvent" do
+      member.soft_delete!(actor: admin)
+      expect do
+        member.soft_delete!(actor: admin)
+      end.to raise_error(ArgumentError, /already soft-deleted/)
+      expect(AuditEvent.where(action: "user.soft_deleted", auditable: member).count).to eq(1)
+    end
+  end
 end

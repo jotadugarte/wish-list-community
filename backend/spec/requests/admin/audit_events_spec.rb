@@ -176,4 +176,20 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(member.reload.suspended?).to be(true)
     end
   end
+
+  describe "dismissed report is not revertable after reopen" do
+    it "hides Revert once the report is pending again" do
+      report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
+      report.dismiss!(actor: admin)
+      event = AuditEvent.find_by!(action: "report.dismissed", auditable: report)
+      report.reopen!(actor: admin)
+
+      get "/admin/audit_events/#{event.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(flash[:alert]).to eq(I18n.t("admin.errors.event_not_revertable"))
+      expect(report.reload.status).to eq("pending")
+    end
+  end
 end

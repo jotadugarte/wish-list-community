@@ -61,6 +61,7 @@ module SoftDeletable
   # [REQ-ADM-001] Snapshots admin_enforcement when a moderating admin (not the subject/owner) soft-deletes (O4A).
   def soft_delete!(actor: nil)
     raise ArgumentError, "Pre-condition failed: record must be persisted" unless persisted?
+    raise ArgumentError, "Pre-condition failed: record is already soft-deleted" if discarded?
 
     resolved_actor = actor || (is_a?(User) ? self : nil)
 
