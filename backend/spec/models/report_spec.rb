@@ -41,4 +41,61 @@ RSpec.describe Report do
       end.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
+
+  describe ".submit! for Wishlist [REQ-DISC-001] [REQ-ADM-001]" do
+    let(:owner) { create(:user) }
+    let(:friend) { create(:user) }
+    let(:wishlist) { create(:wishlist, owner: owner, privacy_mode: "friends") }
+
+    before do
+      Friendship.request!(requester: owner, addressee: friend).accept!(actor: friend)
+    end
+
+    it "accepts reportable: Wishlist with all five ReportReason values [REQ-DISC-001]" do
+      ReportReason::ALLOWED_REASONS.each do |reason|
+        target = create(:wishlist, owner: owner, privacy_mode: "friends")
+        report = described_class.submit!(
+          reporter: friend,
+          reportable: target,
+          reason: reason
+        )
+        expect(report).to be_persisted
+        expect(report.status).to eq("pending")
+        expect(report.reportable).to eq(target)
+        expect(report.reason_vo).to eq(ReportReason.new(reason))
+      end
+    end
+
+    it "records AuditEvent report.created and creates no Notification for the owner [REQ-ADM-001]" do
+      expect do
+        described_class.submit!(
+          reporter: friend,
+          reportable: wishlist,
+          reason: "spam",
+          details: "Suspicious list"
+        )
+      end.to change(AuditEvent, :count).by(1)
+        .and change(Notification, :count).by(0)
+
+      event = AuditEvent.order(:id).last
+      expect(event.action).to eq("report.created")
+      expect(event.metadata["reportable_type"]).to eq("Wishlist")
+      expect(event.metadata["reportable_id"]).to eq(wishlist.id)
+      expect(Notification.where(user_id: owner.id)).to be_empty
+    end
+
+    it "rejects duplicate pending wishlist reports by the same reporter [REQ-DISC-001]" do
+      described_class.submit!(reporter: friend, reportable: wishlist, reason: "spam")
+
+      expect do
+        described_class.submit!(reporter: friend, reportable: wishlist, reason: "scam")
+      end.to raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it "rejects reporting your own wishlist [REQ-DISC-001]" do
+      expect do
+        described_class.submit!(reporter: owner, reportable: wishlist, reason: "spam")
+      end.to raise_error(ArgumentError, /Pre-condition failed/)
+    end
+  end
 end
