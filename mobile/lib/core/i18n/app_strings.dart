@@ -127,6 +127,8 @@ class AppStrings {
   final String deepLinkRequireLoginSnack;
   final String shareNoWishlistsSnack;
   final String legalOpenFailedSnack;
+  final String dialogCancelLabel;
+  final String dialogOkLabel;
 
   const AppStrings({
     required this.locale,
@@ -252,6 +254,8 @@ class AppStrings {
     required this.deepLinkRequireLoginSnack,
     required this.shareNoWishlistsSnack,
     required this.legalOpenFailedSnack,
+    required this.dialogCancelLabel,
+    required this.dialogOkLabel,
   });
 
   // [REQ-USER-002] Resolves localized strings for 'es' (default) or 'en'.
@@ -428,6 +432,8 @@ class AppStrings {
     deepLinkRequireLoginSnack: 'Inicia sesión para ver el perfil del amigo',
     shareNoWishlistsSnack: 'Crea una lista antes de agregar el enlace compartido',
     legalOpenFailedSnack: 'No se pudo abrir el enlace',
+    dialogCancelLabel: 'Cancelar',
+    dialogOkLabel: 'OK',
   );
 
   static const AppStrings _en = AppStrings(
@@ -555,5 +561,7 @@ class AppStrings {
     deepLinkRequireLoginSnack: 'Sign in to open the friend profile',
     shareNoWishlistsSnack: 'Create a wishlist before adding the shared link',
     legalOpenFailedSnack: 'Could not open the link',
+    dialogCancelLabel: 'Cancel',
+    dialogOkLabel: 'OK',
   );
 }

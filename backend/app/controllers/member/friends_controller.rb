@@ -8,9 +8,16 @@ module Member
 
     def index
       authorize Friendship, :index?
-      scoped = policy_scope(Friendship).includes(:requester, :addressee).limit(MAX_INDEX)
-      @friends = scoped.select { |f| f.status == "accepted" && f.active_participants? }
-      @incoming = scoped.select { |f| f.status == "pending" && f.addressee_id == current_user.id && f.active_participants? }
+      scoped = policy_scope(Friendship).includes(:requester, :addressee)
+      @incoming = scoped.pending
+                        .where(addressee_id: current_user.id)
+                        .order(created_at: :desc)
+                        .limit(MAX_INDEX)
+                        .select(&:active_participants?)
+      @friends = scoped.accepted
+                       .order(updated_at: :desc)
+                       .limit(MAX_INDEX)
+                       .select(&:active_participants?)
     end
   end
 end

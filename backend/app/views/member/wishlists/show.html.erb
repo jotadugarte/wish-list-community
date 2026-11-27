@@ -24,6 +24,12 @@
         <% if owner_view %>
           <%= link_to item.title, edit_member_item_path(item) %>
           <%= button_to t("member.items.delete"), member_item_path(item), method: :delete %>
+          <% unless @received_gift_ids.include?(item.id) %>
+            <%= form_with url: mark_received_member_item_path(item), method: :post, class: "mt-1 space-y-1" do %>
+              <%= text_field_tag :thank_you_note, nil, placeholder: t("member.gifts.thank_you_placeholder") %>
+              <%= submit_tag t("member.gifts.mark_received") %>
+            <% end %>
+          <% end %>
         <% else %>
           <strong><%= item.title %></strong>
           <% availability = item.availability_for(

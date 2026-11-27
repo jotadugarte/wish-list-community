@@ -19,6 +19,9 @@ Rails.application.routes.draw do
     end
     resources :items, only: %i[edit update destroy], controller: "items" do
       resources :reservations, only: %i[create], controller: "reservations"
+      member do
+        post :mark_received, to: "gifts#mark_received"
+      end
     end
     resources :reservations, only: %i[index destroy], controller: "reservations" do
       member do

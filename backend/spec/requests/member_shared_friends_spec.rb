@@ -37,6 +37,19 @@ RSpec.describe "Hotwire shared and friends shells [REQ-WISH-003] [REQ-SOC-001]",
     expect(response.body).to include("Decline").or include("Rechazar")
   end
 
+  it "still shows incoming requests when many accepted friendships exist [REQ-SOC-001]" do
+    5.times do |i|
+      peer = create(:user, username: "bulk_friend_#{i}")
+      Friendship.request!(requester: peer, addressee: viewer).accept!(actor: viewer)
+    end
+    late = create(:user, username: "late_incoming")
+    Friendship.request!(requester: late, addressee: viewer)
+
+    get "/app/friends"
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("@late_incoming")
+  end
+
   it "shows reserve form for non-owner on a shared wishlist [REQ-RES-001]" do
     Friendship.request!(requester: owner, addressee: viewer).accept!(actor: viewer)
     wishlist = create(:wishlist, :shared, owner: owner, title: "Para reservar")

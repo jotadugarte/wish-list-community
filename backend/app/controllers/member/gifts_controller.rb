@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 module Member
-  # Hotwire gift delivered / confirm-received (thank-you) actions.
-  # Traceability: [REQ-GIFT-001]
+  # Hotwire gift delivered / confirm-received / Path-2 mark-received actions.
+  # Traceability: [REQ-GIFT-001], [REQ-GIFT-003]
   class GiftsController < BaseController
-    rate_limit to: 20, within: 3.minutes, only: %i[mark_delivered confirm_received],
+    rate_limit to: 20, within: 3.minutes, only: %i[mark_delivered confirm_received mark_received],
                name: "member_gifts_write",
                by: -> { current_user&.id || request.remote_ip },
                with: -> {
@@ -37,6 +37,27 @@ module Member
       redirect_back fallback_location: member_wishlists_path, alert: e.message, status: :see_other
     rescue ArgumentError
       redirect_back fallback_location: member_wishlists_path, alert: I18n.t("member.errors.action_failed"), status: :see_other
+    end
+
+    # [REQ-GIFT-003] Path 2 — owner marks an item received without a gifter confirm flow.
+    def mark_received
+      item = Item.kept.find(params[:id])
+      gift = GiftRecord.new(item: item)
+      authorize gift, :owner_mark_received?
+      GiftService.owner_mark_received!(
+        item: item,
+        actor: current_user,
+        thank_you_note: params[:thank_you_note]
+      )
+      redirect_to member_wishlist_path(item.wishlist),
+                  notice: I18n.t("member.gifts.marked_received"),
+                  status: :see_other
+    rescue GiftService::Error => e
+      redirect_back fallback_location: member_wishlists_path, alert: e.message, status: :see_other
+    rescue ArgumentError
+      redirect_back fallback_location: member_wishlists_path,
+                    alert: I18n.t("member.errors.action_failed"),
+                    status: :see_other
     end
   end
 end

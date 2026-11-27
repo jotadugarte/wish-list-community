@@ -220,11 +220,11 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(widget.strings.dialogCancelLabel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('OK'),
+            child: Text(widget.strings.dialogOkLabel),
           ),
         ],
       ),

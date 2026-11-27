@@ -56,4 +56,16 @@ RSpec.describe "Hotwire reservations and gifts [REQ-RES-001] [REQ-RES-004] [REQ-
     expect(gift.reload.status).to eq("received_confirmed")
     expect(gift.thank_you_note).to eq("¡Gracias!")
   end
+
+  it "lets the owner Path-2 mark received from wishlist show [REQ-GIFT-003]" do
+    free_item = create(:item, wishlist: wishlist, title: "Libre")
+    login_web!(owner)
+    get "/app/wishlists/#{wishlist.id}"
+    expect(response.body).to include("mark_received").or include("Ya recibí").or include("already received")
+
+    post "/app/items/#{free_item.id}/mark_received", params: { thank_you_note: "ok" }
+    expect(response).to redirect_to(member_wishlist_path(wishlist))
+    gift = GiftRecord.find_by!(item: free_item)
+    expect(gift.status).to eq("received_confirmed")
+  end
 end

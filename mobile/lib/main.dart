@@ -205,8 +205,13 @@ class _WishListAppState extends State<WishListApp> {
     });
     if (restored != null) {
       _drainPendingInbound();
-    } else if (_pendingFriendUsername != null) {
-      _snack(_strings.deepLinkRequireLoginSnack);
+    } else {
+      if (_pendingFriendUsername != null) {
+        _snack(_strings.deepLinkRequireLoginSnack);
+      }
+      if (_pendingShare != null) {
+        _snack(_strings.shareRequireLoginSnack);
+      }
     }
   }
 
@@ -364,7 +369,14 @@ class _WishListAppState extends State<WishListApp> {
     if (pending == null || !pending.canOpenAddItem) return;
     _pendingShare = null;
     final raw = '${pending.url} ${pending.titleHint}'.trim();
-    widget.shareCoordinator.handleSharedText(raw).then(_onShareDecision);
+    unawaited(
+      widget.shareCoordinator.handleSharedText(raw).then(_onShareDecision).catchError((_) {
+        _pendingShare = pending;
+        if (mounted) {
+          _snack(_strings.genericError);
+        }
+      }),
+    );
   }
 
   void _onAuthenticated(UserProfile profile) {

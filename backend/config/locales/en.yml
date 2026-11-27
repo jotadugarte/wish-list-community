@@ -32,10 +32,12 @@ en:
       empty: "No open gifts."
       mark_purchased: "Mark purchased"
       mark_delivered: "Mark delivered"
+      mark_received: "I already received this"
       confirm_received: "Confirm received"
       thank_you_placeholder: "Optional thank-you note"
       purchased: "Marked as purchased."
       delivered: "Marked as delivered."
+      marked_received: "Marked as received."
       confirmed: "Gift confirmed."
     items:
       heading: "Items"
