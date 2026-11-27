@@ -8,6 +8,27 @@
   <h1 class="text-2xl font-semibold"><%= @wishlist.title %></h1>
   <p class="text-sm text-gray-600"><%= t("secret_links.authenticated_empty_shell", username: @wishlist.owner.username) %></p>
 
+  <% unless is_owner %>
+    <details class="mt-2" data-testid="report-wishlist">
+      <summary class="text-sm underline cursor-pointer"><%= t("secret_links.report_list") %></summary>
+      <%= form_with url: secret_link_report_path(share_token: @wishlist.share_token), method: :post, class: "mt-2 space-y-2" do %>
+        <label class="block text-xs">
+          <%= t("secret_links.report_reason") %>
+          <select name="reason" required class="border px-2 py-1 text-sm w-full">
+            <% ReportReason::ALLOWED_REASONS.each do |reason| %>
+              <option value="<%= reason %>"><%= reason %></option>
+            <% end %>
+          </select>
+        </label>
+        <label class="block text-xs">
+          <%= t("secret_links.report_details") %>
+          <textarea name="details" maxlength="1000" class="border px-2 py-1 text-sm w-full" rows="2"></textarea>
+        </label>
+        <button type="submit" class="text-sm underline" data-testid="report-wishlist-submit"><%= t("secret_links.report_submit") %></button>
+      <% end %>
+    </details>
+  <% end %>
+
   <% if active_items.blank? && received_items.blank? %>
     <p class="text-sm"><%= t("secret_links.no_items_yet", default: "No items yet.") %></p>
   <% else %>

@@ -16,7 +16,7 @@ cursor:
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>3.2 Step 10 — Hotwire report UI + controller</current_step>
+    <current_step>3.1 Step 11 — failing Flutter wishlist report tests</current_step>
     <awaiting>hands-off TDD in progress</awaiting>
   </execution_context>
 
@@ -113,7 +113,7 @@ See updated Domain Model block under Final check section above (O1A–O5A locked
     <step id="7" status="complete">Write failing specs declaring `rate_limit` on Hotwire mutation controllers (Secret Link reservations/gifts mark-purchased/delivered/confirm/mark-received, and any other cookie-session write actions that mutate state) in the same O2A/R1 band. Trace `[REQ-DISC-001]`.</step>
     <step id="8" status="complete">Implement Hotwire `rate_limit` declarations until step 7 green.</step>
     <step id="9" status="complete">Write failing request/system specs for Hotwire **Reportar lista** on authenticated Secret Link show (O3A): non-owner sees report control + same 5 reasons; CSRF POST creates pending report; guest must log in (`return_to`); owner sees no control; soft-deleted/invalid token → unavailable (O4A); exceeding limit shows wait message (429); no notification to wishlist owner (O5A). Trace `[REQ-DISC-001]`, `[REQ-WISH-002]`, `[REQ-AUTH-001]`.</step>
-    <step id="10" status="pending">Implement Hotwire report UI + thin web reports controller/route until step 9 green (cookie session + CSRF; reuse `Report.submit!`).</step>
+    <step id="10" status="complete">Implement Hotwire report UI + thin web reports controller/route until step 9 green (cookie session + CSRF; reuse `Report.submit!`).</step>
     <step id="11" status="pending">Write failing Flutter tests for wishlist report on `WishlistDetailScreen` (non-owner): reason picker (5 values), success confirmation, duplicate/unavailable/429 messaging, bilingual `AppStrings`; repository posts `reportable_type: Wishlist`. Trace `[REQ-DISC-001]`.</step>
     <step id="12" status="pending">Implement Flutter repository/UI/strings until step 11 green. Do **not** add Hotwire Report-user (explicitly out of S7 per O3A).</step>
     <step id="13" status="pending">Update in-repo docs as part of the feature: `docs/core/API_CONTRACT.md` Wishlist reportable + rate_limit notes; touch `docs/core/SPEC.md` / SCHEMA / DATA_FLOW only if wording must reflect Wishlist reports + mutation rate limits; leave ROADMAP Sprint 7 checkboxes for verified Done during later sync/finish (do not claim Done here). No Admin UI. No ADR unless an architecture boundary is violated.</step>

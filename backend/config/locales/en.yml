@@ -43,6 +43,11 @@ en:
     marked_delivered: "Marked as delivered"
     confirmed_received: "Receipt confirmed"
     marked_received: "Marked as received"
+    report_list: "Report list"
+    report_reason: "Reason"
+    report_details: "Details (optional)"
+    report_submit: "Submit report"
+    report_submitted: "Report submitted. Thank you."
 
   reservations:
     errors:

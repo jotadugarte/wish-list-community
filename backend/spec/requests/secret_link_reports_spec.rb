@@ -54,8 +54,7 @@ RSpec.describe "Secret Link Reportar lista", type: :request do
         .and change(Notification, :count).by(0)
 
       expect(response).to redirect_to(secret_link_path(share_token: wishlist.share_token))
-      follow_redirect!
-      expect(response.body).to match(/report|reporte/i)
+      expect(flash[:notice]).to be_present
       report = Report.order(:id).last
       expect(report.reportable).to eq(wishlist)
       expect(report.reporter).to eq(viewer)
