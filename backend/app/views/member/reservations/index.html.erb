@@ -11,8 +11,10 @@
           <li class="border-b border-stone-200 pb-2">
             <strong><%= reservation.item.title %></strong>
             <span class="text-sm text-stone-500"><%= reservation.status %></span>
-            <%= button_to t("member.reservations.cancel"), member_reservation_path(reservation), method: :delete %>
-            <%= button_to t("member.gifts.mark_purchased"), mark_purchased_member_reservation_path(reservation), method: :post %>
+            <% if ReservationStatus::ACTIVE_HOLD.include?(reservation.status) %>
+              <%= button_to t("member.reservations.cancel"), member_reservation_path(reservation), method: :delete %>
+              <%= button_to t("member.gifts.mark_purchased"), mark_purchased_member_reservation_path(reservation), method: :post %>
+            <% end %>
           </li>
         <% end %>
       </ul>

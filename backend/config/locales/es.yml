@@ -23,6 +23,8 @@ es:
       created: "Reservado."
       canceled: "Reservación cancelada."
       cancel: "Cancelar"
+      reserve: "Reservar"
+      estimated_date: "Fecha estimada"
     gifts:
       heading: "Regalos abiertos"
       empty: "No hay regalos abiertos."
@@ -75,6 +77,11 @@ es:
       incoming_empty: "No hay solicitudes pendientes."
       accepted: "Amigos"
       empty: "Aún no tienes amigos."
+      accept: "Aceptar"
+      decline: "Rechazar"
+      remove: "Quitar"
+      accepted_notice: "Solicitud de amistad aceptada."
+      removed_notice: "Conexión actualizada."
     shell:
       app_name: "Wish List Community"
       nav_label: "Navegación de miembro"

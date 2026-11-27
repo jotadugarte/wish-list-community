@@ -89,7 +89,7 @@ class ItemRepository {
     );
   }
 
-  // [REQ-ITEM-001] Updates an item.
+  // [REQ-ITEM-001] [REQ-ITEM-002] Updates an item; images via multipart when present.
   Future<WishlistItem> updateItem({
     required int itemId,
     String? title,
@@ -98,14 +98,30 @@ class ItemRepository {
     int? priceCents,
     String? currency,
     List<String>? linkUrls,
+    List<CompressedImageBlob> images = const [],
   }) async {
     if (itemId <= 0) {
       throw ArgumentError('Pre-condition failed: itemId must be > 0');
     }
     if (priority != null) _validatePriority(priority);
+    if (images.length > CompressedImageBlob.maxImages) {
+      throw ArgumentError('Pre-condition failed: at most ${CompressedImageBlob.maxImages} images');
+    }
+    final useMultipart = images.isNotEmpty;
+    final files = [
+      for (final img in images.take(CompressedImageBlob.maxImages))
+        MultipartFilePart(
+          fieldName: 'images[]',
+          filename: img.filename,
+          contentType: img.contentType,
+          bytes: img.bytes,
+        ),
+    ];
     final response = await apiClient.request(
       method: 'PATCH',
       path: '/api/v1/items/$itemId',
+      multipart: useMultipart,
+      files: useMultipart ? files : null,
       body: {
         'item': {
           'title': ?title,

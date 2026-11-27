@@ -21,7 +21,7 @@ RSpec.describe "Secret Links item list (O1A)", type: :request do
       get "/s/#{wishlist.share_token}"
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Lista de deseos de @list_owner")
+      expect(response.body).to include("Lista de deseos de @list_owner").or include("Wishlist from @list_owner")
       expect(response.body).not_to include("Secret Gadget XYZ")
       expect(response.body).not_to include("specifications")
     end

@@ -23,6 +23,8 @@ en:
       created: "Reserved."
       canceled: "Reservation canceled."
       cancel: "Cancel"
+      reserve: "Reserve"
+      estimated_date: "Estimated date"
     gifts:
       heading: "Open gifts"
       empty: "No open gifts."
@@ -75,6 +77,11 @@ en:
       incoming_empty: "No pending requests."
       accepted: "Friends"
       empty: "No friends yet."
+      accept: "Accept"
+      decline: "Decline"
+      remove: "Remove"
+      accepted_notice: "Friend request accepted."
+      removed_notice: "Connection updated."
     shell:
       app_name: "Wish List Community"
       nav_label: "Member navigation"
@@ -124,7 +131,7 @@ en:
       passwords:
         reset_sent: "If that email address is in our system, we have sent password reset instructions."
   secret_links:
-    invitation_title: "Lista de deseos de @%{username}"
+    invitation_title: "Wishlist from @%{username}"
     og_description: "You've been invited to view a private wishlist. Sign in to continue."
     guest_body: "This is a private invitation. Log in or sign up to open the wishlist."
     login_cta: "Log in"

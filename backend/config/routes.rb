@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     end
     get "shared", to: "shared#index", as: :shared
     get "friends", to: "friends#index", as: :friends
+    resources :friendships, only: %i[update destroy], controller: "friendships"
     resources :notifications, only: %i[index], controller: "notifications" do
       member do
         post :mark_read
@@ -84,7 +85,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resource :session, only: %i[create destroy]
+      resource :session, only: %i[create update destroy]
       resource :signup, only: %i[create]
       resource :passwords, only: %i[create]
       resource :account, only: %i[destroy] do

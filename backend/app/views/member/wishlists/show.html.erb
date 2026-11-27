@@ -19,12 +19,17 @@
   <% end %>
   <ul class="space-y-2">
     <% @items.each do |item| %>
-      <li>
+      <li class="border-b border-stone-100 pb-2">
         <% if owner_view %>
           <%= link_to item.title, edit_member_item_path(item) %>
           <%= button_to t("member.items.delete"), member_item_path(item), method: :delete %>
         <% else %>
-          <%= item.title %>
+          <strong><%= item.title %></strong>
+          <%= form_with url: member_item_reservations_path(item), method: :post, class: "mt-1 flex flex-wrap gap-2 items-end" do %>
+            <%= label_tag :estimated_date, t("member.reservations.estimated_date") %>
+            <%= date_field_tag :estimated_date, Date.current + 7, required: true %>
+            <%= submit_tag t("member.reservations.reserve") %>
+          <% end %>
         <% end %>
       </li>
     <% end %>

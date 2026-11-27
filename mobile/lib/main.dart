@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,8 @@ import 'package:wish_list_mobile/core/values/share_payload.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/auth/login_screen.dart';
 import 'package:wish_list_mobile/features/auth/profile_settings_screen.dart';
+import 'package:wish_list_mobile/features/items/item_form_screen.dart';
+import 'package:wish_list_mobile/features/items/item_repository.dart';
 import 'package:wish_list_mobile/features/notifications/notification_repository.dart';
 import 'package:wish_list_mobile/features/notifications/push_registration.dart';
 import 'package:wish_list_mobile/features/share/deep_link_router.dart';
@@ -24,6 +28,7 @@ import 'package:wish_list_mobile/features/share/share_intent_source.dart';
 import 'package:wish_list_mobile/features/social/friends_list_screen.dart';
 import 'package:wish_list_mobile/features/social/social_repository.dart';
 import 'package:wish_list_mobile/features/social/user_search_screen.dart';
+import 'package:wish_list_mobile/features/wishlists/friend_wishlists_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/my_wishlists_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/shared_wishlists_screen.dart';
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
@@ -56,7 +61,8 @@ Future<void> main() async {
   final notificationRepo = NotificationRepository(apiClient: apiClient);
   final pushRegistration = PushRegistration(
     tokenSource: FirebasePushTokenSource(),
-    bindSession: (_) async {},
+    bindSession: (token) => authRepo.bindDeviceToken(fcmToken: token),
+    // Server unbind happens on DELETE /session; local token cleared in unregisterOnLogout.
     clearSession: () async {},
   );
   final prefs = await SharedPreferences.getInstance();
@@ -198,49 +204,123 @@ class _WishListAppState extends State<WishListApp> {
     });
   }
 
+  AppStrings get _strings =>
+      AppStrings.forLocale(_currentUser?.locale ?? 'es');
+
   Future<void> _openLegalUri(Uri uri) async {
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && mounted) {
-      _snack('Could not open ${uri.toString()}');
+      _snack(_strings.legalOpenFailedSnack);
     }
   }
 
   Future<void> _onShareDecision(ShareIntentDecision decision) async {
+    final s = _strings;
     switch (decision.outcome) {
       case ShareIntentOutcome.requireLogin:
         _pendingShare = decision.payload;
-        _snack('Sign in to add the shared link');
+        _snack(s.shareRequireLoginSnack);
       case ShareIntentOutcome.cannotParse:
-        _snack('No link found in shared text');
+        _snack(s.shareCannotParseSnack);
       case ShareIntentOutcome.skipPicker:
+        if (_currentUser == null) {
+          _pendingShare = decision.payload;
+          return;
+        }
+        final wishlistId = decision.wishlistId;
+        if (wishlistId == null) {
+          await _pickWishlistAndOpenForm(decision.payload);
+          return;
+        }
+        await widget.shareCoordinator.rememberChosenWishlist(wishlistId);
+        setState(() => _selectedIndex = 0);
+        _snack(s.shareSkipPickerSnack);
+        await _openShareItemForm(wishlistId: wishlistId, payload: decision.payload);
       case ShareIntentOutcome.showPicker:
         if (_currentUser == null) {
           _pendingShare = decision.payload;
           return;
         }
-        if (decision.wishlistId != null) {
-          await widget.shareCoordinator.rememberChosenWishlist(decision.wishlistId!);
-        }
         setState(() => _selectedIndex = 0);
-        _snack(
-          decision.outcome == ShareIntentOutcome.skipPicker
-              ? 'Shared link ready for your last list'
-              : 'Shared link ready — pick a wishlist',
-        );
+        _snack(s.shareShowPickerSnack);
+        await _pickWishlistAndOpenForm(decision.payload);
     }
+  }
+
+  Future<void> _pickWishlistAndOpenForm(SharePayload payload) async {
+    if (!payload.canOpenAddItem) return;
+    final lists = await widget.wishlistRepository.fetchMyWishlists();
+    if (!mounted || lists.isEmpty) return;
+    final nav = _navKey.currentState;
+    if (nav == null) return;
+    final chosen = await showDialog<WishlistShell>(
+      context: nav.context,
+      builder: (dialogCtx) {
+        final s = _strings;
+        return SimpleDialog(
+          title: Text(s.sharePickWishlistTitle),
+          children: [
+            for (final list in lists)
+              SimpleDialogOption(
+                onPressed: () => Navigator.of(dialogCtx).pop(list),
+                child: Text(list.title),
+              ),
+          ],
+        );
+      },
+    );
+    if (chosen == null || !mounted) return;
+    await widget.shareCoordinator.rememberChosenWishlist(chosen.id);
+    await _openShareItemForm(wishlistId: chosen.id, payload: payload);
+  }
+
+  Future<void> _openShareItemForm({
+    required int wishlistId,
+    required SharePayload payload,
+  }) async {
+    final nav = _navKey.currentState;
+    if (nav == null || !payload.canOpenAddItem) return;
+    final s = _strings;
+    await nav.push<bool>(
+      MaterialPageRoute(
+        builder: (_) => ItemFormScreen(
+          tokens: widget.tokens,
+          strings: s,
+          itemRepository: ItemRepository(apiClient: widget.authRepository.apiClient),
+          wishlistId: wishlistId,
+          initialStoreUrl: payload.url?.toString(),
+          initialTitle: payload.titleHint.isEmpty ? null : payload.titleHint,
+        ),
+      ),
+    );
   }
 
   Future<void> _onDeepLink(DeepLinkRouteDecision decision) async {
     switch (decision.route) {
       case DeepLinkRoute.friendProfile:
-        setState(() => _selectedIndex = 3);
-        _snack('Open friend @${decision.username}');
+        final username = decision.username;
+        if (username == null || username.isEmpty) return;
+        setState(() => _selectedIndex = 2);
+        final nav = _navKey.currentState;
+        if (nav == null) return;
+        await nav.push<void>(
+          MaterialPageRoute(
+            builder: (_) => FriendWishlistsScreen(
+              tokens: widget.tokens,
+              strings: _strings,
+              wishlistRepository: widget.wishlistRepository,
+              reservationRepository: widget.reservationRepository,
+              giftRepository: widget.giftRepository,
+              username: username,
+            ),
+          ),
+        );
       case DeepLinkRoute.secretLink:
         final host = widget.deepLinkRouter.allowedHosts.first;
         final uri = Uri.https(host, '/s/${decision.shareToken}');
         await _openLegalUri(uri);
       case DeepLinkRoute.safeFailure:
-        _snack('This link is not supported in the app');
+        _snack(_strings.deepLinkUnsupportedSnack);
     }
   }
 
@@ -253,6 +333,7 @@ class _WishListAppState extends State<WishListApp> {
   void _onAuthenticated(UserProfile profile) {
     setState(() => _currentUser = profile);
     _navKey.currentState?.popUntil((route) => route.isFirst);
+    unawaited(widget.pushRegistration.registerAfterLogin().catchError((_) => null));
     final pending = _pendingShare;
     if (pending == null || !pending.canOpenAddItem) return;
     _pendingShare = null;

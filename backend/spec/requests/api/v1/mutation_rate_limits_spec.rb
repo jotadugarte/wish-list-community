@@ -51,7 +51,7 @@ RSpec.describe "API v1 mutation rate_limit declarations [REQ-DISC-001]" do
     },
     "sessions_controller.rb" => {
       controller: Api::V1::SessionsController,
-      actions: %i[destroy]
+      actions: %i[update destroy]
     },
     "accounts_controller.rb" => {
       controller: Api::V1::AccountsController,

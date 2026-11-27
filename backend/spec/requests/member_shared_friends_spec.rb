@@ -33,5 +33,21 @@ RSpec.describe "Hotwire shared and friends shells [REQ-WISH-003] [REQ-SOC-001]",
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("@amigo_s9")
     expect(response.body).to include("@pide_s9")
+    expect(response.body).to include("Accept").or include("Aceptar")
+    expect(response.body).to include("Decline").or include("Rechazar")
+  end
+
+  it "shows reserve form for non-owner on a shared wishlist [REQ-RES-001]" do
+    Friendship.request!(requester: owner, addressee: viewer).accept!(actor: viewer)
+    wishlist = create(:wishlist, :shared, owner: owner, title: "Para reservar")
+    WishlistShare.create!(wishlist: wishlist, user: viewer)
+    create(:item, wishlist: wishlist, title: "Libro")
+
+    get "/app/wishlists/#{wishlist.id}"
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Libro")
+    expect(response.body).to include("estimated_date")
+    expect(response.body).to include("Reserve").or include("Reservar")
   end
 end
+

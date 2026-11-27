@@ -15,6 +15,8 @@ class ItemFormScreen extends StatefulWidget {
   final int wishlistId;
   final WishlistItem? existing;
   final ItemImagePicker? imagePicker;
+  final String? initialStoreUrl;
+  final String? initialTitle;
 
   const ItemFormScreen({
     super.key,
@@ -24,6 +26,8 @@ class ItemFormScreen extends StatefulWidget {
     required this.wishlistId,
     this.existing,
     this.imagePicker,
+    this.initialStoreUrl,
+    this.initialTitle,
   });
 
   @override
@@ -49,16 +53,21 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   void initState() {
     super.initState();
     final e = widget.existing;
-    _title = TextEditingController(text: e?.title ?? '');
+    final seedTitle = e?.title ?? widget.initialTitle ?? '';
+    final seedLinks = e?.links.map((l) => l.url).join('\n') ?? '';
+    final shareUrl = widget.initialStoreUrl?.trim() ?? '';
+    _title = TextEditingController(text: seedTitle);
     _specs = TextEditingController(text: e?.specifications ?? '');
     _links = TextEditingController(
-      text: e?.links.map((l) => l.url).join('\n') ?? '',
+      text: seedLinks.isNotEmpty
+          ? seedLinks
+          : (shareUrl.isNotEmpty ? shareUrl : ''),
     );
     _price = TextEditingController(
       text: e?.priceCents != null ? '${e!.priceCents}' : '',
     );
     _currency = TextEditingController(text: e?.currency ?? '');
-    _storeUrl = TextEditingController();
+    _storeUrl = TextEditingController(text: shareUrl);
     _priority = e?.priority ?? 'medium';
     _picker = widget.imagePicker ?? ItemImagePicker();
   }
@@ -173,6 +182,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
           priceCents: priceCents,
           currency: currency,
           linkUrls: linkUrls,
+          images: _images,
         );
       }
       if (mounted) Navigator.of(context).pop(true);
@@ -264,27 +274,25 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
             controller: _currency,
             decoration: InputDecoration(labelText: s.itemCurrencyLabel),
           ),
-          if (widget.existing == null) ...[
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              children: [
-                OutlinedButton(
-                  key: const Key('item_gallery_button'),
-                  onPressed: _saving ? null : _pickGallery,
-                  child: Text(s.addPhotosGalleryButton),
-                ),
-                OutlinedButton(
-                  key: const Key('item_camera_button'),
-                  onPressed: _saving ? null : _pickCamera,
-                  child: Text(s.addPhotoCameraButton),
-                ),
-              ],
-            ),
-            if (_images.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text('${s.selectedPhotosLabel}: ${_images.length}'),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            children: [
+              OutlinedButton(
+                key: const Key('item_gallery_button'),
+                onPressed: _saving ? null : _pickGallery,
+                child: Text(s.addPhotosGalleryButton),
+              ),
+              OutlinedButton(
+                key: const Key('item_camera_button'),
+                onPressed: _saving ? null : _pickCamera,
+                child: Text(s.addPhotoCameraButton),
+              ),
             ],
+          ),
+          if (_images.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text('${s.selectedPhotosLabel}: ${_images.length}'),
           ],
           if (_error != null) ...[
             const SizedBox(height: 8),

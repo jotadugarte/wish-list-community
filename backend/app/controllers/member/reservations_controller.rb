@@ -34,11 +34,11 @@ module Member
         estimated_date: params.require(:estimated_date),
         private_note: params[:private_note]
       )
-      redirect_to member_reservations_path, notice: I18n.t("member.reservations.created")
+      redirect_to member_reservations_path, notice: I18n.t("member.reservations.created"), status: :see_other
     rescue ReservationService::Error => e
-      redirect_back fallback_location: member_reservations_path, alert: e.message
+      redirect_back fallback_location: member_reservations_path, alert: e.message, status: :see_other
     rescue ArgumentError, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-      redirect_back fallback_location: member_reservations_path, alert: I18n.t("member.errors.action_failed")
+      redirect_back fallback_location: member_reservations_path, alert: I18n.t("member.errors.action_failed"), status: :see_other
     end
 
     def destroy
@@ -47,18 +47,18 @@ module Member
       ReservationService.cancel!(reservation: reservation, actor: current_user)
       redirect_to member_reservations_path, notice: I18n.t("member.reservations.canceled"), status: :see_other
     rescue ReservationService::Error => e
-      redirect_to member_reservations_path, alert: e.message
+      redirect_to member_reservations_path, alert: e.message, status: :see_other
     end
 
     def mark_purchased
       reservation = Reservation.find(params[:id])
       authorize reservation, :mark_purchased?
       GiftService.mark_purchased!(reservation: reservation, actor: current_user)
-      redirect_to member_reservations_path, notice: I18n.t("member.gifts.purchased")
+      redirect_to member_reservations_path, notice: I18n.t("member.gifts.purchased"), status: :see_other
     rescue GiftService::Error => e
-      redirect_to member_reservations_path, alert: e.message
+      redirect_to member_reservations_path, alert: e.message, status: :see_other
     rescue ArgumentError
-      redirect_to member_reservations_path, alert: I18n.t("member.errors.action_failed")
+      redirect_to member_reservations_path, alert: I18n.t("member.errors.action_failed"), status: :see_other
     end
   end
 end
