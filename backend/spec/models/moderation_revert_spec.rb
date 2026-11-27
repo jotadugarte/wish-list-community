@@ -136,4 +136,24 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(member.reload.suspended?).to be(true)
     end
   end
+
+  describe "soft-deleted admin cannot self-restore admin enforcement (O4A)" do
+    it "blocks a soft-deleted admin from restoring their own admin-enforced soft-delete" do
+      peer = create(:user, role: "admin", username: "peer_admin", email_address: "peer_admin@example.com")
+      peer.soft_delete!(actor: admin)
+      expect(peer.soft_deleted_by_admin?).to be(true)
+      expect(peer.restore!(actor: peer)).to be(false)
+      expect(peer.reload.discarded?).to be(true)
+      expect(peer.restore!(actor: admin)).to be(true)
+      expect(peer.reload.discarded?).to be(false)
+    end
+
+    it "does not stamp admin_enforcement on cascade soft-deletes of an admin owner wishlist" do
+      peer = create(:user, role: "admin", username: "cascade_admin", email_address: "cascade_admin@example.com")
+      wishlist = create(:wishlist, owner: peer)
+      peer.soft_delete!(actor: admin)
+      event = AuditEvent.find_by!(action: "wishlist.soft_deleted", auditable: wishlist)
+      expect(event.metadata["admin_enforcement"]).not_to eq(true)
+    end
+  end
 end

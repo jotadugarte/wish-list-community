@@ -179,6 +179,8 @@ es:
       actor_must_be_admin: "Solo un admin puede realizar esta acción."
       cannot_suspend_yourself: "No puedes suspenderte a ti mismo."
       cannot_suspend_last_admin: "No se puede suspender al último admin restante."
+      cannot_soft_delete_last_admin: "No se puede eliminar temporalmente al último admin restante."
+      pending_report_exists: "Ya existe un reporte pendiente para este objetivo."
       user_must_be_suspended: "El usuario debe estar suspendido."
       target_must_match_reportable: "El usuario objetivo debe coincidir con la cuenta o dueño reportado."
       wishlist_must_match_reportable: "La lista debe coincidir con la lista reportada."

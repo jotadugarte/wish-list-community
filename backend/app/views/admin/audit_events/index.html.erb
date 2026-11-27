@@ -15,9 +15,6 @@
       <%= link_to admin_audit_event_path(event) do %>
         <%= event.action %> — <%= event.auditable_type %> #<%= event.auditable_id %>
       <% end %>
-      <% if revertable_event?(event) %>
-        <%= button_to t("admin.actions.revert"), revert_admin_audit_event_path(event), method: :post %>
-      <% end %>
     </li>
   <% end %>
 </ul>

@@ -179,6 +179,8 @@ en:
       actor_must_be_admin: "Only an admin can perform this action."
       cannot_suspend_yourself: "You cannot suspend yourself."
       cannot_suspend_last_admin: "Cannot suspend the last remaining admin."
+      cannot_soft_delete_last_admin: "Cannot soft-delete the last remaining admin."
+      pending_report_exists: "A pending report already exists for this target."
       user_must_be_suspended: "User must be suspended."
       target_must_match_reportable: "Target user must match the reported account or wishlist owner."
       wishlist_must_match_reportable: "Wishlist must match the reported wishlist."

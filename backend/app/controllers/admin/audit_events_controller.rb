@@ -18,6 +18,7 @@ module Admin
                with: -> { rate_limit_admin_write }
 
     # [REQ-ADM-001] Lists recent AuditEvents, optionally filtered by action.
+    # Revert controls live on show to avoid N+1 eligibility queries on the index.
     def index
       authorize :admin, :index?, policy_class: AdminPolicy
       scope = AuditEvent.order(created_at: :desc).limit(100)
@@ -50,18 +51,37 @@ module Admin
       send(REVERTABLE.fetch(event.action), event)
     end
 
-    # Soft-delete reverts require an immutable admin_enforcement snapshot, a discarded record,
-    # and that this event is the latest soft_delete for the auditable (O4A).
+    # Soft-delete / suspend reverts require the event still to be the active latest enforcement (O4A).
     def revertable_event?(event)
       return false unless REVERTABLE.key?(event.action)
-      return true unless event.action.end_with?(".soft_deleted")
 
+      case event.action
+      when "user.soft_deleted", "wishlist.soft_deleted"
+        soft_delete_revertable?(event)
+      when "user.suspended"
+        suspend_revertable?(event)
+      else
+        true
+      end
+    end
+
+    def soft_delete_revertable?(event)
       return false unless ActiveModel::Type::Boolean.new.cast(event.metadata["admin_enforcement"])
 
       record = event.auditable
       return false unless record&.discarded?
 
-      latest = record.latest_soft_delete_event
+      record.latest_soft_delete_event&.id == event.id
+    end
+
+    def suspend_revertable?(event)
+      user = event.auditable
+      return false unless user&.suspended?
+
+      latest = AuditEvent.where(auditable_type: "User", auditable_id: event.auditable_id, action: "user.suspended")
+                         .order(created_at: :desc, id: :desc)
+                         .limit(1)
+                         .first
       latest&.id == event.id
     end
 

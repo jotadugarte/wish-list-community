@@ -212,7 +212,7 @@ class Report < ApplicationRecord
     ).where.not(id: id).exists?
     return unless conflict
 
-    errors.add(:base, "a pending report already exists for this target")
+    errors.add(:base, I18n.t("admin.errors.pending_report_exists"))
     raise ActiveRecord::RecordInvalid, self
   end
 
@@ -244,6 +244,6 @@ class Report < ApplicationRecord
       reportable_id: reportable_id,
       status: "pending"
     ).exists?
-    errors.add(:base, "a pending report already exists for this target") if exists
+    errors.add(:base, I18n.t("admin.errors.pending_report_exists")) if exists
   end
 end

@@ -58,7 +58,7 @@ module SoftDeletable
 
   # [REQ-LIFE-001] [REQ-LIFE-002] Soft-deletes the record, runs registered on_soft_delete hooks,
   # and logs an immutable AuditEvent (hooks may contribute metadata via merge_soft_delete_audit_metadata!).
-  # [REQ-ADM-001] When the actor is an admin, snapshots admin_enforcement: true on the AuditEvent (O4A).
+  # [REQ-ADM-001] Snapshots admin_enforcement when a moderating admin (not the subject/owner) soft-deletes (O4A).
   def soft_delete!(actor: nil)
     raise ArgumentError, "Pre-condition failed: record must be persisted" unless persisted?
 
@@ -68,7 +68,7 @@ module SoftDeletable
       @soft_delete_audit_metadata = {}
       update!(discarded_at: Time.current)
       run_lifecycle_hooks!(self.class.soft_delete_hooks)
-      if admin_actor?(resolved_actor)
+      if moderating_admin_actor?(resolved_actor)
         merge_soft_delete_audit_metadata!("admin_enforcement" => true)
       end
       AuditEvent.record!(
@@ -107,7 +107,7 @@ module SoftDeletable
       return false
     end
 
-    if soft_deleted_by_admin? && !admin_actor?(actor)
+    if soft_deleted_by_admin? && !moderating_admin_can_restore?(actor)
       errors.add(:base, "Admin soft-delete can only be restored by an admin")
       return false
     end
@@ -156,6 +156,34 @@ module SoftDeletable
 
   def admin_actor?(actor)
     actor.present? && actor.respond_to?(:role) && actor.role == "admin"
+  end
+
+  # Moderating admin: role=admin and not the soft-delete subject (self/owner).
+  def moderating_admin_actor?(actor)
+    admin_actor?(actor) && !soft_delete_subject?(actor)
+  end
+
+  # Active moderating admin may restore admin-enforced soft-deletes (O4A); subject/owner cannot.
+  def moderating_admin_can_restore?(actor)
+    return false unless moderating_admin_actor?(actor)
+    return false if actor.discarded?
+    return false if actor.respond_to?(:suspended?) && actor.suspended?
+
+    true
+  end
+
+  def soft_delete_subject?(actor)
+    return false if actor.nil?
+
+    if is_a?(User)
+      actor.id == id
+    elsif is_a?(Wishlist)
+      actor.id == owner_id
+    elsif is_a?(Item)
+      actor.id == wishlist.owner_id
+    else
+      false
+    end
   end
 
   def run_lifecycle_hooks!(registry)

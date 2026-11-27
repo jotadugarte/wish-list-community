@@ -16,6 +16,7 @@ module Admin
       "Pre-condition failed: actor must be an admin" => "admin.errors.actor_must_be_admin",
       "Pre-condition failed: cannot suspend yourself" => "admin.errors.cannot_suspend_yourself",
       "Pre-condition failed: cannot suspend the last remaining admin" => "admin.errors.cannot_suspend_last_admin",
+      "Pre-condition failed: cannot soft-delete the last remaining admin" => "admin.errors.cannot_soft_delete_last_admin",
       "Pre-condition failed: user must be suspended" => "admin.errors.user_must_be_suspended",
       "Pre-condition failed: target_user must match reportable" => "admin.errors.target_must_match_reportable",
       "Pre-condition failed: wishlist must match reportable" => "admin.errors.wishlist_must_match_reportable"

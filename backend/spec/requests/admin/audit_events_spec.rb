@@ -159,4 +159,21 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(member.reload.discarded?).to be(true)
     end
   end
+
+  describe "stale user.suspended cannot unsuspend a later re-suspend" do
+    it "hides Revert on an older suspend event after re-suspend" do
+      member.suspend!(actor: admin)
+      first = AuditEvent.find_by!(action: "user.suspended", auditable: member)
+      post "/admin/audit_events/#{first.id}/revert"
+      expect(member.reload.suspended?).to be(false)
+
+      member.suspend!(actor: admin)
+      get "/admin/audit_events/#{first.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+
+      post "/admin/audit_events/#{first.id}/revert"
+      expect(flash[:alert]).to eq(I18n.t("admin.errors.event_not_revertable"))
+      expect(member.reload.suspended?).to be(true)
+    end
+  end
 end
