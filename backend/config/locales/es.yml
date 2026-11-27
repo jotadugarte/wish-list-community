@@ -261,18 +261,21 @@ es:
       brand: "Admin"
       reports: "Reportes"
       audit: "Auditoría"
+      style_guide: "Guía de estilo"
     titles:
       reports: "Reportes de admin"
       audit: "Auditoría de admin"
       report: "Reporte #%{id}"
       audit_event: "Auditoría #%{id}"
       gift: "Regalo de admin #%{id}"
+      style_guide: "Guía de estilo"
     headings:
       reports: "Reportes"
       audit: "Auditoría"
       report: "Reporte #%{id}"
       audit_event: "Evento de auditoría #%{id}"
       gift: "Regalo #%{id}"
+      style_guide: "Guía de estilo"
     copy:
       pending_reports: "Reportes de abuso pendientes (Usuario y Lista)."
       no_pending_reports: "No hay reportes pendientes."
