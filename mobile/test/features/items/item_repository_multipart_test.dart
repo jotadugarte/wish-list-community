@@ -60,4 +60,47 @@ void main() {
     expect(captured!.files!.first.bytes, [1, 2, 3, 4]);
     expect(captured?.body?['images'], isNull);
   });
+
+  test('ItemRepository updateItem uploads compressed images multipart [REQ-ITEM-002]', () async {
+    final tokenStorage = InMemoryTokenStorage();
+    await tokenStorage.saveToken('t');
+    RecordedApiRequest? captured;
+    final client = ApiClient(
+      baseUrl: 'https://api.wishlist.test',
+      tokenStorage: tokenStorage,
+      transport: (req) async {
+        captured = req;
+        return const ApiResponse(
+          statusCode: 200,
+          body: {
+            'item': {
+              'id': 11,
+              'wishlist_id': 2,
+              'title': 'Foto',
+              'priority': 'medium',
+              'position': 0,
+              'links': [],
+              'images': [
+                {'id': 2, 'url': 'https://cdn.example/2.webp'},
+              ],
+            },
+          },
+        );
+      },
+    );
+    final repo = ItemRepository(apiClient: client);
+    final blob = CompressedImageBlob(
+      bytes: Uint8List.fromList([9, 8, 7]),
+      filename: 'edit.jpg',
+      contentType: 'image/jpeg',
+    );
+
+    final updated = await repo.updateItem(itemId: 11, title: 'Foto', images: [blob]);
+
+    expect(updated.id, 11);
+    expect(captured?.method, 'PATCH');
+    expect(captured?.isMultipart, isTrue);
+    expect(captured!.files!.first.filename, 'edit.jpg');
+    expect(captured!.files!.first.bytes, [9, 8, 7]);
+  });
 }

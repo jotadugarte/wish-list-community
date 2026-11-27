@@ -29,7 +29,7 @@ module Member
         replace_links!(@item)
         attach_uploaded_images!(@item)
       end
-      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.items.created")
+      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.items.created"), status: :see_other
     rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error => e
       @item = @wishlist.items.new(item_attrs)
       flash.now[:alert] = e.message.presence || I18n.t("member.items.invalid")
@@ -48,10 +48,10 @@ module Member
       @wishlist = @item.wishlist
       Item.transaction do
         @item.update!(item_attrs) if item_attrs.present?
-        replace_links!(@item) if params[:item]&.key?(:links) || params[:item]&.key?("links")
+        replace_links!(@item) if links_submitted?
         attach_uploaded_images!(@item)
       end
-      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.items.updated")
+      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.items.updated"), status: :see_other
     rescue ArgumentError, ActiveRecord::RecordInvalid, ImageProcessing::Error, Vips::Error => e
       flash.now[:alert] = e.message.presence || I18n.t("member.items.invalid")
       render :edit, status: :unprocessable_content
@@ -78,14 +78,31 @@ module Member
       attrs
     end
 
+    def links_submitted?
+      item_params = params[:item]
+      return false if item_params.nil?
+
+      item_params.key?(:links) || item_params.key?("links") ||
+        item_params.key?(:links_text) || item_params.key?("links_text")
+    end
+
     def replace_links!(item)
-      links = Array(params.dig(:item, :links)).first(MAX_LINKS)
+      links = submitted_link_urls.first(MAX_LINKS)
       item.item_links.destroy_all
       links.each_with_index do |url, index|
         next if url.blank?
 
         item.item_links.create!(url: url, position: index)
       end
+    end
+
+    def submitted_link_urls
+      text = params.dig(:item, :links_text)
+      if text.present?
+        return text.to_s.split(/\r?\n/).map(&:strip).reject(&:blank?)
+      end
+
+      Array(params.dig(:item, :links)).map { |url| url.to_s.strip }.reject(&:blank?)
     end
 
     def attach_uploaded_images!(item)

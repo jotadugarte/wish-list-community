@@ -7,8 +7,12 @@
       <%= f.text_field :title, required: true %>
     </div>
     <div>
-      <%= label_tag "item[links][]", t("member.items.paste_url") %>
-      <%= text_field_tag "item[links][]", @item.item_links.order(:position).limit(1).pick(:url), placeholder: "https://" %>
+      <%= label_tag "item[links_text]", t("member.items.links_label") %>
+      <%= text_area_tag "item[links_text]",
+            @item.item_links.order(:position).limit(20).pluck(:url).join("\n"),
+            rows: 4,
+            placeholder: "https://…" %>
+      <p class="text-sm text-stone-500"><%= t("member.items.links_hint") %></p>
     </div>
     <div>
       <%= label_tag :images, t("member.items.images") %>

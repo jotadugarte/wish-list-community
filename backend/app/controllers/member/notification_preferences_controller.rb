@@ -32,7 +32,7 @@ module Member
       end
       pref.channels = channels
       pref.save!
-      redirect_to member_notification_preferences_path, notice: I18n.t("member.notifications.prefs_saved")
+      redirect_to member_notification_preferences_path, notice: I18n.t("member.notifications.prefs_saved"), status: :see_other
     end
 
     private

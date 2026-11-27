@@ -131,6 +131,7 @@ class _WishListAppState extends State<WishListApp> {
   int _selectedIndex = 0;
   bool _restoring = true;
   SharePayload? _pendingShare;
+  String? _pendingFriendUsername;
   InboundLinkBootstrap? _inbound;
 
   @override
@@ -250,7 +251,12 @@ class _WishListAppState extends State<WishListApp> {
   Future<void> _pickWishlistAndOpenForm(SharePayload payload) async {
     if (!payload.canOpenAddItem) return;
     final lists = await widget.wishlistRepository.fetchMyWishlists();
-    if (!mounted || lists.isEmpty) return;
+    if (!mounted) return;
+    if (lists.isEmpty) {
+      _snack(_strings.shareNoWishlistsSnack);
+      setState(() => _selectedIndex = 0);
+      return;
+    }
     final nav = _navKey.currentState;
     if (nav == null) return;
     final chosen = await showDialog<WishlistShell>(
@@ -300,21 +306,12 @@ class _WishListAppState extends State<WishListApp> {
       case DeepLinkRoute.friendProfile:
         final username = decision.username;
         if (username == null || username.isEmpty) return;
-        setState(() => _selectedIndex = 2);
-        final nav = _navKey.currentState;
-        if (nav == null) return;
-        await nav.push<void>(
-          MaterialPageRoute(
-            builder: (_) => FriendWishlistsScreen(
-              tokens: widget.tokens,
-              strings: _strings,
-              wishlistRepository: widget.wishlistRepository,
-              reservationRepository: widget.reservationRepository,
-              giftRepository: widget.giftRepository,
-              username: username,
-            ),
-          ),
-        );
+        if (_currentUser == null) {
+          _pendingFriendUsername = username;
+          _snack(_strings.deepLinkRequireLoginSnack);
+          return;
+        }
+        await _openFriendWishlists(username);
       case DeepLinkRoute.secretLink:
         final host = widget.deepLinkRouter.allowedHosts.first;
         final uri = Uri.https(host, '/s/${decision.shareToken}');
@@ -322,6 +319,24 @@ class _WishListAppState extends State<WishListApp> {
       case DeepLinkRoute.safeFailure:
         _snack(_strings.deepLinkUnsupportedSnack);
     }
+  }
+
+  Future<void> _openFriendWishlists(String username) async {
+    setState(() => _selectedIndex = 2);
+    final nav = _navKey.currentState;
+    if (nav == null) return;
+    await nav.push<void>(
+      MaterialPageRoute(
+        builder: (_) => FriendWishlistsScreen(
+          tokens: widget.tokens,
+          strings: _strings,
+          wishlistRepository: widget.wishlistRepository,
+          reservationRepository: widget.reservationRepository,
+          giftRepository: widget.giftRepository,
+          username: username,
+        ),
+      ),
+    );
   }
 
   void _snack(String message) {
@@ -334,6 +349,11 @@ class _WishListAppState extends State<WishListApp> {
     setState(() => _currentUser = profile);
     _navKey.currentState?.popUntil((route) => route.isFirst);
     unawaited(widget.pushRegistration.registerAfterLogin().catchError((_) => null));
+    final pendingFriend = _pendingFriendUsername;
+    if (pendingFriend != null && pendingFriend.isNotEmpty) {
+      _pendingFriendUsername = null;
+      unawaited(_openFriendWishlists(pendingFriend));
+    }
     final pending = _pendingShare;
     if (pending == null || !pending.canOpenAddItem) return;
     _pendingShare = null;

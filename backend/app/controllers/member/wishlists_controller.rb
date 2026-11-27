@@ -32,6 +32,10 @@ module Member
         []
       end
       @items = @wishlist.items.kept.order(:position, :id).limit(200)
+      item_ids = @items.map(&:id)
+      @holds_by_item_id = Item.active_holds_by_item_id(item_ids)
+      @open_gifts_by_item_id = Item.open_gifts_by_item_id(item_ids)
+      @received_gift_ids = Item.received_gift_item_ids_for(@wishlist.id)
     end
 
     def new
@@ -44,7 +48,7 @@ module Member
       @wishlist = current_user.wishlists.create!(wishlist_create_params.merge(privacy_mode: "friends"))
       raise "Post-condition failed: default friends mode" unless @wishlist.privacy_mode == "friends"
 
-      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.wishlists.created")
+      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.wishlists.created"), status: :see_other
     rescue ActiveRecord::RecordInvalid
       @wishlist = current_user.wishlists.new(wishlist_create_params.merge(privacy_mode: "friends"))
       flash.now[:alert] = I18n.t("api.v1.errors.wishlist_invalid")
@@ -60,7 +64,7 @@ module Member
       @wishlist = current_user.wishlists.kept.find(params[:id])
       authorize @wishlist, :update?
       apply_updates!(@wishlist)
-      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.wishlists.updated")
+      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.wishlists.updated"), status: :see_other
     rescue ArgumentError, ActiveRecord::RecordInvalid
       flash.now[:alert] = I18n.t("api.v1.errors.wishlist_invalid")
       render :edit, status: :unprocessable_content
@@ -77,9 +81,9 @@ module Member
       @wishlist = current_user.wishlists.kept.find(params[:id])
       authorize @wishlist, :rotate_share_token?
       WishlistPrivacyService.rotate_token!(wishlist: @wishlist)
-      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.wishlists.token_rotated")
+      redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.wishlists.token_rotated"), status: :see_other
     rescue ArgumentError
-      redirect_to member_wishlist_path(@wishlist), alert: I18n.t("api.v1.errors.wishlist_invalid")
+      redirect_to member_wishlist_path(@wishlist), alert: I18n.t("api.v1.errors.wishlist_invalid"), status: :see_other
     end
 
     private

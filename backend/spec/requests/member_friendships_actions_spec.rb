@@ -24,5 +24,8 @@ RSpec.describe "Hotwire friendship accept/decline [REQ-SOC-001]", type: :request
     delete "/app/friendships/#{friendship.id}"
     expect(response).to redirect_to(member_friends_path)
     expect(Friendship.find_by(id: friendship.id)).to be_nil
+    expect(flash[:notice]).to eq(
+      I18n.t("member.friends.declined_notice", locale: viewer.locale.to_sym)
+    )
   end
 end

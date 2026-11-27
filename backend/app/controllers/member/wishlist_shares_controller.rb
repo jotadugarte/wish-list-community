@@ -18,9 +18,9 @@ module Member
       authorize wishlist, :manage_shares?
       friend = User.kept.find(params[:user_id])
       WishlistShare.upsert_explicit!(wishlist: wishlist, user: friend)
-      redirect_to member_wishlist_path(wishlist), notice: I18n.t("member.wishlists.share_added")
+      redirect_to member_wishlist_path(wishlist), notice: I18n.t("member.wishlists.share_added"), status: :see_other
     rescue ArgumentError, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-      redirect_to member_wishlist_path(wishlist), alert: I18n.t("api.v1.errors.wishlist_share_invalid")
+      redirect_to member_wishlist_path(wishlist), alert: I18n.t("api.v1.errors.wishlist_share_invalid"), status: :see_other
     end
 
     def destroy

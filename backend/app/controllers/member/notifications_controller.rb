@@ -22,7 +22,7 @@ module Member
       note = current_user.notifications.find(params[:id])
       authorize note, :update?
       note.mark_read!
-      redirect_to member_notifications_path, notice: I18n.t("member.notifications.marked_read")
+      redirect_to member_notifications_path, notice: I18n.t("member.notifications.marked_read"), status: :see_other
     end
   end
 end

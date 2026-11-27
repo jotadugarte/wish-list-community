@@ -28,6 +28,7 @@ Authenticates an active user, issues a SHA-256-backed API token, and optionally 
     "device_token": "optional_fcm_token"
   }
   ```
+  `fcm_token` is accepted as an alias of `device_token`.
 - **Response (`201 Created`):**
   ```json
   {
@@ -39,6 +40,12 @@ Authenticates an active user, issues a SHA-256-backed API token, and optionally 
     }
   }
   ```
+
+### `PATCH /api/v1/session` (`[REQ-NOTIF-002]`)
+Rebinds the FCM `device_token` on the current authenticated API token (used after cold-start session restore).
+- **Auth Required:** Yes (Rate-limited with session mutate: 20 req / 3 min).
+- **Request Body:** `{ "device_token": "fcm_token" }` (`fcm_token` alias accepted).
+- **Response:** `204 No Content`.
 
 ### `POST /api/v1/signup` (`[REQ-AUTH-001]`, `[REQ-AUTH-002]`, `[REQ-AUTH-003]`, `[REQ-USER-001]`, `[REQ-USER-002]`, `[REQ-USER-003]`)
 Registers a new user with mandatory UGC Terms/EULA acceptance (`terms_accepted` → `terms_accepted_at`), then issues a SHA-256-backed API token (same response shape as session create).
@@ -364,7 +371,7 @@ Body: `{ "url": "https://..." }` → `{ "title", "image_url", "source_url" }` (b
 ### Notifications (Sprint 5 foundation + Sprint 9 O1A/O7A/O10B)
 - `GET /api/v1/notifications` · `POST /api/v1/notifications/:id/mark_read`
 - `GET/PATCH /api/v1/notification_preferences` — response includes `channels` and `defaults_events` catalog (friend.request_*, reservation.*, gift.*)
-- Push delivery via injectable FCM adapter (`PushNotifier`); without Google keys, in-app + email still work (no crash). `device_token` binds on session/signup; destroyed on logout/revoke (`REQ-NOTIF-002`).
+- Push delivery via injectable FCM adapter (`PushNotifier`); without Google keys, in-app + email still work (no crash). `device_token` binds on session/signup, rebinds via `PATCH /api/v1/session`, and is destroyed on logout/revoke (`REQ-NOTIF-002`).
 
 ### Member Hotwire + legal (Sprint 9 O2B/O8A/O12A/O13A) — not `/api/v1`
 - Public `GET /terms` · `GET /privacy` (bilingual es+en placeholders)

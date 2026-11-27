@@ -25,8 +25,14 @@ module Member
     def destroy
       friendship = Friendship.find(params[:id])
       authorize friendship, :destroy?
+      was_pending = friendship.status == "pending"
       friendship.remove!(actor: current_user)
-      redirect_to member_friends_path, notice: I18n.t("member.friends.removed_notice"), status: :see_other
+      notice = if was_pending
+        I18n.t("member.friends.declined_notice")
+      else
+        I18n.t("member.friends.removed_notice")
+      end
+      redirect_to member_friends_path, notice: notice, status: :see_other
     rescue ArgumentError
       redirect_to member_friends_path, alert: I18n.t("api.v1.errors.friendship_invalid"), status: :see_other
     end

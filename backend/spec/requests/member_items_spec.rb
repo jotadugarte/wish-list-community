@@ -46,6 +46,26 @@ RSpec.describe "Hotwire member items [REQ-ITEM-001] [REQ-ITEM-002]", type: :requ
     expect(item.reload.discarded_at).to be_present
   end
 
+  it "preserves the full links list when editing with links_text [REQ-ITEM-001]" do
+    item = create(:item, wishlist: wishlist, title: "Multi")
+    item.item_links.create!(url: "https://a.example/1", position: 0)
+    item.item_links.create!(url: "https://b.example/2", position: 1)
+
+    patch "/app/items/#{item.id}", params: {
+      item: {
+        title: "Multi",
+        links_text: "https://a.example/1\nhttps://b.example/2\nhttps://c.example/3"
+      }
+    }
+    expect(response).to redirect_to(member_wishlist_path(wishlist))
+    expect(item.reload.item_links.order(:position).pluck(:url)).to eq([
+      "https://a.example/1",
+      "https://b.example/2",
+      "https://c.example/3"
+    ])
+  end
+
+
   it "item form page includes client image compress helper hook (O5A)" do
     get "/app/wishlists/#{wishlist.id}/items/new"
     expect(response).to have_http_status(:ok)

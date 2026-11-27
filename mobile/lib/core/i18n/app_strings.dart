@@ -124,6 +124,8 @@ class AppStrings {
   final String shareShowPickerSnack;
   final String sharePickWishlistTitle;
   final String deepLinkUnsupportedSnack;
+  final String deepLinkRequireLoginSnack;
+  final String shareNoWishlistsSnack;
   final String legalOpenFailedSnack;
 
   const AppStrings({
@@ -247,6 +249,8 @@ class AppStrings {
     required this.shareShowPickerSnack,
     required this.sharePickWishlistTitle,
     required this.deepLinkUnsupportedSnack,
+    required this.deepLinkRequireLoginSnack,
+    required this.shareNoWishlistsSnack,
     required this.legalOpenFailedSnack,
   });
 
@@ -421,6 +425,8 @@ class AppStrings {
     shareShowPickerSnack: 'Enlace listo — elige una lista',
     sharePickWishlistTitle: 'Elige una lista',
     deepLinkUnsupportedSnack: 'Este enlace no está soportado en la app',
+    deepLinkRequireLoginSnack: 'Inicia sesión para ver el perfil del amigo',
+    shareNoWishlistsSnack: 'Crea una lista antes de agregar el enlace compartido',
     legalOpenFailedSnack: 'No se pudo abrir el enlace',
   );
 
@@ -546,6 +552,8 @@ class AppStrings {
     shareShowPickerSnack: 'Shared link ready — pick a wishlist',
     sharePickWishlistTitle: 'Pick a wishlist',
     deepLinkUnsupportedSnack: 'This link is not supported in the app',
+    deepLinkRequireLoginSnack: 'Sign in to open the friend profile',
+    shareNoWishlistsSnack: 'Create a wishlist before adding the shared link',
     legalOpenFailedSnack: 'Could not open the link',
   );
 }

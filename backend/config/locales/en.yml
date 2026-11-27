@@ -25,6 +25,8 @@ en:
       cancel: "Cancel"
       reserve: "Reserve"
       estimated_date: "Estimated date"
+      reserved_by_me: "Reserved by you."
+      unavailable: "Unavailable."
     gifts:
       heading: "Open gifts"
       empty: "No open gifts."
@@ -44,6 +46,8 @@ en:
       delete: "Delete item"
       paste_url: "Paste product URL"
       images: "Images"
+      links_label: "Purchase links (one per line)"
+      links_hint: "Saving replaces the full link list with what you enter here."
       compress_hint: "Images are resized on your device toward 1600px / 2MB before upload."
       created: "Item created."
       updated: "Item updated."
@@ -81,7 +85,8 @@ en:
       decline: "Decline"
       remove: "Remove"
       accepted_notice: "Friend request accepted."
-      removed_notice: "Connection updated."
+      declined_notice: "Friend request declined."
+      removed_notice: "Friend removed."
     shell:
       app_name: "Wish List Community"
       nav_label: "Member navigation"

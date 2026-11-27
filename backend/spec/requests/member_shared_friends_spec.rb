@@ -49,5 +49,21 @@ RSpec.describe "Hotwire shared and friends shells [REQ-WISH-003] [REQ-SOC-001]",
     expect(response.body).to include("estimated_date")
     expect(response.body).to include("Reserve").or include("Reservar")
   end
+
+  it "hides reserve when the item already has an active hold [REQ-RES-002]" do
+    Friendship.request!(requester: owner, addressee: viewer).accept!(actor: viewer)
+    other = create(:user, username: "other_hold")
+    Friendship.request!(requester: owner, addressee: other).accept!(actor: other)
+    wishlist = create(:wishlist, :shared, owner: owner, title: "Ocupada")
+    WishlistShare.create!(wishlist: wishlist, user: viewer)
+    item = create(:item, wishlist: wishlist, title: "Tomado")
+    ReservationService.create!(item: item, user: other, estimated_date: Date.current + 5)
+
+    get "/app/wishlists/#{wishlist.id}"
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Tomado")
+    expect(response.body).not_to include('name="estimated_date"')
+    expect(response.body).to include("Unavailable").or include("No disponible")
+  end
 end
 

@@ -19,16 +19,28 @@
   <% end %>
   <ul class="space-y-2">
     <% @items.each do |item| %>
+      <% next if !owner_view && @received_gift_ids.include?(item.id) %>
       <li class="border-b border-stone-100 pb-2">
         <% if owner_view %>
           <%= link_to item.title, edit_member_item_path(item) %>
           <%= button_to t("member.items.delete"), member_item_path(item), method: :delete %>
         <% else %>
           <strong><%= item.title %></strong>
-          <%= form_with url: member_item_reservations_path(item), method: :post, class: "mt-1 flex flex-wrap gap-2 items-end" do %>
-            <%= label_tag :estimated_date, t("member.reservations.estimated_date") %>
-            <%= date_field_tag :estimated_date, Date.current + 7, required: true %>
-            <%= submit_tag t("member.reservations.reserve") %>
+          <% availability = item.availability_for(
+               current_user,
+               holds_by_item_id: @holds_by_item_id,
+               open_gifts_by_item_id: @open_gifts_by_item_id
+             ) %>
+          <% if availability == "available" %>
+            <%= form_with url: member_item_reservations_path(item), method: :post, class: "mt-1 flex flex-wrap gap-2 items-end" do %>
+              <%= label_tag :estimated_date, t("member.reservations.estimated_date") %>
+              <%= date_field_tag :estimated_date, Date.current + 7, required: true %>
+              <%= submit_tag t("member.reservations.reserve") %>
+            <% end %>
+          <% elsif availability == "reserved_by_me" %>
+            <p class="text-sm text-stone-600"><%= t("member.reservations.reserved_by_me") %></p>
+          <% else %>
+            <p class="text-sm text-stone-600"><%= t("member.reservations.unavailable") %></p>
           <% end %>
         <% end %>
       </li>
