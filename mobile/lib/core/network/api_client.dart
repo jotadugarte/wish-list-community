@@ -74,6 +74,7 @@ class ApiClient {
     Map<String, dynamic>? queryParams,
     Map<String, dynamic>? body,
     bool authenticated = true,
+    bool multipart = false,
   }) async {
     if (!path.startsWith('/api/v1/')) {
       throw ArgumentError(
@@ -81,12 +82,17 @@ class ApiClient {
       );
     }
 
+    final headers = await _buildHeaders(authenticated, multipart: multipart);
+    final payload = multipart && body != null
+        ? <String, dynamic>{...body, 'multipart': true}
+        : body;
+
     final req = RecordedApiRequest(
       method: method.toUpperCase(),
       path: path,
-      headers: await _buildHeaders(authenticated),
+      headers: headers,
       queryParams: queryParams,
-      body: body,
+      body: payload,
     );
 
     final response = await _send(req);
@@ -103,10 +109,14 @@ class ApiClient {
     return response;
   }
 
-  Future<Map<String, String>> _buildHeaders(bool authenticated) async {
+  Future<Map<String, String>> _buildHeaders(
+    bool authenticated, {
+    bool multipart = false,
+  }) async {
     final headers = <String, String>{
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      if (!multipart) 'Content-Type': 'application/json',
+      if (multipart) 'Content-Type': 'multipart/form-data',
     };
     if (authenticated) {
       final token = await tokenStorage.readToken();
