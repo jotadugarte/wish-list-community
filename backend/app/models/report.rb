@@ -71,9 +71,12 @@ class Report < ApplicationRecord
     unless reporter&.persisted? && reportable&.persisted?
       raise ArgumentError, "Pre-condition failed: reporter and reportable must be persisted"
     end
-    return unless reportable.is_a?(User) && reporter.id == reportable.id
+    if reportable.is_a?(User) && reporter.id == reportable.id
+      raise ArgumentError, "Pre-condition failed: cannot report yourself"
+    end
+    return unless reportable.is_a?(Wishlist) && reporter.id == reportable.owner_id
 
-    raise ArgumentError, "Pre-condition failed: cannot report yourself"
+    raise ArgumentError, "Pre-condition failed: cannot report your own wishlist"
   end
   private_class_method :validate_submit_preconditions!
 
@@ -88,9 +91,14 @@ class Report < ApplicationRecord
   end
 
   def cannot_report_self
-    return unless reportable_type == "User" && reporter_id.present? && reporter_id == reportable_id
+    if reportable_type == "User" && reporter_id.present? && reporter_id == reportable_id
+      errors.add(:reportable_id, "cannot report yourself")
+      return
+    end
+    return unless reportable_type == "Wishlist" && reporter_id.present? && reportable.is_a?(Wishlist)
+    return unless reporter_id == reportable.owner_id
 
-    errors.add(:reportable_id, "cannot report yourself")
+    errors.add(:reportable_id, "cannot report your own wishlist")
   end
 
   def unique_pending_report_for_target
