@@ -14,7 +14,7 @@ Stores core user identity, authentication credentials, localization preferences,
 | `username` | `string` | `false` | — | Public handle (`Username` VO, `3..30` chars, lowercase alphanumeric + underscores). Subject to a 30-day change cooldown (`REQ-USER-001`). |
 | `password_digest` | `string` | `false` | — | BCrypt hash managed by `has_secure_password` (`REQ-AUTH-001`). |
 | `role` | `string` | `false` | `"user"` | Authorization role (`"user"` or `"admin"`). Admins provisioned via seed/console only (`REQ-ADM-001`). |
-| `suspended_at` | `datetime` | `true` | `nil` | Admin suspend timestamp. Login ban (generic auth failure); does not soft-delete or hide content (`REQ-ADM-001`). |
+| `suspended_at` | `datetime` | `true` | `nil` | Admin suspend timestamp (`User#suspend!`). Sets credential revoke (sessions/API/device tokens). Login/API auth fail with the same generic invalid-credentials copy as bad passwords (FC2). Does **not** soft-delete or hide wishlists/items (`REQ-ADM-001`). Cleared only by compensating `user.unsuspended` via Admin revert / `unsuspend!`. |
 | `locale` | `string` | `false` | `"es"` | Preferred UI and asynchronous notification language (`"es"` or `"en"`) (`REQ-USER-002`). |
 | `time_zone` | `string` | `false` | `"UTC"` | User's IANA time zone for accurate reservation expiration and event dates (`REQ-USER-003`). |
 | `username_changed_at` | `datetime` | `true` | `nil` | Timestamp of the last `@username` change; enforces the 30-day cooldown window (`REQ-USER-001`). |
@@ -113,7 +113,7 @@ Strictly immutable (`readonly? => true` after creation) append-only audit log re
 | `actor_id` | `bigint` | `true` | FK (`users`) | User who performed the action (`on_delete: :nullify`). |
 | `action` | `string` | `false` | — | Canonical event key (e.g., `"user.blocked"`, `"user.soft_deleted"`, `"user.restored"`). |
 | `auditable_type` / `auditable_id` | `string` / `bigint` | `false` | — | Polymorphic target entity. |
-| `metadata` | `jsonb` | `false` | `{}` | Structured JSONB context for auditing and administrative revert. |
+| `metadata` | `jsonb` | `false` | `{}` | Structured JSONB context for auditing and administrative revert. Soft-delete events may include `admin_enforcement: true` (immutable O4A stamp from Admin triage) and cascade id lists (`cascaded_wishlist_ids` / `cascaded_item_ids`). |
 
 ---
 

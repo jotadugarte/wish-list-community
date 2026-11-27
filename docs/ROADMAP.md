@@ -75,15 +75,15 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Rails 8 `rate_limit` anti-spam protection across mutation and report endpoints + report wishlist (`REQ-DISC-001`) — 2026-11-26
   - [x] Sensitive content handled through reports queue (`REQ-DISC-001`) — 2026-11-26
   - [x] API v1 endpoints + Flutter screens for this sprint (Hotwire Secret Link Reportar lista parity included) — 2026-11-26
+- [x] **MVP Sprint 8 — Admin/Moderation (Web Only)** — 2026-11-27 — Branch: `cursor/sprint-8-admin-moderation-f6bf` — Draft PR #15
+  - [x] Admin panel: report queue + moderation actions (dismiss / suspend / soft-delete) (`REQ-ADM-001`) — 2026-11-27
+  - [x] Admin audit log viewer (`AuditEvent` history) with 1-click revert for suspend / admin soft-delete / dismiss→pending (`REQ-ADM-001`) — 2026-11-27
+  - [x] Admin auditing of gifter identity and online gift purchase link (`REQ-ADM-001`) — 2026-11-27
 
 ## In Progress
 _(none)_
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 8 — Admin/Moderation (Web Only)**
-  - [ ] Admin panel: report queue + moderation actions (block/suspend) (`REQ-ADM-001`)
-  - [ ] Admin audit log viewer (`AuditEvent` history of reservations/gifts/changes) with 1-click revert for error/abuse (`REQ-ADM-001`)
-  - [ ] Admin auditing of gifter identity and online gift purchase link (`REQ-ADM-001`)
 - [ ] **MVP Sprint 9 — Mobile Wrap-Up & Native "Share to App" Sheet (Flutter iOS + Android)**
   - [ ] Full MVP parity with the web app in the Flutter apps (`REQ-MOB-001`)
   - [ ] Native OS *"Share to App"* sheet extension (iOS & Android) with smart parsing of mixed text + URL from store apps (Amazon, MercadoLibre) + automatic store image preview directly into *"Add Item to Wishlist"* (`REQ-MOB-001`, `REQ-MOB-002`, `REQ-ITEM-006`)

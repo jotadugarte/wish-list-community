@@ -159,7 +159,7 @@ FC4 NONE: no further dark corners.
 </task_session>
 
 ## QA reviewer record — 2026-11-27 (Sprint 8 Admin/Moderation)
-delivery: not posted
+delivery: posted
 
 What was tested (cloud, headless): User Suspend + FC2 auth; Report triage (dismiss/suspend/soft-delete, O7A no Notification); moderation revert; Hotwire /admin gate + reports + audit revert + gift O5A; O6A no promote UI; S7 report regression; full RSpec 352/0; Flutter analyze + 56 tests.
 
@@ -177,3 +177,6 @@ Product bugs: none.
 
 ## Compliance CLOSED
 Owner CONTINUE 2026-11-27 — clean pass 1; proceeding to full check / draft PR.
+
+## Sync-docs CLOSED
+Owner CONTINUE 2026-11-27 — applied API_CONTRACT, SCHEMA_REFERENCE, ROADMAP, CHANGELOG.

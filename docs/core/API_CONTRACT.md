@@ -100,11 +100,13 @@ Soft-deletes the authenticated user's account, revokes all active credentials/to
 - **Auth Required:** Yes.
 - **Response:** `204 No Content`.
 
-### `POST /api/v1/account/restore` (`[REQ-LIFE-002]`)
-Restores a soft-deleted account within the 30-day grace window and issues a fresh API token.
+### `POST /api/v1/account/restore` (`[REQ-LIFE-002]`, `[REQ-ADM-001]`)
+Restores a **self** soft-deleted account within the 30-day SoftDeletable grace window and issues a fresh API token.
 - **Auth Required:** No.
 - **Request Body:** `{ "email_address": "user@example.com", "password": "secretPassword123" }`
 - **Response (`200 OK`):** `{ "token": "raw_bearer_token_string", "user": { "id": 1, "username": "nata_24", "created_at": "..." } }`
+- **Admin-enforced soft-delete (`admin_enforcement` on the latest `user.soft_deleted` AuditEvent):** returns the same generic `401 Unauthorized` / `invalid_credentials` as a bad password (no moderation leak). Restore is via Admin audit revert only (`REQ-ADM-001` / O4A).
+- **Other failures within the grace window** (e.g. expired window after auth): `422` with localized SoftDeletable error messages when applicable.
 
 ---
 
@@ -395,5 +397,5 @@ Cookie session + `role=admin` only. Non-admins receive **404** (no panel leak). 
 - `POST /admin/audit_events/:id/revert` — unsuspend / restore soft-delete (30-day window) / reopen dismissed→pending
 - `GET /admin/gifts/:id` — read-only gifter `@username` + email + `purchase_link_ref`
 
-Suspended accounts fail web/API login with the same generic invalid-credentials copy as bad passwords; discarded soft-delete restore auth is unchanged.
+Suspended accounts fail web/API login with the same generic invalid-credentials copy as bad passwords (FC2). Self soft-delete restore within 30 days is unchanged; **admin-enforced** soft-deletes fail restore with that same generic `401` (member must not learn moderation status from restore).
 
