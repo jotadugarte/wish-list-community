@@ -16,18 +16,19 @@ class GiftRecord < ApplicationRecord
     GiftStatus.new(status)
   end
 
-  # [REQ-GIFT-001] API JSON for clients — never leaks purchase_link_ref (admin-only).
-  def as_api_json
-    {
+  # [REQ-GIFT-001] [REQ-GIFT-004] [REQ-RES-002] API JSON — no purchase_link_ref; gifter_id only for gifter/admin.
+  def as_api_json(viewer: nil)
+    payload = {
       id: id,
       item_id: item_id,
       wishlist_id: item.wishlist_id,
-      gifter_id: gifter_id,
       status: status,
       thank_you_note: thank_you_note,
       created_at: created_at,
       updated_at: updated_at
     }
+    payload[:gifter_id] = gifter_id if reveal_gifter_id?(viewer)
+    payload
   end
 
   # [REQ-GIFT-002] Open gifts that block availability for third parties.
@@ -113,11 +114,16 @@ class GiftRecord < ApplicationRecord
 
   private
 
+  def reveal_gifter_id?(viewer)
+    return false if viewer.nil?
+
+    viewer.id == gifter_id || viewer.role == "admin"
+  end
 
   def status_must_be_allowed
     GiftStatus.new(status)
   rescue ArgumentError
-    errors.add(:status, "is not included in the list")
+    errors.add(:status, I18n.t("gifts.errors.invalid_status"))
   end
 
   def thank_you_note_must_be_valid
@@ -125,7 +131,7 @@ class GiftRecord < ApplicationRecord
 
     ThankYouNote.new(thank_you_note)
   rescue ArgumentError
-    errors.add(:thank_you_note, "is invalid")
+    errors.add(:thank_you_note, I18n.t("gifts.errors.invalid_thank_you"))
   end
 
   def purchase_link_ref_must_be_valid
@@ -133,7 +139,7 @@ class GiftRecord < ApplicationRecord
 
     PurchaseLinkRef.new(purchase_link_ref)
   rescue ArgumentError
-    errors.add(:purchase_link_ref, "is invalid")
+    errors.add(:purchase_link_ref, I18n.t("gifts.errors.invalid_purchase_link"))
   end
 end
 

@@ -21,7 +21,8 @@ module Api
             r.as_api_json.merge(item_title: r.item.title, wishlist_title: r.item.wishlist.title)
           },
           open_gifts: open_gifts.map { |g|
-            g.as_api_json.merge(item_title: g.item.title, wishlist_title: g.item.wishlist.title)
+            g.as_api_json(viewer: current_user)
+             .merge(item_title: g.item.title, wishlist_title: g.item.wishlist.title)
           }
         }, status: :ok
       end

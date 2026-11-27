@@ -13,10 +13,12 @@
   <% else %>
     <ul class="space-y-4" data-testid="secret-link-items">
       <% active_items.each do |item| %>
-        <% availability = is_owner ? nil : item.availability_for(current_user) %>
-        <% my_hold = availability == "reserved_by_me" ? Reservation.find_by(item_id: item.id, user_id: current_user.id, status: ReservationStatus::ACTIVE_HOLD) : nil %>
-        <% my_open_gift = GiftRecord.where(item_id: item.id, gifter_id: current_user.id, status: GiftStatus::OPEN).limit(1).first %>
-        <% pending_delivery = is_owner ? GiftRecord.find_by(item_id: item.id, status: "delivered_pending_confirmation") : nil %>
+        <% availability = is_owner ? nil : item.availability_for(current_user, holds_by_item_id: @holds_by_item_id, open_gifts_by_item_id: @open_gifts_by_item_id) %>
+        <% hold = @holds_by_item_id[item.id] %>
+        <% my_hold = (availability == "reserved_by_me" && hold&.user_id == current_user.id) ? hold : nil %>
+        <% open_gift = @open_gifts_by_item_id[item.id] %>
+        <% my_open_gift = (open_gift&.gifter_id == current_user.id) ? open_gift : nil %>
+        <% pending_delivery = is_owner ? @pending_confirm_by_item_id[item.id] : nil %>
         <li class="border-l-4 border-indigo-500 pl-3 py-2" data-availability="<%= availability %>">
           <h2 class="font-medium"><%= item.title %></h2>
           <% if item.specifications.present? %>

@@ -17,7 +17,7 @@ module Api
           actor: current_user,
           thank_you_note: gift_params[:thank_you_note]
         )
-        render json: { gift: created.as_api_json }, status: :created
+        render json: { gift: created.as_api_json(viewer: current_user) }, status: :created
       rescue GiftService::Error, ArgumentError, ActiveRecord::RecordInvalid => e
         skip_authorization unless @_pundit_policy_authorized
         render json: { errors: [ e.message ] }, status: :unprocessable_content

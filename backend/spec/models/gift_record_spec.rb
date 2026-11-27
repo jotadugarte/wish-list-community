@@ -56,6 +56,15 @@ RSpec.describe GiftRecord do
 
       expect(item.reload.updated_at).to eq(before)
     end
+
+    it "omits gifter_id from owner-facing as_api_json [REQ-GIFT-004] [REQ-RES-002]" do
+      gift = create_gift!
+      owner_json = gift.as_api_json(viewer: owner)
+      gifter_json = gift.as_api_json(viewer: gifter)
+
+      expect(owner_json).not_to have_key(:gifter_id)
+      expect(gifter_json[:gifter_id]).to eq(gifter.id)
+    end
   end
 
   describe "partial unique open gift [REQ-GIFT-002]" do

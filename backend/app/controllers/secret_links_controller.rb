@@ -11,7 +11,11 @@ class SecretLinksController < ApplicationController
     if logged_in?
       register_share_if_needed!(wishlist)
       @wishlist = wishlist
-      @items = wishlist.items.kept.order(:position, :id).limit(200)
+      @items = wishlist.items.kept.includes(:item_links).order(:position, :id).limit(200).to_a
+      item_ids = @items.map(&:id)
+      @holds_by_item_id = Item.active_holds_by_item_id(item_ids)
+      @open_gifts_by_item_id = Item.open_gifts_by_item_id(item_ids)
+      @pending_confirm_by_item_id = Item.pending_confirm_gifts_by_item_id(item_ids)
       render :show_authenticated
     else
       @wishlist = wishlist

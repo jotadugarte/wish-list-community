@@ -10,14 +10,28 @@ module Api
       MAX_INDEX = 200
       MAX_LINKS = 20
 
-      # [REQ-ITEM-001] Lists kept items for a visible wishlist ordered by position.
+      # [REQ-ITEM-001] [REQ-GIFT-002] Lists kept items; batches holds/open gifts/received.
       def index
         wishlist = find_wishlist_for_read!
         authorize wishlist, :index?, policy_class: ItemPolicy
         items = wishlist.items.kept.order(:position, :id).limit(MAX_INDEX).to_a
-        holds = Item.active_holds_by_item_id(items.map(&:id))
+        item_ids = items.map(&:id)
+        holds = Item.active_holds_by_item_id(item_ids)
+        open_gifts = Item.open_gifts_by_item_id(item_ids)
+        received_ids = Item.received_gift_item_ids_for(wishlist.id)
+        pending = if current_user.id == wishlist.owner_id
+          Item.pending_confirm_gifts_by_item_id(item_ids)
+        end
         render json: {
-          items: items.map { |i| i.as_api_json(viewer: current_user, holds_by_item_id: holds) }
+          items: items.map { |i|
+            i.as_api_json(
+              viewer: current_user,
+              holds_by_item_id: holds,
+              open_gifts_by_item_id: open_gifts,
+              received_gift_ids: received_ids,
+              pending_confirm_gifts_by_item_id: pending
+            )
+          }
         }, status: :ok
       end
 

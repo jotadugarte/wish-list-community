@@ -42,7 +42,9 @@ RSpec.describe "Api::V1::Gifts", type: :request do
            params: { gift: { thank_you_note: "¡Gracias!" } },
            headers: owner_headers
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body["gift"]["status"]).to eq("received_confirmed")
+      confirmed = response.parsed_body["gift"]
+      expect(confirmed["status"]).to eq("received_confirmed")
+      expect(confirmed).not_to have_key("gifter_id")
       expect(friend.notifications.pluck(:event_key)).to include("gift.thank_you")
     end
 
@@ -51,6 +53,8 @@ RSpec.describe "Api::V1::Gifts", type: :request do
       GiftRecord.create!(item: item, gifter: other, status: "purchased_secret")
       post "/api/v1/reservations/#{hold.id}/mark_purchased", headers: friend_headers
       expect(response).to have_http_status(:conflict)
+      expect(response.parsed_body["errors"]).to be_present
+      expect(response.parsed_body).not_to have_key("error")
     end
   end
 
@@ -80,6 +84,21 @@ RSpec.describe "Api::V1::Gifts", type: :request do
            headers: friend_headers
       expect(response).to have_http_status(:created)
       expect(GiftRecord.last.status).to eq("voided")
+    end
+
+    it "requires confirm_void_gifts when gifter unfriends with open gift [REQ-GIFT-002]" do
+      GiftRecord.create!(item: item, gifter: friend, status: "purchased_secret")
+      friendship = Friendship.between_users(owner, friend).find_by!(status: "accepted")
+
+      delete "/api/v1/friendships/#{friendship.id}", headers: friend_headers
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["errors"].first).to include("confirm_void_gifts")
+
+      delete "/api/v1/friendships/#{friendship.id}",
+             params: { confirm_void_gifts: true },
+             headers: friend_headers
+      expect(response).to have_http_status(:no_content)
+      expect(GiftRecord.find_by!(item: item).status).to eq("voided")
     end
   end
 end

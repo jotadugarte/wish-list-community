@@ -56,6 +56,7 @@ class WishlistItem {
   final List<ItemImageModel> images;
   final String? availability;
   final bool receivedGift;
+  final int? pendingConfirmGiftId;
 
   const WishlistItem({
     required this.id,
@@ -70,6 +71,7 @@ class WishlistItem {
     this.images = const [],
     this.availability,
     this.receivedGift = false,
+    this.pendingConfirmGiftId,
   });
 
 
@@ -99,6 +101,7 @@ class WishlistItem {
           .toList(growable: false),
       availability: json['availability'] as String?,
       receivedGift: json['received_gift'] == true,
+      pendingConfirmGiftId: json['pending_confirm_gift_id'] as int?,
     );
   }
 }

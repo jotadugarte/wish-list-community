@@ -270,8 +270,12 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
             ],
             if (widget.canManage && !item.receivedGift)
               TextButton(
-                onPressed: () => _ownerMarkReceived(item),
-                child: Text(widget.strings.markReceivedButton),
+                onPressed: () => _ownerReceiveFlow(item),
+                child: Text(
+                  item.pendingConfirmGiftId != null
+                      ? widget.strings.confirmReceivedButton
+                      : widget.strings.markReceivedButton,
+                ),
               ),
           ],
         ),
@@ -279,15 +283,54 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
     );
   }
 
-  Future<void> _ownerMarkReceived(WishlistItem item) async {
+  // [REQ-GIFT-003] [REQ-GIFT-004] Path 1 confirm or Path 2 mark with optional thank-you.
+  Future<void> _ownerReceiveFlow(WishlistItem item) async {
     final gifts = widget.giftRepository;
     if (gifts == null) return;
+    final note = await _promptThankYouNote();
+    if (note == null || !mounted) return;
+    final trimmed = note.trim();
+    final thankYou = trimmed.isEmpty ? null : trimmed;
     try {
-      await gifts.ownerMarkReceived(itemId: item.id);
+      final pendingId = item.pendingConfirmGiftId;
+      if (pendingId != null) {
+        await gifts.confirmReceived(giftId: pendingId, thankYouNote: thankYou);
+      } else {
+        await gifts.ownerMarkReceived(itemId: item.id, thankYouNote: thankYou);
+      }
       await _load();
     } catch (e) {
       if (mounted) setState(() => _error = widget.strings.errorMessage(e));
     }
+  }
+
+  Future<String?> _promptThankYouNote() async {
+    final controller = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(widget.strings.thankYouOptionalLabel),
+        content: TextField(
+          controller: controller,
+          maxLength: 500,
+          decoration: InputDecoration(
+            labelText: widget.strings.thankYouOptionalLabel,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text),
+            child: Text(widget.strings.confirmReceivedButton),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    return result;
   }
 }
 

@@ -64,6 +64,7 @@ en:
       not_confirmable: "gift cannot be confirmed"
       item_required: "item required"
       invalid_thank_you: "invalid thank-you note"
+      invalid_status: "is not included in the list"
       confirm_void_required: "confirm_void_gifts is required because you have an open gift with this user"
   notifications:
     gift:

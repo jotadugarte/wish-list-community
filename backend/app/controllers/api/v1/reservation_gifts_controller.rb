@@ -16,9 +16,9 @@ module Api
           actor: current_user,
           purchase_link_ref: gift_params[:purchase_link_ref]
         )
-        render json: { gift: gift.as_api_json }, status: :created
+        render json: { gift: gift.as_api_json(viewer: current_user) }, status: :created
       rescue GiftService::ConflictError => e
-        render json: { error: e.message }, status: :conflict
+        render json: { errors: [ e.message ] }, status: :conflict
       rescue GiftService::Error, ArgumentError, ActiveRecord::RecordInvalid => e
         render json: { errors: [ e.message ] }, status: :unprocessable_content
       end

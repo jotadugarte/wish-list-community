@@ -46,32 +46,23 @@ class Item < ApplicationRecord
     ItemPriority.new(priority)
   end
 
-  # [REQ-ITEM-001] [REQ-RES-002] JSON payload for API clients.
-  # Viewer-relative `availability` is included for non-owners only (O3A).
-  # Optional `holds_by_item_id` avoids N+1 on bounded list serialization.
-  def as_api_json(viewer: nil, holds_by_item_id: nil)
-    payload = {
-      id: id,
-      wishlist_id: wishlist_id,
-      title: title,
-      specifications: specifications,
-      priority: priority,
-      price_cents: price_cents,
-      currency: currency,
-      position: position,
-      discarded_at: discarded_at,
-      links: item_links.limit(50).map(&:as_api_json),
-      images: images.attachments.limit(MAX_IMAGES).map { |att| image_as_json(att) },
-      created_at: created_at,
-      updated_at: updated_at
-    }
-    payload[:received_gift] = received_confirmed?
-    return payload if viewer.nil? || viewer.id == wishlist.owner_id
+  # [REQ-ITEM-001] [REQ-RES-002] [REQ-GIFT-002] JSON for API clients.
+  # Viewer-relative `availability` for non-owners only (O3A). Batch maps avoid N+1.
+  def as_api_json(viewer: nil, holds_by_item_id: nil, open_gifts_by_item_id: nil,
+                  received_gift_ids: nil, pending_confirm_gifts_by_item_id: nil)
+    payload = base_api_payload
+    payload[:received_gift] = received_gift_flag(received_gift_ids)
+    if viewer && viewer.id == wishlist.owner_id
+      pending_id = pending_confirm_id(pending_confirm_gifts_by_item_id)
+      payload[:pending_confirm_gift_id] = pending_id if pending_id
+      return payload
+    end
+    return payload if viewer.nil?
 
     payload[:availability] = availability_for(
       viewer,
       holds_by_item_id: holds_by_item_id,
-      open_gifts_by_item_id: nil
+      open_gifts_by_item_id: open_gifts_by_item_id
     )
     payload
   end
@@ -123,6 +114,16 @@ class Item < ApplicationRecord
               .index_by(&:item_id)
   end
 
+  # [REQ-GIFT-001] Batch-load delivered_pending gifts awaiting owner confirm.
+  def self.pending_confirm_gifts_by_item_id(item_ids)
+    ids = Array(item_ids).first(200)
+    return {} if ids.empty?
+
+    GiftRecord.where(item_id: ids, status: "delivered_pending_confirmation")
+              .limit(200)
+              .index_by(&:item_id)
+  end
+
   # [REQ-ITEM-004] Item ids in a wishlist that belong in the Received Gifts section.
   def self.received_gift_item_ids_for(wishlist_id)
     joins(:gift_records)
@@ -134,6 +135,39 @@ class Item < ApplicationRecord
 
 
   private
+
+  def base_api_payload
+    {
+      id: id,
+      wishlist_id: wishlist_id,
+      title: title,
+      specifications: specifications,
+      priority: priority,
+      price_cents: price_cents,
+      currency: currency,
+      position: position,
+      discarded_at: discarded_at,
+      links: item_links.limit(50).map(&:as_api_json),
+      images: images.attachments.limit(MAX_IMAGES).map { |att| image_as_json(att) },
+      created_at: created_at,
+      updated_at: updated_at
+    }
+  end
+
+  def received_gift_flag(received_gift_ids)
+    return received_gift_ids.include?(id) if received_gift_ids
+
+    received_confirmed?
+  end
+
+  def pending_confirm_id(pending_confirm_gifts_by_item_id)
+    gift = if pending_confirm_gifts_by_item_id
+      pending_confirm_gifts_by_item_id[id]
+    else
+      GiftRecord.find_by(item_id: id, status: "delivered_pending_confirmation")
+    end
+    gift&.id
+  end
 
   def image_as_json(attachment)
     {

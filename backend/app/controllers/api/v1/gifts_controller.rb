@@ -12,7 +12,7 @@ module Api
         gift = GiftRecord.find(params[:id])
         authorize gift, :mark_delivered?
         updated = GiftService.mark_delivered!(gift: gift, actor: current_user)
-        render json: { gift: updated.as_api_json }, status: :ok
+        render json: { gift: updated.as_api_json(viewer: current_user) }, status: :ok
       rescue GiftService::Error => e
         render json: { errors: [ e.message ] }, status: :unprocessable_content
       end
@@ -26,7 +26,7 @@ module Api
           actor: current_user,
           thank_you_note: gift_params[:thank_you_note]
         )
-        render json: { gift: updated.as_api_json }, status: :ok
+        render json: { gift: updated.as_api_json(viewer: current_user) }, status: :ok
       rescue GiftService::Error, ArgumentError => e
         render json: { errors: [ e.message ] }, status: :unprocessable_content
       end
@@ -34,7 +34,7 @@ module Api
       private
 
       def gift_params
-        params.fetch(:gift, {}).permit(:thank_you_note, :purchase_link_ref)
+        params.fetch(:gift, {}).permit(:thank_you_note)
       end
     end
   end
