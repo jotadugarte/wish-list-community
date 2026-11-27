@@ -80,7 +80,8 @@
 			</array>
 		</dict>
 	</array>
+	<!-- Hand deep links to app_links / InboundLinkBootstrap; do not double-handle. -->
 	<key>FlutterDeepLinkingEnabled</key>
-	<true/>
+	<false/>
 </dict>
 </plist>
