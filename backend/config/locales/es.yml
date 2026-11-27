@@ -3,6 +3,20 @@ es:
   member:
     errors:
       not_found: "No encontrado"
+    items:
+      heading: "Ítems"
+      new: "Agregar ítem"
+      edit: "Editar ítem"
+      create: "Guardar ítem"
+      save: "Guardar"
+      delete: "Eliminar ítem"
+      paste_url: "Pegar URL del producto"
+      images: "Imágenes"
+      compress_hint: "Las imágenes se redimensionan en tu dispositivo hacia 1600px / 2MB antes de subir."
+      created: "Ítem creado."
+      updated: "Ítem actualizado."
+      deleted: "Ítem eliminado."
+      invalid: "No se pudo guardar el ítem."
     wishlists:
       new: "Nueva lista"
       create: "Crear"

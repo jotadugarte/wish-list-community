@@ -156,8 +156,8 @@ Términos y Privacidad bilingües es+en desde el día uno (placeholders hasta te
   <step id="10" status="complete">Implement MemberWebShell layout/nav until step 9 green (empty section shells OK if wired).</step>
   <step id="11" status="complete">Write failing system specs for Hotwire wishlist parity: list/create/edit privacy/secret-link rotate/shares/soft-delete aligned with existing API rules [REQ-WISH-*].</step>
   <step id="12" status="complete">Implement Hotwire wishlist controllers/views until step 11 green (server authority unchanged).</step>
-  <step id="13" status="pending">Write failing system specs for Hotwire item CRUD + paste-URL preview confirm + multipart images with client-side compress helper (O5A) respecting ≤3 / ≤2MB / ≤1600; server libvips still runs [REQ-ITEM-002], [REQ-ITEM-006], [REQ-MOB-001].</step>
-  <step id="14" status="pending">Implement Hotwire item forms + compress helper until step 13 green.</step>
+  <step id="13" status="complete">Write failing system specs for Hotwire item CRUD + paste-URL preview confirm + multipart images with client-side compress helper (O5A) respecting ≤3 / ≤2MB / ≤1600; server libvips still runs [REQ-ITEM-002], [REQ-ITEM-006], [REQ-MOB-001].</step>
+  <step id="14" status="complete">Implement Hotwire item forms + compress helper until step 13 green.</step>
   <step id="15" status="pending">Write failing system specs for Hotwire reserve / gift / my-reservations / thank-you flows matching existing API behaviour [REQ-RES-*], [REQ-GIFT-*].</step>
   <step id="16" status="pending">Implement Hotwire reservation/gift surfaces until step 15 green.</step>
   <step id="17" status="pending">Write failing system/request specs for Hotwire notification inbox + prefs toggles + profile soft-delete/account links (O1A/O2B/O8A) [REQ-NOTIF-001], [REQ-LIFE-002].</step>

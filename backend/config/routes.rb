@@ -15,7 +15,9 @@ Rails.application.routes.draw do
         post :rotate_share_token
       end
       resources :shares, only: %i[create destroy], controller: "wishlist_shares"
+      resources :items, only: %i[new create], controller: "items"
     end
+    resources :items, only: %i[edit update destroy], controller: "items"
     get "shared", to: "shell#show", defaults: { section: "shared" }, as: :shared
     get "friends", to: "shell#show", defaults: { section: "friends" }, as: :friends
     get "reservations", to: "shell#show", defaults: { section: "reservations" }, as: :reservations

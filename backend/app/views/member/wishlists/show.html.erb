@@ -10,6 +10,17 @@
     <%= button_to t("member.wishlists.delete"), member_wishlist_path(@wishlist), method: :delete, form: { data: { turbo_confirm: t("member.wishlists.confirm_delete") } } %>
   </p>
 
+  <h2 class="text-xl font-semibold"><%= t("member.items.heading") %></h2>
+  <%= link_to t("member.items.new"), new_member_wishlist_item_path(@wishlist) %>
+  <ul class="space-y-2">
+    <% @items.each do |item| %>
+      <li>
+        <%= link_to item.title, edit_member_item_path(item) %>
+        <%= button_to t("member.items.delete"), member_item_path(item), method: :delete %>
+      </li>
+    <% end %>
+  </ul>
+
   <h2 class="text-xl font-semibold"><%= t("member.wishlists.shares") %></h2>
   <%= form_with url: member_wishlist_shares_path(@wishlist), method: :post do %>
     <%= label_tag :user_id, t("member.wishlists.share_user_id") %>

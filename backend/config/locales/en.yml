@@ -3,6 +3,20 @@ en:
   member:
     errors:
       not_found: "Not found"
+    items:
+      heading: "Items"
+      new: "Add item"
+      edit: "Edit item"
+      create: "Save item"
+      save: "Save"
+      delete: "Delete item"
+      paste_url: "Paste product URL"
+      images: "Images"
+      compress_hint: "Images are resized on your device toward 1600px / 2MB before upload."
+      created: "Item created."
+      updated: "Item updated."
+      deleted: "Item deleted."
+      invalid: "Unable to save item."
     wishlists:
       new: "New wishlist"
       create: "Create"

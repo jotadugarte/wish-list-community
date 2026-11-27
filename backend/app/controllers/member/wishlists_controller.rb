@@ -25,6 +25,7 @@ module Member
       @wishlist = current_user.wishlists.kept.find(params[:id])
       authorize @wishlist, :show?
       @shares = @wishlist.wishlist_shares.includes(:user).limit(50)
+      @items = @wishlist.items.kept.order(:position, :id).limit(200)
     end
 
     def new
