@@ -1,11 +1,11 @@
 # Database Schema Reference (`SCHEMA_REFERENCE.md`)
 
-> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_26_220000`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
+> **Canonical Source:** Auto-generated and enriched from [`backend/db/schema.rb`](../../backend/db/schema.rb) (Schema Version: `2026_11_27_051505`). Maps PostgreSQL tables, columns, and indexes to business rules and `[REQ-ID]` traceability codes in [`SPEC.md`](SPEC.md).
 
 ---
 
-## 1. `users` (`[REQ-USER-001]`, `[REQ-USER-002]`, `[REQ-USER-003]`, `[REQ-AUTH-002]`, `[REQ-LIFE-002]`)
-Stores core user identity, authentication credentials, localization preferences, UGC terms acceptance, and soft-delete lifecycle state.
+## 1. `users` (`[REQ-USER-001]`, `[REQ-USER-002]`, `[REQ-USER-003]`, `[REQ-AUTH-002]`, `[REQ-LIFE-002]`, `[REQ-ADM-001]`)
+Stores core user identity, authentication credentials, localization preferences, UGC terms acceptance, soft-delete lifecycle state, and admin suspend state.
 
 | Column | Type | Null | Default | Business Semantics |
 | :--- | :--- | :--- | :--- | :--- |
@@ -13,7 +13,8 @@ Stores core user identity, authentication credentials, localization preferences,
 | `email_address` | `string` | `false` | — | Strictly private normalized email (`EmailAddress` VO). Never serialized in public/friend responses. Anonymized to `purged_*@purged.invalid` after 30 days of soft-delete (`REQ-USER-001`, `REQ-LIFE-002`). |
 | `username` | `string` | `false` | — | Public handle (`Username` VO, `3..30` chars, lowercase alphanumeric + underscores). Subject to a 30-day change cooldown (`REQ-USER-001`). |
 | `password_digest` | `string` | `false` | — | BCrypt hash managed by `has_secure_password` (`REQ-AUTH-001`). |
-| `role` | `string` | `false` | `"user"` | Authorization role (`"user"` or `"admin"`). |
+| `role` | `string` | `false` | `"user"` | Authorization role (`"user"` or `"admin"`). Admins provisioned via seed/console only (`REQ-ADM-001`). |
+| `suspended_at` | `datetime` | `true` | `nil` | Admin suspend timestamp (`User#suspend!`). Sets credential revoke (sessions/API/device tokens). Login/API auth fail with the same generic invalid-credentials copy as bad passwords (FC2). Does **not** soft-delete or hide wishlists/items (`REQ-ADM-001`). Cleared only by compensating `user.unsuspended` via Admin revert / `unsuspend!`. |
 | `locale` | `string` | `false` | `"es"` | Preferred UI and asynchronous notification language (`"es"` or `"en"`) (`REQ-USER-002`). |
 | `time_zone` | `string` | `false` | `"UTC"` | User's IANA time zone for accurate reservation expiration and event dates (`REQ-USER-003`). |
 | `username_changed_at` | `datetime` | `true` | `nil` | Timestamp of the last `@username` change; enforces the 30-day cooldown window (`REQ-USER-001`). |
@@ -25,6 +26,7 @@ Stores core user identity, authentication credentials, localization preferences,
   * `idx_users_on_lower_email_address`: Unique functional index on `LOWER(email_address)`.
   * `idx_users_on_lower_username`: Unique functional index on `LOWER(username)`.
   * `index_users_on_discarded_at`: B-tree index supporting `User.kept` and `PiiPurgeJob` queries.
+  * `index_users_on_suspended_at`: B-tree index supporting suspended-account auth checks.
 
 ---
 
@@ -103,7 +105,7 @@ Directional blocks enforcing the platform-wide **"Block Wins"** law in `Applicat
 ---
 
 ## 7. `audit_events` (`[REQ-ADM-001]`)
-Strictly immutable (`readonly? => true` after creation) append-only audit log recording blocks, soft-deletes, restorations, and future reservation/gift actions for Sprint 8 Admin moderation.
+Strictly immutable (`readonly? => true` after creation) append-only audit log recording blocks, soft-deletes, restorations, reservations/gifts, and Sprint 8 Admin moderation actions (`user.suspended` / `user.unsuspended`, `report.dismissed` / `report.reviewed` / `report.reopened`). Revert never mutates old rows.
 
 | Column | Type | Null | Default | Business Semantics |
 | :--- | :--- | :--- | :--- | :--- |
@@ -111,7 +113,7 @@ Strictly immutable (`readonly? => true` after creation) append-only audit log re
 | `actor_id` | `bigint` | `true` | FK (`users`) | User who performed the action (`on_delete: :nullify`). |
 | `action` | `string` | `false` | — | Canonical event key (e.g., `"user.blocked"`, `"user.soft_deleted"`, `"user.restored"`). |
 | `auditable_type` / `auditable_id` | `string` / `bigint` | `false` | — | Polymorphic target entity. |
-| `metadata` | `jsonb` | `false` | `{}` | Structured JSONB context for auditing and administrative revert. |
+| `metadata` | `jsonb` | `false` | `{}` | Structured JSONB context for auditing and administrative revert. Soft-delete events may include `admin_enforcement: true` (immutable O4A stamp from Admin triage) and cascade id lists (`cascaded_wishlist_ids` / `cascaded_item_ids`). |
 
 ---
 
@@ -133,7 +135,7 @@ Bidirectional friendships and pending friend requests between users. Enforces un
 ---
 
 ## 9. `reports` (`[REQ-SOC-001]`, `[REQ-DISC-001]`, `[REQ-ADM-001]`)
-Polymorphic abuse reporting queue supporting `User` reports (Sprint 2) and `Wishlist` reports (Sprint 7) for Sprint 8 Admin moderation.
+Polymorphic abuse reporting queue supporting `User` reports (Sprint 2) and `Wishlist` reports (Sprint 7). Hotwire Admin triage dismisses or reviews with Suspend / SoftDeletable enforcement (`REQ-ADM-001`).
 
 | Column | Type | Null | Default | Business Semantics |
 | :--- | :--- | :--- | :--- | :--- |

@@ -70,4 +70,30 @@ RSpec.describe "API v1 Account Soft-Delete & 30-Day Restoration", type: :request
       expect(user.reload.discarded?).to be(true)
     end
   end
+
+  describe "admin soft-delete restore returns generic credentials [REQ-ADM-001] [REQ-LIFE-002]" do
+    it "does not disclose admin enforcement on POST /api/v1/account/restore [REQ-ADM-001]" do
+      admin = User.create!(
+        email_address: "admin_restore@example.com",
+        username: "admin_restore",
+        password: "SecurePassword123!",
+        password_confirmation: "SecurePassword123!",
+        locale: "es",
+        time_zone: "UTC",
+        terms_accepted_at: Time.current,
+        role: "admin"
+      )
+      user.soft_delete!(actor: admin, admin_enforcement: true)
+
+      post "/api/v1/account/restore", params: {
+        email_address: user.email_address,
+        password: "SecurePassword123!"
+      }, as: :json
+
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.parsed_body["error"]).to eq(I18n.t("api.v1.errors.invalid_credentials"))
+      expect(response.parsed_body.to_s).not_to match(/admin|soft-delete|enforcement/i)
+      expect(user.reload.discarded?).to be(true)
+    end
+  end
 end

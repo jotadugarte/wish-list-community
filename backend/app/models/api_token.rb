@@ -48,7 +48,9 @@ class ApiToken < ApplicationRecord
 
     vo = AuthToken.from_raw(raw_token)
     token_record = active.includes(:user).find_by(token_digest: vo.digest)
-    return nil if token_record.nil? || token_record.user.discarded_at.present?
+    return nil if token_record.nil?
+    user = token_record.user
+    return nil if user.discarded_at.present? || user.suspended_at.present?
 
     token_record
   end

@@ -1,0 +1,23 @@
+<% content_for :title, t("admin.titles.reports") %>
+<h1><%= t("admin.headings.reports") %></h1>
+<p><%= t("admin.copy.pending_reports") %></p>
+
+<% if @reports.empty? %>
+  <p><%= t("admin.copy.no_pending_reports") %></p>
+<% else %>
+  <ul>
+    <% @reports.each do |report| %>
+      <li>
+        <%= link_to admin_report_path(report) do %>
+          <%= report.reportable_type %> —
+          <% if report.reportable_type == "User" %>
+            @<%= report.reportable.username %>
+          <% else %>
+            <%= report.reportable.title %>
+          <% end %>
+          (<%= report.reason %>)
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

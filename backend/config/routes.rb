@@ -6,6 +6,24 @@ Rails.application.routes.draw do
   resource :session, only: %i[new create destroy]
   resource :signup, only: %i[new create], controller: "web_signups"
 
+  namespace :admin do
+    root to: "reports#index"
+    resources :reports, only: %i[index show] do
+      member do
+        post :dismiss
+        post :suspend
+        post :soft_delete_user
+        post :soft_delete_wishlist
+      end
+    end
+    resources :audit_events, only: %i[index show] do
+      member do
+        post :revert
+      end
+    end
+    resources :gifts, only: %i[show]
+  end
+
   get "s/:share_token", to: "secret_links#show", as: :secret_link,
       constraints: { share_token: /[A-Za-z0-9\-_]+/ }
   post "s/:share_token/items/:item_id/reservations", to: "secret_link_reservations#create", as: :secret_link_item_reservations,

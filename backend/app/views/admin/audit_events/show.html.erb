@@ -1,0 +1,16 @@
+<% content_for :title, t("admin.titles.audit_event", id: @audit_event.id) %>
+<h1><%= t("admin.headings.audit_event", id: @audit_event.id) %></h1>
+<p>
+  <%= t("admin.copy.action") %>: <strong><%= @audit_event.action %></strong><br>
+  <%= t("admin.copy.auditable") %>: <%= @audit_event.auditable_type %> #<%= @audit_event.auditable_id %><br>
+  <%= t("admin.copy.actor_id") %>: <%= @audit_event.actor_id %><br>
+  <%= t("admin.copy.created") %>: <%= @audit_event.created_at %>
+</p>
+<% if @audit_event.auditable_type == "GiftRecord" && @audit_event.auditable.present? %>
+  <%= render "admin/gifts/detail", gift: @audit_event.auditable %>
+  <p><%= link_to t("admin.copy.open_gift_detail"), admin_gift_path(@audit_event.auditable) %></p>
+<% end %>
+<% if @revertable %>
+  <%= button_to t("admin.actions.revert"), revert_admin_audit_event_path(@audit_event), method: :post %>
+<% end %>
+<p><%= link_to t("admin.copy.back_to_audit"), admin_audit_events_path %></p>

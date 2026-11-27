@@ -1,0 +1,32 @@
+<% content_for :title, t("admin.titles.report", id: @report.id) %>
+<h1><%= t("admin.headings.report", id: @report.id) %></h1>
+
+<p>
+  <%= t("admin.copy.type") %>: <strong><%= @report.reportable_type %></strong><br>
+  <%= t("admin.copy.reason") %>: <%= @report.reason %><br>
+  <%= t("admin.copy.reporter") %>: @<%= @report.reporter.username %><br>
+  <%= t("admin.copy.status") %>: <%= @report.status %>
+</p>
+
+<% if @report.reportable_type == "User" %>
+  <p><%= t("admin.copy.target_user") %>: @<%= @report.reportable.username %></p>
+<% else %>
+  <p><%= t("admin.copy.target_wishlist") %>: <%= @report.reportable.title %> (<%= t("admin.copy.owner") %> @<%= @report.reportable.owner.username %>)</p>
+<% end %>
+
+<% if @report.status == "pending" %>
+  <div class="flex flex-col gap-3 mt-6">
+    <%= button_to t("admin.actions.dismiss"), dismiss_admin_report_path(@report), method: :post %>
+
+    <% if @report.reportable_type == "User" %>
+      <%= button_to t("admin.actions.suspend"), suspend_admin_report_path(@report), method: :post %>
+      <%= button_to t("admin.actions.soft_delete_account"), soft_delete_user_admin_report_path(@report), method: :post %>
+    <% else %>
+      <%= button_to t("admin.actions.suspend_owner"), suspend_admin_report_path(@report), method: :post %>
+      <%= button_to t("admin.actions.soft_delete_account_owner"), soft_delete_user_admin_report_path(@report), method: :post %>
+      <%= button_to t("admin.actions.soft_delete_wishlist"), soft_delete_wishlist_admin_report_path(@report), method: :post %>
+    <% end %>
+  </div>
+<% end %>
+
+<p class="mt-6"><%= link_to t("admin.copy.back_to_reports"), admin_reports_path %></p>

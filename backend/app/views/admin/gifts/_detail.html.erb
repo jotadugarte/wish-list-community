@@ -1,0 +1,12 @@
+<section>
+  <h2><%= t("admin.headings.gift", id: gift.id) %></h2>
+  <p><%= t("admin.copy.item") %>: <%= gift.item.title %></p>
+  <p><%= t("admin.copy.status") %>: <%= gift.status %></p>
+  <% if gift.gifter.present? %>
+    <p><%= t("admin.copy.gifter") %>: @<%= gift.gifter.username %></p>
+    <p><%= t("admin.copy.gifter_email") %>: <%= gift.gifter.email_address %></p>
+  <% else %>
+    <p><%= t("admin.copy.gifter") %>: <%= t("admin.copy.gifter_none") %></p>
+  <% end %>
+  <p><%= t("admin.copy.purchase_link") %>: <%= gift.purchase_link_ref.presence || t("admin.copy.gifter_none") %></p>
+</section>

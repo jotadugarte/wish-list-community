@@ -1,0 +1,224 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
+  let(:password) { "SecurePassword123!" }
+  let!(:admin) do
+    create(
+      :user,
+      role: "admin",
+      username: "audit_admin",
+      email_address: "audit_admin@example.com",
+      password: password,
+      password_confirmation: password
+    )
+  end
+  let!(:member) do
+    create(
+      :user,
+      username: "audit_member",
+      email_address: "audit_member@example.com",
+      password: password,
+      password_confirmation: password
+    )
+  end
+  let(:reporter) { create(:user, username: "audit_reporter", email_address: "audit_reporter@example.com") }
+
+  def sign_in(user)
+    post "/session", params: { email_address: user.email_address, password: password }
+  end
+
+  before { sign_in(admin) }
+
+  describe "list / filter" do
+    it "lists AuditEvents for admins [REQ-ADM-001]" do
+      member.suspend!(actor: admin)
+      get "/admin/audit_events"
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("user.suspended")
+      expect(response.body).to include("Audit")
+    end
+
+    it "filters by action [REQ-ADM-001]" do
+      member.suspend!(actor: admin)
+      Report.submit!(reporter: reporter, reportable: member, reason: "spam").dismiss!(actor: admin)
+
+      get "/admin/audit_events", params: { action_filter: "report.dismissed" }
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("report.dismissed")
+      expect(response.body).not_to include("user.suspended")
+    end
+
+    it "hides the viewer from non-admins [REQ-ADM-001]" do
+      delete "/session"
+      post "/session", params: { email_address: member.email_address, password: password }
+      get "/admin/audit_events"
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe "1-click revert buttons (O4A)" do
+    it "unsuspends from the viewer and records a compensating AuditEvent [REQ-ADM-001]" do
+      member.suspend!(actor: admin)
+      event = AuditEvent.find_by!(action: "user.suspended", auditable: member)
+
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(response).to redirect_to(admin_audit_events_path)
+      expect(member.reload.suspended?).to be(false)
+      expect(AuditEvent.where(action: "user.unsuspended", auditable: member).count).to eq(1)
+    end
+
+    it "restores an admin soft-deleted user within the SoftDeletable window [REQ-ADM-001]" do
+      member.soft_delete!(actor: admin)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(response).to redirect_to(admin_audit_events_path)
+      expect(member.reload.discarded?).to be(false)
+      expect(AuditEvent.where(action: "user.restored", auditable: member).count).to eq(1)
+    end
+
+    it "reopens a dismissed report to pending [REQ-ADM-001]" do
+      report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
+      report.dismiss!(actor: admin)
+      event = AuditEvent.find_by!(action: "report.dismissed", auditable: report)
+
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(response).to redirect_to(admin_audit_events_path)
+      expect(report.reload.status).to eq("pending")
+      expect(AuditEvent.where(action: "report.reopened", auditable: report).count).to eq(1)
+    end
+  end
+
+  describe "rate_limit on revert writes" do
+    it "declares rate_limit covering revert [REQ-ADM-001]" do
+      source = File.read(Rails.root.join("app/controllers/admin/audit_events_controller.rb"))
+      expect(source).to match(/rate_limit[\s\S]*revert/)
+      expect(source).to include("current_user&.id || request.remote_ip")
+    end
+  end
+
+  describe "admin soft-delete gate + domain errors" do
+    it "does not show Revert for a member self soft-delete [REQ-ADM-001]" do
+      member.soft_delete!(actor: member)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      get "/admin/audit_events/#{event.id}"
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+    end
+
+    it "rejects revert of a member self soft-delete [REQ-ADM-001]" do
+      member.soft_delete!(actor: member)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(response).to redirect_to(admin_root_path)
+      expect(flash[:alert]).to be_present
+      expect(member.reload.discarded?).to be(true)
+    end
+
+    it "redirects with a clear alert when restoring an already-restored soft-delete [REQ-ADM-001]" do
+      member.soft_delete!(actor: admin)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      member.restore!(actor: admin)
+
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(response).to redirect_to(admin_root_path)
+      expect(flash[:alert]).to eq(I18n.t("admin.errors.event_not_revertable"))
+      expect(flash[:alert]).not_to match(/30 days|expired/i)
+    end
+
+    it "redirects reopen uniqueness conflicts instead of 500 [REQ-ADM-001]" do
+      report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
+      report.dismiss!(actor: admin)
+      event = AuditEvent.find_by!(action: "report.dismissed", auditable: report)
+      Report.submit!(reporter: reporter, reportable: member, reason: "harassment")
+
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(response).to redirect_to(admin_root_path)
+      expect(response).not_to have_http_status(:internal_server_error)
+      expect(flash[:alert]).to be_present
+      expect(report.reload.status).to eq("dismissed")
+    end
+  end
+
+  describe "stale admin soft-delete cannot revert a later member self soft-delete" do
+    it "hides Revert and rejects revert on a superseded admin soft-delete event [REQ-ADM-001]" do
+      member.soft_delete!(actor: admin)
+      admin_event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      post "/admin/audit_events/#{admin_event.id}/revert"
+      expect(member.reload.discarded?).to be(false)
+
+      member.soft_delete!(actor: member)
+      get "/admin/audit_events/#{admin_event.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+
+      post "/admin/audit_events/#{admin_event.id}/revert"
+      expect(response).to redirect_to(admin_root_path)
+      expect(flash[:alert]).to eq(I18n.t("admin.errors.event_not_revertable"))
+      expect(member.reload.discarded?).to be(true)
+    end
+  end
+
+  describe "stale user.suspended cannot unsuspend a later re-suspend" do
+    it "hides Revert on an older suspend event after re-suspend [REQ-ADM-001]" do
+      member.suspend!(actor: admin)
+      first = AuditEvent.find_by!(action: "user.suspended", auditable: member)
+      post "/admin/audit_events/#{first.id}/revert"
+      expect(member.reload.suspended?).to be(false)
+
+      member.suspend!(actor: admin)
+      get "/admin/audit_events/#{first.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+
+      post "/admin/audit_events/#{first.id}/revert"
+      expect(flash[:alert]).to eq(I18n.t("admin.errors.event_not_revertable"))
+      expect(member.reload.suspended?).to be(true)
+    end
+  end
+
+  describe "dismissed report is not revertable after reopen" do
+    it "hides Revert once the report is pending again [REQ-ADM-001]" do
+      report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
+      report.dismiss!(actor: admin)
+      event = AuditEvent.find_by!(action: "report.dismissed", auditable: report)
+      report.reopen!(actor: admin)
+
+      get "/admin/audit_events/#{event.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(flash[:alert]).to eq(I18n.t("admin.errors.event_not_revertable"))
+      expect(report.reload.status).to eq("pending")
+    end
+  end
+
+  describe "soft-delete Revert requires restorable window" do
+    include ActiveSupport::Testing::TimeHelpers
+
+    after { travel_back }
+
+    it "hides Revert after the 30-day SoftDeletable window [REQ-ADM-001]" do
+      freeze_time
+      member.soft_delete!(actor: admin)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      travel 31.days
+
+      get "/admin/audit_events/#{event.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+    end
+  end
+
+  describe "dismiss revert requires the latest dismiss event" do
+    it "hides Revert on an older dismiss after dismiss → reopen → dismiss [REQ-ADM-001]" do
+      report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
+      report.dismiss!(actor: admin)
+      first = AuditEvent.where(action: "report.dismissed", auditable: report).order(:id).first
+      report.reopen!(actor: admin)
+      report.dismiss!(actor: admin)
+
+      get "/admin/audit_events/#{first.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+    end
+  end
+end

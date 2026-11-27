@@ -100,11 +100,13 @@ Soft-deletes the authenticated user's account, revokes all active credentials/to
 - **Auth Required:** Yes.
 - **Response:** `204 No Content`.
 
-### `POST /api/v1/account/restore` (`[REQ-LIFE-002]`)
-Restores a soft-deleted account within the 30-day grace window and issues a fresh API token.
+### `POST /api/v1/account/restore` (`[REQ-LIFE-002]`, `[REQ-ADM-001]`)
+Restores a **self** soft-deleted account within the 30-day SoftDeletable grace window and issues a fresh API token.
 - **Auth Required:** No.
 - **Request Body:** `{ "email_address": "user@example.com", "password": "secretPassword123" }`
 - **Response (`200 OK`):** `{ "token": "raw_bearer_token_string", "user": { "id": 1, "username": "nata_24", "created_at": "..." } }`
+- **Admin-enforced soft-delete (`admin_enforcement` on the latest `user.soft_deleted` AuditEvent):** returns the same generic `401 Unauthorized` / `invalid_credentials` as a bad password (no moderation leak). Restore is via Admin audit revert only (`REQ-ADM-001` / O4A).
+- **Other failures within the grace window** (e.g. expired window after auth): `422` with localized SoftDeletable error messages when applicable.
 
 ---
 
@@ -184,7 +186,7 @@ Directionally blocks `blocked_id`, transactionally destroying any existing `Frie
 - **Response (`201 Created`):** `{ "blocked_id": 3, "status": "blocked" }`
 
 ### `POST /api/v1/reports` (`[REQ-SOC-001]`, `[REQ-DISC-001]`, `[REQ-ADM-001]`)
-Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`) and records an `AuditEvent` (`"report.created"`). Allowed `reportable_type` values: `User` (Sprint 2) and `Wishlist` (Sprint 7). Wishlist reports require the reporter to currently pass `WishlistPolicy#show?` and **not** be the owner; soft-deleted / inaccessible lists return `404` (anti-existence leak). Duplicate pending reports return `422`. Enqueue-only — no owner notification and no auto-hide (admin triage is Sprint 8).
+Submits a polymorphic abuse report (`ReportReason` Value Object: `spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`) and records an `AuditEvent` (`"report.created"`). Allowed `reportable_type` values: `User` (Sprint 2) and `Wishlist` (Sprint 7). Wishlist reports require the reporter to currently pass `WishlistPolicy#show?` and **not** be the owner; soft-deleted / inaccessible lists return `404` (anti-existence leak). Duplicate pending reports return `422`. Enqueue-only — no owner notification and no auto-hide. Hotwire Admin triage (`/admin/reports`) dismisses or reviews with Suspend / soft-delete; there is **no** admin JSON API.
 - **Auth Required:** Yes.
 - **Rate limit:** `20` requests / `3` minutes → `429` with `{ "error": "..." }`.
 - **Request Body:**
@@ -365,7 +367,7 @@ Body: `{ "url": "https://..." }` → `{ "title", "image_url", "source_url" }` (b
 
 ## 6. Gifts (Sprint 6)
 
-Dual-path fulfillment via `GiftRecord` (`purchased_secret` → `delivered_pending_confirmation` → `received_confirmed`; `voided` for O8D). Optional `purchase_link_ref` is admin-only and **never** returned in owner/friend/gifter API JSON. Optional anonymous thank-you on confirm ([REQ-GIFT-001], [REQ-GIFT-004], [REQ-ADM-001]).
+Dual-path fulfillment via `GiftRecord` (`purchased_secret` → `delivered_pending_confirmation` → `received_confirmed`; `voided` for O8D). Optional `purchase_link_ref` and gifter identity (`@username` + email) are Hotwire Admin-only (`/admin/gifts/:id`, audit gift detail) and **never** returned in `/api/v1` JSON (including when the bearer user has `role=admin`). Optional anonymous thank-you on confirm ([REQ-GIFT-001], [REQ-GIFT-004], [REQ-ADM-001]).
 
 ### Gift API
 - `POST /api/v1/reservations/:id/mark_purchased` — Path 1 start from `active`|`expired_grace`; body optional `{ "gift": { "purchase_link_ref" } }`; reservation → `completed_by_gift`; **409** if open gift exists ([REQ-GIFT-001], [REQ-GIFT-002], [REQ-RES-006] O6A)
@@ -383,4 +385,17 @@ Dual-path fulfillment via `GiftRecord` (`purchased_secret` → `delivered_pendin
 
 ### Relationship guards (O8D)
 - `POST /api/v1/user_blocks` and `DELETE /api/v1/friendships/:id` require `confirm_void_gifts=true` when the actor is the gifter with an open gift toward the other user; otherwise **422**.
+
+## 7. Web-only Admin panel (Sprint 8, Hotwire) `[REQ-ADM-001]`
+
+Cookie session + `role=admin` only. Non-admins receive **404** (no panel leak). No Flutter Admin and no `/api/v1` admin endpoints. Provision admins via seed / `rails console` (`user.update!(role: "admin")`).
+
+- `GET /admin` · `GET /admin/reports` — pending report queue (User + Wishlist)
+- `GET /admin/reports/:id` — triage actions: dismiss / suspend / soft-delete account / soft-delete wishlist
+- `POST /admin/reports/:id/dismiss|suspend|soft_delete_user|soft_delete_wishlist` — rate-limited writes; AuditEvents; **no** Notifications
+- `GET /admin/audit_events` — filterable AuditEvent viewer (`action_filter`)
+- `POST /admin/audit_events/:id/revert` — unsuspend / restore soft-delete (30-day window) / reopen dismissed→pending
+- `GET /admin/gifts/:id` — read-only gifter `@username` + email + `purchase_link_ref`
+
+Suspended accounts fail web/API login with the same generic invalid-credentials copy as bad passwords (FC2). Self soft-delete restore within 30 days is unchanged; **admin-enforced** soft-deletes fail restore with that same generic `401` (member must not learn moderation status from restore).
 

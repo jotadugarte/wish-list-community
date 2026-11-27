@@ -34,9 +34,9 @@ class WishlistPolicy < ApplicationPolicy
     owner_active?
   end
 
-  # [REQ-LIFE-001] Only the owner may restore within SoftDeletable grace.
+  # [REQ-LIFE-001] [REQ-ADM-001] Owner may restore within grace unless soft-delete was admin-enforced (O4A).
   def restore?
-    owner_of_record? && record.discarded?
+    owner_of_record? && record.discarded? && !record.soft_deleted_by_admin?
   end
 
   # [REQ-WISH-002] [REQ-WISH-006] Only the owner may rotate the Secret Link token.
