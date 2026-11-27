@@ -91,6 +91,7 @@ Things done and things left to do. Update this when finishing branches; use `roa
 _(none — Sprint 9 absorbs prior Notifications pending bucket)_
 
 ## Backlog
+- [ ] **Backlog — Admin Brand / Style Guide (Web Admin dual preview)** — Living admin-only Hotwire `/admin` brand/style reference with **two tabs or two pages**: web preview + mobile-app preview (HTML/CSS phone mock from shared tokens; not Flutter Web). Tokens table, buttons/states, a11y notes, do/don’t, sample flows, es/en + light/dark toggles, version stamp, Admin nav + print; driven by a shared DesignTokens file also consumed by Flutter. For Ñata review and Hotwire/Flutter alignment. Depends on: Sprint 8 Admin. Retokenize shared file when Ñata final visual HTML lands. Does not block Sprint 9.
 - [ ] **v1 Sprint A — Activities (Configurable System + Exclusions + Blind Dropout Bridge)**
   - [ ] Create a group activity (owner, name, dates, single currency, external activity link scoped strictly to that activity's info) (`REQ-ACT-001`)
   - [ ] 5 configurable budget modes per activity (`budget_mode`: `none`, `fixed`, `min_only`, `max_only`, `range`) (`REQ-ACT-005`)
