@@ -164,10 +164,10 @@ Términos y Privacidad bilingües es+en desde el día uno (placeholders hasta te
   <step id="18" status="complete">Implement Hotwire inbox/prefs/account deletion UX until step 17 green.</step>
   <step id="19" status="complete">Write failing Flutter tests for SharePayload VO + device-local LastWishlistMemory (O4B/O11A) + ItemForm gallery/camera + client compress + multipart upload (O5A). Trace [REQ-MOB-001], [REQ-MOB-002], [REQ-ITEM-002].</step>
   <step id="20" status="complete">Implement Flutter share parsing, last-wishlist memory, image picker/compress/upload until step 19 green.</step>
-  <step id="21" status="pending">Write failing Flutter tests for Share-to-App entry: logged-out → login resume; logged-in → skip picker when memory safe else picker → Add Item with link-preview confirm (O4B). Trace [REQ-MOB-001], [REQ-MOB-002], [REQ-ITEM-006].</step>
-  <step id="22" status="pending">Implement Flutter share-intent wiring until step 21 green (platform channels/plugins as needed; headless tests with fakes).</step>
-  <step id="23" status="pending">Write failing Flutter tests for DeepLinkTarget: friend profile + `/s/:token` secret link open correct screens; activity/unknown safe failure (O3A) [REQ-MOB-001].</step>
-  <step id="24" status="pending">Implement Universal/App Links association config (staging host configurable O9B) + Flutter routing until step 23 green.</step>
+  <step id="21" status="complete">Write failing Flutter tests for Share-to-App entry: logged-out → login resume; logged-in → skip picker when memory safe else picker → Add Item with link-preview confirm (O4B). Trace [REQ-MOB-001], [REQ-MOB-002], [REQ-ITEM-006].</step>
+  <step id="22" status="complete">Implement Flutter share-intent wiring until step 21 green (platform channels/plugins as needed; headless tests with fakes).</step>
+  <step id="23" status="complete">Write failing Flutter tests for DeepLinkTarget: friend profile + `/s/:token` secret link open correct screens; activity/unknown safe failure (O3A) [REQ-MOB-001].</step>
+  <step id="24" status="complete">Implement Universal/App Links association config (staging host configurable O9B) + Flutter routing until step 23 green.</step>
   <step id="25" status="pending">Write failing Flutter tests for FCM register-after-login, pass fcm_token on session, clear on logout; graceful when keys missing (O6A/O10B) [REQ-NOTIF-002]. Inbox + prefs screens on Flutter; legal links es+en (O13A).</step>
   <step id="26" status="pending">Implement Flutter notifications client + inbox/prefs + legal links until step 25 green.</step>
   <step id="27" status="pending">Update living docs: API_CONTRACT (any new surfaces), ROADMAP mark Sprint 9 + Notifications absorbed when verified, SYSTEM_ARCHITECTURE mobile/Hotwire surfaces, BEHAVIOUR_MATRIX new BM rows as planned, add short store-submit checklist doc under docs/ (O8A). Staging host + Google keys + legal-text-approval called out as ops risks.</step>

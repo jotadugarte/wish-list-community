@@ -24,6 +24,21 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- App Links (O3A/O9B): friend profile /u/:user and secret /s/:token -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https" android:host="staging.wishlist.local" android:pathPrefix="/u/"/>
+                <data android:scheme="https" android:host="staging.wishlist.local" android:pathPrefix="/@"/>
+                <data android:scheme="https" android:host="staging.wishlist.local" android:pathPrefix="/s/"/>
+            </intent-filter>
+            <!-- Share-to-App (O4B): receive text/URL from other apps -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
