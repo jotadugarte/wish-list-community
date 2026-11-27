@@ -34,9 +34,11 @@ module WebAuthentication
     current_user.present?
   end
 
-  # [REQ-AUTH-001] Creates a web Session and signed cookie for the user.
+  # [REQ-AUTH-001] [REQ-ADM-001] Creates a web Session and signed cookie for the user.
   def establish_web_session!(user)
-    raise ArgumentError, "Pre-condition failed: user must be active" unless user&.persisted? && !user.discarded?
+    unless user&.persisted? && !user.discarded? && !user.suspended?
+      raise ArgumentError, "Pre-condition failed: user must be active"
+    end
 
     web_session = user.sessions.create!(
       ip_address: request.remote_ip,

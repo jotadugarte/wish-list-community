@@ -78,4 +78,12 @@ RSpec.describe "Suspended account authentication [REQ-ADM-001] [REQ-AUTH-001]", 
       expect(User.authenticate_discarded(member.email_address, password)).to eq(member)
     end
   end
+
+  describe "authenticate_discarded rejects suspended [REQ-ADM-001]" do
+    it "returns nil for a suspended and soft-deleted account" do
+      member.suspend!(actor: admin)
+      member.soft_delete!(actor: admin)
+      expect(User.authenticate_discarded(member.email_address, password)).to be_nil
+    end
+  end
 end

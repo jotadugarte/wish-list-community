@@ -114,3 +114,18 @@ en:
     terms: "I accept the Terms of Use"
     login_submit: "Log in"
     signup_submit: "Create account"
+  admin:
+    notices:
+      report_dismissed: "Report dismissed."
+      user_suspended: "User suspended."
+      account_soft_deleted: "Account soft-deleted."
+      wishlist_soft_deleted: "Wishlist soft-deleted."
+      revert_applied: "Revert applied."
+    actions:
+      dismiss: "Dismiss"
+      suspend: "Suspend"
+      soft_delete_account: "Soft-delete account"
+      soft_delete_account_owner: "Soft-delete account (owner)"
+      soft_delete_wishlist: "Soft-delete wishlist"
+      suspend_owner: "Suspend owner"
+      revert: "Revert"

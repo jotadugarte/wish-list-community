@@ -157,3 +157,14 @@ FC4 NONE: no further dark corners.
 - **Next after confirm:** owner/coordinator runs **`start-task`** (hands-off) on a **new worker**. This explore agent does **not** write product code.
 
 </task_session>
+
+## QA reviewer record — 2026-11-27 (Sprint 8 Admin/Moderation)
+delivery: not posted
+
+What was tested (cloud, headless): User Suspend + FC2 auth; Report triage (dismiss/suspend/soft-delete, O7A no Notification); moderation revert; Hotwire /admin gate + reports + audit revert + gift O5A; O6A no promote UI; S7 report regression; full RSpec 352/0; Flutter analyze + 56 tests.
+
+Results: All cloud matrix rows QA-S8-01–13 **passed**. QA-S8-14 owner to run (real-browser Admin). QA-S8-15 out of scope.
+
+Environment: Ruby 3.4.13, Flutter 3.50.1, Postgres 16, branch cursor/sprint-8-admin-moderation-f6bf. No computerUse; no live SMTP/FCM.
+
+Product bugs: none.

@@ -11,6 +11,6 @@
   <p><%= link_to "Open gift detail", admin_gift_path(@audit_event.auditable) %></p>
 <% end %>
 <% if @revertable %>
-  <%= button_to "Revert", revert_admin_audit_event_path(@audit_event), method: :post %>
+  <%= button_to t("admin.actions.revert"), revert_admin_audit_event_path(@audit_event), method: :post %>
 <% end %>
 <p><%= link_to "Back to Audit", admin_audit_events_path %></p>

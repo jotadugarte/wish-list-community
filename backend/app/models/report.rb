@@ -174,6 +174,17 @@ class Report < ApplicationRecord
     raise ArgumentError, "Pre-condition failed: target_user must be persisted" unless target_user&.persisted?
     raise ArgumentError, "Pre-condition failed: report must be pending" unless status == "pending"
     raise ArgumentError, "Pre-condition failed: cannot enforce against yourself" if actor.id == target_user.id
+    raise ArgumentError, "Pre-condition failed: target_user must match reportable" unless target_matches_reportable?(target_user)
+  end
+
+  def target_matches_reportable?(target_user)
+    if reportable_type == "User"
+      reportable_id == target_user.id
+    elsif reportable_type == "Wishlist"
+      reportable.is_a?(Wishlist) && reportable.owner_id == target_user.id
+    else
+      false
+    end
   end
 
   def last_unsuspended_admin?(target_user)

@@ -28,7 +28,7 @@ module Admin
       @report = Report.find(params[:id])
       authorize :admin, :dismiss?, policy_class: AdminPolicy
       @report.dismiss!(actor: current_user)
-      redirect_to admin_reports_path, notice: "Report dismissed.", status: :see_other
+      redirect_to admin_reports_path, notice: I18n.t("admin.notices.report_dismissed"), status: :see_other
     end
 
     # [REQ-ADM-001] Suspends the reported user and marks the report reviewed.
@@ -37,7 +37,7 @@ module Admin
       authorize :admin, :suspend?, policy_class: AdminPolicy
       target = enforcement_user!(@report)
       @report.review_with_suspend!(actor: current_user, target_user: target)
-      redirect_to admin_reports_path, notice: "User suspended.", status: :see_other
+      redirect_to admin_reports_path, notice: I18n.t("admin.notices.user_suspended"), status: :see_other
     end
 
     # [REQ-ADM-001] Soft-deletes the reported user account (30-day window).
@@ -46,7 +46,7 @@ module Admin
       authorize :admin, :soft_delete_user?, policy_class: AdminPolicy
       target = enforcement_user!(@report)
       @report.review_with_soft_delete_user!(actor: current_user, target_user: target)
-      redirect_to admin_reports_path, notice: "Account soft-deleted.", status: :see_other
+      redirect_to admin_reports_path, notice: I18n.t("admin.notices.account_soft_deleted"), status: :see_other
     end
 
     # [REQ-ADM-001] Soft-deletes the reported wishlist (30-day window).
@@ -55,7 +55,7 @@ module Admin
       authorize :admin, :soft_delete_wishlist?, policy_class: AdminPolicy
       wishlist = enforcement_wishlist!(@report)
       @report.review_with_soft_delete_wishlist!(actor: current_user, wishlist: wishlist)
-      redirect_to admin_reports_path, notice: "Wishlist soft-deleted.", status: :see_other
+      redirect_to admin_reports_path, notice: I18n.t("admin.notices.wishlist_soft_deleted"), status: :see_other
     end
 
     private

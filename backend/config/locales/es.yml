@@ -114,3 +114,18 @@ es:
     terms: "Acepto los Términos de Uso"
     login_submit: "Iniciar sesión"
     signup_submit: "Crear cuenta"
+  admin:
+    notices:
+      report_dismissed: "Reporte descartado."
+      user_suspended: "Usuario suspendido."
+      account_soft_deleted: "Cuenta eliminada temporalmente."
+      wishlist_soft_deleted: "Lista de deseos eliminada temporalmente."
+      revert_applied: "Reversión aplicada."
+    actions:
+      dismiss: "Descartar"
+      suspend: "Suspender"
+      soft_delete_account: "Eliminar cuenta temporalmente"
+      soft_delete_account_owner: "Eliminar cuenta del dueño temporalmente"
+      soft_delete_wishlist: "Eliminar lista temporalmente"
+      suspend_owner: "Suspender dueño"
+      revert: "Revertir"

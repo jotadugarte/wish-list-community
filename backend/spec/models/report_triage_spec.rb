@@ -95,4 +95,29 @@ RSpec.describe Report, "triage domain [REQ-ADM-001] [REQ-DISC-001] [REQ-LIFE-001
       expect(AuditEvent.where(action: "report.reviewed", auditable: wishlist_report).count).to eq(1)
     end
   end
+
+  describe "enforcement target must match reportable [REQ-ADM-001]" do
+    it "rejects suspend when target_user is not the reported user" do
+      other = create(:user, username: "wrong_target", email_address: "wrong_target@example.com")
+      expect do
+        report.review_with_suspend!(actor: admin, target_user: other)
+      end.to raise_error(ArgumentError, /target_user must match reportable/)
+      expect(other.reload.suspended?).to be(false)
+      expect(report.reload.status).to eq("pending")
+    end
+
+    it "rejects soft-delete user when target_user is not the reported owner for a wishlist report" do
+      owner = create(:user, username: "own_match", email_address: "own_match@example.com")
+      friend = create(:user, username: "fr_match", email_address: "fr_match@example.com")
+      wishlist = create(:wishlist, owner: owner, privacy_mode: "friends")
+      Friendship.request!(requester: owner, addressee: friend).accept!(actor: friend)
+      wl_report = Report.submit!(reporter: friend, reportable: wishlist, reason: "spam")
+      stranger = create(:user, username: "stranger_t", email_address: "stranger_t@example.com")
+
+      expect do
+        wl_report.review_with_soft_delete_user!(actor: admin, target_user: stranger)
+      end.to raise_error(ArgumentError, /target_user must match reportable/)
+      expect(stranger.reload.discarded?).to be(false)
+    end
+  end
 end

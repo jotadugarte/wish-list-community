@@ -74,16 +74,16 @@ RSpec.describe "Admin reports queue [REQ-ADM-001]", type: :request do
     it "shows a User report with clear user action targets" do
       get "/admin/reports/#{user_report.id}"
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Dismiss")
-      expect(response.body).to include("Suspend")
-      expect(response.body).to include("Soft-delete account")
+      expect(response.body).to include(I18n.t("admin.actions.dismiss"))
+      expect(response.body).to include(I18n.t("admin.actions.suspend"))
+      expect(response.body).to include(I18n.t("admin.actions.soft_delete_account"))
       expect(response.body).to include("@#{member.username}")
     end
 
     it "shows a Wishlist report with wishlist soft-delete action" do
       get "/admin/reports/#{wishlist_report.id}"
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Soft-delete wishlist")
+      expect(response.body).to include(I18n.t("admin.actions.soft_delete_wishlist"))
       expect(response.body).to include(wishlist.title)
     end
   end

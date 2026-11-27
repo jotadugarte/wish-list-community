@@ -15,6 +15,8 @@ module Admin
     rescue_from Pundit::NotAuthorizedError, with: :hide_admin_panel
     rescue_from ActiveRecord::RecordNotFound, with: :hide_admin_panel
     rescue_from ArgumentError, with: :handle_domain_error
+    rescue_from ActiveRecord::RecordInvalid, with: :handle_domain_error
+    rescue_from ActiveRecord::RecordNotUnique, with: :handle_domain_error
 
     private
 
@@ -29,7 +31,12 @@ module Admin
 
     def handle_domain_error(error)
       skip_authorization
-      redirect_back fallback_location: admin_root_path, alert: error.message, status: :see_other
+      message = if error.respond_to?(:record) && error.record&.errors&.full_messages&.any?
+        error.record.errors.full_messages.to_sentence
+      else
+        error.message
+      end
+      redirect_back fallback_location: admin_root_path, alert: message, status: :see_other
     end
 
     def rate_limit_admin_write

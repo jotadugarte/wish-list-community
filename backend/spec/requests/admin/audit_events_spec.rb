@@ -98,4 +98,47 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(source).to include("current_user&.id || request.remote_ip")
     end
   end
+
+  describe "admin soft-delete gate + domain errors" do
+    it "does not show Revert for a member self soft-delete" do
+      member.soft_delete!(actor: member)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      get "/admin/audit_events/#{event.id}"
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+    end
+
+    it "rejects revert of a member self soft-delete" do
+      member.soft_delete!(actor: member)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(response).to redirect_to(admin_root_path)
+      expect(flash[:alert]).to be_present
+      expect(member.reload.discarded?).to be(true)
+    end
+
+    it "redirects with a clear alert when restoring an already-restored soft-delete" do
+      member.soft_delete!(actor: admin)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      member.restore!(actor: admin)
+
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(response).to redirect_to(admin_root_path)
+      expect(flash[:alert]).to match(/not soft-deleted/i)
+      expect(flash[:alert]).not_to match(/30 days|expired/i)
+    end
+
+    it "redirects reopen uniqueness conflicts instead of 500" do
+      report = Report.submit!(reporter: reporter, reportable: member, reason: "spam")
+      report.dismiss!(actor: admin)
+      event = AuditEvent.find_by!(action: "report.dismissed", auditable: report)
+      Report.submit!(reporter: reporter, reportable: member, reason: "harassment")
+
+      post "/admin/audit_events/#{event.id}/revert"
+      expect(response).to redirect_to(admin_root_path)
+      expect(response).not_to have_http_status(:internal_server_error)
+      expect(flash[:alert]).to be_present
+      expect(report.reload.status).to eq("dismissed")
+    end
+  end
 end

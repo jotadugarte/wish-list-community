@@ -112,9 +112,9 @@ class User < ApplicationRecord
     authenticate_within_scope(kept.where(suspended_at: nil), raw_email, raw_password)
   end
 
-  # [REQ-LIFE-002] Authenticates a discarded user by email and password for account restoration.
+  # [REQ-LIFE-002] [REQ-ADM-001] Authenticates a discarded, non-suspended user for account restoration.
   def self.authenticate_discarded(raw_email, raw_password)
-    authenticate_within_scope(discarded, raw_email, raw_password)
+    authenticate_within_scope(discarded.where(suspended_at: nil), raw_email, raw_password)
   end
 
   def self.authenticate_within_scope(scope, raw_email, raw_password)

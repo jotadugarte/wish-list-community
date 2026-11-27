@@ -82,4 +82,27 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(report.reload.status).to eq("dismissed")
     end
   end
+
+  describe "member cannot restore admin soft-delete (O4A)" do
+    it "blocks member restore of an admin soft-deleted user" do
+      member.soft_delete!(actor: admin)
+      expect(member.restore!(actor: member)).to be(false)
+      expect(member.errors[:base].join).to match(/admin/i)
+      expect(member.reload.discarded?).to be(true)
+    end
+
+    it "blocks member restore of an admin soft-deleted wishlist" do
+      wishlist = create(:wishlist, owner: member)
+      wishlist.soft_delete!(actor: admin)
+      expect(wishlist.restore!(actor: member)).to be(false)
+      expect(wishlist.errors[:base].join).to match(/admin/i)
+      expect(wishlist.reload.discarded?).to be(true)
+    end
+
+    it "still allows member restore of a self soft-delete" do
+      member.soft_delete!(actor: member)
+      expect(member.restore!(actor: member)).to be(true)
+      expect(member.reload.discarded?).to be(false)
+    end
+  end
 end

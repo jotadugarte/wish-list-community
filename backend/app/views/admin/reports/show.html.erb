@@ -16,15 +16,15 @@
 
 <% if @report.status == "pending" %>
   <div class="flex flex-col gap-3 mt-6">
-    <%= button_to "Dismiss", dismiss_admin_report_path(@report), method: :post %>
+    <%= button_to t("admin.actions.dismiss"), dismiss_admin_report_path(@report), method: :post %>
 
     <% if @report.reportable_type == "User" %>
-      <%= button_to "Suspend", suspend_admin_report_path(@report), method: :post %>
-      <%= button_to "Soft-delete account", soft_delete_user_admin_report_path(@report), method: :post %>
+      <%= button_to t("admin.actions.suspend"), suspend_admin_report_path(@report), method: :post %>
+      <%= button_to t("admin.actions.soft_delete_account"), soft_delete_user_admin_report_path(@report), method: :post %>
     <% else %>
-      <%= button_to "Suspend owner", suspend_admin_report_path(@report), method: :post %>
-      <%= button_to "Soft-delete account (owner)", soft_delete_user_admin_report_path(@report), method: :post %>
-      <%= button_to "Soft-delete wishlist", soft_delete_wishlist_admin_report_path(@report), method: :post %>
+      <%= button_to t("admin.actions.suspend_owner"), suspend_admin_report_path(@report), method: :post %>
+      <%= button_to t("admin.actions.soft_delete_account_owner"), soft_delete_user_admin_report_path(@report), method: :post %>
+      <%= button_to t("admin.actions.soft_delete_wishlist"), soft_delete_wishlist_admin_report_path(@report), method: :post %>
     <% end %>
   </div>
 <% end %>

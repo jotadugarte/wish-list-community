@@ -87,11 +87,22 @@ module SoftDeletable
 
   # [REQ-LIFE-001] [REQ-LIFE-002] Restores a soft-deleted record within the 30-day restoration window,
   # runs registered on_restore hooks (which leave reservations untouched), and logs an AuditEvent.
+  # [REQ-ADM-001] Member actors cannot restore a soft-delete whose latest AuditEvent actor was an admin (O4A).
   def restore!(actor: nil)
     raise ArgumentError, "Pre-condition failed: record must be persisted" unless persisted?
 
+    unless discarded?
+      errors.add(:base, "Record is not soft-deleted")
+      return false
+    end
+
     unless restorable?
       errors.add(:base, "Restoration window of 30 days has expired")
+      return false
+    end
+
+    if soft_deleted_by_admin? && !admin_actor?(actor)
+      errors.add(:base, "Admin soft-delete can only be restored by an admin")
       return false
     end
 
@@ -115,10 +126,27 @@ module SoftDeletable
     discarded? && discarded_at >= RESTORE_GRACE_WINDOW.ago
   end
 
+  # [REQ-ADM-001] True when the latest soft_deleted AuditEvent was performed by an admin.
+  def soft_deleted_by_admin?
+    event = latest_soft_delete_event
+    event&.actor&.role == "admin"
+  end
+
   private
 
   def soft_delete_audit_metadata
     @soft_delete_audit_metadata || {}
+  end
+
+  def latest_soft_delete_event
+    AuditEvent.where(auditable_type: self.class.name, auditable_id: id, action: "#{model_name.singular}.soft_deleted")
+              .order(created_at: :desc, id: :desc)
+              .limit(1)
+              .first
+  end
+
+  def admin_actor?(actor)
+    actor.present? && actor.respond_to?(:role) && actor.role == "admin"
   end
 
   def run_lifecycle_hooks!(registry)

@@ -11,6 +11,8 @@ module Admin
       "report.dismissed" => :reopen_report
     }.freeze
 
+    helper_method :revertable_event?
+
     rate_limit to: 20, within: 3.minutes, only: :revert, name: "admin_audit_revert",
                by: -> { current_user&.id || request.remote_ip },
                with: -> { rate_limit_admin_write }
@@ -29,7 +31,7 @@ module Admin
     def show
       @audit_event = AuditEvent.find(params[:id])
       authorize :admin, :show?, policy_class: AdminPolicy
-      @revertable = REVERTABLE.key?(@audit_event.action)
+      @revertable = revertable_event?(@audit_event)
     end
 
     # [REQ-ADM-001] Runs a compensating moderation revert; never mutates old AuditEvents.
@@ -37,16 +39,23 @@ module Admin
       @audit_event = AuditEvent.find(params[:id])
       authorize :admin, :revert?, policy_class: AdminPolicy
       perform_revert!(@audit_event)
-      redirect_to admin_audit_events_path, notice: "Revert applied.", status: :see_other
+      redirect_to admin_audit_events_path, notice: I18n.t("admin.notices.revert_applied"), status: :see_other
     end
 
     private
 
     def perform_revert!(event)
-      handler = REVERTABLE[event.action]
-      raise ArgumentError, "Pre-condition failed: event is not revertable" if handler.nil?
+      raise ArgumentError, "Pre-condition failed: event is not revertable" unless revertable_event?(event)
 
-      send(handler, event)
+      send(REVERTABLE.fetch(event.action), event)
+    end
+
+    # Soft-delete reverts are admin-enforcement only (O4A); suspend/dismiss are always admin actions.
+    def revertable_event?(event)
+      return false unless REVERTABLE.key?(event.action)
+      return true unless event.action.end_with?(".soft_deleted")
+
+      event.actor&.role == "admin"
     end
 
     def unsuspend_user(event)
@@ -56,12 +65,19 @@ module Admin
 
     def restore_user(event)
       user = User.find(event.auditable_id)
-      raise ArgumentError, "Pre-condition failed: restoration window expired" unless user.restore!(actor: current_user)
+      raise ArgumentError, restore_failure_message(user) unless user.restore!(actor: current_user)
     end
 
     def restore_wishlist(event)
       wishlist = Wishlist.find(event.auditable_id)
-      raise ArgumentError, "Pre-condition failed: restoration window expired" unless wishlist.restore!(actor: current_user)
+      raise ArgumentError, restore_failure_message(wishlist) unless wishlist.restore!(actor: current_user)
+    end
+
+    def restore_failure_message(record)
+      return "Pre-condition failed: record is not soft-deleted" unless record.discarded?
+      return "Pre-condition failed: restoration window expired" unless record.restorable?
+
+      record.errors.full_messages.to_sentence.presence || "Pre-condition failed: restore denied"
     end
 
     def reopen_report(event)
