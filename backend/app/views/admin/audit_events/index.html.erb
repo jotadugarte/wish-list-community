@@ -1,12 +1,12 @@
-<% content_for :title, "Admin Audit" %>
-<h1>Audit</h1>
+<% content_for :title, t("admin.titles.audit") %>
+<h1><%= t("admin.headings.audit") %></h1>
 
 <%= form_with url: admin_audit_events_path, method: :get, local: true do %>
   <label>
-    Action filter
+    <%= t("admin.copy.action_filter") %>
     <input type="text" name="action_filter" value="<%= @action_filter %>">
   </label>
-  <button type="submit">Filter</button>
+  <button type="submit"><%= t("admin.copy.filter") %></button>
 <% end %>
 
 <ul>

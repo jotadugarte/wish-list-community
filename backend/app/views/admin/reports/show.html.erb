@@ -1,17 +1,17 @@
-<% content_for :title, "Report ##{@report.id}" %>
-<h1>Report #<%= @report.id %></h1>
+<% content_for :title, t("admin.titles.report", id: @report.id) %>
+<h1><%= t("admin.headings.report", id: @report.id) %></h1>
 
 <p>
-  Type: <strong><%= @report.reportable_type %></strong><br>
-  Reason: <%= @report.reason %><br>
-  Reporter: @<%= @report.reporter.username %><br>
-  Status: <%= @report.status %>
+  <%= t("admin.copy.type") %>: <strong><%= @report.reportable_type %></strong><br>
+  <%= t("admin.copy.reason") %>: <%= @report.reason %><br>
+  <%= t("admin.copy.reporter") %>: @<%= @report.reporter.username %><br>
+  <%= t("admin.copy.status") %>: <%= @report.status %>
 </p>
 
 <% if @report.reportable_type == "User" %>
-  <p>Target user: @<%= @report.reportable.username %></p>
+  <p><%= t("admin.copy.target_user") %>: @<%= @report.reportable.username %></p>
 <% else %>
-  <p>Target wishlist: <%= @report.reportable.title %> (owner @<%= @report.reportable.owner.username %>)</p>
+  <p><%= t("admin.copy.target_wishlist") %>: <%= @report.reportable.title %> (<%= t("admin.copy.owner") %> @<%= @report.reportable.owner.username %>)</p>
 <% end %>
 
 <% if @report.status == "pending" %>
@@ -29,4 +29,4 @@
   </div>
 <% end %>
 
-<p class="mt-6"><%= link_to "Back to Reports", admin_reports_path %></p>
+<p class="mt-6"><%= link_to t("admin.copy.back_to_reports"), admin_reports_path %></p>

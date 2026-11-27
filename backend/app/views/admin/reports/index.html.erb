@@ -1,9 +1,9 @@
-<% content_for :title, "Admin Reports" %>
-<h1>Reports</h1>
-<p>Pending abuse reports (User and Wishlist).</p>
+<% content_for :title, t("admin.titles.reports") %>
+<h1><%= t("admin.headings.reports") %></h1>
+<p><%= t("admin.copy.pending_reports") %></p>
 
 <% if @reports.empty? %>
-  <p>No pending reports.</p>
+  <p><%= t("admin.copy.no_pending_reports") %></p>
 <% else %>
   <ul>
     <% @reports.each do |report| %>

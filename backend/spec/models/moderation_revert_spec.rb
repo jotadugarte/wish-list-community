@@ -105,4 +105,35 @@ RSpec.describe "Moderation revert helpers [REQ-ADM-001]" do
       expect(member.reload.discarded?).to be(false)
     end
   end
+
+  describe "admin_enforcement snapshot on soft-delete (O4A)" do
+    it "stores admin_enforcement metadata and blocks member restore after the admin is demoted" do
+      member.soft_delete!(actor: admin)
+      event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      expect(event.metadata["admin_enforcement"]).to eq(true)
+
+      admin.update!(role: "user")
+      expect(member.restore!(actor: member)).to be(false)
+      expect(member.errors[:base].join).to match(/admin/i)
+      expect(member.reload.discarded?).to be(true)
+    end
+  end
+
+  describe "User#suspend! admin gate and idempotency [REQ-ADM-001]" do
+    it "rejects a non-admin actor" do
+      other = create(:user, username: "not_admin_actor", email_address: "not_admin_actor@example.com")
+      expect do
+        member.suspend!(actor: other)
+      end.to raise_error(ArgumentError, /actor must be an admin/)
+      expect(member.reload.suspended?).to be(false)
+    end
+
+    it "is idempotent when already suspended" do
+      member.suspend!(actor: admin)
+      expect do
+        expect(member.suspend!(actor: admin)).to be(true)
+      end.not_to change { AuditEvent.where(action: "user.suspended", auditable: member).count }
+      expect(member.reload.suspended?).to be(true)
+    end
+  end
 end

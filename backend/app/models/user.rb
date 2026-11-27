@@ -72,12 +72,15 @@ class User < ApplicationRecord
   end
 
   # [REQ-ADM-001] Suspends the account: sets suspended_at, revokes credentials (R1), records AuditEvent.
-  # Does not soft-delete (O3A). Rejects self-suspend and suspending the last remaining admin.
+  # Does not soft-delete (O3A). Rejects non-admin actors, self-suspend, and suspending the last remaining admin.
+  # Idempotent: already-suspended users return true without a new AuditEvent.
   def suspend!(actor:)
     raise ArgumentError, "Pre-condition failed: actor must be persisted" unless actor&.persisted?
+    raise ArgumentError, "Pre-condition failed: actor must be an admin" unless actor.role == "admin"
     raise ArgumentError, "Pre-condition failed: user must be persisted" unless persisted?
     raise ArgumentError, "Pre-condition failed: cannot suspend yourself" if actor.id == id
     raise ArgumentError, "Pre-condition failed: cannot suspend the last remaining admin" if last_unsuspended_admin?
+    return true if suspended?
 
     transaction do
       update!(suspended_at: Time.current)
@@ -90,9 +93,10 @@ class User < ApplicationRecord
     true
   end
 
-  # [REQ-ADM-001] Clears suspension and records a compensating AuditEvent.
+  # [REQ-ADM-001] Clears suspension and records a compensating AuditEvent. Admin actor required.
   def unsuspend!(actor:)
     raise ArgumentError, "Pre-condition failed: actor must be persisted" unless actor&.persisted?
+    raise ArgumentError, "Pre-condition failed: actor must be an admin" unless actor.role == "admin"
     raise ArgumentError, "Pre-condition failed: user must be persisted" unless persisted?
     raise ArgumentError, "Pre-condition failed: user must be suspended" unless suspended?
 

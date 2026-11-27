@@ -58,15 +58,21 @@ module SoftDeletable
 
   # [REQ-LIFE-001] [REQ-LIFE-002] Soft-deletes the record, runs registered on_soft_delete hooks,
   # and logs an immutable AuditEvent (hooks may contribute metadata via merge_soft_delete_audit_metadata!).
+  # [REQ-ADM-001] When the actor is an admin, snapshots admin_enforcement: true on the AuditEvent (O4A).
   def soft_delete!(actor: nil)
     raise ArgumentError, "Pre-condition failed: record must be persisted" unless persisted?
+
+    resolved_actor = actor || (is_a?(User) ? self : nil)
 
     transaction do
       @soft_delete_audit_metadata = {}
       update!(discarded_at: Time.current)
       run_lifecycle_hooks!(self.class.soft_delete_hooks)
+      if admin_actor?(resolved_actor)
+        merge_soft_delete_audit_metadata!("admin_enforcement" => true)
+      end
       AuditEvent.record!(
-        actor: actor || (is_a?(User) ? self : nil),
+        actor: resolved_actor,
         action: "#{model_name.singular}.soft_deleted",
         auditable: self,
         metadata: soft_delete_audit_metadata
@@ -126,23 +132,26 @@ module SoftDeletable
     discarded? && discarded_at >= RESTORE_GRACE_WINDOW.ago
   end
 
-  # [REQ-ADM-001] True when the latest soft_deleted AuditEvent was performed by an admin.
+  # [REQ-ADM-001] True when the latest soft_deleted AuditEvent snapped admin_enforcement (immutable O4A gate).
   def soft_deleted_by_admin?
     event = latest_soft_delete_event
-    event&.actor&.role == "admin"
+    return false if event.nil?
+
+    ActiveModel::Type::Boolean.new.cast(event.metadata["admin_enforcement"])
+  end
+
+  # [REQ-ADM-001] Latest soft_deleted AuditEvent for this record (used by Admin revert eligibility).
+  def latest_soft_delete_event
+    AuditEvent.where(auditable_type: self.class.name, auditable_id: id, action: "#{model_name.singular}.soft_deleted")
+              .order(created_at: :desc, id: :desc)
+              .limit(1)
+              .first
   end
 
   private
 
   def soft_delete_audit_metadata
     @soft_delete_audit_metadata || {}
-  end
-
-  def latest_soft_delete_event
-    AuditEvent.where(auditable_type: self.class.name, auditable_id: id, action: "#{model_name.singular}.soft_deleted")
-              .order(created_at: :desc, id: :desc)
-              .limit(1)
-              .first
   end
 
   def admin_actor?(actor)

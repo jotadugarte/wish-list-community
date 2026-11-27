@@ -1,3 +1,3 @@
-<% content_for :title, "Admin Gift ##{@gift.id}" %>
+<% content_for :title, t("admin.titles.gift", id: @gift.id) %>
 <%= render "admin/gifts/detail", gift: @gift %>
-<p><%= link_to "Back to Audit", admin_audit_events_path %></p>
+<p><%= link_to t("admin.copy.back_to_audit"), admin_audit_events_path %></p>

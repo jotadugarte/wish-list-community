@@ -35,7 +35,7 @@ RSpec.describe "Admin reports queue [REQ-ADM-001]", type: :request do
       sign_in(admin)
       get "/admin"
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Reports")
+      expect(response.body).to include(I18n.t("admin.nav.reports"))
     end
 
     it "returns not-found for non-admin members without revealing the panel" do

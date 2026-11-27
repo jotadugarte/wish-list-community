@@ -7,6 +7,20 @@ module Admin
     include WebAuthentication
     include Pundit::Authorization
 
+    DOMAIN_ERROR_KEYS = {
+      "Pre-condition failed: event is not revertable" => "admin.errors.event_not_revertable",
+      "Pre-condition failed: record is not soft-deleted" => "admin.errors.not_soft_deleted",
+      "Pre-condition failed: restoration window expired" => "admin.errors.restoration_window_expired",
+      "Pre-condition failed: restore denied" => "admin.errors.restore_denied",
+      "Pre-condition failed: report must be pending" => "admin.errors.report_must_be_pending",
+      "Pre-condition failed: actor must be an admin" => "admin.errors.actor_must_be_admin",
+      "Pre-condition failed: cannot suspend yourself" => "admin.errors.cannot_suspend_yourself",
+      "Pre-condition failed: cannot suspend the last remaining admin" => "admin.errors.cannot_suspend_last_admin",
+      "Pre-condition failed: user must be suspended" => "admin.errors.user_must_be_suspended",
+      "Pre-condition failed: target_user must match reportable" => "admin.errors.target_must_match_reportable",
+      "Pre-condition failed: wishlist must match reportable" => "admin.errors.wishlist_must_match_reportable"
+    }.freeze
+
     layout "admin"
 
     before_action :require_admin!
@@ -31,12 +45,18 @@ module Admin
 
     def handle_domain_error(error)
       skip_authorization
-      message = if error.respond_to?(:record) && error.record&.errors&.full_messages&.any?
-        error.record.errors.full_messages.to_sentence
-      else
-        error.message
+      redirect_back fallback_location: admin_root_path, alert: localize_domain_error(error), status: :see_other
+    end
+
+    def localize_domain_error(error)
+      if error.respond_to?(:record) && error.record&.errors&.full_messages&.any?
+        return error.record.errors.full_messages.to_sentence
       end
-      redirect_back fallback_location: admin_root_path, alert: message, status: :see_other
+
+      key = DOMAIN_ERROR_KEYS[error.message]
+      return I18n.t(key) if key
+
+      I18n.t("admin.errors.domain_generic", message: error.message)
     end
 
     def rate_limit_admin_write

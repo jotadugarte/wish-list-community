@@ -124,7 +124,7 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
 
       post "/admin/audit_events/#{event.id}/revert"
       expect(response).to redirect_to(admin_root_path)
-      expect(flash[:alert]).to match(/not soft-deleted/i)
+      expect(flash[:alert]).to eq(I18n.t("admin.errors.event_not_revertable"))
       expect(flash[:alert]).not_to match(/30 days|expired/i)
     end
 
@@ -139,6 +139,24 @@ RSpec.describe "Admin audit viewer + revert [REQ-ADM-001]", type: :request do
       expect(response).not_to have_http_status(:internal_server_error)
       expect(flash[:alert]).to be_present
       expect(report.reload.status).to eq("dismissed")
+    end
+  end
+
+  describe "stale admin soft-delete cannot revert a later member self soft-delete" do
+    it "hides Revert and rejects revert on a superseded admin soft-delete event" do
+      member.soft_delete!(actor: admin)
+      admin_event = AuditEvent.find_by!(action: "user.soft_deleted", auditable: member)
+      post "/admin/audit_events/#{admin_event.id}/revert"
+      expect(member.reload.discarded?).to be(false)
+
+      member.soft_delete!(actor: member)
+      get "/admin/audit_events/#{admin_event.id}"
+      expect(response.body).not_to include(I18n.t("admin.actions.revert"))
+
+      post "/admin/audit_events/#{admin_event.id}/revert"
+      expect(response).to redirect_to(admin_root_path)
+      expect(flash[:alert]).to eq(I18n.t("admin.errors.event_not_revertable"))
+      expect(member.reload.discarded?).to be(true)
     end
   end
 end
