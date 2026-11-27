@@ -67,6 +67,22 @@ class Report < ApplicationRecord
     }
   end
 
+  # [REQ-ADM-001] Reopens a dismissed report to pending (FC1 KEEP); never mutates old AuditEvents.
+  def reopen!(actor:)
+    validate_triage_actor!(actor)
+    raise ArgumentError, "Pre-condition failed: report must be dismissed" unless status == "dismissed"
+    ensure_no_other_pending_for_target!
+
+    transaction do
+      update!(status: "pending")
+      AuditEvent.record!(actor: actor, action: "report.reopened", auditable: self)
+    end
+
+    raise "Post-condition failed: report must be pending" unless status == "pending"
+
+    true
+  end
+
   # [REQ-ADM-001] Dismisses a pending report without enforcement; no Notification (O7A).
   def dismiss!(actor:)
     validate_triage_actor!(actor)
@@ -174,6 +190,19 @@ class Report < ApplicationRecord
       auditable: self,
       metadata: metadata
     )
+  end
+
+  def ensure_no_other_pending_for_target!
+    conflict = self.class.where(
+      reporter_id: reporter_id,
+      reportable_type: reportable_type,
+      reportable_id: reportable_id,
+      status: "pending"
+    ).where.not(id: id).exists?
+    return unless conflict
+
+    errors.add(:base, "a pending report already exists for this target")
+    raise ActiveRecord::RecordInvalid, self
   end
 
   def validate_reason_value_object
