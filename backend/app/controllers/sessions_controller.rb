@@ -6,6 +6,9 @@ class SessionsController < ApplicationController
   include WebAuthentication
 
   rate_limit to: 10, within: 3.minutes, only: :create
+  rate_limit to: 20, within: 3.minutes, only: :destroy, with: -> {
+    redirect_back fallback_location: root_path, alert: I18n.t("api.v1.errors.rate_limited"), status: :too_many_requests
+  }
 
   # [REQ-AUTH-001] [REQ-WISH-005] Renders HTML login with optional allowlisted return_to.
   def new

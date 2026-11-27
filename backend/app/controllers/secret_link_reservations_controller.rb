@@ -9,6 +9,10 @@ class SecretLinkReservationsController < ApplicationController
   rescue_from Pundit::NotAuthorizedError, with: :render_not_found
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
+  rate_limit to: 20, within: 3.minutes, only: %i[create update destroy], with: -> {
+    redirect_back fallback_location: root_path, alert: I18n.t("api.v1.errors.rate_limited"), status: :too_many_requests
+  }
+
   before_action :require_login!
 
   # [REQ-RES-001] Creates a reservation from the Secret Link item row.
