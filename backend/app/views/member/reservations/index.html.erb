@@ -23,11 +23,12 @@
 
   <div class="space-y-2">
     <h2 class="text-xl font-semibold"><%= t("member.gifts.heading") %></h2>
-    <% if @open_gifts.empty? %>
+    <% gift_rows = (@open_gifts.to_a + @pending_confirm_gifts.to_a).uniq %>
+    <% if gift_rows.empty? %>
       <p><%= t("member.gifts.empty") %></p>
     <% else %>
       <ul class="space-y-3">
-        <% @open_gifts.each do |gift| %>
+        <% gift_rows.each do |gift| %>
           <li class="border-b border-stone-200 pb-2">
             <strong><%= gift.item.title %></strong>
             <span class="text-sm text-stone-500"><%= gift.status %></span>

@@ -203,6 +203,11 @@ class _WishListAppState extends State<WishListApp> {
       _currentUser = restored;
       _restoring = false;
     });
+    if (restored != null) {
+      _drainPendingInbound();
+    } else if (_pendingFriendUsername != null) {
+      _snack(_strings.deepLinkRequireLoginSnack);
+    }
   }
 
   AppStrings get _strings =>
@@ -220,11 +225,13 @@ class _WishListAppState extends State<WishListApp> {
     switch (decision.outcome) {
       case ShareIntentOutcome.requireLogin:
         _pendingShare = decision.payload;
-        _snack(s.shareRequireLoginSnack);
+        if (!_restoring) {
+          _snack(s.shareRequireLoginSnack);
+        }
       case ShareIntentOutcome.cannotParse:
         _snack(s.shareCannotParseSnack);
       case ShareIntentOutcome.skipPicker:
-        if (_currentUser == null) {
+        if (_restoring || _currentUser == null) {
           _pendingShare = decision.payload;
           return;
         }
@@ -238,7 +245,7 @@ class _WishListAppState extends State<WishListApp> {
         _snack(s.shareSkipPickerSnack);
         await _openShareItemForm(wishlistId: wishlistId, payload: decision.payload);
       case ShareIntentOutcome.showPicker:
-        if (_currentUser == null) {
+        if (_restoring || _currentUser == null) {
           _pendingShare = decision.payload;
           return;
         }
@@ -306,9 +313,11 @@ class _WishListAppState extends State<WishListApp> {
       case DeepLinkRoute.friendProfile:
         final username = decision.username;
         if (username == null || username.isEmpty) return;
-        if (_currentUser == null) {
+        if (_restoring || _currentUser == null) {
           _pendingFriendUsername = username;
-          _snack(_strings.deepLinkRequireLoginSnack);
+          if (!_restoring) {
+            _snack(_strings.deepLinkRequireLoginSnack);
+          }
           return;
         }
         await _openFriendWishlists(username);
@@ -345,10 +354,7 @@ class _WishListAppState extends State<WishListApp> {
     ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void _onAuthenticated(UserProfile profile) {
-    setState(() => _currentUser = profile);
-    _navKey.currentState?.popUntil((route) => route.isFirst);
-    unawaited(widget.pushRegistration.registerAfterLogin().catchError((_) => null));
+  void _drainPendingInbound() {
     final pendingFriend = _pendingFriendUsername;
     if (pendingFriend != null && pendingFriend.isNotEmpty) {
       _pendingFriendUsername = null;
@@ -359,6 +365,13 @@ class _WishListAppState extends State<WishListApp> {
     _pendingShare = null;
     final raw = '${pending.url} ${pending.titleHint}'.trim();
     widget.shareCoordinator.handleSharedText(raw).then(_onShareDecision);
+  }
+
+  void _onAuthenticated(UserProfile profile) {
+    setState(() => _currentUser = profile);
+    _navKey.currentState?.popUntil((route) => route.isFirst);
+    unawaited(widget.pushRegistration.registerAfterLogin().catchError((_) => null));
+    _drainPendingInbound();
   }
 
   @override

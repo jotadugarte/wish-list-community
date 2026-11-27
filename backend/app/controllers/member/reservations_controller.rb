@@ -22,6 +22,16 @@ module Member
                                            .where(status: GiftStatus::OPEN)
                                            .order(updated_at: :desc)
                                            .limit(200)
+      # Owner Path-1 confirm UI: GiftRecordPolicy::Scope is gifter-only; load
+      # delivered_pending_confirmation for wishlists the current user owns.
+      @pending_confirm_gifts = GiftRecord.joins(item: :wishlist)
+                                         .includes(item: :wishlist)
+                                         .where(
+                                           wishlists: { owner_id: current_user.id },
+                                           status: "delivered_pending_confirmation"
+                                         )
+                                         .order(updated_at: :desc)
+                                         .limit(200)
     end
 
     def create

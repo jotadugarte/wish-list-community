@@ -47,6 +47,11 @@ RSpec.describe "Hotwire reservations and gifts [REQ-RES-001] [REQ-RES-004] [REQ-
     expect(gift.reload.status).to eq("delivered_pending_confirmation")
 
     login_web!(owner)
+    get "/app/reservations"
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Auriculares")
+    expect(response.body).to include("confirm_received").or include("Confirm").or include("Confirmar")
+
     post "/app/gifts/#{gift.id}/confirm_received", params: { thank_you_note: "¡Gracias!" }
     expect(gift.reload.status).to eq("received_confirmed")
     expect(gift.thank_you_note).to eq("¡Gracias!")
