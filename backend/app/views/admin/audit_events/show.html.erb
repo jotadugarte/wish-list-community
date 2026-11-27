@@ -1,0 +1,12 @@
+<% content_for :title, "Audit ##{@audit_event.id}" %>
+<h1>Audit event #<%= @audit_event.id %></h1>
+<p>
+  Action: <strong><%= @audit_event.action %></strong><br>
+  Auditable: <%= @audit_event.auditable_type %> #<%= @audit_event.auditable_id %><br>
+  Actor id: <%= @audit_event.actor_id %><br>
+  Created: <%= @audit_event.created_at %>
+</p>
+<% if @revertable %>
+  <%= button_to "Revert", revert_admin_audit_event_path(@audit_event), method: :post %>
+<% end %>
+<p><%= link_to "Back to Audit", admin_audit_events_path %></p>

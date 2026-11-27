@@ -27,6 +27,10 @@ class AdminPolicy < ApplicationPolicy
     admin?
   end
 
+  def revert?
+    admin?
+  end
+
   def access?
     admin?
   end

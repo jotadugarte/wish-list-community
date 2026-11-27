@@ -16,6 +16,11 @@ Rails.application.routes.draw do
         post :soft_delete_wishlist
       end
     end
+    resources :audit_events, only: %i[index show] do
+      member do
+        post :revert
+      end
+    end
   end
 
   get "s/:share_token", to: "secret_links#show", as: :secret_link,

@@ -13,6 +13,7 @@
       <nav class="flex gap-4 items-center">
         <strong>Admin</strong>
         <%= link_to "Reports", admin_reports_path %>
+        <%= link_to "Audit", admin_audit_events_path %>
       </nav>
       <% if flash[:notice].present? %>
         <p class="mt-2"><%= flash[:notice] %></p>

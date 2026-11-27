@@ -1,0 +1,23 @@
+<% content_for :title, "Admin Audit" %>
+<h1>Audit</h1>
+
+<%= form_with url: admin_audit_events_path, method: :get, local: true do %>
+  <label>
+    Action filter
+    <input type="text" name="action_filter" value="<%= @action_filter %>">
+  </label>
+  <button type="submit">Filter</button>
+<% end %>
+
+<ul>
+  <% @audit_events.each do |event| %>
+    <li>
+      <%= link_to admin_audit_event_path(event) do %>
+        <%= event.action %> — <%= event.auditable_type %> #<%= event.auditable_id %>
+      <% end %>
+      <% if Admin::AuditEventsController::REVERTABLE.key?(event.action) %>
+        <%= button_to "Revert", revert_admin_audit_event_path(event), method: :post %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
