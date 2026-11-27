@@ -1,4 +1,12 @@
 <% content_for :title, t("admin.titles.style_guide") %>
+<style>
+  .brand-button:hover { filter: brightness(1.05); }
+  @media print {
+    body > header, .brand-guide-controls, .brand-guide-tabs { display:none; }
+    .brand-button:hover { filter: none; }
+    .brand-guide { background: var(--c-bg); color: var(--c-text); }
+  }
+</style>
 <div
   class="brand-guide"
   data-appearance="<%= @guide.appearance %>"

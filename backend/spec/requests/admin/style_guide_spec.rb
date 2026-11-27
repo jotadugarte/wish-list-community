@@ -105,6 +105,19 @@ RSpec.describe "Admin style guide gate [REQ-ADM-001]", type: :request do
     end
   end
 
+  describe "print stylesheet [REQ-ADM-001]" do
+    before { sign_in(admin) }
+
+    it "includes print rules that hide the toggles for PDF [REQ-ADM-001]" do
+      get "/admin/style_guide"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("@media print")
+      expect(response.body).to include(".brand-guide-controls")
+      expect(response.body).to include("display:none")
+    end
+  end
+
   describe "app preview [REQ-ARCH-001]" do
     before { sign_in(admin) }
 
