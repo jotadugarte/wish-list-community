@@ -22,6 +22,8 @@
   </nav>
   <% if @guide.web? %>
     <%= render "admin/style_guides/web", guide: @guide %>
+  <% elsif @guide.app? %>
+    <%= render "admin/style_guides/app", guide: @guide %>
   <% end %>
   <h2><%= t("admin.style_guide.tokens_heading") %></h2>
   <table>

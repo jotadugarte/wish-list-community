@@ -333,6 +333,15 @@ en:
         heading: "Do and don't"
         do: "Do: use the shared tokens for buttons, surfaces, and the specification note."
         dont: "Don't: invent a second palette or hide the specification note."
+      app:
+        note: "Phone mock in HTML and CSS. It is not the Flutter app and it is not pixel-identical."
+        screen_title: "My lists"
+        item_title: "Blue mug"
+        spec: "Large. Sample only."
+        button: "Add"
+        tab_lists: "Lists"
+        tab_friends: "Friends"
+        tab_profile: "Profile"
     errors:
       event_not_revertable: "This audit event cannot be reverted."
       not_soft_deleted: "Record is not soft-deleted."

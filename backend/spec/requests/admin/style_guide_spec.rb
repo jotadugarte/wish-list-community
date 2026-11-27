@@ -104,4 +104,21 @@ RSpec.describe "Admin style guide gate [REQ-ADM-001]", type: :request do
       expect(response.body).to include(I18n.t("admin.style_guide.web.flow_title", locale: :en))
     end
   end
+
+  describe "app preview [REQ-ARCH-001]" do
+    before { sign_in(admin) }
+
+    it "shows an HTML phone mock from the shared tokens, not Flutter Web [REQ-ARCH-001]" do
+      get "/admin/style_guide", params: { preview: "app" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('data-preview="app"')
+      expect(response.body).to include("brand-phone-mock")
+      expect(response.body).to include(SharedDesignTokens.load.app_name)
+      expect(response.body).to include(I18n.t("admin.style_guide.app.screen_title"))
+      expect(response.body).to include("--c-primary")
+      expect(response.body).not_to include("flutter.js")
+      expect(response.body).not_to include("<form")
+    end
+  end
 end

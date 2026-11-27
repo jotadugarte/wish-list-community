@@ -57,6 +57,10 @@ module Admin
       preview == "app"
     end
 
+    def app_name
+      @catalog.app_name
+    end
+
     private
 
     def pick(raw, allowed, fallback)

@@ -333,6 +333,15 @@ es:
         heading: "Qué hacer y qué evitar"
         do: "Sí: usa los tokens compartidos en botones, superficies y la nota de especificación."
         dont: "No: inventes una segunda paleta ni escondas la nota de especificación."
+      app:
+        note: "Marco de teléfono en HTML y CSS. No es la app Flutter ni es idéntico al píxel."
+        screen_title: "Mis listas"
+        item_title: "Taza azul"
+        spec: "Grande. Solo una muestra."
+        button: "Agregar"
+        tab_lists: "Listas"
+        tab_friends: "Amigos"
+        tab_profile: "Perfil"
     errors:
       event_not_revertable: "Este evento de auditoría no se puede revertir."
       not_soft_deleted: "El registro no está eliminado temporalmente."
