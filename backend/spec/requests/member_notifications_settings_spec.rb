@@ -54,6 +54,25 @@ RSpec.describe "Hotwire inbox prefs and account settings [REQ-NOTIF-001] [REQ-LI
     expect(channels.values).to all(eq(false))
   end
 
+  it "does not opt out absent events on a partial prefs PATCH [REQ-NOTIF-001]" do
+    NotificationPreference.create!(
+      user: user,
+      channels: {
+        "friend.request_received" => { "email" => true, "in_app" => true, "push" => true },
+        "gift.thank_you" => { "email" => true, "in_app" => true, "push" => true }
+      }
+    )
+    patch "/app/settings/notification_preferences", params: {
+      notification_preference: {
+        channels: { "friend.request_received" => { "email" => "0", "in_app" => "1", "push" => "1" } }
+      }
+    }
+    expect(response).to be_redirect
+    pref = NotificationPreference.find_by!(user_id: user.id)
+    expect(pref.enabled_channels_for("friend.request_received")["email"]).to eq(false)
+    expect(pref.enabled_channels_for("gift.thank_you").values).to all(eq(true))
+  end
+
 
   it "settings page links to legal pages and supports account soft-delete" do
     get "/app/settings"

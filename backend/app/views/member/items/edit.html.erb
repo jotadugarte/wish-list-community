@@ -1,6 +1,5 @@
 <section class="space-y-4 max-w-lg" data-controller="image-compress">
   <h1 class="text-2xl font-semibold"><%= t("member.items.edit") %></h1>
-  <% if flash[:alert].present? %><p class="text-red-600"><%= flash[:alert] %></p><% end %>
   <%= form_with model: @item, url: member_item_path(@item), method: :patch, html: { multipart: true } do |f| %>
     <div>
       <%= f.label :title %>

@@ -25,7 +25,10 @@ module Member
       channels = pref.channels.is_a?(Hash) ? pref.channels.deep_dup : {}
       raw = params.dig(:notification_preference, :channels) || {}
       NotificationPreference::DEFAULT_EVENTS.each do |event_key|
-        channel_hash = raw[event_key] || raw[event_key.to_s] || {}
+        # Absent event keys must be skipped — defaulting to {} would silently
+        # opt out every channel for the rest of the catalog on a partial PATCH.
+        channel_hash = raw[event_key] || raw[event_key.to_s]
+        next if channel_hash.nil?
         next unless channel_hash.is_a?(ActionController::Parameters) || channel_hash.is_a?(Hash)
 
         channels[event_key.to_s] = normalize_channels(channel_hash)
