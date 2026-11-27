@@ -11,6 +11,7 @@ es:
         invalid_search_query: "La búsqueda debe tener entre 2 y 30 caracteres válidos de @username"
         friendship_invalid: "No se pudo procesar la solicitud de amistad"
         report_invalid: "No se pudo enviar el reporte"
+        rate_limited: "Demasiadas solicitudes. Espera unos minutos e inténtalo de nuevo."
         wishlist_invalid: "No se pudo guardar la lista de deseos"
         wishlist_share_invalid: "No se pudo compartir la lista de deseos"
         signup_invalid: "No se pudo crear la cuenta con los datos proporcionados"

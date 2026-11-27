@@ -6,8 +6,13 @@ module Api
     # Traceability: [REQ-SOC-001], [REQ-DISC-001], [REQ-ADM-001]
     class ReportsController < BaseController
       skip_after_action :verify_policy_scoped
+      rate_limit to: 20, within: 3.minutes, only: :create, with: -> {
+        render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
+      }
+
       ALLOWED_REPORTABLE_TYPES = {
-        "User" => User
+        "User" => User,
+        "Wishlist" => Wishlist
       }.freeze
 
       # [REQ-SOC-001] [REQ-DISC-001] [REQ-ADM-001] Submits a polymorphic abuse report.
@@ -34,6 +39,8 @@ module Api
       def resolve_reportable!(raw_type, raw_id)
         klass = ALLOWED_REPORTABLE_TYPES[raw_type.to_s]
         raise ArgumentError, "Unsupported reportable_type" if klass.nil?
+
+        return klass.kept.find(raw_id) if klass == Wishlist
 
         klass.find(raw_id)
       end
