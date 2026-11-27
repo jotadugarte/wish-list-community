@@ -24,7 +24,6 @@ Rails.application.routes.draw do
       as: :secret_link_mark_received, constraints: { share_token: /[A-Za-z0-9\-_]+/ }
 
   namespace :api do
-
     namespace :v1 do
       resource :session, only: %i[create destroy]
       resource :signup, only: %i[create]

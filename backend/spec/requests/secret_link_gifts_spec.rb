@@ -49,4 +49,3 @@ RSpec.describe "Secret Link gifts (O3C)", type: :request do
     expect(response.body).to include('data-testid="received-gift-')
   end
 end
-
