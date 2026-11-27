@@ -40,7 +40,7 @@ module Api
       def serialize_pref(pref)
         {
           channels: pref.channels || {},
-          defaults_events: NotificationPreference::S5_EVENTS
+          defaults_events: NotificationPreference::DEFAULT_EVENTS
         }
       end
     end

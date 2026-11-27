@@ -1,8 +1,22 @@
 # frozen_string_literal: true
 
-# Per-user per-event channel toggles (in_app / email / push). Defaults all-on for S5 events.
+# Per-user per-event channel toggles (in_app / email / push). Defaults all-on for catalog events.
 # Traceability: [REQ-NOTIF-001]
 class NotificationPreference < ApplicationRecord
+  # Sprint 9 O7A: full prefs catalog (friendship + reservation + gift).
+  DEFAULT_EVENTS = %w[
+    friend.request_received
+    friend.request_accepted
+    reservation.grace_started
+    reservation.auto_released
+    reservation.item_critical_edit
+    reservation.item_deleted
+    gift.delivered_pending_confirmation
+    gift.received_confirmed_to_gifter
+    gift.thank_you
+    gift.voided_by_owner_delete
+  ].freeze
+  # Reservation-only subset retained for callers that still name S5 events.
   S5_EVENTS = %w[
     reservation.grace_started
     reservation.auto_released
