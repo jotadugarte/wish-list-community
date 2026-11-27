@@ -171,3 +171,19 @@
     <step id="20" status="complete">Run full backend RSpec + flutter analyze/flutter test; fix until green. End of start-task implementation scope.</step>
   </implementation_plan>
 </task_session>
+
+## QA matrix (2026-11-26 Sprint 6 Dual-Path Gifts)
+
+See `/cursor/stores/bc-32a5179f-cc50-4940-94d7-70abc32641c4/internal/sprint-6-qa-matrix.md`. Owner CONTINUE authorized with profile accept.
+
+## QA reviewer record — 2026-11-26 Sprint 6 Dual-Path Gifts
+
+delivery: not posted
+
+**What was tested (cloud headless):** Sprint 6 gift Path 1/2 + thank-you + Received Gifts + O8D voids + API/Hotwire/Flutter parity; regression Login/wishlists/items/reservations suite.
+**Results:** QA-S6-01…QA-S6-15 **passed**. QA-S6-16 real-device gift UX **owner to run**. QA-S6-17 live email/FCM **owner to run**.
+**Environment:** Ruby 3.4.13 + Rails test DB; Flutter 3.50.1 widget/unit tests; no computerUse/simulator; push no-op asserted via dispatcher specs only.
+**Not run:** device/simulator Path 1/2 UX; live SMTP/FCM.
+**Evidence:** focused gift RSpec 42/0; full RSpec 253/0; flutter analyze clean; gift repo + surfaces + app_screens green.
+**Product bugs:** none. **Test mistakes:** none.
+
