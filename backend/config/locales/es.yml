@@ -1,5 +1,24 @@
 es:
   hello: "Hola mundo"
+  member:
+    shell:
+      app_name: "Wish List Community"
+      nav_label: "Navegación de miembro"
+      empty_shell: "Esta sección está lista — el contenido llega después."
+      nav:
+        wishlists: "Mis listas"
+        shared: "Compartidas"
+        friends: "Amigos"
+        reservations: "Reservaciones"
+        notifications: "Avisos"
+        settings: "Ajustes"
+      sections:
+        wishlists: "Mis listas"
+        shared: "Compartidas"
+        friends: "Amigos"
+        reservations: "Reservaciones"
+        notifications: "Avisos"
+        settings: "Ajustes"
   legal:
     placeholder_notice: "Texto provisional pendiente de aprobación legal del propietario."
     terms:

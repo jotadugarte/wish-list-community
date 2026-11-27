@@ -152,8 +152,8 @@ Términos y Privacidad bilingües es+en desde el día uno (placeholders hasta te
   <step id="6" status="complete">Implement real push send wiring behind the double/adapter until step 5 green (no live Google calls in CI).</step>
   <step id="7" status="complete">Write failing request/system specs for public Hotwire `GET /terms` and `GET /privacy` (O8A/O13A): 200 public, es+en content (placeholder OK), linked from signup/profile. Trace [REQ-AUTH-002], [REQ-LIFE-002] publication readiness.</step>
   <step id="8" status="complete">Implement legal pages + visible links (web) until step 7 green.</step>
-  <step id="9" status="pending">Write failing system specs for logged-in Hotwire **MemberWebShell** (O12A/O2B): nav sections Mis listas, Compartidas, Amigos, Reservaciones, Avisos, Ajustes; unauthenticated redirected to login.</step>
-  <step id="10" status="pending">Implement MemberWebShell layout/nav until step 9 green (empty section shells OK if wired).</step>
+  <step id="9" status="complete">Write failing system specs for logged-in Hotwire **MemberWebShell** (O12A/O2B): nav sections Mis listas, Compartidas, Amigos, Reservaciones, Avisos, Ajustes; unauthenticated redirected to login.</step>
+  <step id="10" status="complete">Implement MemberWebShell layout/nav until step 9 green (empty section shells OK if wired).</step>
   <step id="11" status="pending">Write failing system specs for Hotwire wishlist parity: list/create/edit privacy/secret-link rotate/shares/soft-delete aligned with existing API rules [REQ-WISH-*].</step>
   <step id="12" status="pending">Implement Hotwire wishlist controllers/views until step 11 green (server authority unchanged).</step>
   <step id="13" status="pending">Write failing system specs for Hotwire item CRUD + paste-URL preview confirm + multipart images with client-side compress helper (O5A) respecting ≤3 / ≤2MB / ≤1600; server libvips still runs [REQ-ITEM-002], [REQ-ITEM-006], [REQ-MOB-001].</step>

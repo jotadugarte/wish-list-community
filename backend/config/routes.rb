@@ -8,6 +8,16 @@ Rails.application.routes.draw do
   get "terms", to: "legal_pages#terms", as: :terms
   get "privacy", to: "legal_pages#privacy", as: :privacy
 
+  namespace :member, path: "app" do
+    root to: "home#show"
+    get "wishlists", to: "shell#show", defaults: { section: "wishlists" }, as: :wishlists
+    get "shared", to: "shell#show", defaults: { section: "shared" }, as: :shared
+    get "friends", to: "shell#show", defaults: { section: "friends" }, as: :friends
+    get "reservations", to: "shell#show", defaults: { section: "reservations" }, as: :reservations
+    get "notifications", to: "shell#show", defaults: { section: "notifications" }, as: :notifications
+    get "settings", to: "shell#show", defaults: { section: "settings" }, as: :settings
+  end
+
   namespace :admin do
     root to: "reports#index"
     resources :reports, only: %i[index show] do
