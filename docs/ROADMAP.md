@@ -49,7 +49,7 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Automatic best-effort extraction of product image and title (`og:image`, `og:title` with SSRF protection; confirm-before-persist) when pasting or sharing a store link (`REQ-ITEM-006`) — 2026-11-26
   - [x] Up to 3 images per item (`REQ-ITEM-002`):
     - [x] Max 2MB each, max 1600px on the longest side
-    - [ ] Optional client-side compression (UX) — deferred O6A to Sprint 9
+    - [x] Optional client-side compression (UX) — shipped Sprint 9 (O5A)
     - [x] Mandatory server-side resize + WebP re-encode + full EXIF/GPS metadata stripping via `libvips`
   - [x] API v1 endpoints + Flutter screens for this sprint — 2026-11-26
 - [x] **MVP Sprint 5 — Secret Reservations (72h Grace Auto-Release & Context-Aware Limits)** — 2026-11-26 — Branch: `cursor/feat-sprint-5-secret-reservations-47be` — Draft PR #12
@@ -81,25 +81,14 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Admin auditing of gifter identity and online gift purchase link (`REQ-ADM-001`) — 2026-11-27
 
 ## In Progress
-_(none)_
+- [ ] **MVP Sprint 9 — Mobile Wrap-Up & Native "Share to App" Sheet** — Branch: `cursor/sprint-9-mobile-wrap-up-5dfd` — implementation complete pending finish-branch
+  - Absorbed **Notifications (MVP)** (O1A): FCM adapter + Flutter register/unbind, prefs + inbox on Flutter and Hotwire, full event catalog
+  - Member Hotwire `/app` parity (O2B/O12A); public `/terms` `/privacy` (O8A/O13A)
+  - Share-to-App + deep links friend/secret only (O3A/O4B); client image compress (O5A)
+  - Ops risks remaining: staging→prod host swap (O9B), Google FCM keys (O10B), owner legal-text approval before store submit (O8A)
 
 ## Pending (by priority)
-- [ ] **MVP Sprint 9 — Mobile Wrap-Up & Native "Share to App" Sheet (Flutter iOS + Android)**
-  - [ ] Full MVP parity with the web app in the Flutter apps (`REQ-MOB-001`)
-  - [ ] Native OS *"Share to App"* sheet extension (iOS & Android) with smart parsing of mixed text + URL from store apps (Amazon, MercadoLibre) + automatic store image preview directly into *"Add Item to Wishlist"* (`REQ-MOB-001`, `REQ-MOB-002`, `REQ-ITEM-006`)
-  - [ ] Deep links (Universal Links on iOS, App Links on Android): friend profile, secret link, activity link (`REQ-MOB-001`)
-  - [ ] Image upload from mobile: in-app compression respecting limits (2MB, 1600px, max 3) (`REQ-MOB-001`)
-  - [ ] Push notifications via Firebase Cloud Messaging with automatic `device_token` unbinding on logout (`REQ-NOTIF-001`, `REQ-NOTIF-002`)
-  - [ ] Publication readiness for App Store and Google Play (including in-app account deletion & UGC EULA compliance) (`REQ-LIFE-002`, `REQ-AUTH-002`)
-- [ ] **Notifications (MVP) — In-App + Email + Push (Configurable per User)**
-  - [ ] Preferences per event (in-app/email/push toggles) (`REQ-NOTIF-001`)
-  - [ ] Single localized dispatcher to create in-app + enqueue email + push (`device_tokens` bound to `api_token_id`) (`REQ-NOTIF-001`, `REQ-NOTIF-002`, `REQ-USER-002`)
-  - [ ] Events covered:
-    - [ ] Friend request received & accepted
-    - [ ] Reservation date expired (72h grace warning to reserver) & auto-released
-    - [ ] Reserved item edited or deleted by owner (reserver/gifter only)
-    - [ ] Gift marked as delivered (anonymous confirmation prompt to owner) & owner anonymous thank-you note (to gifter)
-    - [ ] Reservation closed because owner marked gift as received
+_(none — Sprint 9 absorbs prior Notifications pending bucket)_
 
 ## Backlog
 - [ ] **v1 Sprint A — Activities (Configurable System + Exclusions + Blind Dropout Bridge)**

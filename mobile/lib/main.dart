@@ -10,7 +10,6 @@ import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/auth/auth_repository.dart';
 import 'package:wish_list_mobile/features/auth/login_screen.dart';
 import 'package:wish_list_mobile/features/auth/profile_settings_screen.dart';
-import 'package:wish_list_mobile/features/notifications/inbox_screen.dart';
 import 'package:wish_list_mobile/features/notifications/notification_repository.dart';
 import 'package:wish_list_mobile/features/notifications/push_registration.dart';
 import 'package:wish_list_mobile/features/social/friends_list_screen.dart';

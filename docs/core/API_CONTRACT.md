@@ -361,9 +361,14 @@ Body: `{ "url": "https://..." }` → `{ "title", "image_url", "source_url" }` (b
 - `PATCH /s/:share_token/reservations/:id`
 - `DELETE /s/:share_token/reservations/:id`
 
-### Notifications foundation (D5a / O1A / O8A)
+### Notifications (Sprint 5 foundation + Sprint 9 O1A/O7A/O10B)
 - `GET /api/v1/notifications` · `POST /api/v1/notifications/:id/mark_read`
-- `GET/PATCH /api/v1/notification_preferences`
+- `GET/PATCH /api/v1/notification_preferences` — response includes `channels` and `defaults_events` catalog (friend.request_*, reservation.*, gift.*)
+- Push delivery via injectable FCM adapter (`PushNotifier`); without Google keys, in-app + email still work (no crash). `device_token` binds on session/signup; destroyed on logout/revoke (`REQ-NOTIF-002`).
+
+### Member Hotwire + legal (Sprint 9 O2B/O8A/O12A/O13A) — not `/api/v1`
+- Public `GET /terms` · `GET /privacy` (bilingual es+en placeholders)
+- Logged-in ` /app/*` MemberWebShell: wishlists, items, reservations/gifts, notifications inbox + prefs, account soft-delete
 
 ## 6. Gifts (Sprint 6)
 
