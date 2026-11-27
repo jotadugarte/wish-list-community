@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>3.1 Step 7 Hotwire rate_limit specs</current_step>
+    <current_step>3.2 Step 8 Hotwire rate_limits</current_step>
   </execution_context>
 </agent_state>
