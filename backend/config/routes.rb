@@ -138,6 +138,22 @@ Rails.application.routes.draw do
       end
       resources :link_previews, only: %i[create]
       get "shared_wishlists" => "shared_wishlists#index"
+      resources :activities, only: %i[index create show] do
+        member do
+          post :draw
+          post :arrancar
+          post :blind_bridge
+          post :full_redraw
+          post :cancel
+          post :transfer
+          get :my_assignment
+          post "participants", action: :invite
+          post "participants/accept", action: :accept
+          delete "participants/me", action: :leave
+          post "exclusions", action: :add_exclusion
+          post "co_organizers", action: :appoint_co_organizer
+        end
+      end
     end
   end
 

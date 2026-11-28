@@ -136,6 +136,33 @@ class Activity < ApplicationRecord
     self
   end
 
+  # [REQ-ACT-001] Serializes the activity shell for API clients (share_token creator-only).
+  def as_api_json(viewer: nil)
+    payload = {
+      id: id,
+      name: name,
+      currency: currency,
+      assignment_mode: assignment_mode,
+      visibility_mode: visibility_mode,
+      reservation_visibility: reservation_visibility,
+      budget_mode: budget_mode,
+      budget_amount_cents: budget_amount_cents,
+      budget_max_cents: budget_max_cents,
+      status: status,
+      sealed_at: sealed_at,
+      cancelled_at: cancelled_at,
+      starts_on: starts_on,
+      ends_on: ends_on,
+      money_settings_frozen_at: money_settings_frozen_at,
+      needs_dropout_recovery: needs_dropout_recovery?,
+      creator: creator.public_profile_json,
+      created_at: created_at,
+      updated_at: updated_at
+    }
+    payload[:share_token] = share_token if viewer.present? && viewer.id == creator_id
+    payload
+  end
+
   private
 
   def mint_share_token_if_blank

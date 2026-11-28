@@ -3,9 +3,13 @@
 # Pundit policy for Activity board access and admin mutations.
 # Traceability: [REQ-ACT-001], [REQ-BLOCK-001], [REQ-ARCH-001]
 class ActivityPolicy < ApplicationPolicy
-  # [REQ-ACT-001] Authenticated users may create activities.
-  def create?
+  # [REQ-ACT-001] Authenticated users may list/create activities.
+  def index?
     user.present? && !user.discarded?
+  end
+
+  def create?
+    index?
   end
 
   # [REQ-ACT-001] [REQ-BLOCK-001] Board access for creator or accepted participants; Block Wins.

@@ -135,6 +135,8 @@ en:
         wishlist_invalid: "Unable to save wishlist"
         wishlist_share_invalid: "Unable to share wishlist"
         signup_invalid: "Unable to create account with the provided details"
+        unprocessable: "Unable to process the request"
+        activity_invalid: "Unable to save activity"
       passwords:
         reset_sent: "If that email address is in our system, we have sent password reset instructions."
   secret_links:

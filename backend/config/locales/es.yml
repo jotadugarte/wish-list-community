@@ -135,6 +135,8 @@ es:
         wishlist_invalid: "No se pudo guardar la lista de deseos"
         wishlist_share_invalid: "No se pudo compartir la lista de deseos"
         signup_invalid: "No se pudo crear la cuenta con los datos proporcionados"
+        unprocessable: "No se pudo procesar la solicitud"
+        activity_invalid: "No se pudo guardar la actividad"
       passwords:
         reset_sent: "Si ese correo electrónico está en nuestro sistema, hemos enviado las instrucciones para restablecer la contraseña."
   secret_links:
