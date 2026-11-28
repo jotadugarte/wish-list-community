@@ -186,8 +186,8 @@ REQ tags: `REQ-ACT-001`..`005`, `REQ-ARCH-001`/`002`, `REQ-BLOCK-001`, `REQ-NOTI
   <step id="16" status="complete">Implement leave + `ActivityDropoutBridgeService` + Full Redraw until step 15 green (guard when &lt;3 remain: refuse redraw / require cancel — implementation risk).</step>
   <step id="17" status="complete">Write failing request specs for `/api/v1` activity CRUD, participants, exclusions, draw/Arrancar, bridge/redraw, cancel/transfer, show assignment only to giver. Trace [REQ-ACT-001]..[005], [REQ-ARCH-001].</step>
   <step id="18" status="complete">Implement API controllers/serializers until step 17 green (no activity item/reservation endpoints — O1A).</step>
-  <step id="19" status="pending">Write failing request/system specs for Hotwire: public activity invite preview by token (safe OG, no roster); logged-in board; create/manage flows parity with API rules; personal wishlist bridge links when allowed (O4B/O5B). Trace [REQ-ACT-001], [REQ-WISH-001].</step>
-  <step id="20" status="pending">Implement Hotwire activity surfaces until step 19 green.</step>
+  <step id="19" status="complete">Write failing request/system specs for Hotwire: public activity invite preview by token (safe OG, no roster); logged-in board; create/manage flows parity with API rules; personal wishlist bridge links when allowed (O4B/O5B). Trace [REQ-ACT-001], [REQ-WISH-001].</step>
+  <step id="20" status="complete">Implement Hotwire activity surfaces until step 19 green.</step>
   <step id="21" status="pending">Write failing specs for NotificationDispatcher catalog keys (O8A): invite, accept/decline, co-org, draw (private), Arrancar, leave, dropout-needs-cure, Blind Bridge, Full Redraw, cancel, transfer — prefs toggles. Trace [REQ-NOTIF-001], [REQ-NOTIF-002].</step>
   <step id="22" status="pending">Implement notification events + prefs until step 21 green.</step>
   <step id="23" status="pending">Write failing Flutter tests for activity feature: board, invite/accept, exclusions UI for co-org/creator, draw/Arrancar, private recipient, leave/cure prompts, cancel/transfer; personal wishlist bridge. Trace [REQ-ACT-001]..[005], [REQ-MOB-001].</step>

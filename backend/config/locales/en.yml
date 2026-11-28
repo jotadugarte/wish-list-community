@@ -139,6 +139,24 @@ en:
         activity_invalid: "Unable to save activity"
       passwords:
         reset_sent: "If that email address is in our system, we have sent password reset instructions."
+  activities:
+    invitation_title: "Activity invitation: %{name}"
+    og_description: "You've been invited to a group gift activity. Sign in to continue."
+    guest_body: "This is a private activity invitation. Log in or sign up to open the board."
+    login_cta: "Log in"
+    signup_cta: "Sign up"
+    index_heading: "Activities"
+    new_heading: "New activity"
+    new_cta: "Create activity"
+    create_cta: "Create"
+    board_heading: "Activity board"
+    share_label: "Invite link"
+    participants_heading: "Participants"
+    your_recipient_heading: "You give to"
+    wishlist_bridge_heading: "Personal wishlists"
+    wishlist_bridge_empty: "No personal wishlists visible yet."
+    errors:
+      invalid: "Unable to save activity"
   secret_links:
     invitation_title: "Wishlist from @%{username}"
     og_description: "You've been invited to view a private wishlist. Sign in to continue."

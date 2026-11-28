@@ -139,6 +139,24 @@ es:
         activity_invalid: "No se pudo guardar la actividad"
       passwords:
         reset_sent: "Si ese correo electrónico está en nuestro sistema, hemos enviado las instrucciones para restablecer la contraseña."
+  activities:
+    invitation_title: "Invitación a actividad: %{name}"
+    og_description: "Te invitaron a una actividad de regalos. Inicia sesión para continuar."
+    guest_body: "Esta es una invitación privada a una actividad. Inicia sesión o regístrate para abrir el tablero."
+    login_cta: "Iniciar sesión"
+    signup_cta: "Crear cuenta"
+    index_heading: "Actividades"
+    new_heading: "Nueva actividad"
+    new_cta: "Crear actividad"
+    create_cta: "Crear"
+    board_heading: "Tablero de actividad"
+    share_label: "Enlace de invitación"
+    participants_heading: "Participantes"
+    your_recipient_heading: "Le regalas a"
+    wishlist_bridge_heading: "Listas personales"
+    wishlist_bridge_empty: "Aún no hay listas personales visibles."
+    errors:
+      invalid: "No se pudo guardar la actividad"
   secret_links:
     invitation_title: "Lista de deseos de @%{username}"
     og_description: "Te invitaron a ver una lista de deseos privada. Inicia sesión para continuar."

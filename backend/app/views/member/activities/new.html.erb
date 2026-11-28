@@ -1,0 +1,30 @@
+<section class="space-y-4 max-w-xl">
+  <h1 class="text-2xl font-semibold"><%= t("activities.new_heading") %></h1>
+  <%= form_with model: @activity, url: member_activities_path, class: "space-y-3" do |f| %>
+    <div>
+      <%= f.label :name %>
+      <%= f.text_field :name, required: true, class: "border w-full" %>
+    </div>
+    <div>
+      <%= f.label :currency %>
+      <%= f.text_field :currency, required: true, class: "border w-full" %>
+    </div>
+    <div>
+      <%= f.label :assignment_mode %>
+      <%= f.select :assignment_mode, Activity::ASSIGNMENT_MODES, {}, class: "border w-full" %>
+    </div>
+    <div>
+      <%= f.label :visibility_mode %>
+      <%= f.select :visibility_mode, Activity::VISIBILITY_MODES, {}, class: "border w-full" %>
+    </div>
+    <div>
+      <%= f.label :reservation_visibility %>
+      <%= f.select :reservation_visibility, Activity::RESERVATION_VISIBILITIES, {}, class: "border w-full" %>
+    </div>
+    <div>
+      <%= f.label :budget_mode %>
+      <%= f.select :budget_mode, BudgetMode::ALLOWED, {}, class: "border w-full" %>
+    </div>
+    <%= f.submit t("activities.create_cta"), class: "underline" %>
+  <% end %>
+</section>

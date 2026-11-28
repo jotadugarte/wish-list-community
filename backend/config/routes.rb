@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   namespace :member, path: "app" do
     root to: "home#show"
+    resources :activities, only: %i[index show new create]
     resources :wishlists, only: %i[index show new create edit update destroy] do
       member do
         post :rotate_share_token
@@ -68,6 +69,8 @@ Rails.application.routes.draw do
     resource :style_guide, only: :show, controller: "style_guides"
   end
 
+  get "a/:share_token", to: "activity_links#show", as: :activity_link,
+      constraints: { share_token: /[A-Za-z0-9\-_]+/ }
   get "s/:share_token", to: "secret_links#show", as: :secret_link,
       constraints: { share_token: /[A-Za-z0-9\-_]+/ }
   post "s/:share_token/items/:item_id/reservations", to: "secret_link_reservations#create", as: :secret_link_item_reservations,
