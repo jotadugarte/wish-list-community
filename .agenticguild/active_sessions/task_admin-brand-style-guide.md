@@ -30,5 +30,34 @@
   Paused before QA, finish-branch, and any PR.
   Rebase 2026-11-27: onto origin/main 707475e (Sprint 9 PR #16). Conflicts resolved in current_state.md (keep this task) and SYSTEM_ARCHITECTURE.md (keep Sprint 9 surfaces plus the shared tokens bullet). ROADMAP, locales, and routes merged and were checked. Published with lease to cursor/admin-brand-style-guide-ea18 at 34efec0.
   QA pause at step 3.2: smoke QA-01..03 pass. QA-04..07 and QA-09..14 pass. QA-08 failed as a test mistake (expected raw "Do and don't"; the page renders "Do and don&#39;t"). Flutter shared catalog test passed. Full RSpec 435/0 and Flutter suite green on this commit. Temporary spec left at backend/tmp/qa-specs/admin_brand_style_guide_qa_spec.rb until FIX or CONTINUE. No reviewer record yet. No finish-branch and no PR.
+  QA-08 re-run 2026-11-27: assertion updated to the escaped apostrophe only. Product page unchanged. 1 example, 0 failures. Temporary spec removed after the pass.
   </working_notes>
+
+  ## QA reviewer record — 2026-11-27 (not posted)
+
+  What was tested: Admin brand / style guide on branch cursor/admin-brand-style-guide-ea18, product tree at 34efec0, rebased onto origin/main 707475e (Sprint 9, PR #16). Headless RSpec request checks and one Flutter unit test. No browser and no computerUse.
+
+  Environment: Linux cloud VM, Ruby 3.4.13, Rails 8 test database on PostgreSQL, Flutter 3.50.1. Factories for guest, member (locale es), and admin (locale es, role admin). Temporary spec backend/tmp/qa-specs/admin_brand_style_guide_qa_spec.rb, removed after this pass.
+
+  Results:
+  QA-01 PASS — guest GET /up returns 200.
+  QA-02 PASS — admin GET /admin/style_guide returns 200 and shows brand-guide.
+  QA-03 PASS — member GET /admin/style_guide returns 404 and does not show brand-guide.
+  QA-04 PASS — guest GET /admin/style_guide returns 404 and does not show brand-guide.
+  QA-05 PASS — nav, token table, version 2026-11-27.1, light primary #1F4037.
+  QA-06 PASS — appearance=dark uses primary #4E8C73.
+  QA-07 PASS — Spanish web preview is inert (buttons, no form).
+  QA-08 PASS — English web preview. First run failed as a test mistake (looked for a raw apostrophe). Owner said FIX QA-08. The assertion now expects Do and don&#39;t. Re-run: 1 example, 0 failures. The product page was not changed.
+  QA-09 PASS — app preview is an HTML phone mock named Wish List, not Flutter Web.
+  QA-10 PASS — print CSS hides .brand-guide-controls.
+  QA-11 PASS — shared design/design_tokens.json version 2026-11-27.1 and palette 01 light primary #1F4037.
+  QA-12 PASS — roadmap bullet and API contract mention the guide; architecture still names Sprint 9 InboxScreen.
+  QA-13 PASS — member GET /app redirects to /app/wishlists and does not include brand-guide.
+  QA-14 PASS — admin GET /admin/reports returns 200 and still links the style guide.
+  Flutter shared catalog test PASS — palette 01 matches DesignTokens.
+  Regression on the rebased product commit, run before this record: RSpec 435 examples, 0 failures; RuboCop 241 files, no offenses; flutter analyze clean; flutter test all passed.
+
+  Not run (owner): real-browser print/PDF, visual comparison of the phone mock with the Flutter app, iOS/Android simulator or device.
+
+  Delivery: not posted
 </task_session>
