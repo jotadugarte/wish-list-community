@@ -75,27 +75,38 @@ class Wishlist < ApplicationRecord
   # [REQ-WISH-001] [REQ-WISH-002] Switches privacy mode, minting or wiping share_token.
   # No-op when the requested mode already matches (avoids reminting without O4A rotate).
   def switch_privacy_mode!(mode_vo)
+    assert_personal_privacy_switchable!(mode_vo)
+    return self if privacy_mode == mode_vo.value
+
+    transaction { apply_privacy_mode_update!(mode_vo) }
+    assert_privacy_mode_switched!(mode_vo)
+    self
+  end
+
+  def assert_personal_privacy_switchable!(mode_vo)
     raise ArgumentError, "Pre-condition failed: mode must be PrivacyMode" unless mode_vo.is_a?(PrivacyMode)
     raise ArgumentError, "Pre-condition failed: wishlist must be persisted" unless persisted?
     raise ArgumentError, "Pre-condition failed: activity wishlists cannot switch personal privacy" if activity_scoped?
-    return self if privacy_mode == mode_vo.value
+  end
+  private :assert_personal_privacy_switchable!
 
-    transaction do
-      if mode_vo.shared?
-        update!(privacy_mode: mode_vo.value, share_token: mint_unique_share_token!)
-      else
-        update!(privacy_mode: mode_vo.value, share_token: nil)
-        revoke_secret_link_shares!
-      end
+  def apply_privacy_mode_update!(mode_vo)
+    if mode_vo.shared?
+      update!(privacy_mode: mode_vo.value, share_token: mint_unique_share_token!)
+    else
+      update!(privacy_mode: mode_vo.value, share_token: nil)
+      revoke_secret_link_shares!
     end
+  end
+  private :apply_privacy_mode_update!
 
+  def assert_privacy_mode_switched!(mode_vo)
     raise "Post-condition failed: privacy_mode mismatch" unless privacy_mode == mode_vo.value
     raise "Post-condition failed: friends must wipe share_token" if mode_vo.friends? && share_token.present?
     raise "Post-condition failed: shared must mint share_token" if mode_vo.shared? && share_token.blank?
     assert_secret_link_shares_revoked! if mode_vo.friends?
-
-    self
   end
+  private :assert_privacy_mode_switched!
 
   # [REQ-WISH-001] [REQ-WISH-006] [REQ-ARCH-002] Serializes the wishlist shell for API clients.
   # share_token is owner-only on personal lists; activity lists never expose Secret Link (FC4A).

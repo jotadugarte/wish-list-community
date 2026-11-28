@@ -43,12 +43,19 @@ class GiftService
         raise "Post-condition failed: mark_purchased must leave open gift and completed hold"
       end
 
-      ActivityNotifier.gift_purchased!(gift: gift) if item.wishlist&.activity_scoped?
+      notify_gift_purchased_if_activity!(gift: gift, item: item)
       gift
     end
   rescue ActiveRecord::RecordNotUnique
     raise ConflictError, I18n.t("gifts.errors.open_gift_exists")
   end
+
+  def self.notify_gift_purchased_if_activity!(gift:, item:)
+    return unless item.wishlist&.activity_scoped?
+
+    ActivityNotifier.gift_purchased!(gift: gift)
+  end
+  private_class_method :notify_gift_purchased_if_activity!
 
   def self.mark_purchased_allowed?(reservation, actor)
     reservation.user_id == actor.id && ReservationStatus::ACTIVE_HOLD.include?(reservation.status)
