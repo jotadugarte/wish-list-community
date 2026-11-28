@@ -79,19 +79,22 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Admin panel: report queue + moderation actions (dismiss / suspend / soft-delete) (`REQ-ADM-001`) — 2026-11-27
   - [x] Admin audit log viewer (`AuditEvent` history) with 1-click revert for suspend / admin soft-delete / dismiss→pending (`REQ-ADM-001`) — 2026-11-27
   - [x] Admin auditing of gifter identity and online gift purchase link (`REQ-ADM-001`) — 2026-11-27
+- [x] **MVP Sprint 9 — Mobile Wrap-Up & Native "Share to App" Sheet** — 2026-11-27 — Branch: `cursor/sprint-9-mobile-wrap-up-5dfd` — PR #16
+  - [x] Absorbed **Notifications (MVP)** (O1A): FCM adapter + Flutter register/unbind, prefs + inbox on Flutter and Hotwire, full event catalog (`REQ-NOTIF-001`, `REQ-NOTIF-002`) — 2026-11-27
+  - [x] Member Hotwire `/app` parity (O2B/O12A); public `/terms` `/privacy` (O8A/O13A) — 2026-11-27
+  - [x] Share-to-App + deep links friend/secret only (O3A/O4B); client image compress (O5A) (`REQ-MOB-001`, `REQ-MOB-002`, `REQ-ITEM-002`) — 2026-11-27
+  - Ops risks remaining (do not block Done): staging→prod host swap (O9B), Google FCM keys (O10B), owner legal-text approval before store submit (O8A); owner device QA deferred (Share sheet, App Links, live FCM, browser Hotwire walk)
+- [x] **Backlog — Admin Brand / Style Guide (Web Admin dual preview)** — 2026-11-27 — Branch: `cursor/admin-brand-style-guide-ea18` — PR #17
+  - [x] Admin-only Hotwire `GET /admin/style_guide`: web preview + HTML/CSS phone mock from shared `design/design_tokens.json` (not Flutter Web); tokens table, es/en + light/dark, version stamp, print CSS; Flutter `SharedDesignTokenCatalog` additive reader (`REQ-ARCH-001`, `REQ-ADM-001`) — 2026-11-27
+  - Follow-up: retokenize shared file when Ñata final visual HTML lands; owner browser print/PDF + phone-mock vs Flutter visual check
 
 ## In Progress
-- [ ] **MVP Sprint 9 — Mobile Wrap-Up & Native "Share to App" Sheet** — Branch: `cursor/sprint-9-mobile-wrap-up-5dfd` — implementation complete pending finish-branch
-  - Absorbed **Notifications (MVP)** (O1A): FCM adapter + Flutter register/unbind, prefs + inbox on Flutter and Hotwire, full event catalog
-  - Member Hotwire `/app` parity (O2B/O12A); public `/terms` `/privacy` (O8A/O13A)
-  - Share-to-App + deep links friend/secret only (O3A/O4B); client image compress (O5A)
-  - Ops risks remaining: staging→prod host swap (O9B), Google FCM keys (O10B), owner legal-text approval before store submit (O8A)
+_(none)_
 
 ## Pending (by priority)
-_(none — Sprint 9 absorbs prior Notifications pending bucket)_
+_(none — next product work is v1 Activities in Backlog)_
 
 ## Backlog
-- [ ] **Backlog — Admin Brand / Style Guide (Web Admin dual preview)** — Living admin-only Hotwire `/admin` brand/style reference with **two tabs or two pages**: web preview + mobile-app preview (HTML/CSS phone mock from shared tokens; not Flutter Web). Tokens table, buttons/states, a11y notes, do/don’t, sample flows, es/en + light/dark toggles, version stamp, Admin nav + print; driven by a shared DesignTokens file also consumed by Flutter. For Ñata review and Hotwire/Flutter alignment. Depends on: Sprint 8 Admin. Retokenize shared file when Ñata final visual HTML lands. Does not block Sprint 9.
 - [ ] **v1 Sprint A — Activities (Configurable System + Exclusions + Blind Dropout Bridge)**
   - [ ] Create a group activity (owner, name, dates, single currency, external activity link scoped strictly to that activity's info) (`REQ-ACT-001`)
   - [ ] 5 configurable budget modes per activity (`budget_mode`: `none`, `fixed`, `min_only`, `max_only`, `range`) (`REQ-ACT-005`)

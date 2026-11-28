@@ -83,7 +83,7 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
   * **72-Hour Expiration Grace Window (O2A / O5A / O6A / O7A):** When `estimated_date` elapses in the reserver's `time_zone`, a Solid Queue recurring sweep (`ReservationGraceSweepJob`) moves the hold to `expired_grace` and notifies the reserver. During active or grace, the reserver may **extend**, **voluntarily cancel**, or **mark purchased** (Sprint 6). If the grace window elapses without action, status becomes `auto_released`.
   * **Hotwire Secret Link parity (O3C / O4B):** Logged-in sharees on `/s/:share_token` get reserve/extend/cancel plus gift Path 1/2 and thank-you parity with Flutter. Guests remain invitation/view + login/`return_to`.
   * **O8D gift voids:** Soft-deleting an item voids open gifts (notify gifter). Block/unfriend voids open gifts between the pair; gifters must send `confirm_void_gifts=true` when an open gift exists. Restore never reopens voided gifts.
-  * **Notification foundation (O1A / O8A):** `Notification`, `NotificationPreference` (defaults all-on), and `NotificationDispatcher` (in-app + email enqueue; **push send is no-op** until Sprint 9). Gift events: delivered-pending (anonymous to owner), thank-you / received-confirmed (to gifter), voided-by-owner-delete.
+  * **Notifications (O1A / O8A, shipped Sprint 9):** `Notification`, `NotificationPreference` (defaults all-on; full event catalog including friendship), and `NotificationDispatcher` (in-app + email enqueue + injectable FCM push adapter). Without Google keys, in-app + email still work and push send is a no-op (no crash). Gift events: delivered-pending (anonymous to owner), thank-you / received-confirmed (to gifter), voided-by-owner-delete.
 * **Value Objects:** `ReservationStatus`, `EstimatedDate` (calendar date in reserver TZ), `GiftStatus`, `ThankYouNote`, `PurchaseLinkRef`.
 
 ### 4.6 `Activity`, `ActivityParticipant` & `ActivityExclusion` (v1)
@@ -99,7 +99,7 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
   * A user cannot report themselves, and partial unique index (`WHERE status = 'pending'`) prevents duplicate pending reports by the same reporter on the same target.
   * Admin Hotwire triage: **Dismiss** → `dismissed`; **Suspend** / admin soft-delete account or wishlist → `reviewed`. Each writes a new `AuditEvent`. Triage creates **no** Notifications. Member `UserBlock` is unchanged.
   * Moderation 1-click revert (compensating action + new `AuditEvent`, never mutate old rows): unsuspend; restore admin soft-delete within the same **30-day** SoftDeletable window; reopen `dismissed` → `pending` (unique pending respected).
-  * All user-facing notification fan-out goes through `NotificationDispatcher`. Missing preference rows mean defaults-on for Sprint 5 events. Push preference is stored; send remains a no-op until Sprint 9.
+  * All user-facing notification fan-out goes through `NotificationDispatcher`. Missing preference rows mean defaults-on for the catalog events. Push preference is stored; FCM send runs via the injectable adapter when tokens and keys exist, otherwise in-app + email still work (`REQ-NOTIF-001`, `REQ-NOTIF-002`).
 * **Value Objects:** `ReportReason` (`spam`, `harassment`, `impersonation`, `inappropriate_content`, `scam`).
 
 ---
