@@ -3,10 +3,12 @@ import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/activities/activity_repository.dart';
 import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
+import 'package:wish_list_mobile/features/items/item_models.dart';
+import 'package:wish_list_mobile/features/reservations/reservation_models.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
 
-// Activity board: draw/Arrancar, leave, cure prompts, private recipient.
-// Traceability: [REQ-ACT-001], [REQ-ACT-003], [REQ-MOB-001]
+// Activity board: draw/Arrancar, leave, cure, activity lists + reserve/gift.
+// Traceability: [REQ-ACT-001], [REQ-ACT-003], [REQ-ACT-005], [REQ-MOB-001]
 class ActivityBoardScreen extends StatefulWidget {
   final ActivityRepository activityRepository;
   final ReservationRepository? reservationRepository;
@@ -34,6 +36,9 @@ class ActivityBoardScreen extends StatefulWidget {
 class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
   ActivityShell? _activity;
   ActivityAssignmentView? _assignment;
+  List<ActivityWishlistView> _wishlists = const [];
+  Map<int, List<WishlistItem>> _itemsByWishlist = const {};
+  final Map<int, ReservationModel> _holdsByItemId = {};
   String? _error;
   bool _loading = true;
 
@@ -54,10 +59,24 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
       final assignment = await widget.activityRepository.myAssignment(
         activityId: widget.activityId,
       );
+      final wishlists = await widget.activityRepository.fetchActivityWishlists(
+        activityId: widget.activityId,
+      );
+      final itemsByWishlist = <int, List<WishlistItem>>{};
+      for (final list in wishlists.take(ActivityRepository.maxList)) {
+        itemsByWishlist[list.id] =
+            await widget.activityRepository.fetchActivityItems(
+          activityId: widget.activityId,
+          wishlistId: list.id,
+        );
+      }
+      await _syncHoldsFromMine();
       if (!mounted) return;
       setState(() {
         _activity = activity;
         _assignment = assignment;
+        _wishlists = wishlists;
+        _itemsByWishlist = itemsByWishlist;
         _loading = false;
       });
     } catch (e) {
@@ -69,6 +88,21 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
     }
   }
 
+  Future<void> _syncHoldsFromMine() async {
+    final repo = widget.reservationRepository;
+    if (repo == null) return;
+    try {
+      final mine = await repo.fetchMine();
+      for (final hold in mine.take(200)) {
+        if (hold.activityId == widget.activityId) {
+          _holdsByItemId[hold.itemId] = hold;
+        }
+      }
+    } catch (_) {
+      // Board still usable without my-reservations sync.
+    }
+  }
+
   Future<void> _run(Future<ActivityShell> Function() action) async {
     try {
       await action();
@@ -77,6 +111,12 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
       if (!mounted) return;
       setState(() => _error = e.toString());
     }
+  }
+
+  bool _isOwner(ActivityWishlistView list) {
+    if (list.viewerIsOwner) return true;
+    final viewerId = widget.viewerUserId;
+    return viewerId != null && list.ownerId == viewerId;
   }
 
   @override
@@ -120,9 +160,163 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
           ],
         ),
         const SizedBox(height: 16),
+        Text(s.activityListsHeading),
+        ..._wishlists.map((list) => _wishlistSection(list, activity, s)),
+        const SizedBox(height: 16),
         Text(s.activityPersonalWishlistsHeading),
       ],
     );
+  }
+
+  Widget _wishlistSection(
+    ActivityWishlistView list,
+    ActivityShell activity,
+    AppStrings s,
+  ) {
+    final owner = _isOwner(list);
+    final items = _itemsByWishlist[list.id] ?? const <WishlistItem>[];
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(list.title, style: const TextStyle(fontWeight: FontWeight.w600)),
+          if (list.ownerUsername != null) Text('@${list.ownerUsername}'),
+          if (owner) _ownerAddForm(list, activity, s),
+          ...items.map((item) => _itemRow(item, owner: owner, s: s)),
+        ],
+      ),
+    );
+  }
+
+  Widget _ownerAddForm(
+    ActivityWishlistView list,
+    ActivityShell activity,
+    AppStrings s,
+  ) {
+    return _ActivityItemAddForm(
+      strings: s,
+      onSubmit: (title, priceRaw) => _createItem(
+        list: list,
+        activity: activity,
+        title: title,
+        priceRaw: priceRaw,
+      ),
+    );
+  }
+
+  Future<void> _createItem({
+    required ActivityWishlistView list,
+    required ActivityShell activity,
+    required String title,
+    required String priceRaw,
+  }) async {
+    try {
+      final price = priceRaw.trim().isEmpty ? null : int.tryParse(priceRaw.trim());
+      await widget.activityRepository.createActivityItem(
+        activityId: activity.id,
+        wishlistId: list.id,
+        title: title,
+        priceCents: price,
+        currency: activity.currency,
+      );
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.toString());
+    }
+  }
+
+  Widget _itemRow(WishlistItem item, {required bool owner, required AppStrings s}) {
+    return ListTile(
+      title: Text(item.title),
+      subtitle: item.priceCents == null
+          ? null
+          : Text('${item.priceCents} ${item.currency ?? ''}'),
+      trailing: owner ? null : _peerActions(item, s),
+    );
+  }
+
+  Widget? _peerActions(WishlistItem item, AppStrings s) {
+    final reservations = widget.reservationRepository;
+    final gifts = widget.giftRepository;
+    if (reservations == null) return null;
+
+    final hold = _holdsByItemId[item.id];
+    if (hold != null &&
+        (hold.status == 'active' || hold.status == 'expired_grace')) {
+      return Wrap(
+        spacing: 4,
+        children: [
+          TextButton(
+            onPressed: () => _extendHold(hold, reservations),
+            child: Text(s.extendReservationButton),
+          ),
+          if (gifts != null)
+            TextButton(
+              onPressed: () => _markPurchased(hold, gifts),
+              child: Text(s.markPurchasedButton),
+            ),
+        ],
+      );
+    }
+
+    if (item.availability == 'available' || item.availability == null) {
+      return TextButton(
+        onPressed: () => _reserve(item, reservations),
+        child: Text(s.reserveButton),
+      );
+    }
+    return Text(s.availabilityReservedByMe);
+  }
+
+  Future<void> _reserve(WishlistItem item, ReservationRepository repo) async {
+    try {
+      final date = DateTime.now().toUtc().add(const Duration(days: 7));
+      final iso =
+          '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final hold = await repo.create(itemId: item.id, estimatedDate: iso);
+      _holdsByItemId[item.id] = hold;
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.toString());
+    }
+  }
+
+  Future<void> _extendHold(
+    ReservationModel hold,
+    ReservationRepository repo,
+  ) async {
+    try {
+      final date = DateTime.now().toUtc().add(const Duration(days: 14));
+      final iso =
+          '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final updated = await repo.extend(
+        reservationId: hold.id,
+        estimatedDate: iso,
+      );
+      _holdsByItemId[updated.itemId] = updated;
+      if (!mounted) return;
+      setState(() {});
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.toString());
+    }
+  }
+
+  Future<void> _markPurchased(
+    ReservationModel hold,
+    GiftRepository gifts,
+  ) async {
+    try {
+      await gifts.markPurchased(reservationId: hold.id);
+      _holdsByItemId.remove(hold.itemId);
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.toString());
+    }
   }
 
   List<Widget> _inviteActions(ActivityShell activity, AppStrings s) {
@@ -231,5 +425,63 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
       return s.activityStatusCancelledLabel;
     }
     return s.activityStatusOpenLabel;
+  }
+}
+
+class _ActivityItemAddForm extends StatefulWidget {
+  final AppStrings strings;
+  final Future<void> Function(String title, String priceRaw) onSubmit;
+
+  const _ActivityItemAddForm({
+    required this.strings,
+    required this.onSubmit,
+  });
+
+  @override
+  State<_ActivityItemAddForm> createState() => _ActivityItemAddFormState();
+}
+
+class _ActivityItemAddFormState extends State<_ActivityItemAddForm> {
+  final _titleController = TextEditingController();
+  final _priceController = TextEditingController();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _priceController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.strings;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        children: [
+          TextField(
+            key: const Key('activity_item_title'),
+            controller: _titleController,
+            decoration: InputDecoration(labelText: s.addItemButton),
+          ),
+          TextField(
+            key: const Key('activity_item_price'),
+            controller: _priceController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: 'price_cents'),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton(
+              onPressed: () => widget.onSubmit(
+                _titleController.text,
+                _priceController.text,
+              ),
+              child: Text(s.saveItemButton),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -41,6 +41,7 @@ module Api
       def activity_wishlist_json(wishlist)
         payload = wishlist.as_api_json(viewer: current_user)
         payload[:activity_id] = wishlist.activity_id
+        payload[:viewer_is_owner] = wishlist.owner_id == current_user.id
         payload.delete(:share_token)
         payload
       end

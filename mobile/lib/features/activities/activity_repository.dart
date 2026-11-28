@@ -15,20 +15,46 @@ class ActivityRepository {
 
   const ActivityRepository({required this.apiClient});
 
-  // Sprint B stubs — implemented in Step 20 [REQ-ACT-005] [REQ-MOB-001].
+  // [REQ-ACT-001] [REQ-ARCH-002] Lists activity-scoped wishlists (FC1A board-only).
   Future<List<ActivityWishlistView>> fetchActivityWishlists({
     required int activityId,
   }) async {
-    throw UnimplementedError('fetchActivityWishlists');
+    _assertId(activityId);
+    final response = await apiClient.request(
+      method: 'GET',
+      path: '/api/v1/activities/$activityId/wishlists',
+    );
+    final raw = response.body['wishlists'];
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .take(maxList)
+        .map(ActivityWishlistView.fromJson)
+        .toList(growable: false);
   }
 
+  // [REQ-ACT-005] Lists items on one activity wishlist.
   Future<List<WishlistItem>> fetchActivityItems({
     required int activityId,
     required int wishlistId,
   }) async {
-    throw UnimplementedError('fetchActivityItems');
+    _assertId(activityId);
+    if (wishlistId <= 0) {
+      throw ArgumentError('Pre-condition failed: wishlistId must be > 0');
+    }
+    final response = await apiClient.request(
+      method: 'GET',
+      path: '/api/v1/activities/$activityId/wishlists/$wishlistId/items',
+    );
+    final raw = response.body['items'] as List<dynamic>? ?? const [];
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .take(maxList)
+        .map(WishlistItem.fromJson)
+        .toList(growable: false);
   }
 
+  // [REQ-ACT-005] Creates an activity item with manual price + currency.
   Future<WishlistItem> createActivityItem({
     required int activityId,
     required int wishlistId,
@@ -37,14 +63,50 @@ class ActivityRepository {
     String? currency,
     String priority = 'medium',
   }) async {
-    throw UnimplementedError('createActivityItem');
+    _assertId(activityId);
+    if (wishlistId <= 0) {
+      throw ArgumentError('Pre-condition failed: wishlistId must be > 0');
+    }
+    final cleaned = title.trim();
+    if (cleaned.isEmpty) {
+      throw ArgumentError('Pre-condition failed: title cannot be blank');
+    }
+    final response = await apiClient.request(
+      method: 'POST',
+      path: '/api/v1/activities/$activityId/wishlists/$wishlistId/items',
+      body: {
+        'item': {
+          'title': cleaned,
+          'priority': priority,
+          'price_cents': ?priceCents,
+          'currency': ?currency,
+        },
+      },
+    );
+    return WishlistItem.fromJson(
+      response.body['item'] as Map<String, dynamic>,
+    );
   }
 
+  // [REQ-RES-005] Sets open_gifting max reservations per user (pre-seal only).
   Future<int> setReservationLimit({
     required int activityId,
     required int maxReservationsPerUser,
   }) async {
-    throw UnimplementedError('setReservationLimit');
+    _assertId(activityId);
+    if (maxReservationsPerUser < 1) {
+      throw ArgumentError('Pre-condition failed: max must be >= 1');
+    }
+    final response = await apiClient.request(
+      method: 'PATCH',
+      path: '/api/v1/activities/$activityId/reservation_limit',
+      body: {'max_reservations_per_user': maxReservationsPerUser},
+    );
+    final value = response.body['max_reservations_per_user'];
+    if (value is! int || value < 1) {
+      throw StateError('Post-condition failed: max_reservations_per_user');
+    }
+    return value;
   }
 
   Future<List<ActivityShell>> fetchActivities() async {
