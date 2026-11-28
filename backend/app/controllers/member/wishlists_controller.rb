@@ -18,7 +18,7 @@ module Member
 
     def index
       authorize Wishlist, :index?
-      @wishlists = policy_scope(Wishlist).where(owner_id: current_user.id)
+      @wishlists = policy_scope(Wishlist).personal.where(owner_id: current_user.id)
                                         .order(created_at: :desc)
                                         .limit(MAX_INDEX)
     end

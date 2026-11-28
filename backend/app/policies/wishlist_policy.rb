@@ -57,7 +57,8 @@ class WishlistPolicy < ApplicationPolicy
     def resolve
       return scope.none if user.nil? || user.discarded?
 
-      kept_with_active_owner = scope.kept.where(owner_id: User.kept.select(:id))
+      # [REQ-ARCH-002] Activity-scoped lists stay off personal discovery (FC1A).
+      kept_with_active_owner = scope.kept.personal.where(owner_id: User.kept.select(:id))
       owned = kept_with_active_owner.where(owner_id: user.id)
       friend_ids = accepted_friend_ids
       friends_mode = kept_with_active_owner.where(owner_id: friend_ids, privacy_mode: "friends")

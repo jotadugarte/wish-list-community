@@ -16,7 +16,7 @@ module Api
       # [REQ-WISH-001] Lists the current user's kept wishlists.
       def index
         authorize Wishlist, :index?
-        wishlists = current_user.wishlists.kept.order(created_at: :desc).limit(MAX_INDEX)
+        wishlists = current_user.wishlists.personal.kept.order(created_at: :desc).limit(MAX_INDEX)
         render json: { wishlists: wishlists.map { |w| w.as_api_json(viewer: current_user) } }, status: :ok
       end
 

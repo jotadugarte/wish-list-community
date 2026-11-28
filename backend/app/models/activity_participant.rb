@@ -40,8 +40,10 @@ class ActivityParticipant < ApplicationRecord
     transaction do
       update!(status: "accepted", accepted_at: Time.current)
       freeze_money_settings_if_first_invitee_accept!
+      ActivityWishlistEnsureService.ensure_for_participant!(participant: self)
     end
     raise "Post-condition failed: status must be accepted" unless status == "accepted"
+    raise "Post-condition failed: activity wishlist must exist" unless Wishlist.kept.exists?(activity_id: activity_id, owner_id: user_id)
     ActivityNotifier.accepted!(activity: activity, participant: self, actor: user)
 
     self

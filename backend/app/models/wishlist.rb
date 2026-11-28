@@ -10,8 +10,14 @@ class Wishlist < ApplicationRecord
   MAX_TOKEN_MINT_ATTEMPTS = 5
 
   belongs_to :owner, class_name: "User"
+  belongs_to :activity, optional: true
   has_many :wishlist_shares, dependent: :destroy
   has_many :items, dependent: :destroy, inverse_of: :wishlist
+
+  # [REQ-ARCH-002] Personal My Wishlists exclude activity-scoped rows (FC1A).
+  scope :personal, -> { where(activity_id: nil) }
+  # [REQ-ARCH-002] Activity-board lists only (not personal My Wishlists).
+  scope :activity_scoped, -> { where.not(activity_id: nil) }
 
   # [REQ-LIFE-001] Cascade soft-delete to Items so restore leaves a clean slate for S5 reservations.
   register_soft_delete_hook(:cascade_soft_delete_items) do |wishlist_record|
@@ -61,11 +67,17 @@ class Wishlist < ApplicationRecord
     ShareToken.new(share_token)
   end
 
+  # [REQ-ARCH-002] [REQ-ACT-001] True when this wishlist belongs to an Activity (FC4A).
+  def activity_scoped?
+    activity_id.present?
+  end
+
   # [REQ-WISH-001] [REQ-WISH-002] Switches privacy mode, minting or wiping share_token.
   # No-op when the requested mode already matches (avoids reminting without O4A rotate).
   def switch_privacy_mode!(mode_vo)
     raise ArgumentError, "Pre-condition failed: mode must be PrivacyMode" unless mode_vo.is_a?(PrivacyMode)
     raise ArgumentError, "Pre-condition failed: wishlist must be persisted" unless persisted?
+    raise ArgumentError, "Pre-condition failed: activity wishlists cannot switch personal privacy" if activity_scoped?
     return self if privacy_mode == mode_vo.value
 
     transaction do
@@ -105,6 +117,7 @@ class Wishlist < ApplicationRecord
 
   # [REQ-WISH-002] [REQ-WISH-006] Rotates share_token while remaining shared (O4A).
   def rotate_share_token!
+    raise ArgumentError, "Pre-condition failed: activity wishlists cannot use Secret Link" if activity_scoped?
     raise ArgumentError, "Pre-condition failed: must be shared" unless privacy_mode_vo.shared?
     raise ArgumentError, "Pre-condition failed: wishlist must be persisted" unless persisted?
 

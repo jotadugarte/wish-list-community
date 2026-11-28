@@ -84,7 +84,7 @@ module Member
       user_ids -= [ current_user.id ]
       return [] if user_ids.empty?
 
-      Wishlist.kept.where(owner_id: user_ids).includes(:owner).limit(MAX_BRIDGES).select do |wishlist|
+      Wishlist.kept.personal.where(owner_id: user_ids).includes(:owner).limit(MAX_BRIDGES).select do |wishlist|
         WishlistPolicy.new(current_user, wishlist).show?
       end
     end
