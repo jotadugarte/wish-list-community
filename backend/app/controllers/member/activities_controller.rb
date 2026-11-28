@@ -41,6 +41,7 @@ module Member
       @wishlist_bridges = personal_wishlist_bridges
       @viewer_status = @activity.participants.find_by(user_id: current_user.id)&.status
       @viewer_status = "accepted" if current_user.id == @activity.creator_id && @viewer_status.nil?
+      load_activity_lists!
     end
 
     # [REQ-ACT-001] Accept a pending invite from the Activity Link surface.
@@ -84,8 +85,39 @@ module Member
       user_ids -= [ current_user.id ]
       return [] if user_ids.empty?
 
-      Wishlist.kept.where(owner_id: user_ids).includes(:owner).limit(MAX_BRIDGES).select do |wishlist|
+      Wishlist.kept.personal.where(owner_id: user_ids).includes(:owner).limit(MAX_BRIDGES).select do |wishlist|
         WishlistPolicy.new(current_user, wishlist).show?
+      end
+    end
+
+    # [REQ-ACT-001] [REQ-ACT-005] Activity-scoped lists/items for the board (FC1A — not My Wishlists).
+    def load_activity_lists!
+      lists = Wishlist.kept.activity_scoped
+                      .where(activity_id: @activity.id)
+                      .includes(:owner)
+                      .limit(MAX_BRIDGES)
+                      .select { |w| ActivityVisibilityGate.can_view_list?(viewer: current_user, owner_wishlist: w) }
+      @activity_wishlists = lists.first(MAX_BRIDGES)
+      item_ids = []
+      @activity_items_by_wishlist_id = {}
+      @activity_wishlists.each do |wishlist|
+        items = wishlist.items.kept.order(:position, :id).limit(200).to_a
+        @activity_items_by_wishlist_id[wishlist.id] = items
+        item_ids.concat(items.map(&:id))
+      end
+      item_ids = item_ids.first(500)
+      @holds_by_item_id = Item.active_holds_by_item_id(item_ids)
+      @open_gifts_by_item_id = Item.open_gifts_by_item_id(item_ids)
+      @pending_confirm_gifts_by_item_id = Item.pending_confirm_gifts_by_item_id(item_ids)
+      @my_holds_by_item_id = Reservation.where(user_id: current_user.id, item_id: item_ids)
+                                       .where(status: ReservationStatus::ACTIVE_HOLD)
+                                       .index_by(&:item_id)
+      @my_open_gifts_by_item_id = GiftRecord.where(gifter_id: current_user.id, item_id: item_ids)
+                                           .where(status: GiftStatus::OPEN)
+                                           .index_by(&:item_id)
+      @received_gift_ids_by_wishlist = {}
+      @activity_wishlists.each do |wishlist|
+        @received_gift_ids_by_wishlist[wishlist.id] = Item.received_gift_item_ids_for(wishlist.id)
       end
     end
   end

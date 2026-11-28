@@ -27,6 +27,8 @@ class GiftRecord < ApplicationRecord
       created_at: created_at,
       updated_at: updated_at
     }
+    activity_id = item.wishlist&.activity_id
+    payload[:activity_id] = activity_id if activity_id.present?
     payload[:gifter_id] = gifter_id if reveal_gifter_id?(viewer)
     payload
   end

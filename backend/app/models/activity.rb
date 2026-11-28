@@ -209,11 +209,15 @@ class Activity < ApplicationRecord
   def ensure_creator_participant!
     raise ArgumentError, "Pre-condition failed: creator must be present" if creator.blank?
 
-    participants.find_or_create_by!(user: creator) do |participant|
-      participant.status = "accepted"
-      participant.co_organizer = true
-      participant.accepted_at = Time.current
+    participant = participants.find_or_create_by!(user: creator) do |row|
+      row.status = "accepted"
+      row.co_organizer = true
+      row.accepted_at = Time.current
     end
+    ActivityWishlistEnsureService.ensure_for_participant!(participant: participant)
+    raise "Post-condition failed: creator activity wishlist must exist" unless Wishlist.kept.exists?(activity_id: id, owner_id: creator_id)
+
+    participant
   end
 
   def budget_mode_bounds_are_valid

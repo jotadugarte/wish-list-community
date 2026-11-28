@@ -98,3 +98,43 @@ class ActivityAssignmentView {
     );
   }
 }
+
+// Activity-scoped wishlist shell (FC1A / FC4A — no Secret Link).
+// Traceability: [REQ-ACT-001], [REQ-ARCH-002], [REQ-MOB-001]
+class ActivityWishlistView {
+  final int id;
+  final int activityId;
+  final String title;
+  final String? ownerUsername;
+  final int? ownerId;
+  final bool viewerIsOwner;
+  final String? shareToken;
+  final int? maxReservationsPerUser;
+
+  const ActivityWishlistView({
+    required this.id,
+    required this.activityId,
+    required this.title,
+    this.ownerUsername,
+    this.ownerId,
+    this.viewerIsOwner = false,
+    this.shareToken,
+    this.maxReservationsPerUser,
+  });
+
+  factory ActivityWishlistView.fromJson(Map<String, dynamic> json) {
+    final owner = json['owner'];
+    return ActivityWishlistView(
+      id: json['id'] as int,
+      activityId: json['activity_id'] as int? ?? 0,
+      title: json['title'] as String? ?? '',
+      ownerUsername: owner is Map<String, dynamic>
+          ? owner['username'] as String?
+          : null,
+      ownerId: owner is Map<String, dynamic> ? owner['id'] as int? : null,
+      viewerIsOwner: json['viewer_is_owner'] == true,
+      shareToken: json['share_token'] as String?,
+      maxReservationsPerUser: json['max_reservations_per_user'] as int?,
+    );
+  }
+}

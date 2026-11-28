@@ -39,6 +39,7 @@ class Item < ApplicationRecord
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :price_and_currency_pair
   validate :currency_format_when_present
+  validate :activity_budget_and_currency
   validate :images_count_within_limit
 
   # [REQ-ITEM-003] Priority Value Object for the stored desire level.
@@ -204,6 +205,15 @@ class Item < ApplicationRecord
     return if currency.match?(CURRENCY_FORMAT)
 
     errors.add(:currency, "must be a 3-letter ISO code")
+  end
+
+  # [REQ-ACT-005] Activity items enforce currency + BudgetMode (O4A); personal lists unchanged.
+  def activity_budget_and_currency
+    return unless wishlist&.activity_scoped?
+
+    BudgetEnforcement.assert_item!(item: self)
+  rescue ArgumentError => e
+    errors.add(:base, e.message)
   end
 
   def images_count_within_limit

@@ -73,4 +73,25 @@ RSpec.describe ActivityParticipant do
       expect(revived.reload.status).to eq("invited")
     end
   end
+
+  describe "activity wishlist ensure on accept [REQ-ARCH-002] [REQ-ACT-001]" do
+    it "ensures exactly one activity-scoped wishlist on accept [REQ-ARCH-002] [REQ-ACT-001]" do
+      participant = described_class.invite!(activity: activity, user: invitee, actor: creator)
+      participant.accept!
+
+      wishlists = Wishlist.kept.where(activity_id: activity.id, owner_id: invitee.id)
+      expect(wishlists.count).to eq(1)
+      wishlist = wishlists.first
+      expect(wishlist.share_token).to be_nil
+      expect(wishlist.owner_id).to eq(invitee.id)
+    end
+
+    it "does not create a duplicate wishlist on repeated ensure after accept [REQ-ARCH-002]" do
+      participant = described_class.invite!(activity: activity, user: invitee, actor: creator)
+      participant.accept!
+      ActivityWishlistEnsureService.ensure_for_participant!(participant: participant.reload)
+
+      expect(Wishlist.kept.where(activity_id: activity.id, owner_id: invitee.id).count).to eq(1)
+    end
+  end
 end

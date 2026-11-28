@@ -14,7 +14,7 @@ module Member
                }
 
     def create
-      wishlist = current_user.wishlists.kept.find(params[:wishlist_id])
+      wishlist = current_user.wishlists.personal.kept.find(params[:wishlist_id])
       authorize wishlist, :manage_shares?
       friend = User.kept.find(params[:user_id])
       WishlistShare.upsert_explicit!(wishlist: wishlist, user: friend)
@@ -24,7 +24,7 @@ module Member
     end
 
     def destroy
-      wishlist = current_user.wishlists.kept.find(params[:wishlist_id])
+      wishlist = current_user.wishlists.personal.kept.find(params[:wishlist_id])
       authorize wishlist, :manage_shares?
       WishlistShare.where(wishlist: wishlist, user_id: params[:id]).delete_all
       redirect_to member_wishlist_path(wishlist), notice: I18n.t("member.wishlists.share_removed"), status: :see_other

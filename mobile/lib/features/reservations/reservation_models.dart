@@ -4,6 +4,7 @@ class ReservationModel {
   final int id;
   final int itemId;
   final int? wishlistId;
+  final int? activityId;
   final String status;
   final String estimatedDate;
   final String? privateNote;
@@ -17,6 +18,7 @@ class ReservationModel {
     required this.status,
     required this.estimatedDate,
     this.wishlistId,
+    this.activityId,
     this.privateNote,
     this.itemTitle,
     this.wishlistTitle,
@@ -32,6 +34,7 @@ class ReservationModel {
       id: rawId,
       itemId: json['item_id'] as int? ?? 0,
       wishlistId: json['wishlist_id'] as int?,
+      activityId: json['activity_id'] as int?,
       status: json['status'] as String? ?? 'active',
       estimatedDate: json['estimated_date'] as String? ?? '',
       privateNote: json['private_note'] as String?,

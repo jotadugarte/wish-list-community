@@ -22,8 +22,10 @@ en:
       empty: "No active reservations."
       created: "Reserved."
       canceled: "Reservation canceled."
+      extended: "Reservation extended."
       cancel: "Cancel"
       reserve: "Reserve"
+      extend: "Extend"
       estimated_date: "Estimated date"
       reserved_by_me: "Reserved by you."
       unavailable: "Unavailable."
@@ -166,6 +168,10 @@ en:
     your_recipient_heading: "You give to"
     wishlist_bridge_heading: "Personal wishlists"
     wishlist_bridge_empty: "No personal wishlists visible yet."
+    activity_lists_heading: "Activity lists"
+    activity_lists_empty: "No activity lists visible yet."
+    item_price_cents: "Price (cents)"
+    item_currency: "Currency"
     errors:
       invalid: "Unable to save activity"
       invite_unavailable: "That invitation is no longer available"
@@ -268,6 +274,37 @@ en:
       ownership_transferred:
         title: "You own this activity: %{name}"
         body: "@%{actor} transferred ownership to you."
+      actor_anonymous: "someone"
+      item_touched_while_reserved:
+        title: "Reserved item updated: %{name}"
+        body: "\"%{item}\" was edited while you had a reservation."
+      item_deleted:
+        title: "Reserved item removed: %{name}"
+        body: "\"%{item}\" was removed, so your activity reservation was released."
+      reservation_created:
+        title: "Item reserved: %{name}"
+        body: "Someone reserved \"%{item}\" in this activity."
+      reservation_released:
+        title: "Reservation released: %{name}"
+        body: "The hold on \"%{item}\" was released."
+      reservation_grace_started:
+        title: "Reservation grace: %{name}"
+        body: "Your activity reservation expired; you have 72 hours to extend or cancel."
+      reservation_auto_released:
+        title: "Reservation released: %{name}"
+        body: "Your activity reservation was released after the grace window."
+      gift_purchased:
+        title: "Marked purchased: %{name}"
+        body: "You marked \"%{item}\" as purchased."
+      gift_delivered:
+        title: "Gift delivered: %{name}"
+        body: "Confirm receipt of \"%{item}\"?"
+      gift_received:
+        title: "Gift received: %{name}"
+        body: "The owner confirmed receipt of \"%{item}\"."
+      budget_rejected:
+        title: "Budget blocked a reserve: %{name}"
+        body: "@%{actor} could not reserve \"%{item}\" because it breaks the activity budget."
     friend:
       request_received:
         title: "New friend request"

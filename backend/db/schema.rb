@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_28_055000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_28_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -324,6 +324,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_28_055000) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["activity_id", "owner_id"], name: "index_wishlists_on_activity_id_and_owner_id_unique", unique: true, where: "(activity_id IS NOT NULL)"
     t.index ["activity_id"], name: "index_wishlists_on_activity_id"
     t.index ["discarded_at"], name: "index_wishlists_on_discarded_at"
     t.index ["owner_id", "discarded_at"], name: "index_wishlists_on_owner_id_and_discarded_at"

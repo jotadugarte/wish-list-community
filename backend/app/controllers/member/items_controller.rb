@@ -16,13 +16,13 @@ module Member
     MAX_LINKS = 20
 
     def new
-      @wishlist = current_user.wishlists.kept.find(params[:wishlist_id])
+      @wishlist = find_personal_wishlist_kept!
       authorize @wishlist, :create?, policy_class: ItemPolicy
       @item = @wishlist.items.new
     end
 
     def create
-      @wishlist = current_user.wishlists.kept.find(params[:wishlist_id])
+      @wishlist = find_personal_wishlist_kept!
       authorize @wishlist, :create?, policy_class: ItemPolicy
       Item.transaction do
         @item = @wishlist.items.create!(item_attrs)
@@ -37,13 +37,13 @@ module Member
     end
 
     def edit
-      @item = Item.kept.find(params[:id])
+      @item = find_personal_item_kept!
       authorize @item, :update?
       @wishlist = @item.wishlist
     end
 
     def update
-      @item = Item.kept.find(params[:id])
+      @item = find_personal_item_kept!
       authorize @item, :update?
       @wishlist = @item.wishlist
       Item.transaction do
@@ -58,7 +58,7 @@ module Member
     end
 
     def destroy
-      @item = Item.kept.find(params[:id])
+      @item = find_personal_item_kept!
       authorize @item, :destroy?
       wishlist = @item.wishlist
       @item.soft_delete!(actor: current_user)
@@ -66,6 +66,18 @@ module Member
     end
 
     private
+
+    # [REQ-ACT-001] FC1A: activity-scoped items stay on activity board routes.
+    def find_personal_wishlist_kept!
+      current_user.wishlists.personal.kept.find(params[:wishlist_id])
+    end
+
+    def find_personal_item_kept!
+      item = Item.kept.find(params[:id])
+      raise ActiveRecord::RecordNotFound if item.wishlist.activity_scoped?
+
+      item
+    end
 
     def item_attrs
       permitted = params.fetch(:item, ActionController::Parameters.new).permit(

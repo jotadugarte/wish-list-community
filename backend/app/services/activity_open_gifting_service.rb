@@ -27,6 +27,7 @@ class ActivityOpenGiftingService
 
       raise "Post-condition failed: activity must be sealed" unless activity.reload.sealed?
       raise "Post-condition failed: open_gifting must not create assignments" if ActivityAssignment.where(activity: activity).exists?
+      ActivityReservationLimitService.freeze_at_seal!(activity: activity)
       ActivityNotifier.arrancar!(activity: activity)
 
       activity

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Dual-path gift fulfillment: mark purchased, deliver, confirm / owner receive.
+# Applies to personal and activity-scoped items (O1B reuse; activity copy in O6A).
 # Traceability: [REQ-GIFT-001], [REQ-GIFT-002], [REQ-GIFT-003], [REQ-GIFT-004],
 # [REQ-ADM-001], [REQ-RES-002], [REQ-RES-006], [REQ-NOTIF-001]
 class GiftService
@@ -42,11 +43,19 @@ class GiftService
         raise "Post-condition failed: mark_purchased must leave open gift and completed hold"
       end
 
+      notify_gift_purchased_if_activity!(gift: gift, item: item)
       gift
     end
   rescue ActiveRecord::RecordNotUnique
     raise ConflictError, I18n.t("gifts.errors.open_gift_exists")
   end
+
+  def self.notify_gift_purchased_if_activity!(gift:, item:)
+    return unless item.wishlist&.activity_scoped?
+
+    ActivityNotifier.gift_purchased!(gift: gift)
+  end
+  private_class_method :notify_gift_purchased_if_activity!
 
   def self.mark_purchased_allowed?(reservation, actor)
     reservation.user_id == actor.id && ReservationStatus::ACTIVE_HOLD.include?(reservation.status)
@@ -168,6 +177,11 @@ class GiftService
   private_class_method :normalize_thank_you
 
   def self.notify_owner_delivered!(gift)
+    if gift.item.wishlist&.activity_scoped?
+      ActivityNotifier.gift_delivered!(gift: gift)
+      return
+    end
+
     owner = gift.item.wishlist.owner
     return if owner.nil? || owner.discarded?
 
@@ -184,6 +198,11 @@ class GiftService
   private_class_method :notify_owner_delivered!
 
   def self.notify_gifter_received!(gift)
+    if gift.item.wishlist&.activity_scoped?
+      ActivityNotifier.gift_received!(gift: gift)
+      return
+    end
+
     gifter = gift.gifter
     return if gifter.nil? || gifter.discarded?
 

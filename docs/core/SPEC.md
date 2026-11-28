@@ -87,11 +87,17 @@ Personal wishlists are **never** exposed to strangers who merely search or guess
 * **Value Objects:** `ReservationStatus`, `EstimatedDate` (calendar date in reserver TZ), `GiftStatus`, `ThankYouNote`, `PurchaseLinkRef`.
 
 ### 4.6 `Activity`, `ActivityParticipant` & `ActivityExclusion` (v1)
-* **Responsibility:** Group gift exchanges (`secret_santa` 1->1 or `open_gifting`), external activity link access (scoped strictly to that activity), 5 budget modes (`none`, `fixed`, `min_only`, `max_only`, `range`), default 1 active reservation per participant in Secret Santa, pair exclusions, and blind dropout recovery.
+* **Responsibility:** Group gift exchanges (`secret_santa` 1->1 or `open_gifting`), external activity link access (scoped strictly to that activity), 5 budget modes (`none`, `fixed`, `min_only`, `max_only`, `range`), default 1 active reservation per participant in Secret Santa (configurable N in `open_gifting`), pair exclusions, blind dropout recovery, and activity-scoped wishlists/items/reservations/gifts (Sprint B).
 * **Invariants:**
   * Minimum **3 `accepted` participants** required to run a `secret_santa` draw.
   * Draw algorithm enforces a **single Hamiltonian cycle** (no 2-person `A <-> B` sub-loops when >= 3 participants exist) and validates exclusion graph solvability before committing.
   * If a participant drops out after the draw, the creator chooses between **Blind Auto-Bridge** (server heals `A -> B -> C` into `A -> C` and notifies `A` without ever showing the creator who gifts whom) or **Full Redraw**.
+  * **Activity wishlists (O2A / FC1A / FC4A):** Exactly one `Wishlist` per accepted participant with `activity_id` set (`ActivityWishlistEnsureService`). Surfaced only inside activity board/API — never mixed into personal My Wishlists. No Secret Link / personal `privacy_mode` switch; access via accepted participation + `visibility_mode` / assignment (`ActivityVisibilityGate`).
+  * **Budget enforcement (O4A / `REQ-ACT-005`):** Item create/update and reserve re-check via `BudgetEnforcement`. Item currency must equal activity currency. Mode `none` skips amount checks; other modes require a valid `price_cents`.
+  * **Reservation limits (O5A / FC3A / `REQ-RES-005`):** `secret_santa` fixed at 1 active reservation per participant; `open_gifting` N (`max_reservations_per_user`, default 1) editable by creator/co-org only before seal and frozen at draw/Arrancar.
+  * **Seal gate (O3A):** Participants may add items before seal; reserves only after draw/Arrancar. No self-reserve. `reservation_visibility` controls whether the recipient is notified of holds inside the activity.
+  * **Cleanup (FC2A):** Leave / cancel activity / Block Wins cancel the leaver's open activity holds, void their open activity gifts, archive their activity wishlist, and notify affected parties (`ActivityParticipationCleanup`).
+  * **B notifications (O6A / `REQ-NOTIF-001`):** Activity-scoped catalog keys for item-touched-while-reserved, reserve/release/grace/auto-release, gift purchased/delivered/received, and budget rejected (to item owner), via `ActivityNotifier` + prefs.
 
 ### 4.7 `Report`, `AuditEvent`, `Notification`, `NotificationPreference` & `DeviceToken`
 * **Responsibility:** Polymorphic abuse reports (`User`, `Wishlist`), immutable admin audit trail (`AuditEvent`), in-app `Notification` rows, per-event notification toggles (`in_app`, `email`, `push`), and `api_token`-bound FCM `DeviceToken` (automatically unbound on logout/revocation).

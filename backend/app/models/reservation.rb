@@ -46,11 +46,16 @@ class Reservation < ApplicationRecord
   end
 
 
-  # [REQ-RES-003] Notify the reserver when the owner edits critical item fields.
+  # [REQ-RES-003] [REQ-NOTIF-001] Notify the reserver when the owner edits critical item fields.
   def self.notify_critical_edit!(item:)
     hold = find_by(item_id: item.id, status: ReservationStatus::ACTIVE_HOLD)
     return if hold.nil?
     return if hold.user.nil? || hold.user.discarded?
+
+    if item.wishlist&.activity_scoped?
+      ActivityNotifier.item_touched_while_reserved!(item: item, reservation: hold)
+      return
+    end
 
     I18n.with_locale(hold.user.locale.presence || I18n.default_locale) do
       NotificationDispatcher.dispatch!(
@@ -65,9 +70,16 @@ class Reservation < ApplicationRecord
 
   # [REQ-RES-003] Notify the reserver when a reserved item is soft-deleted.
   # Prefer the pre-cancel hold captured by the soft-delete hook (avoids wrong canceled row).
+  # [REQ-NOTIF-001] O6A: activity-scoped items use ActivityNotifier, not personal keys.
   def self.notify_item_deleted!(reservation:)
     return if reservation.nil?
     return if reservation.user.nil? || reservation.user.discarded?
+
+    item = reservation.item
+    if item&.wishlist&.activity_scoped?
+      ActivityNotifier.item_deleted_while_reserved!(item: item, reservation: reservation)
+      return
+    end
 
     I18n.with_locale(reservation.user.locale.presence || I18n.default_locale) do
       NotificationDispatcher.dispatch!(
@@ -89,7 +101,7 @@ class Reservation < ApplicationRecord
 
   # [REQ-RES-001] [REQ-RES-004] JSON payload for the reserver (never for owner spoilers).
   def as_api_json
-    {
+    payload = {
       id: id,
       item_id: item_id,
       wishlist_id: item.wishlist_id,
@@ -101,6 +113,9 @@ class Reservation < ApplicationRecord
       created_at: created_at,
       updated_at: updated_at
     }
+    activity_id = item.wishlist&.activity_id
+    payload[:activity_id] = activity_id if activity_id.present?
+    payload
   end
 
   private

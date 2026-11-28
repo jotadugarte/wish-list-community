@@ -3,11 +3,15 @@ import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/activities/activity_board_screen.dart';
 import 'package:wish_list_mobile/features/activities/activity_repository.dart';
+import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
+import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
 
 // Lists the user's activities and supports create (Sprint A shell).
 // Traceability: [REQ-ACT-001], [REQ-MOB-001]
 class ActivitiesListScreen extends StatefulWidget {
   final ActivityRepository activityRepository;
+  final ReservationRepository? reservationRepository;
+  final GiftRepository? giftRepository;
   final AppStrings strings;
   final DesignTokens tokens;
 
@@ -16,6 +20,8 @@ class ActivitiesListScreen extends StatefulWidget {
     required this.activityRepository,
     required this.strings,
     required this.tokens,
+    this.reservationRepository,
+    this.giftRepository,
   });
 
   @override
@@ -49,6 +55,8 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
       MaterialPageRoute<void>(
         builder: (_) => ActivityBoardScreen(
           activityRepository: widget.activityRepository,
+          reservationRepository: widget.reservationRepository,
+          giftRepository: widget.giftRepository,
           strings: widget.strings,
           tokens: widget.tokens,
           activityId: created.id,
@@ -95,6 +103,8 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                     MaterialPageRoute<void>(
                       builder: (_) => ActivityBoardScreen(
                         activityRepository: widget.activityRepository,
+                        reservationRepository: widget.reservationRepository,
+                        giftRepository: widget.giftRepository,
                         strings: widget.strings,
                         tokens: widget.tokens,
                         activityId: activity.id,

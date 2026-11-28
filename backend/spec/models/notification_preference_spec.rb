@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe NotificationPreference, type: :model do
-  # Sprint 9 O7A + Sprint A activity events.
+  # Sprint 9 O7A + Sprint A/B activity events.
   # Traceability: [REQ-NOTIF-001]
   let(:expected_catalog) do
     %w[
@@ -29,6 +29,16 @@ RSpec.describe NotificationPreference, type: :model do
       activity.full_redraw
       activity.cancelled
       activity.ownership_transferred
+      activity.item_touched_while_reserved
+      activity.item_deleted
+      activity.reservation_created
+      activity.reservation_released
+      activity.reservation_grace_started
+      activity.reservation_auto_released
+      activity.gift_purchased
+      activity.gift_delivered
+      activity.gift_received
+      activity.budget_rejected
     ]
   end
 

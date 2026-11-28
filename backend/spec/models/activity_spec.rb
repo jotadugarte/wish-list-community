@@ -101,5 +101,21 @@ RSpec.describe Activity do
       expect(participant.status).to eq("accepted")
       expect(participant.co_organizer).to eq(true)
     end
+
+    it "ensures an activity-scoped wishlist for the creator on create [REQ-ARCH-002] [REQ-ACT-001]" do
+      activity = described_class.create!(
+        creator: creator,
+        name: "Grupo con lista",
+        currency: "CRC",
+        assignment_mode: "secret_santa",
+        visibility_mode: "recipient_only",
+        reservation_visibility: "hidden_from_recipient",
+        budget_mode: "none"
+      )
+
+      wishlists = Wishlist.kept.where(activity_id: activity.id, owner_id: creator.id)
+      expect(wishlists.count).to eq(1)
+      expect(wishlists.first.share_token).to be_nil
+    end
   end
 end

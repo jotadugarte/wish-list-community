@@ -18,7 +18,7 @@ module Member
 
     def index
       authorize Wishlist, :index?
-      @wishlists = policy_scope(Wishlist).where(owner_id: current_user.id)
+      @wishlists = policy_scope(Wishlist).personal.where(owner_id: current_user.id)
                                         .order(created_at: :desc)
                                         .limit(MAX_INDEX)
     end
@@ -57,12 +57,12 @@ module Member
     end
 
     def edit
-      @wishlist = current_user.wishlists.kept.find(params[:id])
+      @wishlist = find_personal_wishlist_kept!
       authorize @wishlist, :update?
     end
 
     def update
-      @wishlist = current_user.wishlists.kept.find(params[:id])
+      @wishlist = find_personal_wishlist_kept!
       authorize @wishlist, :update?
       apply_updates!(@wishlist)
       redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.wishlists.updated"), status: :see_other
@@ -72,14 +72,14 @@ module Member
     end
 
     def destroy
-      @wishlist = current_user.wishlists.kept.find(params[:id])
+      @wishlist = find_personal_wishlist_kept!
       authorize @wishlist, :destroy?
       @wishlist.soft_delete!(actor: current_user)
       redirect_to member_wishlists_path, notice: I18n.t("member.wishlists.deleted"), status: :see_other
     end
 
     def rotate_share_token
-      @wishlist = current_user.wishlists.kept.find(params[:id])
+      @wishlist = find_personal_wishlist_kept!
       authorize @wishlist, :rotate_share_token?
       WishlistPrivacyService.rotate_token!(wishlist: @wishlist)
       redirect_to member_wishlist_path(@wishlist), notice: I18n.t("member.wishlists.token_rotated"), status: :see_other
@@ -89,11 +89,19 @@ module Member
 
     private
 
+    # [REQ-ACT-001] FC1A: activity-scoped lists stay off personal wishlist mutations.
+    def find_personal_wishlist_kept!
+      current_user.wishlists.personal.kept.find(params[:id])
+    end
+
     def wishlist_create_params
       params.require(:wishlist).permit(:title, :event_date, :max_reservations_per_user)
     end
 
     def apply_updates!(wishlist)
+      # [REQ-RES-005] FC3A: activity reservation caps only via ActivityReservationLimitService.
+      raise ArgumentError, "activity-scoped wishlist" if wishlist.activity_scoped?
+
       attrs = params.require(:wishlist).permit(:title, :event_date, :max_reservations_per_user, :privacy_mode)
       wishlist.transaction do
         if attrs.key?(:privacy_mode) && attrs[:privacy_mode].present?

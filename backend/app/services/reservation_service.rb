@@ -13,9 +13,12 @@ class ReservationService
 
     date_vo = EstimatedDate.new(estimated_date, time_zone: user.time_zone.presence || "UTC")
     date_vo.assert_not_past!
+    assert_activity_reserve_allowed!(item: item, user: user)
 
     Reservation.transaction do
-      wishlist = item.wishlist.lock!
+      wishlist = item.wishlist
+      lock_secret_santa_activity!(wishlist)
+      wishlist.lock!
       enforce_per_wishlist_limit!(wishlist: wishlist, user: user)
       reservation = Reservation.create!(
         item: item,
@@ -33,6 +36,7 @@ class ReservationService
       )
       raise "Post-condition failed: reservation must be persisted active" unless reservation.persisted? && reservation.status == "active"
 
+      ActivityNotifier.reservation_created!(reservation: reservation) if wishlist.activity_scoped?
       reservation
     end
   end
@@ -82,11 +86,16 @@ class ReservationService
       )
       raise "Post-condition failed: cancel must leave status canceled" unless reservation.status == "canceled"
 
+      if reservation.item.wishlist&.activity_scoped?
+        ActivityNotifier.reservation_released!(reservation: reservation)
+      end
       reservation
     end
   end
 
   def self.enforce_per_wishlist_limit!(wishlist:, user:)
+    enforce_secret_santa_activity_limit!(wishlist: wishlist, user: user)
+
     limit = wishlist.max_reservations_per_user
     return if limit.nil?
 
@@ -103,4 +112,58 @@ class ReservationService
     raise Error, I18n.t("reservations.errors.limit_reached") if count >= limit
   end
   private_class_method :enforce_per_wishlist_limit!
+
+  # [REQ-RES-005] Lock Activity before wishlist so SS creates across lists serialize.
+  def self.lock_secret_santa_activity!(wishlist)
+    return unless wishlist&.activity_scoped?
+
+    activity = wishlist.activity
+    return unless activity&.secret_santa?
+
+    activity.lock!
+  end
+  private_class_method :lock_secret_santa_activity!
+
+  # [REQ-RES-005] O5A: secret_santa is 1 active hold per participant across the activity.
+  def self.enforce_secret_santa_activity_limit!(wishlist:, user:)
+    return unless wishlist&.activity_scoped?
+
+    activity = wishlist.activity
+    return unless activity&.secret_santa?
+
+    count = Reservation.joins(item: :wishlist)
+                       .where(
+                         user_id: user.id,
+                         status: ReservationStatus::ACTIVE_HOLD,
+                         wishlists: { activity_id: activity.id }
+                       )
+                       .where(items: { discarded_at: nil })
+                       .limit(2)
+                       .count
+    raise Error, I18n.t("reservations.errors.limit_reached") if count >= 1
+  end
+  private_class_method :enforce_secret_santa_activity_limit!
+
+  # [REQ-ACT-001] [REQ-ACT-005] [REQ-NOTIF-001] O3A/O4A: activity gate + budget re-check on reserve.
+  def self.assert_activity_reserve_allowed!(item:, user:)
+    wishlist = item.wishlist
+    return unless wishlist&.activity_scoped?
+
+    ActivityVisibilityGate.assert_may_reserve!(viewer: user, item: item)
+    BudgetEnforcement.assert_item!(item: item)
+  rescue ActivityVisibilityGate::Error => e
+    raise Error, e.message
+  rescue ArgumentError => e
+    notify_budget_reject_if_needed!(item: item, actor: user, error: e)
+    raise Error, e.message
+  end
+  private_class_method :assert_activity_reserve_allowed!
+
+  # [REQ-NOTIF-001] O6A: budget reject on reserve → item owner.
+  def self.notify_budget_reject_if_needed!(item:, actor:, error:)
+    return unless error.message.match?(/budget|price|fixed|min|max|range/i)
+
+    ActivityNotifier.budget_rejected!(item: item, actor: actor)
+  end
+  private_class_method :notify_budget_reject_if_needed!
 end

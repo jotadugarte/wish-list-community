@@ -29,6 +29,100 @@
     </section>
   <% end %>
 
+  <section data-testid="activity-lists" class="space-y-6">
+    <h2 class="text-lg font-medium"><%= t("activities.activity_lists_heading") %></h2>
+    <% if @activity_wishlists.blank? %>
+      <p class="text-sm opacity-70"><%= t("activities.activity_lists_empty") %></p>
+    <% else %>
+      <% @activity_wishlists.each do |wishlist| %>
+        <% owner_view = wishlist.owner_id == current_user.id %>
+        <% received_ids = @received_gift_ids_by_wishlist.fetch(wishlist.id, []) %>
+        <% items = @activity_items_by_wishlist_id.fetch(wishlist.id, []) %>
+        <article class="space-y-3 border-t border-stone-200 pt-4" data-testid="activity-wishlist-<%= wishlist.id %>">
+          <h3 class="font-medium"><%= wishlist.title %> (@<%= wishlist.owner.username %>)</h3>
+
+          <% if owner_view %>
+            <%= form_with url: member_activity_wishlist_items_path(@activity, wishlist), method: :post, class: "space-y-2 max-w-md" do %>
+              <div>
+                <%= label_tag "item[title]", t("member.items.new") %>
+                <%= text_field_tag "item[title]", nil, required: true %>
+              </div>
+              <div>
+                <%= label_tag "item[price_cents]", t("activities.item_price_cents") %>
+                <%= number_field_tag "item[price_cents]", nil, min: 0 %>
+              </div>
+              <div>
+                <%= label_tag "item[currency]", t("activities.item_currency") %>
+                <%= text_field_tag "item[currency]", @activity.currency, required: true %>
+              </div>
+              <%= hidden_field_tag "item[priority]", "medium" %>
+              <%= submit_tag t("member.items.create") %>
+            <% end %>
+          <% end %>
+
+          <ul class="space-y-2">
+            <% items.each do |item| %>
+              <% next if !owner_view && received_ids.include?(item.id) %>
+              <li class="border-b border-stone-100 pb-2" data-testid="activity-item-<%= item.id %>">
+                <strong><%= item.title %></strong>
+                <% if item.price_cents.present? %>
+                  <span class="text-sm opacity-70"><%= item.price_cents %> <%= item.currency %></span>
+                <% end %>
+
+                <% if owner_view %>
+                  <% unless received_ids.include?(item.id) %>
+                    <% pending = @pending_confirm_gifts_by_item_id[item.id] %>
+                    <% if pending %>
+                      <%= form_with url: confirm_received_member_gift_path(pending), method: :post, class: "mt-1 space-y-1" do %>
+                        <%= text_field_tag :thank_you_note, nil, placeholder: t("member.gifts.thank_you_placeholder") %>
+                        <%= submit_tag t("member.gifts.confirm_received") %>
+                      <% end %>
+                    <% else %>
+                      <%= form_with url: mark_received_member_item_path(item), method: :post, class: "mt-1 space-y-1" do %>
+                        <%= text_field_tag :thank_you_note, nil, placeholder: t("member.gifts.thank_you_placeholder") %>
+                        <%= submit_tag t("member.gifts.mark_received") %>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                <% else %>
+                  <% availability = item.availability_for(
+                       current_user,
+                       holds_by_item_id: @holds_by_item_id,
+                       open_gifts_by_item_id: @open_gifts_by_item_id
+                     ) %>
+                  <% my_hold = @my_holds_by_item_id[item.id] %>
+                  <% my_gift = @my_open_gifts_by_item_id[item.id] %>
+                  <% min_date = Time.use_zone(current_user.time_zone.presence || "UTC") { Date.current } %>
+
+                  <% if availability == "available" %>
+                    <%= form_with url: member_item_reservations_path(item), method: :post, class: "mt-1 flex flex-wrap gap-2 items-end" do %>
+                      <%= label_tag :estimated_date, t("member.reservations.estimated_date") %>
+                      <%= date_field_tag :estimated_date, min_date + 7, required: true, min: min_date %>
+                      <%= submit_tag t("member.reservations.reserve") %>
+                    <% end %>
+                  <% elsif my_hold %>
+                    <p class="text-sm text-stone-600"><%= t("member.reservations.reserved_by_me") %></p>
+                    <%= form_with url: member_reservation_path(my_hold), method: :patch, class: "mt-1 flex flex-wrap gap-2 items-end" do %>
+                      <%= label_tag :estimated_date, t("member.reservations.estimated_date") %>
+                      <%= date_field_tag :estimated_date, [ my_hold.estimated_date, min_date ].max, required: true, min: min_date %>
+                      <%= submit_tag t("member.reservations.extend") %>
+                    <% end %>
+                    <%= button_to t("member.reservations.cancel"), member_reservation_path(my_hold), method: :delete, class: "underline text-sm" %>
+                    <%= button_to t("member.gifts.mark_purchased"), mark_purchased_member_reservation_path(my_hold), method: :post, class: "underline text-sm" %>
+                  <% elsif my_gift&.status == "purchased_secret" %>
+                    <%= button_to t("member.gifts.mark_delivered"), mark_delivered_member_gift_path(my_gift), method: :post, class: "underline text-sm" %>
+                  <% else %>
+                    <p class="text-sm text-stone-600"><%= t("member.reservations.unavailable") %></p>
+                  <% end %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </article>
+      <% end %>
+    <% end %>
+  </section>
+
   <section>
     <h2 class="text-lg font-medium"><%= t("activities.wishlist_bridge_heading") %></h2>
     <% if @wishlist_bridges.empty? %>

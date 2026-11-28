@@ -4,6 +4,7 @@ class GiftModel {
   final int id;
   final int itemId;
   final int? wishlistId;
+  final int? activityId;
   final int? gifterId;
   final String status;
   final String? thankYouNote;
@@ -15,6 +16,7 @@ class GiftModel {
     required this.itemId,
     required this.status,
     this.wishlistId,
+    this.activityId,
     this.gifterId,
     this.thankYouNote,
     this.itemTitle,
@@ -30,6 +32,7 @@ class GiftModel {
       id: rawId,
       itemId: json['item_id'] as int? ?? 0,
       wishlistId: json['wishlist_id'] as int?,
+      activityId: json['activity_id'] as int?,
       gifterId: json['gifter_id'] as int?,
       status: json['status'] as String? ?? 'purchased_secret',
       thankYouNote: json['thank_you_note'] as String?,

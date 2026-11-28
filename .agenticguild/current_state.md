@@ -1,11 +1,11 @@
 <agent_state>
   <active_task_pointer>
-    task_v1-sprint-a-activities.md
+    task_v1-sprint-b-activities.md
   </active_task_pointer>
 
   <execution_context>
     <active_skill>finish-branch</active_skill>
-    <current_phase>3</current_phase>
-    <current_step>3.1</current_step>
+    <current_phase>1</current_phase>
+    <current_step>1.1 Code review (FIX ALL applied; resume finish-branch)</current_step>
   </execution_context>
 </agent_state>

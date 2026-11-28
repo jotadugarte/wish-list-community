@@ -24,6 +24,57 @@ RSpec.describe "Api::V1::Wishlists", type: :request do
     end
   end
 
+  describe "GET /api/v1/wishlists excludes activity lists [REQ-ARCH-002] [REQ-ACT-001]" do
+    it "omits activity-scoped wishlists from My Wishlists index [REQ-ARCH-002] [REQ-ACT-001]" do
+      personal = create(:wishlist, owner: owner, title: "Personal")
+      activity = Activity.create!(
+        creator: owner,
+        name: "Actividad",
+        currency: "CRC",
+        assignment_mode: "secret_santa",
+        visibility_mode: "recipient_only",
+        reservation_visibility: "hidden_from_recipient",
+        budget_mode: "none"
+      )
+      activity_list = ActivityWishlistEnsureService.ensure_for_participant!(
+        participant: activity.participants.find_by!(user: owner)
+      )
+
+      get "/api/v1/wishlists", headers: headers
+      ids = response.parsed_body["wishlists"].map { |w| w["id"] }
+      expect(ids).to include(personal.id)
+      expect(ids).not_to include(activity_list.id)
+    end
+
+    it "rejects personal show/update/destroy for activity-scoped lists [REQ-ACT-001] FC1A" do
+      activity = Activity.create!(
+        creator: owner,
+        name: "Board only",
+        currency: "CRC",
+        assignment_mode: "open_gifting",
+        visibility_mode: "all_participants",
+        reservation_visibility: "hidden_from_recipient",
+        budget_mode: "none"
+      )
+      activity_list = ActivityWishlistEnsureService.ensure_for_participant!(
+        participant: activity.participants.find_by!(user: owner)
+      )
+
+      get "/api/v1/wishlists/#{activity_list.id}", headers: headers
+      expect(response).to have_http_status(:not_found)
+
+      patch "/api/v1/wishlists/#{activity_list.id}",
+            params: { wishlist: { title: "Hacked", max_reservations_per_user: 99 } },
+            headers: headers
+      expect(response).to have_http_status(:not_found)
+      expect(activity_list.reload.max_reservations_per_user).not_to eq(99)
+
+      delete "/api/v1/wishlists/#{activity_list.id}", headers: headers
+      expect(response).to have_http_status(:not_found)
+      expect(activity_list.reload.discarded?).to eq(false)
+    end
+  end
+
   describe "GET /api/v1/wishlists and show/update/delete [REQ-WISH-001] [REQ-LIFE-001]" do
     it "lists, shows, updates privacy, soft-deletes, and restores [REQ-WISH-001] [REQ-WISH-002] [REQ-LIFE-001]" do
       post "/api/v1/wishlists", params: { wishlist: { title: "Navidad" } }, headers: headers
@@ -97,6 +148,28 @@ RSpec.describe "Api::V1::Wishlists", type: :request do
       delete "/api/v1/wishlists/#{wishlist.id}/shares/#{friend.id}", headers: headers
       expect(response).to have_http_status(:no_content)
       expect(WishlistShare.where(wishlist: wishlist, user: friend)).not_to exist
+    end
+
+    it "returns 404 for shares on activity-scoped lists [REQ-ACT-001] FC1A" do
+      activity = Activity.create!(
+        creator: owner,
+        name: "No personal shares",
+        currency: "CRC",
+        assignment_mode: "open_gifting",
+        visibility_mode: "all_participants",
+        reservation_visibility: "hidden_from_recipient",
+        budget_mode: "none"
+      )
+      activity_list = ActivityWishlistEnsureService.ensure_for_participant!(
+        participant: activity.participants.find_by!(user: owner)
+      )
+
+      post "/api/v1/wishlists/#{activity_list.id}/shares",
+           params: { user_id: friend.id }, headers: headers
+      expect(response).to have_http_status(:not_found)
+
+      delete "/api/v1/wishlists/#{activity_list.id}/shares/#{friend.id}", headers: headers
+      expect(response).to have_http_status(:not_found)
     end
   end
 end

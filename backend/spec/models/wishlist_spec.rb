@@ -110,4 +110,48 @@ RSpec.describe Wishlist do
       expect(described_class.kept.find(wishlist.id)).to eq(wishlist)
     end
   end
+
+  describe "activity-scoped wishlist invariants [REQ-ARCH-002] [REQ-ACT-001]" do
+    let(:activity) do
+      Activity.create!(
+        creator: owner,
+        name: "Actividad lista",
+        currency: "CRC",
+        assignment_mode: "secret_santa",
+        visibility_mode: "recipient_only",
+        reservation_visibility: "hidden_from_recipient",
+        budget_mode: "none"
+      )
+    end
+
+    def activity_wishlist_for(owner_user)
+      ActivityWishlistEnsureService.ensure_for_participant!(
+        participant: activity.participants.find_by!(user: owner_user)
+      )
+    end
+
+    it "exposes personal and activity_scoped scopes [REQ-ARCH-002]" do
+      personal = described_class.create!(owner: owner, title: "Personal", activity_id: nil)
+      scoped = activity_wishlist_for(owner)
+
+      expect(described_class.personal.kept).to include(personal)
+      expect(described_class.personal.kept).not_to include(scoped)
+      expect(described_class.activity_scoped.kept).to include(scoped)
+      expect(described_class.activity_scoped.kept).not_to include(personal)
+    end
+
+    it "refuses personal privacy switch and Secret Link rotate [REQ-ACT-001]" do
+      scoped = activity_wishlist_for(owner)
+
+      expect {
+        scoped.switch_privacy_mode!(PrivacyMode.new("shared"))
+      }.to raise_error(ArgumentError, /activity/i)
+
+      expect {
+        scoped.rotate_share_token!
+      }.to raise_error(ArgumentError, /activity/i)
+
+      expect(scoped.reload.share_token).to be_nil
+    end
+  end
 end

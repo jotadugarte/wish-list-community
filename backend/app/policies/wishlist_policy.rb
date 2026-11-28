@@ -10,11 +10,13 @@ class WishlistPolicy < ApplicationPolicy
 
   # [REQ-WISH-001] [REQ-BLOCK-001] Show when owner, accepted friend on friends mode,
   # or sharee on shared mode — never when blocked either direction.
+  # Activity-scoped lists use ActivityVisibilityGate (O3A / FC1A).
   def show?
     return false if user.nil? || user.discarded? || record.nil? || record.discarded?
     return false if record.owner.discarded?
     return true if owner?
     return false if blocked_between?(record.owner)
+    return activity_list_access? if record.activity_scoped?
 
     friends_mode_access? || shared_mode_access?
   end
@@ -25,28 +27,30 @@ class WishlistPolicy < ApplicationPolicy
   end
 
   # [REQ-WISH-001] Only the owner may update privacy, title, or event_date.
+  # [REQ-ACT-001] FC1A: activity-scoped lists mutate only via activity paths.
   def update?
-    owner_active?
+    owner_active? && !record.activity_scoped?
   end
 
   # [REQ-LIFE-001] Only the owner may soft-delete.
+  # [REQ-ACT-001] FC1A/FC2A: activity lists archive via ActivityParticipationCleanup only.
   def destroy?
-    owner_active?
+    owner_active? && !record.activity_scoped?
   end
 
   # [REQ-LIFE-001] [REQ-ADM-001] Owner may restore within grace unless soft-delete was admin-enforced (O4A).
   def restore?
-    owner_of_record? && record.discarded? && !record.soft_deleted_by_admin?
+    owner_of_record? && record.discarded? && !record.soft_deleted_by_admin? && !record.activity_scoped?
   end
 
   # [REQ-WISH-002] [REQ-WISH-006] Only the owner may rotate the Secret Link token.
   def rotate_share_token?
-    owner_active?
+    owner_active? && !record.activity_scoped?
   end
 
   # [REQ-WISH-003] Only the owner may manage explicit shares.
   def manage_shares?
-    owner_active?
+    owner_active? && !record.activity_scoped?
   end
 
   class Scope < ApplicationPolicy::Scope
@@ -57,7 +61,8 @@ class WishlistPolicy < ApplicationPolicy
     def resolve
       return scope.none if user.nil? || user.discarded?
 
-      kept_with_active_owner = scope.kept.where(owner_id: User.kept.select(:id))
+      # [REQ-ARCH-002] Activity-scoped lists stay off personal discovery (FC1A).
+      kept_with_active_owner = scope.kept.personal.where(owner_id: User.kept.select(:id))
       owned = kept_with_active_owner.where(owner_id: user.id)
       friend_ids = accepted_friend_ids
       friends_mode = kept_with_active_owner.where(owner_id: friend_ids, privacy_mode: "friends")
@@ -123,5 +128,10 @@ class WishlistPolicy < ApplicationPolicy
     return false unless record.privacy_mode_vo.shared?
 
     WishlistShare.exists?(wishlist_id: record.id, user_id: user.id)
+  end
+
+  # [REQ-ACT-001] Activity board visibility (not personal friends/shared modes).
+  def activity_list_access?
+    ActivityVisibilityGate.can_view_list?(viewer: user, owner_wishlist: record)
   end
 end

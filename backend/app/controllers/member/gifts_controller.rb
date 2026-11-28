@@ -17,7 +17,9 @@ module Member
       gift = GiftRecord.find(params[:id])
       authorize gift, :mark_delivered?
       GiftService.mark_delivered!(gift: gift, actor: current_user)
-      redirect_to member_reservations_path, notice: I18n.t("member.gifts.delivered"), status: :see_other
+      redirect_to activity_or(gift.item.wishlist, member_reservations_path),
+                  notice: I18n.t("member.gifts.delivered"),
+                  status: :see_other
     rescue GiftService::Error => e
       redirect_to member_reservations_path, alert: e.message, status: :see_other
     rescue ArgumentError
@@ -32,7 +34,9 @@ module Member
         actor: current_user,
         thank_you_note: params[:thank_you_note]
       )
-      redirect_to member_wishlists_path, notice: I18n.t("member.gifts.confirmed"), status: :see_other
+      redirect_to activity_or(gift.item.wishlist, member_wishlists_path),
+                  notice: I18n.t("member.gifts.confirmed"),
+                  status: :see_other
     rescue GiftService::Error => e
       redirect_back fallback_location: member_wishlists_path, alert: e.message, status: :see_other
     rescue ArgumentError
@@ -49,7 +53,7 @@ module Member
         actor: current_user,
         thank_you_note: params[:thank_you_note]
       )
-      redirect_to member_wishlist_path(item.wishlist),
+      redirect_to activity_or(item.wishlist, member_wishlist_path(item.wishlist)),
                   notice: I18n.t("member.gifts.marked_received"),
                   status: :see_other
     rescue GiftService::Error => e
@@ -58,6 +62,15 @@ module Member
       redirect_back fallback_location: member_wishlists_path,
                     alert: I18n.t("member.errors.action_failed"),
                     status: :see_other
+    end
+
+    private
+
+    # [REQ-ACT-001] Activity gifts return to the board; otherwise keep the personal destination.
+    def activity_or(wishlist, personal_path)
+      return member_activity_path(wishlist.activity_id) if wishlist&.activity_scoped?
+
+      personal_path
     end
   end
 end

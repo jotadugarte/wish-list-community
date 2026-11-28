@@ -16,7 +16,7 @@ module Api
       # [REQ-WISH-001] Lists the current user's kept wishlists.
       def index
         authorize Wishlist, :index?
-        wishlists = current_user.wishlists.kept.order(created_at: :desc).limit(MAX_INDEX)
+        wishlists = current_user.wishlists.personal.kept.order(created_at: :desc).limit(MAX_INDEX)
         render json: { wishlists: wishlists.map { |w| w.as_api_json(viewer: current_user) } }, status: :ok
       end
 
@@ -40,7 +40,7 @@ module Api
 
       # [REQ-WISH-001] [REQ-WISH-002] [REQ-WISH-004] Updates title/event_date/privacy_mode.
       def update
-        wishlist = current_user.wishlists.kept.find(params[:id])
+        wishlist = find_personal_wishlist_kept!
         authorize wishlist, :update?
         apply_updates!(wishlist)
         render json: { wishlist: wishlist.reload.as_api_json(viewer: current_user) }, status: :ok
@@ -50,7 +50,7 @@ module Api
 
       # [REQ-LIFE-001] Soft-deletes the owner's wishlist.
       def destroy
-        wishlist = current_user.wishlists.kept.find(params[:id])
+        wishlist = find_personal_wishlist_kept!
         authorize wishlist, :destroy?
         wishlist.soft_delete!(actor: current_user)
         head :no_content
@@ -58,7 +58,7 @@ module Api
 
       # [REQ-LIFE-001] Restores a soft-deleted wishlist within the grace window.
       def restore
-        wishlist = current_user.wishlists.discarded.find(params[:id])
+        wishlist = find_personal_wishlist_discarded!
         authorize wishlist, :restore?
         unless wishlist.restore!(actor: current_user)
           return render json: { errors: [ I18n.t("api.v1.errors.wishlist_invalid") ] }, status: :unprocessable_content
@@ -69,7 +69,7 @@ module Api
 
       # [REQ-WISH-002] [REQ-WISH-006] Rotates Secret Link token while staying shared (O4A).
       def rotate_share_token
-        wishlist = current_user.wishlists.kept.find(params[:id])
+        wishlist = find_personal_wishlist_kept!
         authorize wishlist, :rotate_share_token?
         WishlistPrivacyService.rotate_token!(wishlist: wishlist)
         render json: { wishlist: wishlist.reload.as_api_json(viewer: current_user) }, status: :ok
@@ -83,11 +83,26 @@ module Api
         params.require(:wishlist).permit(:title, :event_date, :max_reservations_per_user)
       end
 
+      # [REQ-ACT-001] FC1A: activity-scoped lists are board/API-only (404 on personal routes).
       def find_wishlist_for_show!
-        Wishlist.kept.find(params[:id])
+        wishlist = Wishlist.kept.find(params[:id])
+        raise ActiveRecord::RecordNotFound if wishlist.activity_scoped?
+
+        wishlist
+      end
+
+      def find_personal_wishlist_kept!
+        current_user.wishlists.personal.kept.find(params[:id])
+      end
+
+      def find_personal_wishlist_discarded!
+        current_user.wishlists.personal.discarded.find(params[:id])
       end
 
       def apply_updates!(wishlist)
+        # [REQ-RES-005] FC3A: max_reservations_per_user only via ActivityReservationLimitService.
+        raise ArgumentError, "activity-scoped wishlist" if wishlist.activity_scoped?
+
         attrs = params.require(:wishlist).permit(:title, :event_date, :max_reservations_per_user, :privacy_mode)
         wishlist.transaction do
           if attrs.key?(:privacy_mode) && attrs[:privacy_mode].present?
