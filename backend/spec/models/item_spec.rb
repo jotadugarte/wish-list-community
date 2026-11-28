@@ -85,4 +85,61 @@ RSpec.describe Item do
       expect(item.reload).not_to be_discarded
     end
   end
+
+  describe "activity budget and currency enforcement [REQ-ACT-005]" do
+    def activity_with(budget_mode:, amount: nil, max: nil, currency: "CRC")
+      Activity.create!(
+        creator: create(:user),
+        name: "Presupuesto",
+        currency: currency,
+        assignment_mode: "open_gifting",
+        visibility_mode: "all_participants",
+        reservation_visibility: "visible_to_recipient",
+        budget_mode: budget_mode,
+        budget_amount_cents: amount,
+        budget_max_cents: max
+      )
+    end
+
+    def activity_wishlist(activity)
+      ActivityWishlistEnsureService.ensure_for_participant!(
+        participant: activity.participants.find_by!(user: activity.creator)
+      )
+    end
+
+    it "allows missing price on activity items when budget_mode is none [REQ-ACT-005]" do
+      activity = activity_with(budget_mode: "none")
+      list = activity_wishlist(activity)
+
+      item = described_class.create!(wishlist: list, title: "Sin precio")
+      expect(item).to be_persisted
+      expect(item.price_cents).to be_nil
+    end
+
+    it "requires activity currency and valid price for fixed mode [REQ-ACT-005]" do
+      activity = activity_with(budget_mode: "fixed", amount: 2500)
+      list = activity_wishlist(activity)
+
+      expect {
+        described_class.create!(wishlist: list, title: "Sin precio", price_cents: nil, currency: nil)
+      }.to raise_error(ActiveRecord::RecordInvalid)
+
+      expect {
+        described_class.create!(wishlist: list, title: "USD", price_cents: 2500, currency: "USD")
+      }.to raise_error(ActiveRecord::RecordInvalid)
+
+      expect {
+        described_class.create!(wishlist: list, title: "Barato", price_cents: 2000, currency: "CRC")
+      }.to raise_error(ActiveRecord::RecordInvalid)
+
+      item = described_class.create!(wishlist: list, title: "Exacto", price_cents: 2500, currency: "CRC")
+      expect(item.price_cents).to eq(2500)
+      expect(item.currency).to eq("CRC")
+    end
+
+    it "does not apply activity budget rules to personal wishlists [REQ-ACT-005]" do
+      item = described_class.create!(wishlist: wishlist, title: "Personal", price_cents: 1, currency: "USD")
+      expect(item).to be_persisted
+    end
+  end
 end
