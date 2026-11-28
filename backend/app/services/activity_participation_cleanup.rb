@@ -40,6 +40,8 @@ class ActivityParticipationCleanup
                .limit(MAX_ROWS)
                .find_each do |reservation|
       reservation.update!(status: "canceled", grace_expires_at: nil)
+      # [REQ-NOTIF-001] O6A: notify owners when a visible activity hold is released.
+      ActivityNotifier.reservation_released!(reservation: reservation)
     end
   end
   private_class_method :cancel_reserver_holds!

@@ -7,14 +7,14 @@ RSpec.describe "FC2A activity cleanup [REQ-BLOCK-001] [REQ-ACT-003] [REQ-LIFE-00
   let(:leaver) { create(:user) }
   let(:peer) { create(:user) }
 
-  def sealed_open!
+  def sealed_open!(reservation_visibility: "hidden_from_recipient")
     activity = Activity.create!(
       creator: creator,
       name: "FC2A",
       currency: "CRC",
       assignment_mode: "open_gifting",
       visibility_mode: "all_participants",
-      reservation_visibility: "hidden_from_recipient",
+      reservation_visibility: reservation_visibility,
       budget_mode: "none"
     )
     [ leaver, peer ].each do |user|
@@ -56,6 +56,20 @@ RSpec.describe "FC2A activity cleanup [REQ-BLOCK-001] [REQ-ACT-003] [REQ-LIFE-00
       expect(peer_hold.reload.status).to eq("canceled")
       expect(untouched.reload.status).to eq("active")
       expect(wishlist(activity, peer).discarded?).to eq(false)
+    end
+
+    it "dispatches activity.reservation_released when visible holds are canceled [REQ-NOTIF-001] O6A" do
+      activity = sealed_open!(reservation_visibility: "visible_to_recipient")
+      peer_item = create(:item, wishlist: wishlist(activity, peer), title: "Visible hold")
+      hold = ReservationService.create!(
+        item: peer_item, user: leaver, estimated_date: Date.current + 3
+      )
+      expect(peer.notifications.where(event_key: "activity.reservation_created")).to exist
+
+      ActivityDropoutBridgeService.leave!(activity: activity, actor: leaver)
+
+      expect(hold.reload.status).to eq("canceled")
+      expect(peer.notifications.where(event_key: "activity.reservation_released")).to exist
     end
   end
 

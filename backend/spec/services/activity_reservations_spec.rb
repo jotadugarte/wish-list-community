@@ -81,6 +81,33 @@ RSpec.describe "Activity reservations [REQ-RES-005] [REQ-ACT-005]" do
         ReservationService.create!(item: item_b, user: giver, estimated_date: Date.current + 4)
       }.to raise_error(ReservationService::Error, /l[ií]mite|limit/i)
     end
+
+    it "blocks a second hold on another activity wishlist (activity-wide SS cap) [REQ-RES-005]" do
+      open_vis = Activity.create!(
+        creator: creator,
+        name: "SS all-vis",
+        currency: "CRC",
+        assignment_mode: "secret_santa",
+        visibility_mode: "all_participants",
+        reservation_visibility: "hidden_from_recipient",
+        budget_mode: "none"
+      )
+      accept_pair!(open_vis)
+      ActivityAssignment.create!(activity: open_vis, giver: giver, recipient: recipient)
+      ActivityAssignment.create!(activity: open_vis, giver: recipient, recipient: creator)
+      ActivityAssignment.create!(activity: open_vis, giver: creator, recipient: giver)
+      open_vis.update!(status: "sealed", sealed_at: Time.current)
+
+      list_a = wishlist(open_vis, recipient)
+      list_b = wishlist(open_vis, creator)
+      item_a = create(:item, wishlist: list_a, title: "A")
+      item_b = create(:item, wishlist: list_b, title: "B")
+
+      ReservationService.create!(item: item_a, user: giver, estimated_date: Date.current + 3)
+      expect {
+        ReservationService.create!(item: item_b, user: giver, estimated_date: Date.current + 4)
+      }.to raise_error(ReservationService::Error, /l[ií]mite|limit/i)
+    end
   end
 
   describe "open_gifting configured N [REQ-RES-005] O5A" do
@@ -163,7 +190,7 @@ RSpec.describe "Activity reservations [REQ-RES-005] [REQ-ACT-005]" do
 
       expect {
         ReservationService.create!(item: item.reload, user: giver, estimated_date: Date.current + 2)
-      }.to raise_error(ArgumentError, /budget|fixed|price/i)
+      }.to raise_error(ReservationService::Error, /budget|fixed|price/i)
     end
 
     it "allows reserve when price still satisfies budget [REQ-ACT-005]" do

@@ -185,3 +185,27 @@ No Secret Link / no personal friends/shared privacy on activity wishlists. Acces
   <step status="complete" id="21">Update living docs required for start-task truth only: API_CONTRACT activity item/reservation surfaces, SYSTEM_ARCHITECTURE B services, BEHAVIOUR_MATRIX planned rows, SPEC notes if needed for activity wishlist rules — with REQ-ID tags. Do not mark ROADMAP Sprint B Done in this plan.</step>
   <step status="complete" id="22">Run full backend RSpec + flutter analyze / flutter test; fix until green. End of start-task implementation scope.</step>
 </implementation_plan>
+
+## QA reviewer record — 2026-11-28 Sprint B (America/Costa_Rica)
+
+**Delivery:** not posted
+
+```
+Wish List Community — Sprint B QA reviewer record
+Branch: cursor/v1-sprint-b-activities-6756
+When: 2026-11-28 America/Costa_Rica
+Environment: cloud headless (Ruby 3.4.13, Flutter 3.50.1, Postgres test DB)
+Profile: docs/ai/qa_profile.md
+
+Prerequisites: Flutter ready; Ruby/bundle ready; Postgres test DB ready; no staging seed needed.
+
+Results:
+- QA-SB-01..02 smoke Flutter activity B: PASSED
+- QA-SB-03..11 functional (ensure, budget, visibility, limits, gifts/grace, FC2A, notifier, API, Hotwire): PASSED (68 examples)
+- QA-SB-12 Flutter analyze + test: PASSED (111 tests, analyze clean)
+- QA-SB-13 Full RSpec: PASSED (574 examples, 0 failures)
+- QA-SB-14 owner-device UX: NOT RUN (deferred per prefs)
+- QA-SB-15 live email/FCM: NOT RUN (forbidden in cloud / deferred)
+
+Product bugs: none.
+```

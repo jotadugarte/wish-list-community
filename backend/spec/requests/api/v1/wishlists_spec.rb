@@ -45,6 +45,34 @@ RSpec.describe "Api::V1::Wishlists", type: :request do
       expect(ids).to include(personal.id)
       expect(ids).not_to include(activity_list.id)
     end
+
+    it "rejects personal show/update/destroy for activity-scoped lists [REQ-ACT-001] FC1A" do
+      activity = Activity.create!(
+        creator: owner,
+        name: "Board only",
+        currency: "CRC",
+        assignment_mode: "open_gifting",
+        visibility_mode: "all_participants",
+        reservation_visibility: "hidden_from_recipient",
+        budget_mode: "none"
+      )
+      activity_list = ActivityWishlistEnsureService.ensure_for_participant!(
+        participant: activity.participants.find_by!(user: owner)
+      )
+
+      get "/api/v1/wishlists/#{activity_list.id}", headers: headers
+      expect(response).to have_http_status(:not_found)
+
+      patch "/api/v1/wishlists/#{activity_list.id}",
+            params: { wishlist: { title: "Hacked", max_reservations_per_user: 99 } },
+            headers: headers
+      expect(response).to have_http_status(:not_found)
+      expect(activity_list.reload.max_reservations_per_user).not_to eq(99)
+
+      delete "/api/v1/wishlists/#{activity_list.id}", headers: headers
+      expect(response).to have_http_status(:not_found)
+      expect(activity_list.reload.discarded?).to eq(false)
+    end
   end
 
   describe "GET /api/v1/wishlists and show/update/delete [REQ-WISH-001] [REQ-LIFE-001]" do

@@ -36,6 +36,7 @@ RSpec.describe "Activity B notification catalog O6A [REQ-NOTIF-001]" do
     it "includes Sprint B activity event keys in DEFAULT_EVENTS [REQ-NOTIF-001]" do
       expected = %w[
         activity.item_touched_while_reserved
+        activity.item_deleted
         activity.reservation_created
         activity.reservation_released
         activity.reservation_grace_started
@@ -136,9 +137,21 @@ RSpec.describe "Activity B notification catalog O6A [REQ-NOTIF-001]" do
 
       expect {
         ReservationService.create!(item: item, user: giver, estimated_date: Date.current + 3)
-      }.to raise_error(ArgumentError, /budget|fixed|price/i)
+      }.to raise_error(ReservationService::Error, /budget|fixed|price/i)
 
       expect(recipient.notifications.where(event_key: "activity.budget_rejected")).to exist
+    end
+
+    it "notifies reserver with activity.item_deleted on soft-delete [REQ-NOTIF-001]" do
+      activity = sealed_open_activity!
+      item = activity_item!(activity, recipient, title: "Gone")
+      hold = ReservationService.create!(item: item, user: giver, estimated_date: Date.current + 5)
+
+      item.soft_delete!(actor: recipient)
+
+      expect(hold.reload.status).to eq("canceled")
+      expect(giver.notifications.where(event_key: "activity.item_deleted")).to exist
+      expect(giver.notifications.where(event_key: "reservation.item_deleted")).not_to exist
     end
   end
 end

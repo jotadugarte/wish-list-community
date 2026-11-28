@@ -28,6 +28,7 @@ class NotificationPreference < ApplicationRecord
     activity.cancelled
     activity.ownership_transferred
     activity.item_touched_while_reserved
+    activity.item_deleted
     activity.reservation_created
     activity.reservation_released
     activity.reservation_grace_started

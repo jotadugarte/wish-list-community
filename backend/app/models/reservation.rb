@@ -70,9 +70,16 @@ class Reservation < ApplicationRecord
 
   # [REQ-RES-003] Notify the reserver when a reserved item is soft-deleted.
   # Prefer the pre-cancel hold captured by the soft-delete hook (avoids wrong canceled row).
+  # [REQ-NOTIF-001] O6A: activity-scoped items use ActivityNotifier, not personal keys.
   def self.notify_item_deleted!(reservation:)
     return if reservation.nil?
     return if reservation.user.nil? || reservation.user.discarded?
+
+    item = reservation.item
+    if item&.wishlist&.activity_scoped?
+      ActivityNotifier.item_deleted_while_reserved!(item: item, reservation: reservation)
+      return
+    end
 
     I18n.with_locale(reservation.user.locale.presence || I18n.default_locale) do
       NotificationDispatcher.dispatch!(

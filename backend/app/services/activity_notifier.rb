@@ -159,6 +159,28 @@ class ActivityNotifier
       end
     end
 
+    # [REQ-NOTIF-001] Reserver: reserved activity item was soft-deleted / archived.
+    def item_deleted_while_reserved!(item:, reservation:)
+      raise ArgumentError, "Pre-condition failed: item required" if item.nil?
+      raise ArgumentError, "Pre-condition failed: reservation required" if reservation.nil?
+
+      activity = activity_for(item)
+      return if activity.nil?
+
+      user = reservation.user
+      return if user.nil? || user.discarded?
+
+      with_user_locale(user) do
+        dispatch!(
+          user: user,
+          event_key: "activity.item_deleted",
+          title: I18n.t("notifications.activity.item_deleted.title", name: activity.name),
+          body: I18n.t("notifications.activity.item_deleted.body", item: item.title),
+          payload: activity_payload(activity, reservation_id: reservation.id, item_id: item.id)
+        )
+      end
+    end
+
     # [REQ-NOTIF-001] Item owner when reservation_visibility is visible_to_recipient.
     def reservation_created!(reservation:)
       notify_owner_on_visible_hold!(
@@ -280,7 +302,7 @@ class ActivityNotifier
           body: I18n.t(
             "notifications.activity.budget_rejected.body",
             item: item.title,
-            actor: actor&.username.presence || "someone"
+            actor: actor&.username.presence || I18n.t("notifications.activity.actor_anonymous")
           ),
           payload: activity_payload(activity, item_id: item.id, actor_id: actor&.id)
         )

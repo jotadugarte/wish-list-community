@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/activities/activity_repository.dart';
+import 'package:wish_list_mobile/features/gifts/gift_models.dart';
 import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
 import 'package:wish_list_mobile/features/items/item_models.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_models.dart';
@@ -39,6 +40,7 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
   List<ActivityWishlistView> _wishlists = const [];
   Map<int, List<WishlistItem>> _itemsByWishlist = const {};
   final Map<int, ReservationModel> _holdsByItemId = {};
+  final Map<int, GiftModel> _openGiftsByItemId = {};
   String? _error;
   bool _loading = true;
 
@@ -70,7 +72,7 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
           wishlistId: list.id,
         );
       }
-      await _syncHoldsFromMine();
+      await _syncHoldsAndGiftsFromMine();
       if (!mounted) return;
       setState(() {
         _activity = activity;
@@ -88,14 +90,22 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
     }
   }
 
-  Future<void> _syncHoldsFromMine() async {
+  Future<void> _syncHoldsAndGiftsFromMine() async {
     final repo = widget.reservationRepository;
     if (repo == null) return;
     try {
       final mine = await repo.fetchMine();
+      _holdsByItemId.removeWhere((_, __) => true);
       for (final hold in mine.take(200)) {
         if (hold.activityId == widget.activityId) {
           _holdsByItemId[hold.itemId] = hold;
+        }
+      }
+      final openGifts = await repo.fetchMineOpenGifts();
+      _openGiftsByItemId.removeWhere((_, __) => true);
+      for (final gift in openGifts.take(200)) {
+        if (gift.activityId == widget.activityId) {
+          _openGiftsByItemId[gift.itemId] = gift;
         }
       }
     } catch (_) {
@@ -233,7 +243,21 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
       subtitle: item.priceCents == null
           ? null
           : Text('${item.priceCents} ${item.currency ?? ''}'),
-      trailing: owner ? null : _peerActions(item, s),
+      trailing: owner ? _ownerActions(item, s) : _peerActions(item, s),
+    );
+  }
+
+  Widget? _ownerActions(WishlistItem item, AppStrings s) {
+    final gifts = widget.giftRepository;
+    if (gifts == null || item.receivedGift) return null;
+
+    return TextButton(
+      onPressed: () => _ownerReceiveFlow(item, gifts),
+      child: Text(
+        item.pendingConfirmGiftId != null
+            ? s.confirmReceivedButton
+            : s.markReceivedButton,
+      ),
     );
   }
 
@@ -258,6 +282,14 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
               child: Text(s.markPurchasedButton),
             ),
         ],
+      );
+    }
+
+    final openGift = _openGiftsByItemId[item.id];
+    if (openGift != null && openGift.status == 'purchased_secret' && gifts != null) {
+      return TextButton(
+        onPressed: () => _markDelivered(openGift, gifts),
+        child: Text(s.markDeliveredButton),
       );
     }
 
@@ -310,13 +342,73 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
     GiftRepository gifts,
   ) async {
     try {
-      await gifts.markPurchased(reservationId: hold.id);
+      final gift = await gifts.markPurchased(reservationId: hold.id);
       _holdsByItemId.remove(hold.itemId);
+      _openGiftsByItemId[gift.itemId] = gift;
       await _load();
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e.toString());
     }
+  }
+
+  Future<void> _markDelivered(GiftModel gift, GiftRepository gifts) async {
+    try {
+      await gifts.markDelivered(giftId: gift.id);
+      _openGiftsByItemId.remove(gift.itemId);
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.toString());
+    }
+  }
+
+  // [REQ-GIFT-003] Path 1 confirm or Path 2 owner mark received on the activity board.
+  Future<void> _ownerReceiveFlow(WishlistItem item, GiftRepository gifts) async {
+    final note = await _promptThankYouNote();
+    if (note == null || !mounted) return;
+    final trimmed = note.trim();
+    final thankYou = trimmed.isEmpty ? null : trimmed;
+    try {
+      final pendingId = item.pendingConfirmGiftId;
+      if (pendingId != null) {
+        await gifts.confirmReceived(giftId: pendingId, thankYouNote: thankYou);
+      } else {
+        await gifts.ownerMarkReceived(itemId: item.id, thankYouNote: thankYou);
+      }
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.toString());
+    }
+  }
+
+  Future<String?> _promptThankYouNote() async {
+    final controller = TextEditingController();
+    final s = widget.strings;
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(s.thankYouOptionalLabel),
+        content: TextField(
+          controller: controller,
+          maxLength: 500,
+          decoration: InputDecoration(labelText: s.thankYouOptionalLabel),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(s.dialogCancelLabel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text),
+            child: Text(s.confirmReceivedButton),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    return result;
   }
 
   List<Widget> _inviteActions(ActivityShell activity, AppStrings s) {
@@ -468,7 +560,7 @@ class _ActivityItemAddFormState extends State<_ActivityItemAddForm> {
             key: const Key('activity_item_price'),
             controller: _priceController,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'price_cents'),
+            decoration: InputDecoration(labelText: s.itemPriceLabel),
           ),
           Align(
             alignment: Alignment.centerLeft,

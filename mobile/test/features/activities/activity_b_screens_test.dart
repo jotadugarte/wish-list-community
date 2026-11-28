@@ -101,18 +101,48 @@ void main() {
       expect(find.text('Lista Ana'), findsOneWidget);
       expect(find.byKey(const Key('activity_item_title')), findsOneWidget);
       expect(find.byKey(const Key('activity_item_price')), findsOneWidget);
+      expect(find.text(strings.itemPriceLabel), findsOneWidget);
+      expect(find.text('price_cents'), findsNothing);
       expect(find.text(strings.myWishlistsTitle), findsNothing);
       expect(find.textContaining('Secret Link'), findsNothing);
       expect(find.textContaining('enlace secreto'), findsNothing);
     });
 
-    testWidgets('board reserve gift grace and budget error [REQ-RES-004] [REQ-ACT-005]', (
+    testWidgets('board reserve gift deliver and owner receive [REQ-RES-004] [REQ-GIFT-001] [REQ-ACT-005]', (
       tester,
     ) async {
       var reserved = false;
+      var purchased = false;
+      var delivered = false;
       final client = buildClient((req) {
         if (req.path.endsWith('/my_assignment')) {
           return const ApiResponse(statusCode: 200, body: {'assignment': null});
+        }
+        if (req.path == '/api/v1/my_reservations') {
+          final holds = <Map<String, dynamic>>[];
+          final gifts = <Map<String, dynamic>>[];
+          if (reserved && !purchased) {
+            holds.add({
+              'id': 8,
+              'item_id': 50,
+              'status': 'active',
+              'estimated_date': '2026-12-10',
+              'activity_id': 7,
+            });
+          }
+          if (purchased && !delivered) {
+            gifts.add({
+              'id': 3,
+              'item_id': 50,
+              'wishlist_id': 11,
+              'activity_id': 7,
+              'status': 'purchased_secret',
+            });
+          }
+          return ApiResponse(
+            statusCode: 200,
+            body: {'reservations': holds, 'open_gifts': gifts},
+          );
         }
         if (req.path == '/api/v1/activities/7') {
           return ApiResponse(statusCode: 200, body: {'activity': activityJson()});
@@ -136,6 +166,9 @@ void main() {
         }
         if (req.path == '/api/v1/activities/7/wishlists/11/items' &&
             req.method == 'GET') {
+          String? availability = 'available';
+          if (reserved && !purchased) availability = 'reserved_by_me';
+          if (purchased) availability = 'reserved';
           return ApiResponse(
             statusCode: 200,
             body: {
@@ -150,7 +183,7 @@ void main() {
                   'position': 0,
                   'links': [],
                   'images': [],
-                  'availability': reserved ? 'reserved_by_me' : 'available',
+                  'availability': availability,
                 },
               ],
             },
@@ -186,10 +219,32 @@ void main() {
           );
         }
         if (req.path == '/api/v1/reservations/8/mark_purchased') {
+          purchased = true;
+          reserved = false;
           return const ApiResponse(
             statusCode: 201,
             body: {
-              'gift': {'id': 3, 'item_id': 50, 'status': 'purchased_secret'},
+              'gift': {
+                'id': 3,
+                'item_id': 50,
+                'wishlist_id': 11,
+                'activity_id': 7,
+                'status': 'purchased_secret',
+              },
+            },
+          );
+        }
+        if (req.path == '/api/v1/gifts/3/mark_delivered') {
+          delivered = true;
+          return const ApiResponse(
+            statusCode: 200,
+            body: {
+              'gift': {
+                'id': 3,
+                'item_id': 50,
+                'activity_id': 7,
+                'status': 'delivered_pending_confirmation',
+              },
             },
           );
         }
@@ -231,6 +286,101 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text(strings.markPurchasedButton));
       await tester.pumpAndSettle();
+      expect(find.text(strings.markDeliveredButton), findsOneWidget);
+
+      await tester.tap(find.text(strings.markDeliveredButton));
+      await tester.pumpAndSettle();
+      expect(delivered, isTrue);
+    });
+
+    testWidgets('board owner mark received Path 2 [REQ-GIFT-003] [REQ-ACT-005]', (
+      tester,
+    ) async {
+      var marked = false;
+      final client = buildClient((req) {
+        if (req.path.endsWith('/my_assignment')) {
+          return const ApiResponse(statusCode: 200, body: {'assignment': null});
+        }
+        if (req.path == '/api/v1/my_reservations') {
+          return const ApiResponse(
+            statusCode: 200,
+            body: {'reservations': [], 'open_gifts': []},
+          );
+        }
+        if (req.path == '/api/v1/activities/7') {
+          return ApiResponse(statusCode: 200, body: {'activity': activityJson()});
+        }
+        if (req.path == '/api/v1/activities/7/wishlists') {
+          return const ApiResponse(
+            statusCode: 200,
+            body: {
+              'wishlists': [
+                {
+                  'id': 11,
+                  'title': 'Mi lista',
+                  'activity_id': 7,
+                  'privacy_mode': 'friends',
+                  'owner': {'id': 9, 'username': 'me'},
+                  'viewer_is_owner': true,
+                },
+              ],
+            },
+          );
+        }
+        if (req.path == '/api/v1/activities/7/wishlists/11/items' &&
+            req.method == 'GET') {
+          return ApiResponse(
+            statusCode: 200,
+            body: {
+              'items': [
+                {
+                  'id': 50,
+                  'wishlist_id': 11,
+                  'title': 'Taza',
+                  'priority': 'medium',
+                  'position': 0,
+                  'links': [],
+                  'images': [],
+                  'received_gift': marked,
+                },
+              ],
+            },
+          );
+        }
+        if (req.path == '/api/v1/items/50/mark_received') {
+          marked = true;
+          return const ApiResponse(
+            statusCode: 201,
+            body: {
+              'gift': {'id': 9, 'item_id': 50, 'status': 'received_confirmed'},
+            },
+          );
+        }
+        return const ApiResponse(statusCode: 200, body: {});
+      });
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ActivityBoardScreen(
+            activityRepository: ActivityRepository(apiClient: client),
+            reservationRepository: ReservationRepository(apiClient: client),
+            giftRepository: GiftRepository(apiClient: client),
+            strings: strings,
+            tokens: tokens,
+            activityId: 7,
+            viewerUserId: 9,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text(strings.markReceivedButton), findsOneWidget);
+      await tester.tap(find.text(strings.markReceivedButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(strings.confirmReceivedButton));
+      await tester.pumpAndSettle();
+      expect(marked, isTrue);
+      expect(find.text(strings.markReceivedButton), findsNothing);
     });
 
     testWidgets('activity lists are not under My Wishlists [REQ-ACT-001] FC1A', (

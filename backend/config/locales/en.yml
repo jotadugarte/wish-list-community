@@ -274,9 +274,13 @@ en:
       ownership_transferred:
         title: "You own this activity: %{name}"
         body: "@%{actor} transferred ownership to you."
+      actor_anonymous: "someone"
       item_touched_while_reserved:
         title: "Reserved item updated: %{name}"
         body: "\"%{item}\" was edited while you had a reservation."
+      item_deleted:
+        title: "Reserved item removed: %{name}"
+        body: "\"%{item}\" was removed, so your activity reservation was released."
       reservation_created:
         title: "Item reserved: %{name}"
         body: "Someone reserved \"%{item}\" in this activity."

@@ -92,6 +92,8 @@ class ReservationService
   end
 
   def self.enforce_per_wishlist_limit!(wishlist:, user:)
+    enforce_secret_santa_activity_limit!(wishlist: wishlist, user: user)
+
     limit = wishlist.max_reservations_per_user
     return if limit.nil?
 
@@ -109,6 +111,26 @@ class ReservationService
   end
   private_class_method :enforce_per_wishlist_limit!
 
+  # [REQ-RES-005] O5A: secret_santa is 1 active hold per participant across the activity.
+  def self.enforce_secret_santa_activity_limit!(wishlist:, user:)
+    return unless wishlist&.activity_scoped?
+
+    activity = wishlist.activity
+    return unless activity&.secret_santa?
+
+    count = Reservation.joins(item: :wishlist)
+                       .where(
+                         user_id: user.id,
+                         status: ReservationStatus::ACTIVE_HOLD,
+                         wishlists: { activity_id: activity.id }
+                       )
+                       .where(items: { discarded_at: nil })
+                       .limit(2)
+                       .count
+    raise Error, I18n.t("reservations.errors.limit_reached") if count >= 1
+  end
+  private_class_method :enforce_secret_santa_activity_limit!
+
   # [REQ-ACT-001] [REQ-ACT-005] [REQ-NOTIF-001] O3A/O4A: activity gate + budget re-check on reserve.
   def self.assert_activity_reserve_allowed!(item:, user:)
     wishlist = item.wishlist
@@ -120,7 +142,7 @@ class ReservationService
     raise Error, e.message
   rescue ArgumentError => e
     notify_budget_reject_if_needed!(item: item, actor: user, error: e)
-    raise
+    raise Error, e.message
   end
   private_class_method :assert_activity_reserve_allowed!
 

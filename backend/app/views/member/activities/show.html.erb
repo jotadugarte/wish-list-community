@@ -71,7 +71,7 @@
 
                 <% if owner_view %>
                   <% unless received_ids.include?(item.id) %>
-                    <% pending = Item.pending_confirm_gifts_by_item_id([ item.id ])[item.id] %>
+                    <% pending = @pending_confirm_gifts_by_item_id[item.id] %>
                     <% if pending %>
                       <%= form_with url: confirm_received_member_gift_path(pending), method: :post, class: "mt-1 space-y-1" do %>
                         <%= text_field_tag :thank_you_note, nil, placeholder: t("member.gifts.thank_you_placeholder") %>

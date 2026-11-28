@@ -108,6 +108,7 @@ module Member
       item_ids = item_ids.first(500)
       @holds_by_item_id = Item.active_holds_by_item_id(item_ids)
       @open_gifts_by_item_id = Item.open_gifts_by_item_id(item_ids)
+      @pending_confirm_gifts_by_item_id = Item.pending_confirm_gifts_by_item_id(item_ids)
       @my_holds_by_item_id = Reservation.where(user_id: current_user.id, item_id: item_ids)
                                        .where(status: ReservationStatus::ACTIVE_HOLD)
                                        .index_by(&:item_id)

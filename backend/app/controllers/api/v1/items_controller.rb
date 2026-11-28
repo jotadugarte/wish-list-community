@@ -41,7 +41,7 @@ module Api
 
       # [REQ-ITEM-001] Creates an item for the wishlist owner (O3A/O4A/O5A).
       def create
-        wishlist = current_user.wishlists.kept.find(params[:wishlist_id])
+        wishlist = find_personal_wishlist_kept!
         authorize wishlist, :create?, policy_class: ItemPolicy
         item = nil
         Item.transaction do
@@ -57,14 +57,14 @@ module Api
 
       # [REQ-ITEM-001] Shows a kept item when the parent wishlist is visible.
       def show
-        item = Item.kept.find(params[:id])
+        item = find_personal_item_kept!
         authorize item, :show?
         render json: { item: item.as_api_json(viewer: current_user) }, status: :ok
       end
 
       # [REQ-ITEM-001] Owner updates fields, links, and optional images.
       def update
-        item = Item.kept.find(params[:id])
+        item = find_personal_item_kept!
         authorize item, :update?
         Item.transaction do
           apply_item_updates!(item)
@@ -78,7 +78,7 @@ module Api
 
       # [REQ-LIFE-001] Soft-deletes an item.
       def destroy
-        item = Item.kept.find(params[:id])
+        item = find_personal_item_kept!
         authorize item, :destroy?
         item.soft_delete!(actor: current_user)
         head :no_content
@@ -86,7 +86,7 @@ module Api
 
       # [REQ-LIFE-001] Restores a soft-deleted item.
       def restore
-        item = Item.discarded.find(params[:id])
+        item = find_personal_item_discarded!
         authorize item, :restore?
         unless item.restore!(actor: current_user)
           return render json: { errors: [ "not restorable" ] }, status: :unprocessable_content
@@ -97,7 +97,7 @@ module Api
 
       # [REQ-ITEM-002] Detaches one image attachment.
       def destroy_image
-        item = Item.kept.find(params[:id])
+        item = find_personal_item_kept!
         authorize item, :manage_images?
         attachment = item.images.attachments.find(params[:image_id])
         attachment.purge
@@ -106,7 +106,7 @@ module Api
 
       # [REQ-ITEM-001] Reorders items for a wishlist (O8A).
       def reorder
-        wishlist = current_user.wishlists.kept.find(params[:wishlist_id])
+        wishlist = find_personal_wishlist_kept!
         authorize wishlist, :reorder?, policy_class: ItemPolicy
         ids = Array(params.require(:item_ids)).map(&:to_i).first(MAX_INDEX)
         reorder_items!(wishlist, ids)
@@ -118,8 +118,30 @@ module Api
 
       private
 
+      # [REQ-ACT-001] FC1A: activity-scoped items stay on activity board/API routes.
       def find_wishlist_for_read!
-        Wishlist.kept.find(params[:wishlist_id])
+        wishlist = Wishlist.kept.find(params[:wishlist_id])
+        raise ActiveRecord::RecordNotFound if wishlist.activity_scoped?
+
+        wishlist
+      end
+
+      def find_personal_wishlist_kept!
+        current_user.wishlists.personal.kept.find(params[:wishlist_id])
+      end
+
+      def find_personal_item_kept!
+        item = Item.kept.find(params[:id])
+        raise ActiveRecord::RecordNotFound if item.wishlist.activity_scoped?
+
+        item
+      end
+
+      def find_personal_item_discarded!
+        item = Item.discarded.find(params[:id])
+        raise ActiveRecord::RecordNotFound if item.wishlist.activity_scoped?
+
+        item
       end
 
       def build_item!(wishlist)

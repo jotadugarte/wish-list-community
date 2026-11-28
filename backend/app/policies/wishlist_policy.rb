@@ -27,28 +27,30 @@ class WishlistPolicy < ApplicationPolicy
   end
 
   # [REQ-WISH-001] Only the owner may update privacy, title, or event_date.
+  # [REQ-ACT-001] FC1A: activity-scoped lists mutate only via activity paths.
   def update?
-    owner_active?
+    owner_active? && !record.activity_scoped?
   end
 
   # [REQ-LIFE-001] Only the owner may soft-delete.
+  # [REQ-ACT-001] FC1A/FC2A: activity lists archive via ActivityParticipationCleanup only.
   def destroy?
-    owner_active?
+    owner_active? && !record.activity_scoped?
   end
 
   # [REQ-LIFE-001] [REQ-ADM-001] Owner may restore within grace unless soft-delete was admin-enforced (O4A).
   def restore?
-    owner_of_record? && record.discarded? && !record.soft_deleted_by_admin?
+    owner_of_record? && record.discarded? && !record.soft_deleted_by_admin? && !record.activity_scoped?
   end
 
   # [REQ-WISH-002] [REQ-WISH-006] Only the owner may rotate the Secret Link token.
   def rotate_share_token?
-    owner_active?
+    owner_active? && !record.activity_scoped?
   end
 
   # [REQ-WISH-003] Only the owner may manage explicit shares.
   def manage_shares?
-    owner_active?
+    owner_active? && !record.activity_scoped?
   end
 
   class Scope < ApplicationPolicy::Scope
