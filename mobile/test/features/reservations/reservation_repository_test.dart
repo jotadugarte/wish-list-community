@@ -47,9 +47,12 @@ void main() {
       expect(created.status, 'active');
     });
 
-    test('fetchMine maps my_reservations [REQ-RES-004]', () async {
+    test('fetchMineWithOpenGifts maps holds and gifts in one GET [REQ-RES-004] [REQ-GIFT-001]',
+        () async {
+      var calls = 0;
       final client = buildMockClient((req) {
         expect(req.path, '/api/v1/my_reservations');
+        calls += 1;
         return ApiResponse(
           statusCode: 200,
           body: {
@@ -64,13 +67,24 @@ void main() {
                 'wishlist_title': 'Fiesta',
               },
             ],
+            'open_gifts': [
+              {
+                'id': 4,
+                'item_id': 9,
+                'wishlist_id': 3,
+                'status': 'purchased_secret',
+              },
+            ],
           },
         );
       });
       final repo = ReservationRepository(apiClient: client);
-      final mine = await repo.fetchMine();
-      expect(mine.single.itemTitle, 'Libro');
-      expect(mine.single.wishlistTitle, 'Fiesta');
+      final bundle = await repo.fetchMineWithOpenGifts();
+      expect(calls, 1);
+      expect(bundle.reservations.single.itemTitle, 'Libro');
+      expect(bundle.reservations.single.wishlistTitle, 'Fiesta');
+      expect(bundle.openGifts.single.id, 4);
+      expect(bundle.openGifts.single.status, 'purchased_secret');
     });
   });
 }

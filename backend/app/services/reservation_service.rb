@@ -16,7 +16,9 @@ class ReservationService
     assert_activity_reserve_allowed!(item: item, user: user)
 
     Reservation.transaction do
-      wishlist = item.wishlist.lock!
+      wishlist = item.wishlist
+      lock_secret_santa_activity!(wishlist)
+      wishlist.lock!
       enforce_per_wishlist_limit!(wishlist: wishlist, user: user)
       reservation = Reservation.create!(
         item: item,
@@ -110,6 +112,17 @@ class ReservationService
     raise Error, I18n.t("reservations.errors.limit_reached") if count >= limit
   end
   private_class_method :enforce_per_wishlist_limit!
+
+  # [REQ-RES-005] Lock Activity before wishlist so SS creates across lists serialize.
+  def self.lock_secret_santa_activity!(wishlist)
+    return unless wishlist&.activity_scoped?
+
+    activity = wishlist.activity
+    return unless activity&.secret_santa?
+
+    activity.lock!
+  end
+  private_class_method :lock_secret_santa_activity!
 
   # [REQ-RES-005] O5A: secret_santa is 1 active hold per participant across the activity.
   def self.enforce_secret_santa_activity_limit!(wishlist:, user:)

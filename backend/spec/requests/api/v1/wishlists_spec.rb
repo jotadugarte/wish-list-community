@@ -149,5 +149,27 @@ RSpec.describe "Api::V1::Wishlists", type: :request do
       expect(response).to have_http_status(:no_content)
       expect(WishlistShare.where(wishlist: wishlist, user: friend)).not_to exist
     end
+
+    it "returns 404 for shares on activity-scoped lists [REQ-ACT-001] FC1A" do
+      activity = Activity.create!(
+        creator: owner,
+        name: "No personal shares",
+        currency: "CRC",
+        assignment_mode: "open_gifting",
+        visibility_mode: "all_participants",
+        reservation_visibility: "hidden_from_recipient",
+        budget_mode: "none"
+      )
+      activity_list = ActivityWishlistEnsureService.ensure_for_participant!(
+        participant: activity.participants.find_by!(user: owner)
+      )
+
+      post "/api/v1/wishlists/#{activity_list.id}/shares",
+           params: { user_id: friend.id }, headers: headers
+      expect(response).to have_http_status(:not_found)
+
+      delete "/api/v1/wishlists/#{activity_list.id}/shares/#{friend.id}", headers: headers
+      expect(response).to have_http_status(:not_found)
+    end
   end
 end

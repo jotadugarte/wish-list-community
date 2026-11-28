@@ -20,8 +20,25 @@ module Api
           raise Pundit::NotAuthorizedError
         end
 
-        items = wishlist.items.kept.order(:position, :id).limit(MAX_INDEX)
-        render json: { items: items.map { |i| i.as_api_json(viewer: current_user) } }, status: :ok
+        items = wishlist.items.kept.order(:position, :id).limit(MAX_INDEX).to_a
+        item_ids = items.map(&:id)
+        holds = Item.active_holds_by_item_id(item_ids)
+        open_gifts = Item.open_gifts_by_item_id(item_ids)
+        received_ids = Item.received_gift_item_ids_for(wishlist.id)
+        pending = if current_user.id == wishlist.owner_id
+          Item.pending_confirm_gifts_by_item_id(item_ids)
+        end
+        render json: {
+          items: items.map { |i|
+            i.as_api_json(
+              viewer: current_user,
+              holds_by_item_id: holds,
+              open_gifts_by_item_id: open_gifts,
+              received_gift_ids: received_ids,
+              pending_confirm_gifts_by_item_id: pending
+            )
+          }
+        }, status: :ok
       end
 
       # [REQ-ACT-005] Owner creates an item on their activity wishlist.

@@ -44,12 +44,12 @@ class _MyReservationsScreenState extends State<MyReservationsScreen> {
       _error = null;
     });
     try {
-      final rows = await widget.reservationRepository.fetchMine();
-      final gifts = await widget.reservationRepository.fetchMineOpenGifts();
+      final bundle =
+          await widget.reservationRepository.fetchMineWithOpenGifts();
       if (mounted) {
         setState(() {
-          _rows = rows;
-          _gifts = gifts;
+          _rows = bundle.reservations;
+          _gifts = bundle.openGifts;
         });
       }
     } catch (e) {

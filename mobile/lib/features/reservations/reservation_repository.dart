@@ -75,32 +75,38 @@ class ReservationRepository {
     );
   }
 
-  // [REQ-RES-004] Lists active/grace reservations for the current user.
-  Future<List<ReservationModel>> fetchMine() async {
+  // [REQ-RES-004] [REQ-GIFT-001] One GET returns holds + open gifts.
+  Future<({List<ReservationModel> reservations, List<GiftModel> openGifts})>
+      fetchMineWithOpenGifts() async {
     final response = await apiClient.request(
       method: 'GET',
       path: '/api/v1/my_reservations',
     );
-    final raw = response.body['reservations'] as List<dynamic>? ?? const [];
-    return raw
+    final rawHolds = response.body['reservations'] as List<dynamic>? ?? const [];
+    final rawGifts = response.body['open_gifts'] as List<dynamic>? ?? const [];
+    final reservations = rawHolds
         .whereType<Map<String, dynamic>>()
         .take(maxList)
         .map(ReservationModel.fromJson)
         .toList(growable: false);
-  }
-
-  // [REQ-GIFT-001] Lists open gifts returned alongside my_reservations.
-  Future<List<GiftModel>> fetchMineOpenGifts() async {
-    final response = await apiClient.request(
-      method: 'GET',
-      path: '/api/v1/my_reservations',
-    );
-    final raw = response.body['open_gifts'] as List<dynamic>? ?? const [];
-    return raw
+    final openGifts = rawGifts
         .whereType<Map<String, dynamic>>()
         .take(maxList)
         .map(GiftModel.fromJson)
         .toList(growable: false);
+    return (reservations: reservations, openGifts: openGifts);
+  }
+
+  // [REQ-RES-004] Lists active/grace reservations for the current user.
+  Future<List<ReservationModel>> fetchMine() async {
+    final bundle = await fetchMineWithOpenGifts();
+    return bundle.reservations;
+  }
+
+  // [REQ-GIFT-001] Lists open gifts returned alongside my_reservations.
+  Future<List<GiftModel>> fetchMineOpenGifts() async {
+    final bundle = await fetchMineWithOpenGifts();
+    return bundle.openGifts;
   }
 }
 

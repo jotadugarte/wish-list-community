@@ -168,7 +168,7 @@ void main() {
             req.method == 'GET') {
           String? availability = 'available';
           if (reserved && !purchased) availability = 'reserved_by_me';
-          if (purchased) availability = 'reserved';
+          if (purchased) availability = 'reserved_by_me';
           return ApiResponse(
             statusCode: 200,
             body: {

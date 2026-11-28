@@ -94,16 +94,15 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
     final repo = widget.reservationRepository;
     if (repo == null) return;
     try {
-      final mine = await repo.fetchMine();
+      final bundle = await repo.fetchMineWithOpenGifts();
       _holdsByItemId.removeWhere((_, __) => true);
-      for (final hold in mine.take(200)) {
+      for (final hold in bundle.reservations.take(200)) {
         if (hold.activityId == widget.activityId) {
           _holdsByItemId[hold.itemId] = hold;
         }
       }
-      final openGifts = await repo.fetchMineOpenGifts();
       _openGiftsByItemId.removeWhere((_, __) => true);
-      for (final gift in openGifts.take(200)) {
+      for (final gift in bundle.openGifts.take(200)) {
         if (gift.activityId == widget.activityId) {
           _openGiftsByItemId[gift.itemId] = gift;
         }
@@ -299,7 +298,10 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
         child: Text(s.reserveButton),
       );
     }
-    return Text(s.availabilityReservedByMe);
+    if (item.availability == 'reserved_by_me') {
+      return Text(s.availabilityReservedByMe);
+    }
+    return Text(s.availabilityUnavailable);
   }
 
   Future<void> _reserve(WishlistItem item, ReservationRepository repo) async {
