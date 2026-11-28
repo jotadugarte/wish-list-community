@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>Step 6 in progress (ActivityVisibilityGate implement)</current_step>
+    <current_step>Step 7 in progress (activity reservation specs)</current_step>
   </execution_context>
 </agent_state>

@@ -13,6 +13,7 @@ class ReservationService
 
     date_vo = EstimatedDate.new(estimated_date, time_zone: user.time_zone.presence || "UTC")
     date_vo.assert_not_past!
+    assert_activity_reserve_allowed!(item: item, user: user)
 
     Reservation.transaction do
       wishlist = item.wishlist.lock!
@@ -103,4 +104,15 @@ class ReservationService
     raise Error, I18n.t("reservations.errors.limit_reached") if count >= limit
   end
   private_class_method :enforce_per_wishlist_limit!
+
+  # [REQ-ACT-001] O3A: activity-scoped holds require visibility/seal gate.
+  def self.assert_activity_reserve_allowed!(item:, user:)
+    wishlist = item.wishlist
+    return unless wishlist&.activity_scoped?
+
+    ActivityVisibilityGate.assert_may_reserve!(viewer: user, item: item)
+  rescue ActivityVisibilityGate::Error => e
+    raise Error, e.message
+  end
+  private_class_method :assert_activity_reserve_allowed!
 end
