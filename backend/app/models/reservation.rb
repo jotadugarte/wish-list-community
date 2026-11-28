@@ -94,7 +94,7 @@ class Reservation < ApplicationRecord
 
   # [REQ-RES-001] [REQ-RES-004] JSON payload for the reserver (never for owner spoilers).
   def as_api_json
-    {
+    payload = {
       id: id,
       item_id: item_id,
       wishlist_id: item.wishlist_id,
@@ -106,6 +106,9 @@ class Reservation < ApplicationRecord
       created_at: created_at,
       updated_at: updated_at
     }
+    activity_id = item.wishlist&.activity_id
+    payload[:activity_id] = activity_id if activity_id.present?
+    payload
   end
 
   private

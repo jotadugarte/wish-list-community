@@ -10,11 +10,13 @@ class WishlistPolicy < ApplicationPolicy
 
   # [REQ-WISH-001] [REQ-BLOCK-001] Show when owner, accepted friend on friends mode,
   # or sharee on shared mode — never when blocked either direction.
+  # Activity-scoped lists use ActivityVisibilityGate (O3A / FC1A).
   def show?
     return false if user.nil? || user.discarded? || record.nil? || record.discarded?
     return false if record.owner.discarded?
     return true if owner?
     return false if blocked_between?(record.owner)
+    return activity_list_access? if record.activity_scoped?
 
     friends_mode_access? || shared_mode_access?
   end
@@ -124,5 +126,10 @@ class WishlistPolicy < ApplicationPolicy
     return false unless record.privacy_mode_vo.shared?
 
     WishlistShare.exists?(wishlist_id: record.id, user_id: user.id)
+  end
+
+  # [REQ-ACT-001] Activity board visibility (not personal friends/shared modes).
+  def activity_list_access?
+    ActivityVisibilityGate.can_view_list?(viewer: user, owner_wishlist: record)
   end
 end

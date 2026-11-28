@@ -155,6 +155,7 @@ Rails.application.routes.draw do
           post :cancel
           post :transfer
           get :my_assignment
+          patch :reservation_limit
           post "participants", action: :invite
           post "participants/accept", action: :accept
           post "participants/decline", action: :decline
@@ -162,6 +163,10 @@ Rails.application.routes.draw do
           post "exclusions", action: :add_exclusion
           post "co_organizers", action: :appoint_co_organizer
         end
+        resources :wishlists, only: %i[index show], controller: "activity_wishlists" do
+          resources :items, only: %i[index create], controller: "activity_items"
+        end
+        resources :items, only: %i[update destroy], controller: "activity_items"
       end
     end
   end

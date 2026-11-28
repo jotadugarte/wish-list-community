@@ -8,7 +8,7 @@ module Api
       skip_after_action :verify_policy_scoped
       rate_limit to: 30, within: 3.minutes,
                  only: %i[create invite accept decline leave draw arrancar blind_bridge full_redraw
-                          cancel transfer appoint_co_organizer add_exclusion],
+                          cancel transfer appoint_co_organizer add_exclusion reservation_limit],
                  name: "api_activities_write",
                  by: -> { current_user&.id || request.remote_ip },
                  with: -> { render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests }
@@ -183,6 +183,18 @@ module Api
         render json: { activity: activity.reload.as_api_json(viewer: current_user) }, status: :ok
       rescue ArgumentError
         render json: { errors: [ I18n.t("api.v1.errors.unprocessable") ] }, status: :unprocessable_content
+      end
+
+      # [REQ-RES-005] O5A/FC3A: set open_gifting N on activity wishlists (pre-seal only).
+      def reservation_limit
+        activity = find_activity!
+        authorize activity, :manage?
+        max = Integer(params.require(:max_reservations_per_user))
+        ActivityReservationLimitService.set!(activity: activity, actor: current_user, max: max)
+        render json: { max_reservations_per_user: max }, status: :ok
+      rescue ArgumentError, TypeError, ActionController::ParameterMissing => e
+        render json: { errors: [ e.message.presence || I18n.t("api.v1.errors.unprocessable") ] },
+               status: :unprocessable_content
       end
 
       private

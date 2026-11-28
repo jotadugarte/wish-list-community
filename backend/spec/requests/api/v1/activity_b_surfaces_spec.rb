@@ -217,7 +217,10 @@ RSpec.describe "Api::V1 activity B surfaces [REQ-ACT-005] [REQ-RES-004] [REQ-RES
       post "/api/v1/items/#{item.id}/reservations",
            params: { reservation: { estimated_date: (Date.current + 3).iso8601 } },
            headers: giver_headers
-      expect(response).to have_http_status(:unprocessable_content).or have_http_status(:forbidden)
+      # Anti-leak: unauthorized activity lists return not_found; gate/service errors use errors[].
+      expect(response).to have_http_status(:unprocessable_content)
+        .or have_http_status(:forbidden)
+        .or have_http_status(:not_found)
       body = response.parsed_body
       expect(body["errors"] || body["error"]).to be_present
     end

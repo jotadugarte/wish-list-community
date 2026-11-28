@@ -8,7 +8,7 @@ class ReservationPolicy < ApplicationPolicy
     user.present? && !user.discarded?
   end
 
-  # [REQ-RES-001] [REQ-WISH-002] [REQ-BLOCK-001] Create when viewer may see the item wishlist and is not the owner.
+  # [REQ-RES-001] [REQ-WISH-002] [REQ-BLOCK-001] [REQ-ACT-001] Create when viewer may hold the item.
   def create?
     return false if user.nil? || user.discarded?
     return false if record.item.blank? || record.item.discarded?
@@ -16,7 +16,10 @@ class ReservationPolicy < ApplicationPolicy
     return false if record.item.wishlist.owner_id == user.id
     return false if blocked_between?(record.item.wishlist.owner)
 
-    WishlistPolicy.new(user, record.item.wishlist).show?
+    wishlist = record.item.wishlist
+    return ActivityVisibilityGate.can_reserve?(viewer: user, item: record.item) if wishlist.activity_scoped?
+
+    WishlistPolicy.new(user, wishlist).show?
   end
 
   # [REQ-RES-001] Only the reserver may extend note/date.

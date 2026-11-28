@@ -97,8 +97,8 @@ class Wishlist < ApplicationRecord
     self
   end
 
-  # [REQ-WISH-001] [REQ-WISH-006] Serializes the empty wishlist shell for API clients.
-  # share_token is owner-only so non-owners cannot redistribute the Secret Link (O4A).
+  # [REQ-WISH-001] [REQ-WISH-006] [REQ-ARCH-002] Serializes the wishlist shell for API clients.
+  # share_token is owner-only on personal lists; activity lists never expose Secret Link (FC4A).
   def as_api_json(viewer: nil)
     payload = {
       id: id,
@@ -111,7 +111,10 @@ class Wishlist < ApplicationRecord
       created_at: created_at,
       updated_at: updated_at
     }
-    payload[:share_token] = share_token if viewer.present? && viewer.id == owner_id
+    payload[:activity_id] = activity_id if activity_scoped?
+    if !activity_scoped? && viewer.present? && viewer.id == owner_id
+      payload[:share_token] = share_token
+    end
     payload
   end
 
