@@ -79,4 +79,3 @@ RSpec.describe "Hotwire shared and friends shells [REQ-WISH-003] [REQ-SOC-001]",
     expect(response.body).to include("Unavailable").or include("No disponible")
   end
 end
-

@@ -47,4 +47,3 @@ RSpec.describe "Friendship notification dispatch [REQ-NOTIF-001] [REQ-SOC-001]" 
     end
   end
 end
-
