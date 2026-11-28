@@ -183,5 +183,5 @@ No Secret Link / no personal friends/shared privacy on activity wishlists. Acces
   <step status="complete" id="19">Write failing Flutter tests: activity list/item forms with price, reserve/gift/grace flows, limit/budget errors, board-only navigation (not My Wishlists), prefs for new events. Trace [REQ-MOB-001], O1B..O6A.</step>
   <step status="complete" id="20">Implement Flutter activity B feature until step 19 green (headless/fakes; no Nata retokenize).</step>
   <step status="complete" id="21">Update living docs required for start-task truth only: API_CONTRACT activity item/reservation surfaces, SYSTEM_ARCHITECTURE B services, BEHAVIOUR_MATRIX planned rows, SPEC notes if needed for activity wishlist rules — with REQ-ID tags. Do not mark ROADMAP Sprint B Done in this plan.</step>
-  <step status="pending" id="22">Run full backend RSpec + flutter analyze / flutter test; fix until green. End of start-task implementation scope.</step>
+  <step status="complete" id="22">Run full backend RSpec + flutter analyze / flutter test; fix until green. End of start-task implementation scope.</step>
 </implementation_plan>

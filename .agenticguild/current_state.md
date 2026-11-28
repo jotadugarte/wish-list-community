@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>Step 21 complete; next Step 22 (full suites green)</current_step>
+    <current_step>Phase 3 complete (steps 1–22); awaiting QA or finish-branch</current_step>
   </execution_context>
 </agent_state>
