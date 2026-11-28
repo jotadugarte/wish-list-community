@@ -33,7 +33,7 @@
   QA-08 re-run 2026-11-27: assertion updated to the escaped apostrophe only. Product page unchanged. 1 example, 0 failures. Temporary spec removed after the pass.
   </working_notes>
 
-  ## QA reviewer record — 2026-11-27 (not posted)
+  ## QA reviewer record — 2026-11-27 (posted)
 
   What was tested: Admin brand / style guide on branch cursor/admin-brand-style-guide-ea18, product tree at 34efec0, rebased onto origin/main 707475e (Sprint 9, PR #16). Headless RSpec request checks and one Flutter unit test. No browser and no computerUse.
 
@@ -59,5 +59,5 @@
 
   Not run (owner): real-browser print/PDF, visual comparison of the phone mock with the Flutter app, iOS/Android simulator or device.
 
-  Delivery: not posted
+  Delivery: posted
 </task_session>
