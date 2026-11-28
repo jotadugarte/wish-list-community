@@ -166,7 +166,7 @@ No Secret Link / no personal friends/shared privacy on activity wishlists. Acces
   <step status="complete" id="2">Implement ensure-on-accept (and backfill helper for already-accepted) until step 1 green — models/services only.</step>
   <step status="complete" id="3">Write failing specs for activity item create/update: manual price+currency rules; currency must equal activity currency; BudgetEnforcement blocks when mode is fixed/min_only/max_only/range and price invalid or missing; none allows missing/any price. Trace [REQ-ACT-005], O4A.</step>
   <step status="complete" id="4">Implement item budget/currency guards until step 3 green.</step>
-  <step status="pending" id="5">Write failing specs for ActivityVisibilityGate: secret_santa vs open_gifting + visibility_mode; never reserve own list; pre-seal add-items OK; reserves forbidden until seal. Trace [REQ-ACT-001], O3A.</step>
+  <step status="complete" id="5">Write failing specs for ActivityVisibilityGate: secret_santa vs open_gifting + visibility_mode; never reserve own list; pre-seal add-items OK; reserves forbidden until seal. Trace [REQ-ACT-001], O3A.</step>
   <step status="pending" id="6">Implement visibility/seal gates until step 5 green.</step>
   <step status="pending" id="7">Write failing specs for activity reservations: reuse Reservation concurrency [REQ-RES-001]; reservation_visibility owner payload rules; SS max_reservations_per_user=1; open_gifting uses configured N; N editable only pre-seal and freezes at Arrancar; re-check budget on reserve. Trace [REQ-RES-005], [REQ-ACT-005], O4A, O5A, FC3A.</step>
   <step status="pending" id="8">Implement reservation limit + freeze-N + budget re-check until step 7 green.</step>
