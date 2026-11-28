@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_051505) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_28_051701) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_051505) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "activities", force: :cascade do |t|
+    t.bigint "creator_id", null: false
+    t.string "name", null: false
+    t.string "currency", null: false
+    t.string "assignment_mode", null: false
+    t.string "visibility_mode", null: false
+    t.string "reservation_visibility", null: false
+    t.string "budget_mode", default: "none", null: false
+    t.integer "budget_amount_cents"
+    t.integer "budget_max_cents"
+    t.string "share_token", null: false
+    t.string "status", default: "open", null: false
+    t.date "starts_on"
+    t.date "ends_on"
+    t.datetime "sealed_at"
+    t.datetime "cancelled_at"
+    t.datetime "money_settings_frozen_at"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id", "status"], name: "index_activities_on_creator_id_and_status"
+    t.index ["creator_id"], name: "index_activities_on_creator_id"
+    t.index ["discarded_at"], name: "index_activities_on_discarded_at"
+    t.index ["share_token"], name: "index_activities_on_share_token", unique: true
+  end
+
+  create_table "activity_participants", force: :cascade do |t|
+    t.bigint "activity_id", null: false
+    t.bigint "user_id", null: false
+    t.string "status", default: "invited", null: false
+    t.boolean "co_organizer", default: false, null: false
+    t.datetime "accepted_at"
+    t.datetime "left_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id", "status"], name: "index_activity_participants_on_activity_id_and_status"
+    t.index ["activity_id", "user_id"], name: "index_activity_participants_on_activity_id_and_user_id", unique: true
+    t.index ["activity_id"], name: "index_activity_participants_on_activity_id"
+    t.index ["user_id"], name: "index_activity_participants_on_user_id"
   end
 
   create_table "api_tokens", force: :cascade do |t|
@@ -103,7 +144,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_051505) do
     t.index ["gifter_id", "status"], name: "index_gift_records_on_gifter_id_and_status"
     t.index ["gifter_id"], name: "index_gift_records_on_gifter_id"
     t.index ["item_id"], name: "index_gift_records_on_item_id"
-    t.index ["item_id"], name: "index_gift_records_one_open_gift_per_item", unique: true, where: "((status)::text = ANY ((ARRAY['purchased_secret'::character varying, 'delivered_pending_confirmation'::character varying])::text[]))"
+    t.index ["item_id"], name: "index_gift_records_one_open_gift_per_item", unique: true, where: "((status)::text = ANY (ARRAY[('purchased_secret'::character varying)::text, ('delivered_pending_confirmation'::character varying)::text]))"
   end
 
   create_table "item_links", force: :cascade do |t|
@@ -266,6 +307,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_051505) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activities", "users", column: "creator_id", on_delete: :restrict
+  add_foreign_key "activity_participants", "activities", on_delete: :cascade
+  add_foreign_key "activity_participants", "users", on_delete: :cascade
   add_foreign_key "api_tokens", "users", on_delete: :cascade
   add_foreign_key "audit_events", "users", column: "actor_id", on_delete: :nullify
   add_foreign_key "device_tokens", "api_tokens", on_delete: :cascade
