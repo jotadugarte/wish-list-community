@@ -18,6 +18,7 @@ class ActivityDropoutBridgeService
       else
         participant.force_leave!(require_cure: false)
       end
+      raise "Post-condition failed: participant must be left" unless participant.reload.status_vo.left?
       ActivityNotifier.left!(activity: activity, actor: actor)
 
       participant

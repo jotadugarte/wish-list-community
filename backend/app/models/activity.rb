@@ -3,10 +3,10 @@
 # Group gift exchange shell (Secret Santa / Open Gifting) for Sprint A.
 # Traceability: [REQ-ACT-001], [REQ-ACT-005], [REQ-ARCH-001]
 class Activity < ApplicationRecord
-  ASSIGNMENT_MODES = %w[secret_santa open_gifting].freeze
+  ASSIGNMENT_MODES = AssignmentMode::ALLOWED
   VISIBILITY_MODES = %w[recipient_only all_participants].freeze
   RESERVATION_VISIBILITIES = %w[hidden_from_recipient visible_to_recipient].freeze
-  STATUSES = %w[open sealed cancelled].freeze
+  STATUSES = ActivityStatus::ALLOWED
   MAX_TOKEN_MINT_ATTEMPTS = 5
 
   belongs_to :creator, class_name: "User"
@@ -47,12 +47,20 @@ class Activity < ApplicationRecord
     needs_dropout_recovery == true
   end
 
+  def assignment_mode_vo
+    AssignmentMode.new(assignment_mode)
+  end
+
+  def status_vo
+    ActivityStatus.new(status)
+  end
+
   def secret_santa?
-    assignment_mode == "secret_santa"
+    assignment_mode_vo.secret_santa?
   end
 
   def open_gifting?
-    assignment_mode == "open_gifting"
+    assignment_mode_vo.open_gifting?
   end
 
   def accepted_participants

@@ -13,34 +13,10 @@ class ActivityDrawService
       raise ArgumentError, "Pre-condition failed: already sealed" if activity.sealed?
       ActivityAdminService.send(:assert_admin!, activity, actor)
 
-      ids = activity.accepted_participants.order(:id).limit(ActivityExclusionService::MAX_PARTICIPANTS).pluck(:user_id)
-      raise ArgumentError, "Pre-condition failed: minimum 3 accepted participants required" if ids.size < 3
-
+      ids = accepted_ids!(activity)
       ActivityExclusionService.assert_solvable!(activity: activity)
-      rng = Random.new(Integer(seed || SecureRandom.random_number(1 << 31)))
-      cycle = nil
-      attempts = 0
-      while cycle.nil? && attempts < MAX_ATTEMPTS
-        attempts += 1
-        ordered = ids.shuffle(random: rng)
-        cycle = cycle_from_order(ordered, activity)
-      end
-      cycle ||= ActivityExclusionService.find_hamiltonian_cycle(activity: activity)
-      raise ArgumentError, "Post-condition failed: could not find Hamiltonian cycle" if cycle.nil?
-
-      activity.transaction do
-        ActivityParticipant.expire_pending_invites!(activity)
-        cycle.each do |giver_id, recipient_id|
-          ActivityAssignment.create!(activity: activity, giver_id: giver_id, recipient_id: recipient_id)
-        end
-        activity.update!(status: "sealed", sealed_at: Time.current, needs_dropout_recovery: false)
-        AuditEvent.record!(
-          actor: actor,
-          action: "activity.drawn",
-          auditable: activity,
-          metadata: { participant_count: ids.size, seed: seed }
-        )
-      end
+      cycle = find_cycle!(activity, ids, seed)
+      persist_draw!(activity: activity, actor: actor, ids: ids, cycle: cycle, seed: seed)
 
       raise "Post-condition failed: activity must be sealed" unless activity.reload.sealed?
       raise "Post-condition failed: assignment count mismatch" unless ActivityAssignment.where(activity: activity).count == ids.size
@@ -63,6 +39,43 @@ class ActivityDrawService
     end
 
     private
+
+    def accepted_ids!(activity)
+      ids = activity.accepted_participants.order(:id).limit(ActivityExclusionService::MAX_PARTICIPANTS).pluck(:user_id)
+      raise ArgumentError, "Pre-condition failed: minimum 3 accepted participants required" if ids.size < 3
+
+      ids
+    end
+
+    def find_cycle!(activity, ids, seed)
+      rng = Random.new(Integer(seed || SecureRandom.random_number(1 << 31)))
+      cycle = nil
+      attempts = 0
+      while cycle.nil? && attempts < MAX_ATTEMPTS
+        attempts += 1
+        cycle = cycle_from_order(ids.shuffle(random: rng), activity)
+      end
+      cycle ||= ActivityExclusionService.find_hamiltonian_cycle(activity: activity)
+      raise ArgumentError, "Post-condition failed: could not find Hamiltonian cycle" if cycle.nil?
+
+      cycle
+    end
+
+    def persist_draw!(activity:, actor:, ids:, cycle:, seed:)
+      activity.transaction do
+        ActivityParticipant.expire_pending_invites!(activity)
+        cycle.each do |giver_id, recipient_id|
+          ActivityAssignment.create!(activity: activity, giver_id: giver_id, recipient_id: recipient_id)
+        end
+        activity.update!(status: ActivityStatus.new("sealed").value, sealed_at: Time.current, needs_dropout_recovery: false)
+        AuditEvent.record!(
+          actor: actor,
+          action: "activity.drawn",
+          auditable: activity,
+          metadata: { participant_count: ids.size, seed: seed }
+        )
+      end
+    end
 
     def cycle_from_order(ordered, activity)
       forbidden = ActivityExclusion.where(activity_id: activity.id)

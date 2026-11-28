@@ -148,6 +148,7 @@ es:
     signup_cta: "Crear cuenta"
     accept_cta: "Aceptar invitación"
     decline_cta: "Rechazar"
+    co_organizer_badge: "co-org"
     index_heading: "Actividades"
     new_heading: "Nueva actividad"
     new_cta: "Crear actividad"

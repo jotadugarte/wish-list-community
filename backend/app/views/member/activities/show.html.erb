@@ -17,7 +17,7 @@
     <h2 class="text-lg font-medium"><%= t("activities.participants_heading") %></h2>
     <ul class="space-y-1">
       <% @participants.each do |participant| %>
-        <li>@<%= participant.user.username %> · <%= participant.status %><%= " · co-org" if participant.co_organizer? %></li>
+        <li>@<%= participant.user.username %> · <%= participant.status %><%= " · #{t('activities.co_organizer_badge')}" if participant.co_organizer? %></li>
       <% end %>
     </ul>
   </section>

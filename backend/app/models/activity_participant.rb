@@ -3,7 +3,7 @@
 # Participant invite/accept/decline/leave record for an Activity.
 # Traceability: [REQ-ACT-001]
 class ActivityParticipant < ApplicationRecord
-  STATUSES = %w[invited accepted declined left].freeze
+  STATUSES = ParticipantStatus::ALLOWED
 
   belongs_to :activity
   belongs_to :user
@@ -51,9 +51,14 @@ class ActivityParticipant < ApplicationRecord
   def self.expire_pending_invites!(activity)
     raise ArgumentError, "Pre-condition failed: activity required" if activity.nil?
 
-    where(activity: activity, status: "invited").limit(500).find_each do |participant|
-      participant.update!(status: "declined")
+    where(activity: activity, status: ParticipantStatus.new("invited").value).limit(500).find_each do |participant|
+      participant.update!(status: ParticipantStatus.new("declined").value)
     end
+    raise "Post-condition failed: pending invites must be cleared" if where(activity: activity, status: "invited").exists?
+  end
+
+  def status_vo
+    ParticipantStatus.new(status)
   end
 
   # [REQ-ACT-001] Declines a pending invitation.

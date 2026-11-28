@@ -40,9 +40,9 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
 
   Future<void> _create() async {
     final created = await widget.activityRepository.createActivity(
-      name: 'Nueva actividad',
+      name: widget.strings.createActivityButton,
       currency: 'CRC',
-      assignmentMode: 'secret_santa',
+      assignmentMode: ActivityAssignmentMode.secretSanta,
     );
     if (!mounted) return;
     await Navigator.of(context).push(
@@ -83,7 +83,7 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
               final activity = items[index];
               return ListTile(
                 title: Text(activity.name),
-                subtitle: Text(activity.status),
+                subtitle: Text(activity.status.apiValue),
                 onTap: () async {
                   await Navigator.of(context).push(
                     MaterialPageRoute<void>(

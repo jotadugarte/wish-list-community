@@ -69,7 +69,7 @@ void main() {
       final created = await repo.createActivity(
         name: 'Navidad',
         currency: 'CRC',
-        assignmentMode: 'secret_santa',
+        assignmentMode: ActivityAssignmentMode.secretSanta,
       );
       expect(created.name, equals('Navidad'));
       expect(created.shareToken, isNotNull);
@@ -124,7 +124,10 @@ void main() {
       expect((await repo.draw(activityId: 1)).isSealed, isTrue);
       expect((await repo.leave(activityId: 1)).needsDropoutRecovery, isTrue);
       expect((await repo.blindBridge(activityId: 1)).needsDropoutRecovery, isFalse);
-      expect((await repo.cancel(activityId: 1)).status, equals('cancelled'));
+      expect(
+        (await repo.cancel(activityId: 1)).status,
+        equals(ActivityLifecycleStatus.cancelled),
+      );
       final assignment = await repo.myAssignment(activityId: 1);
       expect(assignment?.recipientUsername, equals('amigo'));
     });

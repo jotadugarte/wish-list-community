@@ -1,6 +1,8 @@
 import 'package:wish_list_mobile/core/network/api_client.dart';
+import 'package:wish_list_mobile/features/activities/activity_enums.dart';
 import 'package:wish_list_mobile/features/activities/activity_models.dart';
 
+export 'package:wish_list_mobile/features/activities/activity_enums.dart';
 export 'package:wish_list_mobile/features/activities/activity_models.dart';
 
 // Repository for Sprint A Activities API parity with Hotwire.
@@ -29,10 +31,10 @@ class ActivityRepository {
   Future<ActivityShell> createActivity({
     required String name,
     required String currency,
-    required String assignmentMode,
+    required ActivityAssignmentMode assignmentMode,
     String visibilityMode = 'recipient_only',
     String reservationVisibility = 'hidden_from_recipient',
-    String budgetMode = 'none',
+    ActivityBudgetMode budgetMode = ActivityBudgetMode.none,
     int? budgetAmountCents,
   }) async {
     final cleaned = name.trim();
@@ -46,10 +48,10 @@ class ActivityRepository {
         'activity': {
           'name': cleaned,
           'currency': currency,
-          'assignment_mode': assignmentMode,
+          'assignment_mode': assignmentMode.apiValue,
           'visibility_mode': visibilityMode,
           'reservation_visibility': reservationVisibility,
-          'budget_mode': budgetMode,
+          'budget_mode': budgetMode.apiValue,
           'budget_amount_cents': ?budgetAmountCents,
         },
       },

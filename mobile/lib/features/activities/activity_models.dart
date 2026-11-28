@@ -1,16 +1,18 @@
+import 'package:wish_list_mobile/features/activities/activity_enums.dart';
+
 // Activity shell models for Sprint A Flutter parity.
 // Traceability: [REQ-ACT-001], [REQ-ACT-005]
 class ActivityShell {
   final int id;
   final String name;
   final String currency;
-  final String assignmentMode;
+  final ActivityAssignmentMode assignmentMode;
   final String visibilityMode;
   final String reservationVisibility;
-  final String budgetMode;
+  final ActivityBudgetMode budgetMode;
   final int? budgetAmountCents;
   final int? budgetMaxCents;
-  final String status;
+  final ActivityLifecycleStatus status;
   final String? shareToken;
   final bool needsDropoutRecovery;
   final String? creatorUsername;
@@ -41,13 +43,15 @@ class ActivityShell {
       id: json['id'] as int,
       name: json['name'] as String,
       currency: json['currency'] as String,
-      assignmentMode: json['assignment_mode'] as String,
+      assignmentMode: ActivityAssignmentMode.parse(
+        json['assignment_mode'] as String,
+      ),
       visibilityMode: json['visibility_mode'] as String,
       reservationVisibility: json['reservation_visibility'] as String,
-      budgetMode: json['budget_mode'] as String,
+      budgetMode: ActivityBudgetMode.parse(json['budget_mode'] as String),
       budgetAmountCents: json['budget_amount_cents'] as int?,
       budgetMaxCents: json['budget_max_cents'] as int?,
-      status: json['status'] as String,
+      status: ActivityLifecycleStatus.parse(json['status'] as String),
       shareToken: json['share_token'] as String?,
       needsDropoutRecovery: json['needs_dropout_recovery'] == true,
       creatorUsername: creator is Map<String, dynamic>
@@ -58,9 +62,11 @@ class ActivityShell {
     );
   }
 
-  bool get isSecretSanta => assignmentMode == 'secret_santa';
-  bool get isOpenGifting => assignmentMode == 'open_gifting';
-  bool get isSealed => status == 'sealed';
+  bool get isSecretSanta =>
+      assignmentMode == ActivityAssignmentMode.secretSanta;
+  bool get isOpenGifting =>
+      assignmentMode == ActivityAssignmentMode.openGifting;
+  bool get isSealed => status == ActivityLifecycleStatus.sealed;
   bool get isInvited => viewerStatus == 'invited';
 }
 
