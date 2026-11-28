@@ -87,24 +87,26 @@ Things done and things left to do. Update this when finishing branches; use `roa
 - [x] **Backlog — Admin Brand / Style Guide (Web Admin dual preview)** — 2026-11-27 — Branch: `cursor/admin-brand-style-guide-ea18` — PR #17
   - [x] Admin-only Hotwire `GET /admin/style_guide`: web preview + HTML/CSS phone mock from shared `design/design_tokens.json` (not Flutter Web); tokens table, es/en + light/dark, version stamp, print CSS; Flutter `SharedDesignTokenCatalog` additive reader (`REQ-ARCH-001`, `REQ-ADM-001`) — 2026-11-27
   - Follow-up: retokenize shared file when Ñata final visual HTML lands; owner browser print/PDF + phone-mock vs Flutter visual check
+- [x] **v1 Sprint A — Activities (Configurable System + Exclusions + Blind Dropout Bridge)** — 2026-11-28 — Branch: `cursor/v1-sprint-a-activities-b870` — PR #19
+  - [x] Create a group activity (owner, name, dates, single currency, external activity link scoped strictly to that activity's info) (`REQ-ACT-001`) — 2026-11-28
+  - [x] 5 configurable budget modes per activity (`budget_mode`: `none`, `fixed`, `min_only`, `max_only`, `range`) (`REQ-ACT-005`) — 2026-11-28
+  - [x] Settings when creating an activity (`REQ-ACT-001`) — 2026-11-28:
+    - [x] `assignment_mode`: `secret_santa` (1->1) / `open_gifting` (everyone to everyone)
+    - [x] `visibility_mode`: `recipient_only` / `all_participants`
+    - [x] `reservation_visibility`: `hidden_from_recipient` / `visible_to_recipient`
+  - [x] Invite friends / accept participants (blocks prevent participation; minimum 3 `accepted` participants required to draw) (`REQ-ACT-001`) — 2026-11-28
+  - [x] Pair Exclusions (`ActivityExclusion`: Participant A cannot draw Participant B) with bounded deterministic solvability validation and single Hamiltonian cycle draw (`REQ-ACT-002`, `REQ-ACT-004`) — 2026-11-28
+  - [x] Post-draw participant dropout recovery: creator chooses between **Blind Auto-Bridge** (server bridges `A -> C` without ever revealing to the creator who gifts whom) or **Full Redraw** (`REQ-ACT-003`, `REQ-ACT-004`) — 2026-11-28
+  - [x] API v1 + Hotwire `/a/:token` invite/board + Flutter activities tab/deep links + activity notification catalog (O8A) — 2026-11-28
+  - Ops risks remaining (do not block Done): owner-device QA (create/invite/draw/Blind Bridge); live SMTP/FCM fan-out deferred; Sprint B owns activity items, reservations, and `budget_mode` enforcement
 
 ## In Progress
 _(none)_
 
 ## Pending (by priority)
-_(none — next product work is v1 Activities in Backlog)_
+_(none — next product work is v1 Sprint B Activities in Backlog)_
 
 ## Backlog
-- [ ] **v1 Sprint A — Activities (Configurable System + Exclusions + Blind Dropout Bridge)**
-  - [ ] Create a group activity (owner, name, dates, single currency, external activity link scoped strictly to that activity's info) (`REQ-ACT-001`)
-  - [ ] 5 configurable budget modes per activity (`budget_mode`: `none`, `fixed`, `min_only`, `max_only`, `range`) (`REQ-ACT-005`)
-  - [ ] Settings when creating an activity (`REQ-ACT-001`):
-    - [ ] `assignment_mode`: `secret_santa` (1->1) / `open_gifting` (everyone to everyone)
-    - [ ] `visibility_mode`: `recipient_only` / `all_participants`
-    - [ ] `reservation_visibility`: `hidden_from_recipient` / `visible_to_recipient`
-  - [ ] Invite friends / accept participants (blocks prevent participation; minimum 3 `accepted` participants required to draw) (`REQ-ACT-001`)
-  - [ ] Pair Exclusions (`ActivityExclusion`: Participant A cannot draw Participant B) with bounded deterministic solvability validation and single Hamiltonian cycle draw (`REQ-ACT-002`, `REQ-ACT-004`)
-  - [ ] Post-draw participant dropout recovery: creator chooses between **Blind Auto-Bridge** (server bridges `A -> C` without ever revealing to the creator who gifts whom) or **Full Redraw** (`REQ-ACT-003`, `REQ-ACT-004`)
 - [ ] **v1 Sprint B — Activities (Lists + Reservations + Budget Enforcement)**
   - [ ] Each user adds their activity items (manual price + currency) (`REQ-ACT-005`)
   - [ ] Reservations within an activity (default 1 active reservation per participant in `secret_santa`; configurable in `open_gifting`) (`REQ-RES-005`)
