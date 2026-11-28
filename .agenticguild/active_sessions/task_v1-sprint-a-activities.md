@@ -178,10 +178,10 @@ REQ tags: `REQ-ACT-001`..`005`, `REQ-ARCH-001`/`002`, `REQ-BLOCK-001`, `REQ-NOTI
   <step id="8" status="complete">Implement co-org / transfer / cancel services until step 7 green.</step>
   <step id="9" status="complete">Write failing specs for `ActivityExclusion` + bounded deterministic solvability validation (hard upper bound). Trace [REQ-ACT-002], [REQ-ACT-004].</step>
   <step id="10" status="complete">Implement exclusions + solvability until step 9 green.</step>
-  <step id="11" status="pending">Write failing specs for secret_santa draw: ≥3 accepted; single Hamiltonian cycle; deterministic seed in tests; persists `ActivityAssignment` without exposing full map to creator. Trace [REQ-ACT-001], [REQ-ACT-004].</step>
-  <step id="12" status="pending">Implement `ActivityDrawService` (seedable RNG) until step 11 green.</step>
-  <step id="13" status="pending">Write failing specs for open_gifting Arrancar/cerrar altas: ≥2 accepted (FC3A); no assignments; seals participation (O6A/O2B layer-2). Trace [REQ-ACT-001].</step>
-  <step id="14" status="pending">Implement Arrancar seal until step 13 green.</step>
+  <step id="11" status="complete">Write failing specs for secret_santa draw: ≥3 accepted; single Hamiltonian cycle; deterministic seed in tests; persists `ActivityAssignment` without exposing full map to creator. Trace [REQ-ACT-001], [REQ-ACT-004].</step>
+  <step id="12" status="complete">Implement `ActivityDrawService` (seedable RNG) until step 11 green.</step>
+  <step id="13" status="complete">Write failing specs for open_gifting Arrancar/cerrar altas: ≥2 accepted (FC3A); no assignments; seals participation (O6A/O2B layer-2). Trace [REQ-ACT-001].</step>
+  <step id="14" status="complete">Implement Arrancar seal until step 13 green.</step>
   <step id="15" status="pending">Write failing specs for leave (O7B): free pre-seal; post-draw leave forces Blind Bridge or Full Redraw choice; post-Arrancar leave without bridge; Blind Bridge validates exclusions and notifies only giver. Trace [REQ-ACT-003], [REQ-ACT-004].</step>
   <step id="16" status="pending">Implement leave + `ActivityDropoutBridgeService` + Full Redraw until step 15 green (guard when &lt;3 remain: refuse redraw / require cancel — implementation risk).</step>
   <step id="17" status="pending">Write failing request specs for `/api/v1` activity CRUD, participants, exclusions, draw/Arrancar, bridge/redraw, cancel/transfer, show assignment only to giver. Trace [REQ-ACT-001]..[005], [REQ-ARCH-001].</step>
