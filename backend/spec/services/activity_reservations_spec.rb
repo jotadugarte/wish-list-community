@@ -79,7 +79,7 @@ RSpec.describe "Activity reservations [REQ-RES-005] [REQ-ACT-005]" do
       ReservationService.create!(item: item_a, user: giver, estimated_date: Date.current + 3)
       expect {
         ReservationService.create!(item: item_b, user: giver, estimated_date: Date.current + 4)
-      }.to raise_error(ReservationService::Error, /limit/i)
+      }.to raise_error(ReservationService::Error, /l[ií]mite|limit/i)
     end
   end
 
@@ -110,7 +110,7 @@ RSpec.describe "Activity reservations [REQ-RES-005] [REQ-ACT-005]" do
       ReservationService.create!(item: item_b, user: giver, estimated_date: Date.current + 4)
       expect {
         ReservationService.create!(item: item_c, user: giver, estimated_date: Date.current + 5)
-      }.to raise_error(ReservationService::Error, /limit/i)
+      }.to raise_error(ReservationService::Error, /l[ií]mite|limit/i)
     end
   end
 
