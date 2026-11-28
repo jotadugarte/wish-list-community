@@ -268,6 +268,33 @@ en:
       ownership_transferred:
         title: "You own this activity: %{name}"
         body: "@%{actor} transferred ownership to you."
+      item_touched_while_reserved:
+        title: "Reserved item updated: %{name}"
+        body: "\"%{item}\" was edited while you had a reservation."
+      reservation_created:
+        title: "Item reserved: %{name}"
+        body: "Someone reserved \"%{item}\" in this activity."
+      reservation_released:
+        title: "Reservation released: %{name}"
+        body: "The hold on \"%{item}\" was released."
+      reservation_grace_started:
+        title: "Reservation grace: %{name}"
+        body: "Your activity reservation expired; you have 72 hours to extend or cancel."
+      reservation_auto_released:
+        title: "Reservation released: %{name}"
+        body: "Your activity reservation was released after the grace window."
+      gift_purchased:
+        title: "Marked purchased: %{name}"
+        body: "You marked \"%{item}\" as purchased."
+      gift_delivered:
+        title: "Gift delivered: %{name}"
+        body: "Confirm receipt of \"%{item}\"?"
+      gift_received:
+        title: "Gift received: %{name}"
+        body: "The owner confirmed receipt of \"%{item}\"."
+      budget_rejected:
+        title: "Budget blocked a reserve: %{name}"
+        body: "@%{actor} could not reserve \"%{item}\" because it breaks the activity budget."
     friend:
       request_received:
         title: "New friend request"

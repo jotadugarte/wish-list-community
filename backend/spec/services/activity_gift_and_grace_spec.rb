@@ -44,7 +44,7 @@ RSpec.describe "Activity gift Path 1/2 + grace [REQ-GIFT-001] [REQ-RES-006]" do
 
       GiftService.mark_delivered!(gift: gift, actor: giver)
       expect(gift.reload.status).to eq("delivered_pending_confirmation")
-      expect(recipient.notifications.where(event_key: "gift.delivered_pending_confirmation")).to exist
+      expect(recipient.notifications.where(event_key: "activity.gift_delivered")).to exist
 
       confirmed = GiftService.confirm_received!(
         gift: gift.reload, actor: recipient, thank_you_note: "¡Gracias!"
@@ -52,7 +52,8 @@ RSpec.describe "Activity gift Path 1/2 + grace [REQ-GIFT-001] [REQ-RES-006]" do
       expect(confirmed.status).to eq("received_confirmed")
       expect(confirmed.thank_you_note).to eq("¡Gracias!")
       expect(giver.notifications.pluck(:event_key)).to include(
-        "gift.received_confirmed_to_gifter",
+        "activity.gift_purchased",
+        "activity.gift_received",
         "gift.thank_you"
       )
     end
@@ -88,12 +89,12 @@ RSpec.describe "Activity gift Path 1/2 + grace [REQ-GIFT-001] [REQ-RES-006]" do
       ReservationGraceSweepJob.perform_now
       expect(reservation.reload.status).to eq("expired_grace")
       expect(reservation.grace_expires_at).to be_present
-      expect(giver.notifications.where(event_key: "reservation.grace_started")).to exist
+      expect(giver.notifications.where(event_key: "activity.reservation_grace_started")).to exist
 
       reservation.update!(grace_expires_at: 1.minute.ago)
       ReservationGraceSweepJob.perform_now
       expect(reservation.reload.status).to eq("auto_released")
-      expect(giver.notifications.where(event_key: "reservation.auto_released")).to exist
+      expect(giver.notifications.where(event_key: "activity.reservation_auto_released")).to exist
     end
   end
 end

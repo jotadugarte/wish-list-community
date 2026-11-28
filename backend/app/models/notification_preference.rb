@@ -27,6 +27,15 @@ class NotificationPreference < ApplicationRecord
     activity.full_redraw
     activity.cancelled
     activity.ownership_transferred
+    activity.item_touched_while_reserved
+    activity.reservation_created
+    activity.reservation_released
+    activity.reservation_grace_started
+    activity.reservation_auto_released
+    activity.gift_purchased
+    activity.gift_delivered
+    activity.gift_received
+    activity.budget_rejected
   ].freeze
   # Reservation-only subset retained for callers that still name S5 events.
   S5_EVENTS = %w[

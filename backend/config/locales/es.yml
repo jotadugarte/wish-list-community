@@ -268,6 +268,33 @@ es:
       ownership_transferred:
         title: "Ahora eres dueño: %{name}"
         body: "@%{actor} te transfirió la propiedad."
+      item_touched_while_reserved:
+        title: "Ítem reservado actualizado: %{name}"
+        body: "Se editó \"%{item}\" mientras lo tenías reservado."
+      reservation_created:
+        title: "Ítem reservado: %{name}"
+        body: "Alguien reservó \"%{item}\" en esta actividad."
+      reservation_released:
+        title: "Reservación liberada: %{name}"
+        body: "Se liberó la reserva de \"%{item}\"."
+      reservation_grace_started:
+        title: "Gracia de reservación: %{name}"
+        body: "Tu reserva de la actividad venció; tienes 72 horas para extender o cancelar."
+      reservation_auto_released:
+        title: "Reservación liberada: %{name}"
+        body: "Tu reserva de la actividad se liberó después del período de gracia."
+      gift_purchased:
+        title: "Marcado como comprado: %{name}"
+        body: "Marcaste \"%{item}\" como comprado."
+      gift_delivered:
+        title: "Regalo entregado: %{name}"
+        body: "¿Confirmas haber recibido \"%{item}\"?"
+      gift_received:
+        title: "Regalo recibido: %{name}"
+        body: "El dueño confirmó la recepción de \"%{item}\"."
+      budget_rejected:
+        title: "Presupuesto bloqueó una reserva: %{name}"
+        body: "@%{actor} no pudo reservar \"%{item}\" porque rompe el presupuesto de la actividad."
     friend:
       request_received:
         title: "Nueva solicitud de amistad"

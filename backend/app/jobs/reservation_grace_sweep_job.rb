@@ -27,7 +27,7 @@ class ReservationGraceSweepJob < ApplicationJob
                                .pluck(:id)
     return if candidate_ids.empty?
 
-    Reservation.where(id: candidate_ids).includes(:user).order(:estimated_date, :id).each do |reservation|
+    Reservation.where(id: candidate_ids).includes(:user, item: :wishlist).order(:estimated_date, :id).each do |reservation|
       break if transitioned >= MAX_BATCH
 
       user = reservation.user
@@ -42,13 +42,17 @@ class ReservationGraceSweepJob < ApplicationJob
 
       grace_ends = zone.now + GRACE_HOURS.hours
       reservation.update!(status: "expired_grace", grace_expires_at: grace_ends)
-      dispatch_safe!(
-        user: user,
-        event_key: "reservation.grace_started",
-        title_key: "notifications.reservation.grace_started.title",
-        body_key: "notifications.reservation.grace_started.body",
-        payload: { reservation_id: reservation.id }
-      )
+      if reservation.item.wishlist&.activity_scoped?
+        ActivityNotifier.reservation_grace_started!(reservation: reservation)
+      else
+        dispatch_safe!(
+          user: user,
+          event_key: "reservation.grace_started",
+          title_key: "notifications.reservation.grace_started.title",
+          body_key: "notifications.reservation.grace_started.body",
+          payload: { reservation_id: reservation.id }
+        )
+      end
       transitioned += 1
     end
   end
@@ -57,7 +61,7 @@ class ReservationGraceSweepJob < ApplicationJob
     transitioned = 0
     Reservation.where(status: "expired_grace")
                .where("grace_expires_at <= ?", Time.current)
-               .includes(:user)
+               .includes(:user, item: :wishlist)
                .order(:grace_expires_at, :id)
                .limit(MAX_BATCH * CANDIDATE_MULTIPLIER)
                .each do |reservation|
@@ -71,13 +75,17 @@ class ReservationGraceSweepJob < ApplicationJob
       end
 
       reservation.update!(status: "auto_released", grace_expires_at: nil)
-      dispatch_safe!(
-        user: user,
-        event_key: "reservation.auto_released",
-        title_key: "notifications.reservation.auto_released.title",
-        body_key: "notifications.reservation.auto_released.body",
-        payload: { reservation_id: reservation.id }
-      )
+      if reservation.item.wishlist&.activity_scoped?
+        ActivityNotifier.reservation_auto_released!(reservation: reservation)
+      else
+        dispatch_safe!(
+          user: user,
+          event_key: "reservation.auto_released",
+          title_key: "notifications.reservation.auto_released.title",
+          body_key: "notifications.reservation.auto_released.body",
+          payload: { reservation_id: reservation.id }
+        )
+      end
       transitioned += 1
     end
   end

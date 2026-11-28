@@ -34,6 +34,7 @@ class ReservationService
       )
       raise "Post-condition failed: reservation must be persisted active" unless reservation.persisted? && reservation.status == "active"
 
+      ActivityNotifier.reservation_created!(reservation: reservation) if wishlist.activity_scoped?
       reservation
     end
   end
@@ -83,6 +84,9 @@ class ReservationService
       )
       raise "Post-condition failed: cancel must leave status canceled" unless reservation.status == "canceled"
 
+      if reservation.item.wishlist&.activity_scoped?
+        ActivityNotifier.reservation_released!(reservation: reservation)
+      end
       reservation
     end
   end
@@ -105,7 +109,7 @@ class ReservationService
   end
   private_class_method :enforce_per_wishlist_limit!
 
-  # [REQ-ACT-001] [REQ-ACT-005] O3A/O4A: activity gate + budget re-check on reserve.
+  # [REQ-ACT-001] [REQ-ACT-005] [REQ-NOTIF-001] O3A/O4A: activity gate + budget re-check on reserve.
   def self.assert_activity_reserve_allowed!(item:, user:)
     wishlist = item.wishlist
     return unless wishlist&.activity_scoped?
@@ -114,6 +118,17 @@ class ReservationService
     BudgetEnforcement.assert_item!(item: item)
   rescue ActivityVisibilityGate::Error => e
     raise Error, e.message
+  rescue ArgumentError => e
+    notify_budget_reject_if_needed!(item: item, actor: user, error: e)
+    raise
   end
   private_class_method :assert_activity_reserve_allowed!
+
+  # [REQ-NOTIF-001] O6A: budget reject on reserve → item owner.
+  def self.notify_budget_reject_if_needed!(item:, actor:, error:)
+    return unless error.message.match?(/budget|price|fixed|min|max|range/i)
+
+    ActivityNotifier.budget_rejected!(item: item, actor: actor)
+  end
+  private_class_method :notify_budget_reject_if_needed!
 end

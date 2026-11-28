@@ -46,11 +46,16 @@ class Reservation < ApplicationRecord
   end
 
 
-  # [REQ-RES-003] Notify the reserver when the owner edits critical item fields.
+  # [REQ-RES-003] [REQ-NOTIF-001] Notify the reserver when the owner edits critical item fields.
   def self.notify_critical_edit!(item:)
     hold = find_by(item_id: item.id, status: ReservationStatus::ACTIVE_HOLD)
     return if hold.nil?
     return if hold.user.nil? || hold.user.discarded?
+
+    if item.wishlist&.activity_scoped?
+      ActivityNotifier.item_touched_while_reserved!(item: item, reservation: hold)
+      return
+    end
 
     I18n.with_locale(hold.user.locale.presence || I18n.default_locale) do
       NotificationDispatcher.dispatch!(

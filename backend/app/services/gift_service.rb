@@ -43,6 +43,7 @@ class GiftService
         raise "Post-condition failed: mark_purchased must leave open gift and completed hold"
       end
 
+      ActivityNotifier.gift_purchased!(gift: gift) if item.wishlist&.activity_scoped?
       gift
     end
   rescue ActiveRecord::RecordNotUnique
@@ -169,6 +170,11 @@ class GiftService
   private_class_method :normalize_thank_you
 
   def self.notify_owner_delivered!(gift)
+    if gift.item.wishlist&.activity_scoped?
+      ActivityNotifier.gift_delivered!(gift: gift)
+      return
+    end
+
     owner = gift.item.wishlist.owner
     return if owner.nil? || owner.discarded?
 
@@ -185,6 +191,11 @@ class GiftService
   private_class_method :notify_owner_delivered!
 
   def self.notify_gifter_received!(gift)
+    if gift.item.wishlist&.activity_scoped?
+      ActivityNotifier.gift_received!(gift: gift)
+      return
+    end
+
     gifter = gift.gifter
     return if gifter.nil? || gifter.discarded?
 
