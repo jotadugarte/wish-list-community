@@ -174,8 +174,8 @@ REQ tags: `REQ-ACT-001`..`005`, `REQ-ARCH-001`/`002`, `REQ-BLOCK-001`, `REQ-NOTI
   <step id="4" status="complete">Implement freeze rules until step 3 green.</step>
   <step id="5" status="complete">Write failing Pundit/policy + Block Wins specs: blocked users cannot join/view board; mid sealed secret_santa block removes affected and requires cure (FC1A); open_gifting removes without bridge. Trace [REQ-BLOCK-001], [REQ-ACT-003].</step>
   <step id="6" status="complete">Implement Activity policies + block cascade hooks until step 5 green.</step>
-  <step id="7" status="pending">Write failing specs for creator-only co-org appoint/remove (ACCEPT parks), equal admin powers for invite/exclusions/draw/dropout/Arrancar (O3B), ownership transfer + cancel (FC2C). Trace [REQ-ACT-001], [REQ-ACT-003].</step>
-  <step id="8" status="pending">Implement co-org / transfer / cancel services until step 7 green.</step>
+  <step id="7" status="complete">Write failing specs for creator-only co-org appoint/remove (ACCEPT parks), equal admin powers for invite/exclusions/draw/dropout/Arrancar (O3B), ownership transfer + cancel (FC2C). Trace [REQ-ACT-001], [REQ-ACT-003].</step>
+  <step id="8" status="complete">Implement co-org / transfer / cancel services until step 7 green.</step>
   <step id="9" status="pending">Write failing specs for `ActivityExclusion` + bounded deterministic solvability validation (hard upper bound). Trace [REQ-ACT-002], [REQ-ACT-004].</step>
   <step id="10" status="pending">Implement exclusions + solvability until step 9 green.</step>
   <step id="11" status="pending">Write failing specs for secret_santa draw: ≥3 accepted; single Hamiltonian cycle; deterministic seed in tests; persists `ActivityAssignment` without exposing full map to creator. Trace [REQ-ACT-001], [REQ-ACT-004].</step>
