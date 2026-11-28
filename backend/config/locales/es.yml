@@ -149,6 +149,13 @@ es:
     accept_cta: "Aceptar invitación"
     decline_cta: "Rechazar"
     co_organizer_badge: "co-org"
+    modes:
+      secret_santa: "Amigo secreto"
+      open_gifting: "Regalos abiertos"
+    statuses:
+      open: "Abierta"
+      sealed: "Sellada"
+      cancelled: "Cancelada"
     index_heading: "Actividades"
     new_heading: "Nueva actividad"
     new_cta: "Crear actividad"

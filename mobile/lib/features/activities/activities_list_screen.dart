@@ -83,7 +83,13 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
               final activity = items[index];
               return ListTile(
                 title: Text(activity.name),
-                subtitle: Text(activity.status.apiValue),
+                subtitle: Text(
+                  activity.isSealed
+                      ? s.activityStatusSealedLabel
+                      : activity.status == ActivityLifecycleStatus.cancelled
+                          ? s.activityStatusCancelledLabel
+                          : s.activityStatusOpenLabel,
+                ),
                 onTap: () async {
                   await Navigator.of(context).push(
                     MaterialPageRoute<void>(

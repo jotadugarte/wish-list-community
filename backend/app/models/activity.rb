@@ -4,8 +4,8 @@
 # Traceability: [REQ-ACT-001], [REQ-ACT-005], [REQ-ARCH-001]
 class Activity < ApplicationRecord
   ASSIGNMENT_MODES = AssignmentMode::ALLOWED
-  VISIBILITY_MODES = %w[recipient_only all_participants].freeze
-  RESERVATION_VISIBILITIES = %w[hidden_from_recipient visible_to_recipient].freeze
+  VISIBILITY_MODES = VisibilityMode::ALLOWED
+  RESERVATION_VISIBILITIES = ReservationVisibility::ALLOWED
   STATUSES = ActivityStatus::ALLOWED
   MAX_TOKEN_MINT_ATTEMPTS = 5
 
@@ -53,6 +53,14 @@ class Activity < ApplicationRecord
 
   def status_vo
     ActivityStatus.new(status)
+  end
+
+  def visibility_mode_vo
+    VisibilityMode.new(visibility_mode)
+  end
+
+  def reservation_visibility_vo
+    ReservationVisibility.new(reservation_visibility)
   end
 
   def secret_santa?

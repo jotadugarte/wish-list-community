@@ -7,8 +7,8 @@ class ActivityShell {
   final String name;
   final String currency;
   final ActivityAssignmentMode assignmentMode;
-  final String visibilityMode;
-  final String reservationVisibility;
+  final ActivityVisibilityMode visibilityMode;
+  final ActivityReservationVisibility reservationVisibility;
   final ActivityBudgetMode budgetMode;
   final int? budgetAmountCents;
   final int? budgetMaxCents;
@@ -16,7 +16,7 @@ class ActivityShell {
   final String? shareToken;
   final bool needsDropoutRecovery;
   final String? creatorUsername;
-  final String? viewerStatus;
+  final ActivityViewerStatus? viewerStatus;
   final bool viewerCanManage;
 
   const ActivityShell({
@@ -46,8 +46,12 @@ class ActivityShell {
       assignmentMode: ActivityAssignmentMode.parse(
         json['assignment_mode'] as String,
       ),
-      visibilityMode: json['visibility_mode'] as String,
-      reservationVisibility: json['reservation_visibility'] as String,
+      visibilityMode: ActivityVisibilityMode.parse(
+        json['visibility_mode'] as String,
+      ),
+      reservationVisibility: ActivityReservationVisibility.parse(
+        json['reservation_visibility'] as String,
+      ),
       budgetMode: ActivityBudgetMode.parse(json['budget_mode'] as String),
       budgetAmountCents: json['budget_amount_cents'] as int?,
       budgetMaxCents: json['budget_max_cents'] as int?,
@@ -57,7 +61,9 @@ class ActivityShell {
       creatorUsername: creator is Map<String, dynamic>
           ? creator['username'] as String?
           : null,
-      viewerStatus: json['viewer_status'] as String?,
+      viewerStatus: ActivityViewerStatus.tryParse(
+        json['viewer_status'] as String?,
+      ),
       viewerCanManage: json['viewer_can_manage'] == true,
     );
   }
@@ -67,7 +73,7 @@ class ActivityShell {
   bool get isOpenGifting =>
       assignmentMode == ActivityAssignmentMode.openGifting;
   bool get isSealed => status == ActivityLifecycleStatus.sealed;
-  bool get isInvited => viewerStatus == 'invited';
+  bool get isInvited => viewerStatus == ActivityViewerStatus.invited;
 }
 
 class ActivityAssignmentView {

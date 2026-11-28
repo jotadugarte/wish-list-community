@@ -145,6 +145,11 @@ class AppStrings {
   final String activityBlindBridgeAction;
   final String activityFullRedrawAction;
   final String activityPersonalWishlistsHeading;
+  final String activityModeSecretSantaLabel;
+  final String activityModeOpenGiftingLabel;
+  final String activityStatusOpenLabel;
+  final String activityStatusSealedLabel;
+  final String activityStatusCancelledLabel;
   final String dialogCancelLabel;
   final String dialogOkLabel;
 
@@ -290,6 +295,11 @@ class AppStrings {
     required this.activityBlindBridgeAction,
     required this.activityFullRedrawAction,
     required this.activityPersonalWishlistsHeading,
+    required this.activityModeSecretSantaLabel,
+    required this.activityModeOpenGiftingLabel,
+    required this.activityStatusOpenLabel,
+    required this.activityStatusSealedLabel,
+    required this.activityStatusCancelledLabel,
     required this.dialogCancelLabel,
     required this.dialogOkLabel,
   });
@@ -485,6 +495,11 @@ class AppStrings {
     activityBlindBridgeAction: 'Puente ciego',
     activityFullRedrawAction: 'Volver a sortear',
     activityPersonalWishlistsHeading: 'Listas personales',
+    activityModeSecretSantaLabel: 'Amigo secreto',
+    activityModeOpenGiftingLabel: 'Regalos abiertos',
+    activityStatusOpenLabel: 'Abierta',
+    activityStatusSealedLabel: 'Sellada',
+    activityStatusCancelledLabel: 'Cancelada',
     legalOpenFailedSnack: 'No se pudo abrir el enlace',
     dialogCancelLabel: 'Cancelar',
     dialogOkLabel: 'OK',
@@ -632,6 +647,11 @@ class AppStrings {
     activityBlindBridgeAction: 'Blind bridge',
     activityFullRedrawAction: 'Full redraw',
     activityPersonalWishlistsHeading: 'Personal wishlists',
+    activityModeSecretSantaLabel: 'Secret Santa',
+    activityModeOpenGiftingLabel: 'Open gifting',
+    activityStatusOpenLabel: 'Open',
+    activityStatusSealedLabel: 'Sealed',
+    activityStatusCancelledLabel: 'Cancelled',
     legalOpenFailedSnack: 'Could not open the link',
     dialogCancelLabel: 'Cancel',
     dialogOkLabel: 'OK',

@@ -77,7 +77,10 @@ void main() {
 
       await tester.tap(find.text('Grupo'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('secret_santa'), findsOneWidget);
+      expect(
+        find.textContaining(AppStrings.forLocale('es').activityModeSecretSantaLabel),
+        findsOneWidget,
+      );
       expect(find.text(AppStrings.forLocale('es').activityDrawAction), findsOneWidget);
     });
 

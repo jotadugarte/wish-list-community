@@ -1,7 +1,7 @@
 <section class="space-y-6">
   <header class="space-y-1">
     <h1 class="text-2xl font-semibold"><%= @activity.name %></h1>
-    <p class="text-sm opacity-70"><%= t("activities.board_heading") %> · <%= @activity.assignment_mode %> · <%= @activity.status %></p>
+    <p class="text-sm opacity-70"><%= t("activities.board_heading") %> · <%= t("activities.modes.#{@activity.assignment_mode}") %> · <%= t("activities.statuses.#{@activity.status}") %></p>
     <% if current_user.id == @activity.creator_id %>
       <p class="text-sm"><%= t("activities.share_label") %>: <code><%= activity_link_url(share_token: @activity.share_token) %></code></p>
     <% end %>

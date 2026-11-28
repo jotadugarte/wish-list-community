@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
+import 'package:wish_list_mobile/features/activities/activity_enums.dart';
 import 'package:wish_list_mobile/features/activities/activity_repository.dart';
 
 // Activity board: draw/Arrancar, leave, cure prompts, private recipient.
@@ -90,9 +91,7 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
       padding: const EdgeInsets.all(16),
       children: [
         Text(activity.name, style: Theme.of(context).textTheme.headlineSmall),
-        Text(
-          '${activity.assignmentMode.apiValue} · ${activity.status.apiValue}',
-        ),
+        Text('${_modeLabel(activity, s)} · ${_statusLabel(activity, s)}'),
         if (activity.needsDropoutRecovery)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -211,5 +210,19 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
         child: Text(s.activityLeaveAction),
       ),
     ];
+  }
+
+  String _modeLabel(ActivityShell activity, AppStrings s) {
+    return activity.isSecretSanta
+        ? s.activityModeSecretSantaLabel
+        : s.activityModeOpenGiftingLabel;
+  }
+
+  String _statusLabel(ActivityShell activity, AppStrings s) {
+    if (activity.isSealed) return s.activityStatusSealedLabel;
+    if (activity.status == ActivityLifecycleStatus.cancelled) {
+      return s.activityStatusCancelledLabel;
+    }
+    return s.activityStatusOpenLabel;
   }
 }

@@ -49,3 +49,51 @@ enum ActivityBudgetMode {
     );
   }
 }
+
+enum ActivityVisibilityMode {
+  recipientOnly('recipient_only'),
+  allParticipants('all_participants');
+
+  final String apiValue;
+  const ActivityVisibilityMode(this.apiValue);
+
+  static ActivityVisibilityMode parse(String raw) {
+    return ActivityVisibilityMode.values.firstWhere(
+      (mode) => mode.apiValue == raw,
+      orElse: () => throw ArgumentError('Invalid visibility_mode: $raw'),
+    );
+  }
+}
+
+enum ActivityReservationVisibility {
+  hiddenFromRecipient('hidden_from_recipient'),
+  visibleToRecipient('visible_to_recipient');
+
+  final String apiValue;
+  const ActivityReservationVisibility(this.apiValue);
+
+  static ActivityReservationVisibility parse(String raw) {
+    return ActivityReservationVisibility.values.firstWhere(
+      (mode) => mode.apiValue == raw,
+      orElse: () => throw ArgumentError('Invalid reservation_visibility: $raw'),
+    );
+  }
+}
+
+enum ActivityViewerStatus {
+  invited('invited'),
+  accepted('accepted'),
+  declined('declined'),
+  left('left');
+
+  final String apiValue;
+  const ActivityViewerStatus(this.apiValue);
+
+  static ActivityViewerStatus? tryParse(String? raw) {
+    if (raw == null) return null;
+    return ActivityViewerStatus.values.firstWhere(
+      (status) => status.apiValue == raw,
+      orElse: () => throw ArgumentError('Invalid viewer_status: $raw'),
+    );
+  }
+}
