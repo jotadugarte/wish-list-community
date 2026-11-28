@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_28_053000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_28_054000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -67,6 +67,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_28_053000) do
     t.index ["creator_id"], name: "index_activities_on_creator_id"
     t.index ["discarded_at"], name: "index_activities_on_discarded_at"
     t.index ["share_token"], name: "index_activities_on_share_token", unique: true
+  end
+
+  create_table "activity_exclusions", force: :cascade do |t|
+    t.bigint "activity_id", null: false
+    t.bigint "giver_id", null: false
+    t.bigint "forbidden_recipient_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id", "giver_id", "forbidden_recipient_id"], name: "index_activity_exclusions_unique_pair", unique: true
+    t.index ["activity_id"], name: "index_activity_exclusions_on_activity_id"
+    t.index ["forbidden_recipient_id"], name: "index_activity_exclusions_on_forbidden_recipient_id"
+    t.index ["giver_id"], name: "index_activity_exclusions_on_giver_id"
   end
 
   create_table "activity_participants", force: :cascade do |t|
@@ -309,6 +321,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_28_053000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "users", column: "creator_id", on_delete: :restrict
+  add_foreign_key "activity_exclusions", "activities", on_delete: :cascade
+  add_foreign_key "activity_exclusions", "users", column: "forbidden_recipient_id", on_delete: :cascade
+  add_foreign_key "activity_exclusions", "users", column: "giver_id", on_delete: :cascade
   add_foreign_key "activity_participants", "activities", on_delete: :cascade
   add_foreign_key "activity_participants", "users", on_delete: :cascade
   add_foreign_key "api_tokens", "users", on_delete: :cascade
