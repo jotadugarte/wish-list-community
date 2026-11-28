@@ -43,6 +43,10 @@ class Activity < ApplicationRecord
     cancelled_at.present? || status == "cancelled"
   end
 
+  def needs_dropout_recovery?
+    needs_dropout_recovery == true
+  end
+
   def secret_santa?
     assignment_mode == "secret_santa"
   end
@@ -110,6 +114,24 @@ class Activity < ApplicationRecord
 
     update!(money_settings_frozen_at: Time.current)
     raise "Post-condition failed: money settings must be frozen" unless money_settings_frozen?
+
+    self
+  end
+
+  # [REQ-BLOCK-001] [REQ-ACT-003] Marks sealed secret_santa as needing Blind Bridge / Full Redraw.
+  def require_dropout_recovery!
+    raise ArgumentError, "Pre-condition failed: activity must be sealed secret_santa" unless sealed? && secret_santa?
+
+    update!(needs_dropout_recovery: true)
+    raise "Post-condition failed: dropout recovery required" unless needs_dropout_recovery?
+
+    self
+  end
+
+  # [REQ-ACT-003] Clears the dropout recovery flag after bridge/redraw.
+  def clear_dropout_recovery!
+    update!(needs_dropout_recovery: false)
+    raise "Post-condition failed: dropout recovery cleared" if needs_dropout_recovery?
 
     self
   end

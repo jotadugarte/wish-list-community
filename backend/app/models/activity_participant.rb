@@ -52,13 +52,28 @@ class ActivityParticipant < ApplicationRecord
     raise ArgumentError, "Pre-condition failed: must be accepted" unless status == "accepted"
     raise ArgumentError, "Pre-condition failed: activity must be unsealed for free leave" if activity.sealed?
 
-    update!(status: "left", left_at: Time.current, co_organizer: false)
-    raise "Post-condition failed: status must be left" unless status == "left"
+    mark_left!
+    self
+  end
+
+  # [REQ-BLOCK-001] [REQ-ACT-003] Forced removal (block/dropout) even after seal.
+  def force_leave!(require_cure: false)
+    return self if status == "left"
+
+    transaction do
+      mark_left!
+      activity.require_dropout_recovery! if require_cure && activity.sealed? && activity.secret_santa?
+    end
 
     self
   end
 
   private
+
+  def mark_left!
+    update!(status: "left", left_at: Time.current, co_organizer: false)
+    raise "Post-condition failed: status must be left" unless status == "left"
+  end
 
   def freeze_money_settings_if_first_invitee_accept!
     return if user_id == activity.creator_id
@@ -66,3 +81,26 @@ class ActivityParticipant < ApplicationRecord
     activity.freeze_money_settings!
   end
 end
+
+# [REQ-BLOCK-001] [REQ-ACT-003] Block Wins removes both users from shared activities (FC1A).
+UserBlock.register_cleanup_hook(:activity_block_wins) do |blocker, blocked|
+  ::ActivityParticipant
+  ::Activity
+  max_rows = 500
+  participant_rows = ActivityParticipant
+                     .where(user_id: [ blocker.id, blocked.id ], status: %w[invited accepted])
+                     .limit(max_rows)
+                     .to_a
+  activity_ids = participant_rows.map(&:activity_id).uniq
+  activity_ids.first(max_rows).each do |activity_id|
+    activity = Activity.find_by(id: activity_id)
+    next if activity.nil? || activity.cancelled?
+
+    affected = ActivityParticipant.where(activity_id: activity_id, user_id: [ blocker.id, blocked.id ])
+                                  .where(status: %w[invited accepted])
+                                  .limit(max_rows)
+    require_cure = activity.sealed? && activity.secret_santa?
+    affected.each { |participant| participant.force_leave!(require_cure: require_cure) }
+  end
+end
+

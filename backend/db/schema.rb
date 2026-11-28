@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_28_051701) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_28_053000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_28_051701) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "needs_dropout_recovery", default: false, null: false
     t.index ["creator_id", "status"], name: "index_activities_on_creator_id_and_status"
     t.index ["creator_id"], name: "index_activities_on_creator_id"
     t.index ["discarded_at"], name: "index_activities_on_discarded_at"
