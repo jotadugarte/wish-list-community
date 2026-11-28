@@ -261,18 +261,21 @@ es:
       brand: "Admin"
       reports: "Reportes"
       audit: "Auditoría"
+      style_guide: "Guía de estilo"
     titles:
       reports: "Reportes de admin"
       audit: "Auditoría de admin"
       report: "Reporte #%{id}"
       audit_event: "Auditoría #%{id}"
       gift: "Regalo de admin #%{id}"
+      style_guide: "Guía de estilo"
     headings:
       reports: "Reportes"
       audit: "Auditoría"
       report: "Reporte #%{id}"
       audit_event: "Evento de auditoría #%{id}"
       gift: "Regalo #%{id}"
+      style_guide: "Guía de estilo"
     copy:
       pending_reports: "Reportes de abuso pendientes (Usuario y Lista)."
       no_pending_reports: "No hay reportes pendientes."
@@ -297,6 +300,48 @@ es:
       open_gift_detail: "Abrir detalle del regalo"
       back_to_reports: "Volver a Reportes"
       back_to_audit: "Volver a Auditoría"
+    style_guide:
+      version: "Versión %{version}"
+      copy_label: "Texto de muestra: español"
+      tokens_heading: "Tokens"
+      toggles:
+        label: "Controles de la guía"
+        light: "Claro"
+        dark: "Oscuro"
+        spanish: "Español"
+        english: "English"
+      columns:
+        role: "Rol"
+        hex: "Hex"
+      tabs:
+        label: "Vistas previas"
+        web: "Vista web"
+        app: "Vista de la app"
+      web:
+        flow_title: "Lista de cumpleaños"
+        flow_note: "Muestra inerte. Aquí no se reserva ni se compra nada."
+        list_title: "Fin de semana con amigos"
+        spec: "Taza azul, grande. Esta nota es solo una muestra."
+        button_default: "Reservar"
+        button_disabled: "Reservado"
+      a11y:
+        heading: "Notas de accesibilidad"
+        contrast: "El texto y los botones usan los colores primary y text compartidos."
+        focus: "Los botones siguen siendo botones para que el foco del teclado se vea."
+        names: "Las acciones de muestra tienen nombre visible. Esta página no las envía."
+      do_dont:
+        heading: "Qué hacer y qué evitar"
+        do: "Sí: usa los tokens compartidos en botones, superficies y la nota de especificación."
+        dont: "No: inventes una segunda paleta ni escondas la nota de especificación."
+      app:
+        note: "Marco de teléfono en HTML y CSS. No es la app Flutter ni es idéntico al píxel."
+        screen_title: "Mis listas"
+        item_title: "Taza azul"
+        spec: "Grande. Solo una muestra."
+        button: "Agregar"
+        tab_lists: "Listas"
+        tab_friends: "Amigos"
+        tab_profile: "Perfil"
     errors:
       event_not_revertable: "Este evento de auditoría no se puede revertir."
       not_soft_deleted: "El registro no está eliminado temporalmente."

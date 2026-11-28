@@ -14,6 +14,7 @@
         <strong><%= t("admin.nav.brand") %></strong>
         <%= link_to t("admin.nav.reports"), admin_reports_path %>
         <%= link_to t("admin.nav.audit"), admin_audit_events_path %>
+        <%= link_to t("admin.nav.style_guide"), admin_style_guide_path %>
       </nav>
       <% if flash[:notice].present? %>
         <p class="mt-2"><%= flash[:notice] %></p>

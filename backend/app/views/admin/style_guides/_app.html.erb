@@ -1,0 +1,25 @@
+<section class="brand-app-preview" aria-label="<%= t("admin.style_guide.tabs.app", locale: guide.copy) %>">
+  <p><%= t("admin.style_guide.app.note", locale: guide.copy) %></p>
+  <div class="brand-phone-mock" style="width:280px;border:10px solid var(--c-text);border-radius:32px;background:var(--c-bg);color:var(--c-text);overflow:hidden">
+    <header style="background:var(--c-primary);color:var(--c-primary-fg);padding:16px">
+      <%= guide.app_name %>
+    </header>
+    <div style="padding:16px">
+      <h2><%= t("admin.style_guide.app.screen_title", locale: guide.copy) %></h2>
+      <article style="background:var(--c-surface);border:1px solid var(--c-border);padding:12px">
+        <h3><%= t("admin.style_guide.app.item_title", locale: guide.copy) %></h3>
+        <p style="background:var(--c-spec-bg);border-left:4px solid var(--c-accent)">
+          <%= t("admin.style_guide.app.spec", locale: guide.copy) %>
+        </p>
+        <button type="button" class="brand-button" style="background:var(--c-primary);color:var(--c-primary-fg)">
+          <%= t("admin.style_guide.app.button", locale: guide.copy) %>
+        </button>
+      </article>
+    </div>
+    <nav style="display:flex;justify-content:space-around;background:var(--c-surface);border-top:1px solid var(--c-border);padding:12px" aria-hidden="true">
+      <span><%= t("admin.style_guide.app.tab_lists", locale: guide.copy) %></span>
+      <span><%= t("admin.style_guide.app.tab_friends", locale: guide.copy) %></span>
+      <span><%= t("admin.style_guide.app.tab_profile", locale: guide.copy) %></span>
+    </nav>
+  </div>
+</section>

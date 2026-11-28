@@ -1,0 +1,29 @@
+<section class="brand-web-preview" aria-label="<%= t("admin.style_guide.tabs.web", locale: guide.copy) %>">
+  <h2><%= t("admin.style_guide.web.flow_title", locale: guide.copy) %></h2>
+  <p><%= t("admin.style_guide.web.flow_note", locale: guide.copy) %></p>
+  <article class="brand-sample-card" style="background:var(--c-surface);color:var(--c-text);border:1px solid var(--c-border)">
+    <h3><%= t("admin.style_guide.web.list_title", locale: guide.copy) %></h3>
+    <p style="background:var(--c-spec-bg);border-left:4px solid var(--c-accent)">
+      <%= t("admin.style_guide.web.spec", locale: guide.copy) %>
+    </p>
+    <button type="button" class="brand-button" style="background:var(--c-primary);color:var(--c-primary-fg)">
+      <%= t("admin.style_guide.web.button_default", locale: guide.copy) %>
+    </button>
+    <button type="button" class="brand-button" disabled>
+      <%= t("admin.style_guide.web.button_disabled", locale: guide.copy) %>
+    </button>
+  </article>
+  <section class="brand-a11y">
+    <h2><%= t("admin.style_guide.a11y.heading", locale: guide.copy) %></h2>
+    <ul>
+      <li><%= t("admin.style_guide.a11y.contrast", locale: guide.copy) %></li>
+      <li><%= t("admin.style_guide.a11y.focus", locale: guide.copy) %></li>
+      <li><%= t("admin.style_guide.a11y.names", locale: guide.copy) %></li>
+    </ul>
+  </section>
+  <section class="brand-do-dont">
+    <h2><%= t("admin.style_guide.do_dont.heading", locale: guide.copy) %></h2>
+    <p><%= t("admin.style_guide.do_dont.do", locale: guide.copy) %></p>
+    <p><%= t("admin.style_guide.do_dont.dont", locale: guide.copy) %></p>
+  </section>
+</section>

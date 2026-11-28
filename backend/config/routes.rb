@@ -65,6 +65,7 @@ Rails.application.routes.draw do
       end
     end
     resources :gifts, only: %i[show]
+    resource :style_guide, only: :show, controller: "style_guides"
   end
 
   get "s/:share_token", to: "secret_links#show", as: :secret_link,

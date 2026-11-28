@@ -1,0 +1,53 @@
+<% content_for :title, t("admin.titles.style_guide") %>
+<style>
+  .brand-button:hover { filter: brightness(1.05); }
+  @media print {
+    body > header, .brand-guide-controls, .brand-guide-tabs { display:none; }
+    .brand-button:hover { filter: none; }
+    .brand-guide { background: var(--c-bg); color: var(--c-text); }
+  }
+</style>
+<div
+  class="brand-guide"
+  data-appearance="<%= @guide.appearance %>"
+  data-copy="<%= @guide.copy %>"
+  data-preview="<%= @guide.preview %>"
+  data-token-version="<%= @guide.version %>"
+  style="<%= @guide.style_attribute %>"
+>
+  <h1><%= t("admin.headings.style_guide") %></h1>
+  <p><%= t("admin.style_guide.version", version: @guide.version) %></p>
+  <p><%= t("admin.style_guide.copy_label", locale: @guide.copy) %></p>
+  <nav class="brand-guide-controls" aria-label="<%= t("admin.style_guide.toggles.label") %>">
+    <%= link_to t("admin.style_guide.toggles.light"), @guide.path_for(appearance: "light", copy: @guide.copy) %>
+    <%= link_to t("admin.style_guide.toggles.dark"), @guide.path_for(appearance: "dark", copy: @guide.copy) %>
+    <%= link_to t("admin.style_guide.toggles.spanish"), @guide.path_for(appearance: @guide.appearance, copy: "es") %>
+    <%= link_to t("admin.style_guide.toggles.english"), @guide.path_for(appearance: @guide.appearance, copy: "en") %>
+  </nav>
+  <nav class="brand-guide-tabs" aria-label="<%= t("admin.style_guide.tabs.label") %>">
+    <%= link_to t("admin.style_guide.tabs.web"), @guide.path_for(appearance: @guide.appearance, copy: @guide.copy, preview: "web") %>
+    <%= link_to t("admin.style_guide.tabs.app"), @guide.path_for(appearance: @guide.appearance, copy: @guide.copy, preview: "app") %>
+  </nav>
+  <% if @guide.web? %>
+    <%= render "admin/style_guides/web", guide: @guide %>
+  <% elsif @guide.app? %>
+    <%= render "admin/style_guides/app", guide: @guide %>
+  <% end %>
+  <h2><%= t("admin.style_guide.tokens_heading") %></h2>
+  <table>
+    <thead>
+      <tr>
+        <th><%= t("admin.style_guide.columns.role") %></th>
+        <th><%= t("admin.style_guide.columns.hex") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @guide.rows.each do |row| %>
+        <tr>
+          <td><%= row[:role] %></td>
+          <td><%= row[:hex] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
