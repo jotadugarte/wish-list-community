@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
-import 'package:wish_list_mobile/features/activities/activity_enums.dart';
 import 'package:wish_list_mobile/features/activities/activity_repository.dart';
 
 // Activity board: draw/Arrancar, leave, cure prompts, private recipient.
