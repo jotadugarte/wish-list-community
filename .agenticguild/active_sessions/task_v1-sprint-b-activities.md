@@ -171,7 +171,7 @@ No Secret Link / no personal friends/shared privacy on activity wishlists. Acces
   <step status="complete" id="7">Write failing specs for activity reservations: reuse Reservation concurrency [REQ-RES-001]; reservation_visibility owner payload rules; SS max_reservations_per_user=1; open_gifting uses configured N; N editable only pre-seal and freezes at Arrancar; re-check budget on reserve. Trace [REQ-RES-005], [REQ-ACT-005], O4A, O5A, FC3A.</step>
   <step status="complete" id="8">Implement reservation limit + freeze-N + budget re-check until step 7 green.</step>
   <step status="complete" id="9">Write failing specs for gift Path 1/2 + thank-you + 72h grace/auto-release on activity items (reuse services; activity-context notifications). Trace [REQ-GIFT-001]..[004], [REQ-RES-006], O1B.</step>
-  <step status="pending" id="10">Implement/wire gift+grace in activity context until step 9 green.</step>
+  <step status="complete" id="10">Implement/wire gift+grace in activity context until step 9 green.</step>
   <step status="pending" id="11">Write failing specs for FC2A cleanup hooks: leave / cancel activity / Block Wins cancel touched open reserves+gifts, archive leaver activity wishlist, notify; compose with existing A bridge/redraw. Trace [REQ-BLOCK-001], [REQ-ACT-003], [REQ-LIFE-001], FC2A.</step>
   <step status="pending" id="12">Implement cleanup hooks until step 11 green.</step>
   <step status="pending" id="13">Write failing specs for O6A notification catalog + preference keys (activity-scoped copy): item touched while reserved, reserve/release/grace, purchased/delivered/received, budget rejected to item owner. Trace [REQ-NOTIF-001], O6A.</step>

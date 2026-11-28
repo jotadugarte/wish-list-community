@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>Step 10 in progress (gift+grace wire/reuse)</current_step>
+    <current_step>Step 11 in progress (FC2A cleanup specs)</current_step>
   </execution_context>
 </agent_state>

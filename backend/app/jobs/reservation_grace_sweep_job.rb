@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Recurring sweep: active past estimated_date → expired_grace; due grace → auto_released.
+# Item-agnostic: covers personal and activity-scoped holds (O1B).
 # Traceability: [REQ-RES-006], [REQ-USER-003]
 class ReservationGraceSweepJob < ApplicationJob
   queue_as :default

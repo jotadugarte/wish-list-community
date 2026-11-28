@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Dual-path gift fulfillment: mark purchased, deliver, confirm / owner receive.
+# Applies to personal and activity-scoped items (O1B reuse; activity copy in O6A).
 # Traceability: [REQ-GIFT-001], [REQ-GIFT-002], [REQ-GIFT-003], [REQ-GIFT-004],
 # [REQ-ADM-001], [REQ-RES-002], [REQ-RES-006], [REQ-NOTIF-001]
 class GiftService
