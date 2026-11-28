@@ -12,6 +12,7 @@ class ActivityAdminService
       participant = accepted_participant!(activity, user)
       participant.update!(co_organizer: true)
       raise "Post-condition failed: co_organizer must be true" unless participant.co_organizer?
+      ActivityNotifier.co_organizer_appointed!(activity: activity, user: user, actor: actor)
 
       participant
     end
@@ -36,7 +37,9 @@ class ActivityAdminService
       raise ArgumentError, "Pre-condition failed: blocked users cannot be invited" if UserBlock.blocked_between?(actor, user)
       raise ArgumentError, "Pre-condition failed: blocked with creator" if UserBlock.blocked_between?(activity.creator, user)
 
-      ActivityParticipant.invite!(activity: activity, user: user, actor: actor)
+      participant = ActivityParticipant.invite!(activity: activity, user: user, actor: actor)
+      ActivityNotifier.invite!(activity: activity, recipient: user, actor: actor)
+      participant
     end
 
     # [REQ-ACT-001] FC2C ownership transfer to an accepted co-organizer.
@@ -62,6 +65,7 @@ class ActivityAdminService
       end
 
       raise "Post-condition failed: creator must be transferred" unless activity.reload.creator_id == new_creator.id
+      ActivityNotifier.ownership_transferred!(activity: activity, new_creator: new_creator, actor: actor)
 
       activity
     end
@@ -83,6 +87,7 @@ class ActivityAdminService
       end
 
       raise "Post-condition failed: activity must be cancelled" unless activity.reload.cancelled?
+      ActivityNotifier.cancelled!(activity: activity, actor: actor)
 
       activity
     end

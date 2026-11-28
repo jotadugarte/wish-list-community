@@ -42,6 +42,7 @@ class ActivityDrawService
 
       raise "Post-condition failed: activity must be sealed" unless activity.reload.sealed?
       raise "Post-condition failed: assignment count mismatch" unless ActivityAssignment.where(activity: activity).count == ids.size
+      ActivityNotifier.drawn!(activity: activity)
 
       cycle
     end

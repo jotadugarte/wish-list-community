@@ -188,8 +188,8 @@ REQ tags: `REQ-ACT-001`..`005`, `REQ-ARCH-001`/`002`, `REQ-BLOCK-001`, `REQ-NOTI
   <step id="18" status="complete">Implement API controllers/serializers until step 17 green (no activity item/reservation endpoints — O1A).</step>
   <step id="19" status="complete">Write failing request/system specs for Hotwire: public activity invite preview by token (safe OG, no roster); logged-in board; create/manage flows parity with API rules; personal wishlist bridge links when allowed (O4B/O5B). Trace [REQ-ACT-001], [REQ-WISH-001].</step>
   <step id="20" status="complete">Implement Hotwire activity surfaces until step 19 green.</step>
-  <step id="21" status="pending">Write failing specs for NotificationDispatcher catalog keys (O8A): invite, accept/decline, co-org, draw (private), Arrancar, leave, dropout-needs-cure, Blind Bridge, Full Redraw, cancel, transfer — prefs toggles. Trace [REQ-NOTIF-001], [REQ-NOTIF-002].</step>
-  <step id="22" status="pending">Implement notification events + prefs until step 21 green.</step>
+  <step id="21" status="complete">Write failing specs for NotificationDispatcher catalog keys (O8A): invite, accept/decline, co-org, draw (private), Arrancar, leave, dropout-needs-cure, Blind Bridge, Full Redraw, cancel, transfer — prefs toggles. Trace [REQ-NOTIF-001], [REQ-NOTIF-002].</step>
+  <step id="22" status="complete">Implement notification events + prefs until step 21 green.</step>
   <step id="23" status="pending">Write failing Flutter tests for activity feature: board, invite/accept, exclusions UI for co-org/creator, draw/Arrancar, private recipient, leave/cure prompts, cancel/transfer; personal wishlist bridge. Trace [REQ-ACT-001]..[005], [REQ-MOB-001].</step>
   <step id="24" status="pending">Implement Flutter activities feature until step 23 green (headless/fakes; DesignTokens defaults — no retokenize).</step>
   <step id="25" status="pending">Write failing Flutter DeepLinkTarget tests: activity share token opens board/preview; unknown safe failure; keep friend + secret link. Trace [REQ-MOB-001], [REQ-ACT-001].</step>

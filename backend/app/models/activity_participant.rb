@@ -33,6 +33,7 @@ class ActivityParticipant < ApplicationRecord
       freeze_money_settings_if_first_invitee_accept!
     end
     raise "Post-condition failed: status must be accepted" unless status == "accepted"
+    ActivityNotifier.accepted!(activity: activity, participant: self, actor: user)
 
     self
   end
@@ -43,6 +44,7 @@ class ActivityParticipant < ApplicationRecord
 
     update!(status: "declined")
     raise "Post-condition failed: status must be declined" unless status == "declined"
+    ActivityNotifier.declined!(activity: activity, actor: user)
 
     self
   end

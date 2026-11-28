@@ -18,6 +18,7 @@ class ActivityDropoutBridgeService
       else
         participant.force_leave!(require_cure: false)
       end
+      ActivityNotifier.left!(activity: activity, actor: actor)
 
       participant
     end
@@ -69,7 +70,9 @@ class ActivityDropoutBridgeService
 
       raise ArgumentError, "Post-condition failed: bridge did not reconnect a giver" if notified_giver_id.nil?
 
-      BlindBridgeResult.new(notified_giver_id: notified_giver_id, new_recipient_id: new_recipient_id)
+      result = BlindBridgeResult.new(notified_giver_id: notified_giver_id, new_recipient_id: new_recipient_id)
+      ActivityNotifier.blind_bridged!(activity: activity, result: result)
+      result
     end
 
     # [REQ-ACT-003] Full Redraw among remaining accepted participants.
@@ -97,6 +100,7 @@ class ActivityDropoutBridgeService
 
       raise "Post-condition failed: activity must be sealed after redraw" unless activity.reload.sealed?
       raise "Post-condition failed: dropout recovery must be clear" if activity.needs_dropout_recovery?
+      ActivityNotifier.full_redraw!(activity: activity)
 
       activity
     end

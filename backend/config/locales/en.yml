@@ -219,6 +219,43 @@ en:
       invalid_status: "is not included in the list"
       confirm_void_required: "confirm_void_gifts is required because you have an open gift with this user"
   notifications:
+    activity:
+      invite:
+        title: "Activity invite: %{name}"
+        body: "@%{actor} invited you to join."
+      accepted:
+        title: "Invite accepted: %{name}"
+        body: "@%{actor} accepted the invite."
+      declined:
+        title: "Invite declined: %{name}"
+        body: "@%{actor} declined the invite."
+      co_organizer_appointed:
+        title: "You are a co-organizer: %{name}"
+        body: "You can manage invites, exclusions, and the draw."
+      drawn:
+        title: "Draw complete: %{name}"
+        body: "You give to @%{recipient}."
+      arrancar:
+        title: "Activity started: %{name}"
+        body: "Participation is sealed."
+      left:
+        title: "Someone left: %{name}"
+        body: "@%{actor} left the activity."
+      dropout_needs_cure:
+        title: "Action needed: %{name}"
+        body: "Choose Blind Auto-Bridge or Full Redraw."
+      blind_bridged:
+        title: "Your recipient changed: %{name}"
+        body: "The exchange was quietly repaired."
+      full_redraw:
+        title: "New draw: %{name}"
+        body: "Assignments were redrawn."
+      cancelled:
+        title: "Activity cancelled: %{name}"
+        body: "@%{actor} cancelled the activity."
+      ownership_transferred:
+        title: "You own this activity: %{name}"
+        body: "@%{actor} transferred ownership to you."
     friend:
       request_received:
         title: "New friend request"
