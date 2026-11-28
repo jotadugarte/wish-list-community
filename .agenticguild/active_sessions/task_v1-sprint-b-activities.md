@@ -174,11 +174,11 @@ No Secret Link / no personal friends/shared privacy on activity wishlists. Acces
   <step status="complete" id="10">Implement/wire gift+grace in activity context until step 9 green.</step>
   <step status="complete" id="11">Write failing specs for FC2A cleanup hooks: leave / cancel activity / Block Wins cancel touched open reserves+gifts, archive leaver activity wishlist, notify; compose with existing A bridge/redraw. Trace [REQ-BLOCK-001], [REQ-ACT-003], [REQ-LIFE-001], FC2A.</step>
   <step status="complete" id="12">Implement cleanup hooks until step 11 green.</step>
-  <step status="pending" id="13">Write failing specs for O6A notification catalog + preference keys (activity-scoped copy): item touched while reserved, reserve/release/grace, purchased/delivered/received, budget rejected to item owner. Trace [REQ-NOTIF-001], O6A.</step>
-  <step status="pending" id="14">Implement Activity B notifier + prefs until step 13 green.</step>
-  <step status="pending" id="15">Write failing /api/v1 request specs: activity wishlist/items CRUD, reserve/extend/cancel, gift paths, my_reservations includes activity holds, open_gifting N setting pre-seal only, error shapes for budget/visibility/limit. Trace [REQ-ACT-005], [REQ-RES-004], [REQ-RES-005], [REQ-ARCH-001].</step>
-  <step status="pending" id="16">Implement API controllers/serializers until step 15 green.</step>
-  <step status="pending" id="17">Write failing Hotwire request/system specs: activity board list/item/reserve/gift/grace parity; budget errors visible; no activity lists under personal wishlists UI; no Secret Link controls on activity lists. Trace [REQ-ACT-001], FC1A, FC4A.</step>
+  <step status="complete" id="13">Write failing specs for O6A notification catalog + preference keys (activity-scoped copy): item touched while reserved, reserve/release/grace, purchased/delivered/received, budget rejected to item owner. Trace [REQ-NOTIF-001], O6A.</step>
+  <step status="complete" id="14">Implement Activity B notifier + prefs until step 13 green.</step>
+  <step status="complete" id="15">Write failing /api/v1 request specs: activity wishlist/items CRUD, reserve/extend/cancel, gift paths, my_reservations includes activity holds, open_gifting N setting pre-seal only, error shapes for budget/visibility/limit. Trace [REQ-ACT-005], [REQ-RES-004], [REQ-RES-005], [REQ-ARCH-001].</step>
+  <step status="complete" id="16">Implement API controllers/serializers until step 15 green.</step>
+  <step status="complete" id="17">Write failing Hotwire request/system specs: activity board list/item/reserve/gift/grace parity; budget errors visible; no activity lists under personal wishlists UI; no Secret Link controls on activity lists. Trace [REQ-ACT-001], FC1A, FC4A.</step>
   <step status="pending" id="18">Implement Hotwire activity B surfaces until step 17 green (DesignTokens defaults).</step>
   <step status="pending" id="19">Write failing Flutter tests: activity list/item forms with price, reserve/gift/grace flows, limit/budget errors, board-only navigation (not My Wishlists), prefs for new events. Trace [REQ-MOB-001], O1B..O6A.</step>
   <step status="pending" id="20">Implement Flutter activity B feature until step 19 green (headless/fakes; no Nata retokenize).</step>
