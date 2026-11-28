@@ -202,7 +202,7 @@ REQ tags: `REQ-ACT-001`..`005`, `REQ-ARCH-001`/`002`, `REQ-BLOCK-001`, `REQ-NOTI
 
 ## QA reviewer record — 2026-11-28 05:55 UTC-06:00
 
-**Status:** not posted  
+**Status:** posted  
 **Branch:** `cursor/v1-sprint-a-activities-b870`  
 **Environment:** cloud headless (mise Ruby 3.4.13, Flutter 3.50.1, Postgres test DB, RSpec transactional fixtures, Flutter InMemoryTokenStorage mocks)  
 **Profile:** `docs/ai/qa_profile.md`  
