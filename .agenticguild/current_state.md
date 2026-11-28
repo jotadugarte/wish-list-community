@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>Steps 17-20 complete; next Step 21 (living docs)</current_step>
+    <current_step>Step 21 complete; next Step 22 (full suites green)</current_step>
   </execution_context>
 </agent_state>

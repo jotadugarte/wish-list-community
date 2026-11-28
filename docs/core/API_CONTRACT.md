@@ -377,30 +377,47 @@ Body: `{ "url": "https://..." }` → `{ "title", "image_url", "source_url" }` (b
 - Public `GET /terms` · `GET /privacy` (bilingual es+en placeholders)
 - Logged-in ` /app/*` MemberWebShell: wishlists, items, reservations/gifts, notifications inbox + prefs, account soft-delete
 
-## 5b. Activities (v1 Sprint A shell) `[REQ-ACT-001]`…`[REQ-ACT-005]`
+## 5b. Activities (v1 Sprint A shell + Sprint B lists/reservations) `[REQ-ACT-001]`…`[REQ-ACT-005]`, `[REQ-RES-005]`
 
-Group gift exchange shell (no activity-scoped items/reservations yet — those are Sprint B). Modes: `secret_santa` | `open_gifting`. Budget modes stored: `none` | `fixed` | `min_only` | `max_only` | `range` (enforcement in Sprint B). Assignment map is never returned wholesale to creator/co-org.
+Group gift exchange: Sprint A shell (participants, exclusions, draw/Arrancar, Blind Bridge) plus Sprint B activity-scoped wishlists, items, reservations, gifts, budget enforcement, and open_gifting N. Modes: `secret_santa` | `open_gifting`. Budget modes: `none` | `fixed` | `min_only` | `max_only` | `range` (enforced on activity items and reserves). Assignment map is never returned wholesale to creator/co-org.
 
-### Activity API
+### Activity API (shell)
 - `GET /api/v1/activities` — activities where the viewer is creator or accepted participant
 - `POST /api/v1/activities` — create shell; mints opaque `share_token`; creator auto-accepted as co-org
 - `GET /api/v1/activities/:id` — board payload; `share_token` only for creator
 - `POST /api/v1/activities/:id/participants` — invite (`user_id`); creator/co-org
-- `POST /api/v1/activities/:id/participants/accept` — invitee accepts (O2B money freeze on first invitee accept)
-- `DELETE /api/v1/activities/:id/participants/me` — leave (free pre-seal; post-draw forces cure; post-Arrancar no bridge)
+- `POST /api/v1/activities/:id/participants/accept` — invitee accepts (O2B money freeze on first invitee accept; ensures activity wishlist)
+- `DELETE /api/v1/activities/:id/participants/me` — leave (free pre-seal; post-draw forces cure; post-Arrancar no bridge; FC2A cleanup)
 - `POST /api/v1/activities/:id/exclusions` — pair exclusion (`giver_id`, `forbidden_recipient_id`)
-- `POST /api/v1/activities/:id/draw` — secret_santa Hamiltonian draw (≥3 accepted); optional `seed`
-- `POST /api/v1/activities/:id/arrancar` — open_gifting seal (≥2 accepted); no assignments
+- `POST /api/v1/activities/:id/draw` — secret_santa Hamiltonian draw (≥3 accepted); optional `seed`; freezes reservation N
+- `POST /api/v1/activities/:id/arrancar` — open_gifting seal (≥2 accepted); no assignments; freezes reservation N
 - `GET /api/v1/activities/:id/my_assignment` — giver-only recipient (private)
 - `POST /api/v1/activities/:id/blind_bridge` — Blind Auto-Bridge when `needs_dropout_recovery`
 - `POST /api/v1/activities/:id/full_redraw` — Full Redraw (≥3 remaining) or error directing cancel
 - `POST /api/v1/activities/:id/co_organizers` — creator-only appoint (`user_id`)
 - `POST /api/v1/activities/:id/transfer` — creator-only transfer (`new_creator_id` must be co-org)
-- `POST /api/v1/activities/:id/cancel` — creator/co-org cancel
+- `POST /api/v1/activities/:id/cancel` — creator/co-org cancel (archives activity wishlists)
+
+### Activity wishlists, items, open_gifting N (Sprint B) `[REQ-ACT-005]`, `[REQ-RES-005]`, `[REQ-ARCH-002]`
+One `Wishlist` per accepted participant (`activity_id` set). Excluded from personal `GET /api/v1/wishlists`. No `share_token` / Secret Link / personal privacy switch. Access only via accepted participation + `visibility_mode` / assignment rules.
+
+- `GET /api/v1/activities/:id/wishlists` — policy-scoped activity wishlists visible to the viewer
+- `GET /api/v1/activities/:id/wishlists/:wishlist_id` — show; payload includes `activity_id`; omits `share_token`
+- `GET|POST /api/v1/activities/:id/wishlists/:wishlist_id/items` — index / create (owner); manual `price_cents` + `currency` (must equal activity currency); budget modes block invalid/missing price when required (`422` `{ "errors": [...] }`)
+- `PATCH|DELETE /api/v1/activities/:id/items/:id` — owner update / soft-delete (budget re-check on update)
+- `PATCH /api/v1/activities/:id/reservation_limit` — creator/co-org sets open_gifting N (`max_reservations_per_user`, default 1) on all activity wishlists **pre-seal only**; **422** after Arrancar/draw (`secret_santa` stays fixed at 1)
+
+### Activity reservations & gifts (reuse personal endpoints) `[REQ-RES-001]`…`[REQ-RES-006]`, `[REQ-GIFT-001]`…`[REQ-GIFT-004]`
+Same reservation/gift routes as personal lists; server gates apply when the item's wishlist is activity-scoped:
+
+- `POST /api/v1/items/:item_id/reservations` — no self-reserve; only after seal; visibility gate; reservation-limit; budget re-check; **409** concurrency; **422** for limit/visibility/budget
+- `PATCH|DELETE /api/v1/reservations/:id` · `POST .../mark_purchased` · gift deliver/confirm · `POST /api/v1/items/:id/mark_received` — Path 1/2 + 72h grace unchanged
+- `GET /api/v1/my_reservations` — includes activity holds; rows may include `activity_id`
 
 ### Activity Hotwire surfaces
 - Public `GET /a/:share_token` — safe invite preview (no roster); logged-in accepted participants redirect to `/app/activities/:id`
-- Member `GET|POST /app/activities` · `GET /app/activities/:id` — create + board with personal wishlist bridges
+- Member `GET|POST /app/activities` · `GET /app/activities/:id` — create + board with activity lists/items (not under personal My Wishlists); reserve/gift/grace parity; no Secret Link controls on activity lists
+- Member `POST /app/activities/:id/wishlists/:wishlist_id/items` — add item with price on the board
 
 ## 6. Gifts (Sprint 6)
 
