@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>Step 18 complete; next Step 19 (Flutter failing tests)</current_step>
+    <current_step>Step 19 complete; next Step 20 (Flutter implement)</current_step>
   </execution_context>
 </agent_state>

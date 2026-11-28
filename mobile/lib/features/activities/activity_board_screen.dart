@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:wish_list_mobile/core/i18n/app_strings.dart';
 import 'package:wish_list_mobile/core/theme/design_tokens.dart';
 import 'package:wish_list_mobile/features/activities/activity_repository.dart';
+import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
+import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
 
 // Activity board: draw/Arrancar, leave, cure prompts, private recipient.
 // Traceability: [REQ-ACT-001], [REQ-ACT-003], [REQ-MOB-001]
 class ActivityBoardScreen extends StatefulWidget {
   final ActivityRepository activityRepository;
+  final ReservationRepository? reservationRepository;
+  final GiftRepository? giftRepository;
   final AppStrings strings;
   final DesignTokens tokens;
   final int activityId;
+  final int? viewerUserId;
 
   const ActivityBoardScreen({
     super.key,
@@ -17,6 +22,9 @@ class ActivityBoardScreen extends StatefulWidget {
     required this.strings,
     required this.tokens,
     required this.activityId,
+    this.reservationRepository,
+    this.giftRepository,
+    this.viewerUserId,
   });
 
   @override

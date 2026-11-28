@@ -145,6 +145,7 @@ class AppStrings {
   final String activityBlindBridgeAction;
   final String activityFullRedrawAction;
   final String activityPersonalWishlistsHeading;
+  final String activityListsHeading;
   final String activityModeSecretSantaLabel;
   final String activityModeOpenGiftingLabel;
   final String activityStatusOpenLabel;
@@ -295,6 +296,7 @@ class AppStrings {
     required this.activityBlindBridgeAction,
     required this.activityFullRedrawAction,
     required this.activityPersonalWishlistsHeading,
+    required this.activityListsHeading,
     required this.activityModeSecretSantaLabel,
     required this.activityModeOpenGiftingLabel,
     required this.activityStatusOpenLabel,
@@ -495,6 +497,7 @@ class AppStrings {
     activityBlindBridgeAction: 'Puente ciego',
     activityFullRedrawAction: 'Volver a sortear',
     activityPersonalWishlistsHeading: 'Listas personales',
+    activityListsHeading: 'Listas de la actividad',
     activityModeSecretSantaLabel: 'Amigo secreto',
     activityModeOpenGiftingLabel: 'Regalos abiertos',
     activityStatusOpenLabel: 'Abierta',
@@ -647,6 +650,7 @@ class AppStrings {
     activityBlindBridgeAction: 'Blind bridge',
     activityFullRedrawAction: 'Full redraw',
     activityPersonalWishlistsHeading: 'Personal wishlists',
+    activityListsHeading: 'Activity lists',
     activityModeSecretSantaLabel: 'Secret Santa',
     activityModeOpenGiftingLabel: 'Open gifting',
     activityStatusOpenLabel: 'Open',

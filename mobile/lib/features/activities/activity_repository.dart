@@ -1,6 +1,7 @@
 import 'package:wish_list_mobile/core/network/api_client.dart';
 import 'package:wish_list_mobile/features/activities/activity_enums.dart';
 import 'package:wish_list_mobile/features/activities/activity_models.dart';
+import 'package:wish_list_mobile/features/items/item_models.dart';
 
 export 'package:wish_list_mobile/features/activities/activity_enums.dart';
 export 'package:wish_list_mobile/features/activities/activity_models.dart';
@@ -13,6 +14,38 @@ class ActivityRepository {
   final ApiClient apiClient;
 
   const ActivityRepository({required this.apiClient});
+
+  // Sprint B stubs — implemented in Step 20 [REQ-ACT-005] [REQ-MOB-001].
+  Future<List<ActivityWishlistView>> fetchActivityWishlists({
+    required int activityId,
+  }) async {
+    throw UnimplementedError('fetchActivityWishlists');
+  }
+
+  Future<List<WishlistItem>> fetchActivityItems({
+    required int activityId,
+    required int wishlistId,
+  }) async {
+    throw UnimplementedError('fetchActivityItems');
+  }
+
+  Future<WishlistItem> createActivityItem({
+    required int activityId,
+    required int wishlistId,
+    required String title,
+    int? priceCents,
+    String? currency,
+    String priority = 'medium',
+  }) async {
+    throw UnimplementedError('createActivityItem');
+  }
+
+  Future<int> setReservationLimit({
+    required int activityId,
+    required int maxReservationsPerUser,
+  }) async {
+    throw UnimplementedError('setReservationLimit');
+  }
 
   Future<List<ActivityShell>> fetchActivities() async {
     final response = await apiClient.request(
