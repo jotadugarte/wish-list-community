@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>Step 17 complete; next Step 18 (Hotwire implement)</current_step>
+    <current_step>Step 18 complete; next Step 19 (Flutter failing tests)</current_step>
   </execution_context>
 </agent_state>

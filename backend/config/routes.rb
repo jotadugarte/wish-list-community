@@ -15,6 +15,9 @@ Rails.application.routes.draw do
         post :accept
         post :decline
       end
+      resources :wishlists, only: [] do
+        resources :items, only: %i[create], controller: "activity_items"
+      end
     end
     resources :wishlists, only: %i[index show new create edit update destroy] do
       member do
@@ -29,7 +32,7 @@ Rails.application.routes.draw do
         post :mark_received, to: "gifts#mark_received"
       end
     end
-    resources :reservations, only: %i[index destroy], controller: "reservations" do
+    resources :reservations, only: %i[index destroy update], controller: "reservations" do
       member do
         post :mark_purchased
       end
