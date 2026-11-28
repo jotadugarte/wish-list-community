@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- v1 Sprint B Activities (PR #21): activity-scoped wishlists, budget enforcement, visibility/seal gates, reservation limits (SS=1 / open N freeze), gift Path 1/2 + grace, FC2A cleanup, O6A notifications, API + Hotwire + Flutter board parity.
 - Sprint 9 Mobile Wrap-Up (PR #16): Flutter Share-to-App + deep links (friend/secret), client image compress + multipart, FCM bind/rebind/unbind, inbox + notification prefs; Hotwire Member `/app` shell parity; public bilingual `/terms` `/privacy`. Ops follow-ups: prod host swap, Google FCM keys, legal-text approval, owner device QA.
 - Admin Brand / Style Guide (PR #17): admin-only `GET /admin/style_guide` with shared `design/design_tokens.json` (web preview + HTML phone mock; Flutter additive catalog reader).
 - Sprint 8 Admin/Moderation (web-only Hotwire `/admin`): report triage (dismiss / suspend / soft-delete), Suspend with generic auth failures (FC2), audit viewer with O4A compensating reverts, admin-only gift detail (gifter + `purchase_link_ref`), SoftDeletable `admin_enforcement` gate so members cannot undo admin soft-deletes.

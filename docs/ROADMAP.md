@@ -98,19 +98,21 @@ Things done and things left to do. Update this when finishing branches; use `roa
   - [x] Pair Exclusions (`ActivityExclusion`: Participant A cannot draw Participant B) with bounded deterministic solvability validation and single Hamiltonian cycle draw (`REQ-ACT-002`, `REQ-ACT-004`) — 2026-11-28
   - [x] Post-draw participant dropout recovery: creator chooses between **Blind Auto-Bridge** (server bridges `A -> C` without ever revealing to the creator who gifts whom) or **Full Redraw** (`REQ-ACT-003`, `REQ-ACT-004`) — 2026-11-28
   - [x] API v1 + Hotwire `/a/:token` invite/board + Flutter activities tab/deep links + activity notification catalog (O8A) — 2026-11-28
-  - Ops risks remaining (do not block Done): owner-device QA (create/invite/draw/Blind Bridge); live SMTP/FCM fan-out deferred; Sprint B owns activity items, reservations, and `budget_mode` enforcement
+  - Ops risks remaining (do not block Done): owner-device QA (create/invite/draw/Blind Bridge); live SMTP/FCM fan-out deferred
+- [x] **v1 Sprint B — Activities (Lists + Reservations + Budget Enforcement)** — 2026-11-28 — Branch: `cursor/v1-sprint-b-activities-6756` — PR #21
+  - [x] Each user adds their activity items (manual price + currency) (`REQ-ACT-005`) — 2026-11-28
+  - [x] Reservations within an activity (default 1 active reservation per participant in `secret_santa`; configurable in `open_gifting`) (`REQ-RES-005`) — 2026-11-28
+  - [x] Budget validation enforcing the activity's chosen `budget_mode` (`fixed`, `min_only`, `max_only`, `range`) (`REQ-ACT-005`) — 2026-11-28
+  - [x] Activity-scoped wishlists (ensure-on-accept; board-only / no Secret Link), visibility/seal gate, gift Path 1/2 + 72h grace, FC2A cleanup, O6A notifications, API + Hotwire + Flutter parity — 2026-11-28
+  - Ops risks remaining (do not block Done): owner-device activity board QA; live SMTP/FCM B fan-out; Ñata DesignTokens retokenize
 
 ## In Progress
 _(none)_
 
 ## Pending (by priority)
-_(none — next product work is v1 Sprint B Activities in Backlog)_
+_(none — next product work is v1 Group Co-Gifting / Cooperacha in Backlog)_
 
 ## Backlog
-- [ ] **v1 Sprint B — Activities (Lists + Reservations + Budget Enforcement)**
-  - [ ] Each user adds their activity items (manual price + currency) (`REQ-ACT-005`)
-  - [ ] Reservations within an activity (default 1 active reservation per participant in `secret_santa`; configurable in `open_gifting`) (`REQ-RES-005`)
-  - [ ] Budget validation enforcing the activity's chosen `budget_mode` (`fixed`, `min_only`, `max_only`, `range`) (`REQ-ACT-005`)
 - [ ] **v1 — Group Co-Gifting ("Cooperacha")**
   - [ ] Allow a reserver of an expensive item to invite 1 or more friends to chip in and share that reservation
 - [ ] **v1 — Email confirmation**
