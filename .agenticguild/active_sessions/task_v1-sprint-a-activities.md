@@ -182,8 +182,8 @@ REQ tags: `REQ-ACT-001`..`005`, `REQ-ARCH-001`/`002`, `REQ-BLOCK-001`, `REQ-NOTI
   <step id="12" status="complete">Implement `ActivityDrawService` (seedable RNG) until step 11 green.</step>
   <step id="13" status="complete">Write failing specs for open_gifting Arrancar/cerrar altas: ≥2 accepted (FC3A); no assignments; seals participation (O6A/O2B layer-2). Trace [REQ-ACT-001].</step>
   <step id="14" status="complete">Implement Arrancar seal until step 13 green.</step>
-  <step id="15" status="pending">Write failing specs for leave (O7B): free pre-seal; post-draw leave forces Blind Bridge or Full Redraw choice; post-Arrancar leave without bridge; Blind Bridge validates exclusions and notifies only giver. Trace [REQ-ACT-003], [REQ-ACT-004].</step>
-  <step id="16" status="pending">Implement leave + `ActivityDropoutBridgeService` + Full Redraw until step 15 green (guard when &lt;3 remain: refuse redraw / require cancel — implementation risk).</step>
+  <step id="15" status="complete">Write failing specs for leave (O7B): free pre-seal; post-draw leave forces Blind Bridge or Full Redraw choice; post-Arrancar leave without bridge; Blind Bridge validates exclusions and notifies only giver. Trace [REQ-ACT-003], [REQ-ACT-004].</step>
+  <step id="16" status="complete">Implement leave + `ActivityDropoutBridgeService` + Full Redraw until step 15 green (guard when &lt;3 remain: refuse redraw / require cancel — implementation risk).</step>
   <step id="17" status="pending">Write failing request specs for `/api/v1` activity CRUD, participants, exclusions, draw/Arrancar, bridge/redraw, cancel/transfer, show assignment only to giver. Trace [REQ-ACT-001]..[005], [REQ-ARCH-001].</step>
   <step id="18" status="pending">Implement API controllers/serializers until step 17 green (no activity item/reservation endpoints — O1A).</step>
   <step id="19" status="pending">Write failing request/system specs for Hotwire: public activity invite preview by token (safe OG, no roster); logged-in board; create/manage flows parity with API rules; personal wishlist bridge links when allowed (O4B/O5B). Trace [REQ-ACT-001], [REQ-WISH-001].</step>
