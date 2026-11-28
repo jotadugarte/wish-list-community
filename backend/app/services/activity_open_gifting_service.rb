@@ -15,6 +15,7 @@ class ActivityOpenGiftingService
       raise ArgumentError, "Pre-condition failed: minimum 2 accepted participants required" if count < 2
 
       activity.transaction do
+        ActivityParticipant.expire_pending_invites!(activity)
         activity.update!(status: "sealed", sealed_at: Time.current, needs_dropout_recovery: false)
         AuditEvent.record!(
           actor: actor,

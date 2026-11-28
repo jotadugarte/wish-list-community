@@ -17,7 +17,9 @@ class ActivityPolicy < ApplicationPolicy
     return false if user.nil? || user.discarded? || record.nil? || record.cancelled?
     return true if creator?
     return false if blocked_from_activity?
-    return true if invited_or_accepted_participant?
+    return true if accepted_participant?
+    # Pending invitees may open the board only while the activity is still open.
+    return true if invited_participant? && !record.sealed?
 
     false
   end
@@ -76,6 +78,10 @@ class ActivityPolicy < ApplicationPolicy
 
   def invited_or_accepted_participant?
     record.participants.where(user_id: user.id, status: %w[invited accepted]).exists?
+  end
+
+  def invited_participant?
+    record.participants.where(user_id: user.id, status: "invited").exists?
   end
 
   def co_organizer?

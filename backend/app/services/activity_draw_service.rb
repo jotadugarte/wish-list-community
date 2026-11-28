@@ -29,6 +29,7 @@ class ActivityDrawService
       raise ArgumentError, "Post-condition failed: could not find Hamiltonian cycle" if cycle.nil?
 
       activity.transaction do
+        ActivityParticipant.expire_pending_invites!(activity)
         cycle.each do |giver_id, recipient_id|
           ActivityAssignment.create!(activity: activity, giver_id: giver_id, recipient_id: recipient_id)
         end

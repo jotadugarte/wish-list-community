@@ -47,6 +47,15 @@ class ActivityParticipant < ApplicationRecord
     self
   end
 
+  # [REQ-ACT-001] Expires pending invites when the activity seals (draw / Arrancar).
+  def self.expire_pending_invites!(activity)
+    raise ArgumentError, "Pre-condition failed: activity required" if activity.nil?
+
+    where(activity: activity, status: "invited").limit(500).find_each do |participant|
+      participant.update!(status: "declined")
+    end
+  end
+
   # [REQ-ACT-001] Declines a pending invitation.
   def decline!
     raise ArgumentError, "Pre-condition failed: must be invited" unless status == "invited"
