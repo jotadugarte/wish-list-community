@@ -95,13 +95,13 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
     if (repo == null) return;
     try {
       final bundle = await repo.fetchMineWithOpenGifts();
-      _holdsByItemId.removeWhere((_, __) => true);
+      _holdsByItemId.removeWhere((_, _) => true);
       for (final hold in bundle.reservations.take(200)) {
         if (hold.activityId == widget.activityId) {
           _holdsByItemId[hold.itemId] = hold;
         }
       }
-      _openGiftsByItemId.removeWhere((_, __) => true);
+      _openGiftsByItemId.removeWhere((_, _) => true);
       for (final gift in bundle.openGifts.take(200)) {
         if (gift.activityId == widget.activityId) {
           _openGiftsByItemId[gift.itemId] = gift;
