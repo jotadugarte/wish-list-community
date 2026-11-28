@@ -83,6 +83,7 @@ class ActivityAdminService
 
       activity.transaction do
         activity.update!(status: "cancelled", cancelled_at: Time.current)
+        ActivityParticipationCleanup.cleanup_cancelled_activity!(activity: activity, actor: actor)
         AuditEvent.record!(
           actor: actor,
           action: "activity.cancelled",

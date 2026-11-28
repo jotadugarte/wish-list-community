@@ -99,6 +99,11 @@ class ActivityParticipant < ApplicationRecord
 
   def mark_left!
     update!(status: "left", left_at: Time.current, co_organizer: false)
+    ActivityParticipationCleanup.cleanup_leaving_participant!(
+      activity: activity,
+      user: user,
+      actor: user
+    )
     raise "Post-condition failed: status must be left" unless status == "left"
   end
 

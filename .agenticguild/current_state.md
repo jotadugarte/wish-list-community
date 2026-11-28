@@ -6,6 +6,6 @@
   <execution_context>
     <active_skill>start-task</active_skill>
     <current_phase>3</current_phase>
-    <current_step>Step 12 in progress (FC2A cleanup implement)</current_step>
+    <current_step>Steps 5-12 complete; next Step 13 (notifications)</current_step>
   </execution_context>
 </agent_state>

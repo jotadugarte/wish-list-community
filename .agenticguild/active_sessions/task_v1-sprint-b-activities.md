@@ -173,7 +173,7 @@ No Secret Link / no personal friends/shared privacy on activity wishlists. Acces
   <step status="complete" id="9">Write failing specs for gift Path 1/2 + thank-you + 72h grace/auto-release on activity items (reuse services; activity-context notifications). Trace [REQ-GIFT-001]..[004], [REQ-RES-006], O1B.</step>
   <step status="complete" id="10">Implement/wire gift+grace in activity context until step 9 green.</step>
   <step status="complete" id="11">Write failing specs for FC2A cleanup hooks: leave / cancel activity / Block Wins cancel touched open reserves+gifts, archive leaver activity wishlist, notify; compose with existing A bridge/redraw. Trace [REQ-BLOCK-001], [REQ-ACT-003], [REQ-LIFE-001], FC2A.</step>
-  <step status="pending" id="12">Implement cleanup hooks until step 11 green.</step>
+  <step status="complete" id="12">Implement cleanup hooks until step 11 green.</step>
   <step status="pending" id="13">Write failing specs for O6A notification catalog + preference keys (activity-scoped copy): item touched while reserved, reserve/release/grace, purchased/delivered/received, budget rejected to item owner. Trace [REQ-NOTIF-001], O6A.</step>
   <step status="pending" id="14">Implement Activity B notifier + prefs until step 13 green.</step>
   <step status="pending" id="15">Write failing /api/v1 request specs: activity wishlist/items CRUD, reserve/extend/cancel, gift paths, my_reservations includes activity holds, open_gifting N setting pre-seal only, error shapes for budget/visibility/limit. Trace [REQ-ACT-005], [REQ-RES-004], [REQ-RES-005], [REQ-ARCH-001].</step>
