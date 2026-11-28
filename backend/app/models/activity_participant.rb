@@ -24,11 +24,14 @@ class ActivityParticipant < ApplicationRecord
     participant
   end
 
-  # [REQ-ACT-001] Accepts a pending invitation.
+  # [REQ-ACT-001] Accepts a pending invitation and applies O2B layer-1 freeze when needed.
   def accept!
     raise ArgumentError, "Pre-condition failed: must be invited" unless status == "invited"
 
-    update!(status: "accepted", accepted_at: Time.current)
+    transaction do
+      update!(status: "accepted", accepted_at: Time.current)
+      freeze_money_settings_if_first_invitee_accept!
+    end
     raise "Post-condition failed: status must be accepted" unless status == "accepted"
 
     self
@@ -53,5 +56,13 @@ class ActivityParticipant < ApplicationRecord
     raise "Post-condition failed: status must be left" unless status == "left"
 
     self
+  end
+
+  private
+
+  def freeze_money_settings_if_first_invitee_accept!
+    return if user_id == activity.creator_id
+
+    activity.freeze_money_settings!
   end
 end

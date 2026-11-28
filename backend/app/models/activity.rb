@@ -55,6 +55,65 @@ class Activity < ApplicationRecord
     participants.where(status: "accepted")
   end
 
+  # [REQ-ACT-001] O2B layer-1 freeze after the first non-creator invitee accepts.
+  def money_settings_frozen?
+    money_settings_frozen_at.present?
+  end
+
+  # [REQ-ACT-001] Updates money/visibility settings while O2B layer-1 is unlocked.
+  def update_settings!(actor:, currency: nil, budget_mode: nil, visibility_mode: nil, reservation_visibility: nil)
+    raise ArgumentError, "Pre-condition failed: actor required" if actor.nil?
+    raise ArgumentError, "Pre-condition failed: money settings are frozen" if money_settings_frozen?
+
+    attrs = {}
+    attrs[:currency] = currency if currency
+    if budget_mode
+      mode_vo = budget_mode.is_a?(BudgetMode) ? budget_mode : BudgetMode.new(budget_mode)
+      attrs[:budget_mode] = mode_vo.value
+      attrs[:budget_amount_cents] = mode_vo.amount_cents
+      attrs[:budget_max_cents] = mode_vo.max_cents
+    end
+    attrs[:visibility_mode] = visibility_mode if visibility_mode
+    attrs[:reservation_visibility] = reservation_visibility if reservation_visibility
+    update!(attrs) unless attrs.empty?
+    raise "Post-condition failed: settings must remain unfrozen after edit" if money_settings_frozen?
+
+    self
+  end
+
+  # [REQ-ACT-001] Soft name/dates remain editable with an audit notice after freeze.
+  def update_soft_fields!(actor:, name: nil, starts_on: nil, ends_on: nil)
+    raise ArgumentError, "Pre-condition failed: actor required" if actor.nil?
+
+    attrs = {}
+    attrs[:name] = name unless name.nil?
+    attrs[:starts_on] = starts_on unless starts_on.nil?
+    attrs[:ends_on] = ends_on unless ends_on.nil?
+    return self if attrs.empty?
+
+    transaction do
+      update!(attrs)
+      AuditEvent.record!(
+        actor: actor,
+        action: "activity.soft_fields_updated",
+        auditable: self,
+        metadata: attrs.transform_values { |value| value.respond_to?(:iso8601) ? value.iso8601 : value }
+      )
+    end
+
+    self
+  end
+
+  # [REQ-ACT-001] Locks money/visibility settings (idempotent).
+  def freeze_money_settings!
+    return self if money_settings_frozen?
+
+    update!(money_settings_frozen_at: Time.current)
+    raise "Post-condition failed: money settings must be frozen" unless money_settings_frozen?
+
+    self
+  end
+
   private
 
   def mint_share_token_if_blank
