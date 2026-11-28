@@ -356,7 +356,7 @@ class ActivityNotifier
     end
 
     def visible_hold_to_owner?(activity)
-      activity.reservation_visibility == "visible_to_recipient"
+      activity.reservation_visibility_vo.visible_to_recipient?
     end
 
     def notify_owner_on_visible_hold!(reservation:, event_key:, title_key:, body_key:)

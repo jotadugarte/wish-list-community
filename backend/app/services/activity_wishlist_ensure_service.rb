@@ -16,15 +16,23 @@ class ActivityWishlistEnsureService
     raise ArgumentError, "Pre-condition failed: user required" if user.nil?
 
     existing = Wishlist.find_by(activity_id: activity.id, owner_id: user.id)
-    if existing
-      existing.restore!(actor: user) if existing.discarded?
-      if existing.max_reservations_per_user.nil?
-        existing.update!(max_reservations_per_user: ActivityReservationLimitService.default_max_for(activity))
-      end
-      raise "Post-condition failed: activity wishlist must stay activity-scoped" unless existing.activity_id == activity.id
-      return existing
-    end
+    return restore_existing_activity_wishlist!(existing, activity, user) if existing
 
+    create_activity_wishlist!(activity: activity, user: user)
+  end
+
+  def self.restore_existing_activity_wishlist!(wishlist, activity, user)
+    wishlist.restore!(actor: user) if wishlist.discarded?
+    if wishlist.max_reservations_per_user.nil?
+      wishlist.update!(max_reservations_per_user: ActivityReservationLimitService.default_max_for(activity))
+    end
+    raise "Post-condition failed: activity wishlist must stay activity-scoped" unless wishlist.activity_id == activity.id
+
+    wishlist
+  end
+  private_class_method :restore_existing_activity_wishlist!
+
+  def self.create_activity_wishlist!(activity:, user:)
     wishlist = Wishlist.create!(
       owner: user,
       activity_id: activity.id,
@@ -39,6 +47,7 @@ class ActivityWishlistEnsureService
 
     wishlist
   end
+  private_class_method :create_activity_wishlist!
 
   # [REQ-ARCH-002] Backfills activity wishlists for every accepted participant.
   def self.backfill_accepted!(activity:)

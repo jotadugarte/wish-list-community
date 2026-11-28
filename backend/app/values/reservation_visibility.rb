@@ -17,4 +17,12 @@ class ReservationVisibility
   def to_s
     value
   end
+
+  def visible_to_recipient?
+    value == "visible_to_recipient"
+  end
+
+  def hidden_from_recipient?
+    value == "hidden_from_recipient"
+  end
 end

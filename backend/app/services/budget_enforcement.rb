@@ -6,29 +6,42 @@ class BudgetEnforcement
   # [REQ-ACT-005] Pre: BudgetMode VO. Post: raises when price violates mode.
   def self.assert_price!(budget_mode:, price_cents:)
     raise ArgumentError, "Pre-condition failed: budget_mode must be BudgetMode" unless budget_mode.is_a?(BudgetMode)
-
     return if budget_mode.none?
+    raise ArgumentError, "Invalid budget: price is required for #{budget_mode.value}" if price_cents.nil?
 
-    if price_cents.nil?
-      raise ArgumentError, "Invalid budget: price is required for #{budget_mode.value}"
-    end
-
-    cents = Integer(price_cents)
-    case budget_mode.value
-    when "fixed"
-      raise ArgumentError, "Invalid budget: price must equal fixed amount" unless cents == budget_mode.amount_cents
-    when "min_only"
-      raise ArgumentError, "Invalid budget: price below min" if cents < budget_mode.amount_cents
-    when "max_only"
-      raise ArgumentError, "Invalid budget: price above max" if cents > budget_mode.amount_cents
-    when "range"
-      if cents < budget_mode.amount_cents || cents > budget_mode.max_cents
-        raise ArgumentError, "Invalid budget: price outside range"
-      end
-    else
-      raise ArgumentError, "Pre-condition failed: unsupported budget_mode #{budget_mode.value}"
-    end
+    assert_mode_amount!(budget_mode, Integer(price_cents))
   end
+
+  def self.assert_mode_amount!(mode, cents)
+    return assert_fixed_amount!(mode, cents) if mode.fixed?
+    return assert_min_amount!(mode, cents) if mode.min_only?
+    return assert_max_amount!(mode, cents) if mode.max_only?
+    return assert_range_amount!(mode, cents) if mode.range?
+
+    raise ArgumentError, "Pre-condition failed: unsupported budget_mode #{mode.value}"
+  end
+  private_class_method :assert_mode_amount!
+
+  def self.assert_fixed_amount!(mode, cents)
+    raise ArgumentError, "Invalid budget: price must equal fixed amount" unless cents == mode.amount_cents
+  end
+  private_class_method :assert_fixed_amount!
+
+  def self.assert_min_amount!(mode, cents)
+    raise ArgumentError, "Invalid budget: price below min" if cents < mode.amount_cents
+  end
+  private_class_method :assert_min_amount!
+
+  def self.assert_max_amount!(mode, cents)
+    raise ArgumentError, "Invalid budget: price above max" if cents > mode.amount_cents
+  end
+  private_class_method :assert_max_amount!
+
+  def self.assert_range_amount!(mode, cents)
+    out_of_range = cents < mode.amount_cents || cents > mode.max_cents
+    raise ArgumentError, "Invalid budget: price outside range" if out_of_range
+  end
+  private_class_method :assert_range_amount!
 
   # [REQ-ACT-005] Activity item currency must match activity currency.
   def self.assert_currency!(activity:, currency:)

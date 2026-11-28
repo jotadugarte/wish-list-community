@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe "Activity gift Path 1/2 + grace [REQ-GIFT-001] [REQ-RES-006]" do
+RSpec.describe "Activity gift Path 1/2 + grace [REQ-GIFT-001] [REQ-GIFT-002] [REQ-RES-002] [REQ-RES-006]" do
   let(:creator) { create(:user) }
   let(:giver) { create(:user, time_zone: "UTC", locale: "en") }
   let(:recipient) { create(:user, locale: "es") }
@@ -29,8 +29,8 @@ RSpec.describe "Activity gift Path 1/2 + grace [REQ-GIFT-001] [REQ-RES-006]" do
     create(:item, wishlist: list, title: title)
   end
 
-  describe "Path 1 on activity-scoped item [REQ-GIFT-001] [REQ-GIFT-004] O1B" do
-    it "create reservation → mark_purchased → mark_delivered → confirm_received [REQ-GIFT-001]" do
+  describe "Path 1 on activity-scoped item [REQ-GIFT-001] [REQ-GIFT-002] [REQ-GIFT-004] [REQ-RES-002] O1B" do
+    it "create reservation → mark_purchased → mark_delivered → confirm_received [REQ-GIFT-001] [REQ-GIFT-002]" do
       activity = sealed_open_activity!
       item = activity_item!(activity, recipient, title: "Libro actividad")
       expect(item.wishlist.activity_scoped?).to eq(true)

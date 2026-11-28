@@ -262,36 +262,60 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
 
   Widget? _peerActions(WishlistItem item, AppStrings s) {
     final reservations = widget.reservationRepository;
-    final gifts = widget.giftRepository;
     if (reservations == null) return null;
 
+    final holdActions = _holdPeerActions(item, reservations, s);
+    if (holdActions != null) return holdActions;
+
+    final giftActions = _openGiftPeerActions(item, s);
+    if (giftActions != null) return giftActions;
+
+    return _availabilityPeerTrailing(item, reservations, s);
+  }
+
+  Widget? _holdPeerActions(
+    WishlistItem item,
+    ReservationRepository reservations,
+    AppStrings s,
+  ) {
     final hold = _holdsByItemId[item.id];
-    if (hold != null &&
-        (hold.status == 'active' || hold.status == 'expired_grace')) {
-      return Wrap(
-        spacing: 4,
-        children: [
+    if (hold == null) return null;
+    if (hold.status != 'active' && hold.status != 'expired_grace') return null;
+
+    final gifts = widget.giftRepository;
+    return Wrap(
+      spacing: 4,
+      children: [
+        TextButton(
+          onPressed: () => _extendHold(hold, reservations),
+          child: Text(s.extendReservationButton),
+        ),
+        if (gifts != null)
           TextButton(
-            onPressed: () => _extendHold(hold, reservations),
-            child: Text(s.extendReservationButton),
+            onPressed: () => _markPurchased(hold, gifts),
+            child: Text(s.markPurchasedButton),
           ),
-          if (gifts != null)
-            TextButton(
-              onPressed: () => _markPurchased(hold, gifts),
-              child: Text(s.markPurchasedButton),
-            ),
-        ],
-      );
-    }
+      ],
+    );
+  }
 
+  Widget? _openGiftPeerActions(WishlistItem item, AppStrings s) {
+    final gifts = widget.giftRepository;
     final openGift = _openGiftsByItemId[item.id];
-    if (openGift != null && openGift.status == 'purchased_secret' && gifts != null) {
-      return TextButton(
-        onPressed: () => _markDelivered(openGift, gifts),
-        child: Text(s.markDeliveredButton),
-      );
-    }
+    if (gifts == null || openGift == null) return null;
+    if (openGift.status != 'purchased_secret') return null;
 
+    return TextButton(
+      onPressed: () => _markDelivered(openGift, gifts),
+      child: Text(s.markDeliveredButton),
+    );
+  }
+
+  Widget _availabilityPeerTrailing(
+    WishlistItem item,
+    ReservationRepository reservations,
+    AppStrings s,
+  ) {
     if (item.availability == 'available' || item.availability == null) {
       return TextButton(
         onPressed: () => _reserve(item, reservations),
