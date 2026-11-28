@@ -160,6 +160,14 @@ class Activity < ApplicationRecord
       updated_at: updated_at
     }
     payload[:share_token] = share_token if viewer.present? && viewer.id == creator_id
+    if viewer.present?
+      payload[:viewer_status] =
+        if viewer.id == creator_id
+          participants.find_by(user_id: viewer.id)&.status || "accepted"
+        else
+          participants.find_by(user_id: viewer.id)&.status
+        end
+    end
     payload
   end
 

@@ -63,5 +63,14 @@ RSpec.describe ActivityParticipant do
 
       expect(participant.reload.co_organizer).to eq(true)
     end
+
+    it "re-invites a declined participant [REQ-ACT-001]" do
+      participant = described_class.invite!(activity: activity, user: invitee, actor: creator)
+      participant.decline!
+      revived = described_class.invite!(activity: activity, user: invitee, actor: creator)
+
+      expect(revived.id).to eq(participant.id)
+      expect(revived.reload.status).to eq("invited")
+    end
   end
 end

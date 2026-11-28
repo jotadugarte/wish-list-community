@@ -39,6 +39,34 @@ module Member
       @participants = @activity.participants.includes(:user).where(status: %w[invited accepted]).limit(200)
       @my_assignment = ActivityDrawService.assignment_for(activity: @activity, viewer: current_user)
       @wishlist_bridges = personal_wishlist_bridges
+      @viewer_status = @activity.participants.find_by(user_id: current_user.id)&.status
+      @viewer_status = "accepted" if current_user.id == @activity.creator_id && @viewer_status.nil?
+    end
+
+    # [REQ-ACT-001] Accept a pending invite from the Activity Link surface.
+    def accept
+      @activity = Activity.find(params[:id])
+      authorize @activity, :join?
+      participant = @activity.participants.find_by!(user: current_user, status: "invited")
+      participant.accept!
+      redirect_to member_activity_path(@activity), status: :see_other
+    rescue ActiveRecord::RecordNotFound, ArgumentError
+      redirect_to activity_link_path(share_token: @activity.share_token),
+                  alert: I18n.t("activities.errors.invite_unavailable"),
+                  status: :see_other
+    end
+
+    # [REQ-ACT-001] Decline a pending invite.
+    def decline
+      @activity = Activity.find(params[:id])
+      authorize @activity, :join?
+      participant = @activity.participants.find_by!(user: current_user, status: "invited")
+      participant.decline!
+      redirect_to member_activities_path, status: :see_other
+    rescue ActiveRecord::RecordNotFound, ArgumentError
+      redirect_to activity_link_path(share_token: @activity.share_token),
+                  alert: I18n.t("activities.errors.invite_unavailable"),
+                  status: :see_other
     end
 
     private

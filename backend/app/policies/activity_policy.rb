@@ -12,12 +12,12 @@ class ActivityPolicy < ApplicationPolicy
     index?
   end
 
-  # [REQ-ACT-001] [REQ-BLOCK-001] Board access for creator or accepted participants; Block Wins.
+  # [REQ-ACT-001] [REQ-BLOCK-001] Board access for creator or invited/accepted participants; Block Wins.
   def show?
     return false if user.nil? || user.discarded? || record.nil? || record.cancelled?
     return true if creator?
     return false if blocked_from_activity?
-    return true if accepted_participant?
+    return true if invited_or_accepted_participant?
 
     false
   end
@@ -53,11 +53,11 @@ class ActivityPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     MAX_SCOPE_ROWS = 500
 
-    # [REQ-ACT-001] Activities where the viewer is creator or accepted participant.
+    # [REQ-ACT-001] Activities where the viewer is creator or invited/accepted participant.
     def resolve
       return scope.none if user.nil? || user.discarded?
 
-      participant_ids = ActivityParticipant.where(user_id: user.id, status: "accepted")
+      participant_ids = ActivityParticipant.where(user_id: user.id, status: %w[invited accepted])
                                           .limit(MAX_SCOPE_ROWS)
                                           .pluck(:activity_id)
       scope.where(creator_id: user.id).or(scope.where(id: participant_ids)).limit(MAX_SCOPE_ROWS)
@@ -72,6 +72,10 @@ class ActivityPolicy < ApplicationPolicy
 
   def accepted_participant?
     record.participants.where(user_id: user.id, status: "accepted").exists?
+  end
+
+  def invited_or_accepted_participant?
+    record.participants.where(user_id: user.id, status: %w[invited accepted]).exists?
   end
 
   def co_organizer?

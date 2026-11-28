@@ -95,6 +95,22 @@ RSpec.describe ActivityDropoutBridgeService do
         described_class.blind_bridge!(activity: activity, actor: creator)
       }.to raise_error(ArgumentError, /exclusion|solvable|bridge/i)
     end
+
+    it "notifies every bridged giver when multiple leavers are healed [REQ-ACT-003]" do
+      d = create(:user)
+      ActivityParticipant.invite!(activity: activity, user: d, actor: creator).accept!
+      ActivityDrawService.draw!(activity: activity, actor: creator, seed: 12)
+      described_class.leave!(activity: activity, actor: a)
+      described_class.leave!(activity: activity, actor: b)
+
+      expect {
+        described_class.blind_bridge!(activity: activity, actor: creator)
+      }.to change { Notification.where(event_key: "activity.blind_bridged").count }.by_at_least(1)
+
+      expect(activity.reload.needs_dropout_recovery?).to eq(false)
+      expect(ActivityAssignment.where(activity: activity, giver: a)).not_to exist
+      expect(ActivityAssignment.where(activity: activity, giver: b)).not_to exist
+    end
   end
 
   describe "Full Redraw [REQ-ACT-003]" do

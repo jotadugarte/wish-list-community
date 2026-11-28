@@ -7,7 +7,7 @@ module Api
     class ActivitiesController < BaseController
       skip_after_action :verify_policy_scoped
       rate_limit to: 30, within: 3.minutes,
-                 only: %i[create invite accept leave draw arrancar blind_bridge full_redraw
+                 only: %i[create invite accept decline leave draw arrancar blind_bridge full_redraw
                           cancel transfer appoint_co_organizer add_exclusion],
                  name: "api_activities_write",
                  by: -> { current_user&.id || request.remote_ip },
@@ -51,7 +51,17 @@ module Api
         participant = activity.participants.find_by!(user: current_user, status: "invited")
         participant.accept!
         render json: { participant: participant_json(participant) }, status: :ok
-      rescue ArgumentError, ActiveRecord::RecordNotFound
+      rescue ArgumentError
+        render json: { errors: [ I18n.t("api.v1.errors.unprocessable") ] }, status: :unprocessable_content
+      end
+
+      def decline
+        activity = find_activity!
+        authorize activity, :join?
+        participant = activity.participants.find_by!(user: current_user, status: "invited")
+        participant.decline!
+        render json: { participant: participant_json(participant) }, status: :ok
+      rescue ArgumentError
         render json: { errors: [ I18n.t("api.v1.errors.unprocessable") ] }, status: :unprocessable_content
       end
 
@@ -105,13 +115,10 @@ module Api
       def blind_bridge
         activity = find_activity!
         authorize activity, :recover_dropout?
-        result = ActivityDropoutBridgeService.blind_bridge!(activity: activity, actor: current_user)
+        ActivityDropoutBridgeService.blind_bridge!(activity: activity, actor: current_user)
         render json: {
           activity: activity.reload.as_api_json(viewer: current_user),
-          blind_bridge: {
-            notified_giver_id: result.notified_giver_id,
-            revealed_full_map: result.revealed_full_map
-          }
+          blind_bridge: { revealed_full_map: false }
         }, status: :ok
       rescue ArgumentError
         render json: { errors: [ I18n.t("api.v1.errors.unprocessable") ] }, status: :unprocessable_content

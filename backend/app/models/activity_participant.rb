@@ -11,12 +11,21 @@ class ActivityParticipant < ApplicationRecord
   validates :status, presence: true, inclusion: { in: STATUSES }
   validates :user_id, uniqueness: { scope: :activity_id }
 
-  # [REQ-ACT-001] Invites a user into the activity as pending.
+  # [REQ-ACT-001] Invites a user into the activity as pending (reactivates declined/left rows).
   def self.invite!(activity:, user:, actor:)
     raise ArgumentError, "Pre-condition failed: activity required" if activity.nil?
     raise ArgumentError, "Pre-condition failed: user required" if user.nil?
     raise ArgumentError, "Pre-condition failed: actor required" if actor.nil?
     raise ArgumentError, "Pre-condition failed: activity must be open" if activity.cancelled? || activity.sealed?
+
+    existing = find_by(activity: activity, user: user)
+    if existing.present?
+      raise ArgumentError, "Pre-condition failed: user already invited or accepted" if %w[invited accepted].include?(existing.status)
+
+      existing.update!(status: "invited", accepted_at: nil, left_at: nil, co_organizer: false)
+      raise "Post-condition failed: invite must be invited" unless existing.status == "invited"
+      return existing
+    end
 
     participant = create!(activity: activity, user: user, status: "invited", co_organizer: false)
     raise "Post-condition failed: invite must be invited" unless participant.status == "invited"
@@ -105,4 +114,3 @@ UserBlock.register_cleanup_hook(:activity_block_wins) do |blocker, blocked|
     affected.each { |participant| participant.force_leave!(require_cure: require_cure) }
   end
 end
-

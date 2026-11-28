@@ -134,6 +134,7 @@ class AppStrings {
   final String noActivitiesYet;
   final String activityInviteAction;
   final String activityAcceptAction;
+  final String activityDeclineAction;
   final String activityDrawAction;
   final String activityArrancarAction;
   final String activityLeaveAction;
@@ -278,6 +279,7 @@ class AppStrings {
     required this.noActivitiesYet,
     required this.activityInviteAction,
     required this.activityAcceptAction,
+    required this.activityDeclineAction,
     required this.activityDrawAction,
     required this.activityArrancarAction,
     required this.activityLeaveAction,
@@ -472,6 +474,7 @@ class AppStrings {
     noActivitiesYet: 'Aún no tienes actividades',
     activityInviteAction: 'Invitar',
     activityAcceptAction: 'Aceptar invitación',
+    activityDeclineAction: 'Rechazar',
     activityDrawAction: 'Sortear',
     activityArrancarAction: 'Arrancar',
     activityLeaveAction: 'Salirme',
@@ -618,6 +621,7 @@ class AppStrings {
     noActivitiesYet: 'No activities yet',
     activityInviteAction: 'Invite',
     activityAcceptAction: 'Accept invite',
+    activityDeclineAction: 'Decline',
     activityDrawAction: 'Draw',
     activityArrancarAction: 'Start activity',
     activityLeaveAction: 'Leave',

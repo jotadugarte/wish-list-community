@@ -25,6 +25,7 @@ class ActivityDrawService
         ordered = ids.shuffle(random: rng)
         cycle = cycle_from_order(ordered, activity)
       end
+      cycle ||= ActivityExclusionService.find_hamiltonian_cycle(activity: activity)
       raise ArgumentError, "Post-condition failed: could not find Hamiltonian cycle" if cycle.nil?
 
       activity.transaction do

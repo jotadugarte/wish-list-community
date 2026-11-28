@@ -24,6 +24,7 @@ class ActivityDropoutBridgeService
     end
 
     # [REQ-ACT-003] [REQ-ACT-004] Blind Auto-Bridge: heal A→B→C into A→C without revealing the map.
+    # Returns the first bridged pair for callers; every bridged giver is notified.
     def blind_bridge!(activity:, actor:)
       raise ArgumentError, "Pre-condition failed: sealed secret_santa required" unless activity.sealed? && activity.secret_santa?
       raise ArgumentError, "Pre-condition failed: dropout recovery required" unless activity.needs_dropout_recovery?
@@ -32,8 +33,7 @@ class ActivityDropoutBridgeService
       leavers = left_user_ids(activity)
       raise ArgumentError, "Pre-condition failed: no leavers to bridge" if leavers.empty?
 
-      notified_giver_id = nil
-      new_recipient_id = nil
+      bridged_pairs = []
 
       activity.transaction do
         leavers.first(ActivityExclusionService::MAX_PARTICIPANTS).each do |leaver_id|
@@ -52,9 +52,10 @@ class ActivityDropoutBridgeService
 
           outgoing.destroy!
           incoming.update!(recipient_id: new_recipient)
-          notified_giver_id = incoming.giver_id
-          new_recipient_id = new_recipient
+          bridged_pairs << { giver_id: incoming.giver_id, recipient_id: new_recipient }
         end
+
+        raise ArgumentError, "Post-condition failed: bridge did not reconnect a giver" if bridged_pairs.empty?
 
         # Remove any dangling assignment edges for leavers.
         ActivityAssignment.where(activity: activity, giver_id: leavers).limit(500).delete_all
@@ -64,15 +65,15 @@ class ActivityDropoutBridgeService
           actor: actor,
           action: "activity.blind_bridged",
           auditable: activity,
-          metadata: { notified_giver_id: notified_giver_id }
+          metadata: { bridged_count: bridged_pairs.size }
         )
       end
 
-      raise ArgumentError, "Post-condition failed: bridge did not reconnect a giver" if notified_giver_id.nil?
-
-      result = BlindBridgeResult.new(notified_giver_id: notified_giver_id, new_recipient_id: new_recipient_id)
-      ActivityNotifier.blind_bridged!(activity: activity, result: result)
-      result
+      results = bridged_pairs.map do |pair|
+        BlindBridgeResult.new(notified_giver_id: pair[:giver_id], new_recipient_id: pair[:recipient_id])
+      end
+      results.each { |result| ActivityNotifier.blind_bridged!(activity: activity, result: result) }
+      results.first
     end
 
     # [REQ-ACT-003] Full Redraw among remaining accepted participants.

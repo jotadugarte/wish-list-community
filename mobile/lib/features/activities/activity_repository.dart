@@ -90,6 +90,14 @@ class ActivityRepository {
     );
   }
 
+  Future<void> declineInvite({required int activityId}) async {
+    _assertId(activityId);
+    await apiClient.request(
+      method: 'POST',
+      path: '/api/v1/activities/$activityId/participants/decline',
+    );
+  }
+
   Future<ActivityShell> draw({required int activityId, int? seed}) async {
     _assertId(activityId);
     final response = await apiClient.request(

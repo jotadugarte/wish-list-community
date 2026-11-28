@@ -10,7 +10,12 @@ Rails.application.routes.draw do
 
   namespace :member, path: "app" do
     root to: "home#show"
-    resources :activities, only: %i[index show new create]
+    resources :activities, only: %i[index show new create] do
+      member do
+        post :accept
+        post :decline
+      end
+    end
     resources :wishlists, only: %i[index show new create edit update destroy] do
       member do
         post :rotate_share_token
@@ -152,6 +157,7 @@ Rails.application.routes.draw do
           get :my_assignment
           post "participants", action: :invite
           post "participants/accept", action: :accept
+          post "participants/decline", action: :decline
           delete "participants/me", action: :leave
           post "exclusions", action: :add_exclusion
           post "co_organizers", action: :appoint_co_organizer

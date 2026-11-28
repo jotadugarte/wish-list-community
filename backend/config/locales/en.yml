@@ -143,8 +143,11 @@ en:
     invitation_title: "Activity invitation: %{name}"
     og_description: "You've been invited to a group gift activity. Sign in to continue."
     guest_body: "This is a private activity invitation. Log in or sign up to open the board."
+    invitee_body: "You have a pending invitation. Accept to open the board, or decline."
     login_cta: "Log in"
     signup_cta: "Sign up"
+    accept_cta: "Accept invitation"
+    decline_cta: "Decline"
     index_heading: "Activities"
     new_heading: "New activity"
     new_cta: "Create activity"
@@ -157,6 +160,7 @@ en:
     wishlist_bridge_empty: "No personal wishlists visible yet."
     errors:
       invalid: "Unable to save activity"
+      invite_unavailable: "That invitation is no longer available"
   secret_links:
     invitation_title: "Wishlist from @%{username}"
     og_description: "You've been invited to view a private wishlist. Sign in to continue."

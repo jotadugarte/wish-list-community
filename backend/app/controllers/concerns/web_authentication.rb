@@ -5,7 +5,8 @@
 module WebAuthentication
   extend ActiveSupport::Concern
 
-  RETURN_TO_PATTERN = %r{\A/s/[A-Za-z0-9\-_]+\z}
+  # Secret Link + Activity Link only (same opaque token alphabet).
+  RETURN_TO_PATTERN = %r{\A/(?:s|a)/[A-Za-z0-9\-_]+\z}
 
   included do
     helper_method :current_user, :logged_in? if respond_to?(:helper_method)
@@ -63,7 +64,7 @@ module WebAuthentication
     cookies.delete(:session_id, session_cookie_options.except(:value))
   end
 
-  # [REQ-WISH-005] Allowlists same-origin Secret Link return_to paths only.
+  # [REQ-WISH-005] [REQ-ACT-001] Allowlists same-origin Secret/Activity Link return_to paths only.
   def safe_return_to(raw)
     candidate = raw.to_s.strip
     return nil if candidate.blank?

@@ -50,7 +50,7 @@ class BudgetMode
   alias eql? ==
 
   def hash
-    [value, amount_cents, max_cents].hash
+    [ value, amount_cents, max_cents ].hash
   end
 
   def to_s

@@ -14,6 +14,7 @@ class ActivityShell {
   final String? shareToken;
   final bool needsDropoutRecovery;
   final String? creatorUsername;
+  final String? viewerStatus;
 
   const ActivityShell({
     required this.id,
@@ -29,6 +30,7 @@ class ActivityShell {
     this.budgetMaxCents,
     this.shareToken,
     this.creatorUsername,
+    this.viewerStatus,
   });
 
   factory ActivityShell.fromJson(Map<String, dynamic> json) {
@@ -49,12 +51,14 @@ class ActivityShell {
       creatorUsername: creator is Map<String, dynamic>
           ? creator['username'] as String?
           : null,
+      viewerStatus: json['viewer_status'] as String?,
     );
   }
 
   bool get isSecretSanta => assignmentMode == 'secret_santa';
   bool get isOpenGifting => assignmentMode == 'open_gifting';
   bool get isSealed => status == 'sealed';
+  bool get isInvited => viewerStatus == 'invited';
 }
 
 class ActivityAssignmentView {

@@ -99,6 +99,36 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
+                        if (activity.isInvited) ...[
+                          ElevatedButton(
+                            onPressed: () async {
+                              try {
+                                await widget.activityRepository
+                                    .acceptInvite(activityId: activity.id);
+                                await _load();
+                              } catch (e) {
+                                if (!mounted) return;
+                                setState(() => _error = e.toString());
+                              }
+                            },
+                            child: Text(s.activityAcceptAction),
+                          ),
+                          OutlinedButton(
+                            onPressed: () async {
+                              final navigator = Navigator.of(context);
+                              try {
+                                await widget.activityRepository
+                                    .declineInvite(activityId: activity.id);
+                                if (!mounted) return;
+                                navigator.maybePop();
+                              } catch (e) {
+                                if (!mounted) return;
+                                setState(() => _error = e.toString());
+                              }
+                            },
+                            child: Text(s.activityDeclineAction),
+                          ),
+                        ],
                         if (!activity.isSealed && activity.isSecretSanta)
                           ElevatedButton(
                             onPressed: () => _run(

@@ -199,3 +199,50 @@ REQ tags: `REQ-ACT-001`..`005`, `REQ-ARCH-001`/`002`, `REQ-BLOCK-001`, `REQ-NOTI
 </implementation_plan>
 
 **PLAN CONFIRMED** by owner 2026-11-27 (America/Costa_Rica). Spec locked for `start-task` handoff. This explore writes no application code.
+
+## QA reviewer record — 2026-11-28 05:55 UTC-06:00
+
+**Status:** not posted  
+**Branch:** `cursor/v1-sprint-a-activities-b870`  
+**Environment:** cloud headless (mise Ruby 3.4.13, Flutter 3.50.1, Postgres test DB, RSpec transactional fixtures, Flutter InMemoryTokenStorage mocks)  
+**Profile:** `docs/ai/qa_profile.md`  
+**Matrix:** `/cursor/stores/bc-32a5179f-cc50-4940-94d7-70abc32641c4/internal/sprint-a-qa-matrix.md`
+
+### Prerequisites
+- Flutter / Ruby / bundle / rails runner: ready
+- Test DB via RSpec: ready (no seeded staging API)
+- Owner device / live SMTP-FCM: deferred per profile
+
+### Results
+| ID | Result |
+| :--- | :--- |
+| QA-SA-01 smoke es activity strings | passed |
+| QA-SA-02 smoke en activity strings | passed |
+| QA-SA-03 Activity/BudgetMode models | passed |
+| QA-SA-04 O2B freeze | passed |
+| QA-SA-05 Block Wins FC1A + policy | passed |
+| QA-SA-06 Co-org / cancel / transfer FC2C | passed |
+| QA-SA-07 Exclusions solvability | passed |
+| QA-SA-08 Secret Santa draw | passed |
+| QA-SA-09 Arrancar open_gifting FC3A | passed |
+| QA-SA-10 Blind Bridge / Full Redraw | passed |
+| QA-SA-11 API /api/v1/activities | passed |
+| QA-SA-12 Hotwire /a/:token | passed |
+| QA-SA-13 Activity notifications | passed |
+| QA-SA-14 Flutter activity screens | passed |
+| QA-SA-15 Deep link /a/:token | passed |
+| QA-SA-16 flutter analyze + full suite (102) | passed |
+| QA-SA-17 Full RSpec (495/0) | passed |
+| QA-SA-18 Owner-device activity UX | owner to run (deferred) |
+| QA-SA-19 Live email/FCM | owner to run (forbidden in cloud) |
+
+### Not run (named)
+- Real iOS/Android simulator/device activity flows
+- Live SMTP / FCM delivery for activity events
+- Real-browser Hotwire invite walk
+
+### Product bugs
+None found in this pass.
+
+### Temporary files
+Created and removed: `mobile/test_qa/smoke_sprint_a_activities_test.dart`
