@@ -34,4 +34,13 @@ class FriendshipPolicy < ApplicationPolicy
 
     record.requester_id == user.id || record.addressee_id == user.id
   end
+
+  # [REQ-SOC-001] Scope listings to friendships where the viewer participates.
+  class Scope < ApplicationPolicy::Scope
+    def resolve
+      return scope.none if user.nil? || user.discarded?
+
+      scope.where(requester_id: user.id).or(scope.where(addressee_id: user.id))
+    end
+  end
 end

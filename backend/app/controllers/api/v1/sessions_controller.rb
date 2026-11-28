@@ -9,7 +9,7 @@ module Api
       skip_after_action :verify_authorized
       skip_after_action :verify_policy_scoped
       rate_limit to: 10, within: 3.minutes, only: :create, name: "api_session_create"
-      rate_limit to: 20, within: 3.minutes, only: :destroy, name: "api_session_destroy",
+      rate_limit to: 20, within: 3.minutes, only: %i[update destroy], name: "api_session_mutate",
                     by: -> { current_user&.id || request.remote_ip }, with: -> {
         render json: { error: I18n.t("api.v1.errors.rate_limited") }, status: :too_many_requests
       }
@@ -24,7 +24,7 @@ module Api
         _api_token, raw_token = ApiToken.issue_for!(
           user,
           device_name: params[:device_name],
-          fcm_token: params[:fcm_token]
+          fcm_token: incoming_fcm_token
         )
 
         render json: {
@@ -33,10 +33,22 @@ module Api
         }, status: :created
       end
 
+      # [REQ-NOTIF-002] Rebinds FCM device_token on an existing authenticated session (e.g. restore).
+      def update
+        current_api_token.bind_device_token!(incoming_fcm_token)
+        head :no_content
+      end
+
       # [REQ-AUTH-001] [REQ-NOTIF-002] Revokes the current API token and deletes its bound push DeviceToken.
       def destroy
         current_api_token.revoke!
         head :no_content
+      end
+
+      private
+
+      def incoming_fcm_token
+        params[:fcm_token].presence || params[:device_token]
       end
     end
   end

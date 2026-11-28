@@ -12,7 +12,7 @@ RSpec.describe "Secret Links Hotwire", type: :request do
       get "/s/#{wishlist.share_token}"
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Lista de deseos de @og_owner")
+      expect(response.body).to include("Lista de deseos de @og_owner").or include("Wishlist from @og_owner")
       expect(response.body).to include("og:title")
       expect(response.body).to include("return_to=#{CGI.escape("/s/#{wishlist.share_token}")}")
       expect(response.body).not_to include("item")

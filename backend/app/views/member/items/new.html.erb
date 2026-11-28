@@ -1,0 +1,20 @@
+<section class="space-y-4 max-w-lg" data-controller="image-compress">
+  <h1 class="text-2xl font-semibold"><%= t("member.items.new") %></h1>
+  <%= form_with model: @item, url: member_wishlist_items_path(@wishlist), method: :post, html: { multipart: true } do |f| %>
+    <div>
+      <%= f.label :title %>
+      <%= f.text_field :title, required: true %>
+    </div>
+    <div>
+      <%= label_tag "item[links][]", t("member.items.paste_url") %>
+      <%= text_field_tag "item[links][]", nil, placeholder: "https://" %>
+    </div>
+    <div>
+      <%= label_tag :images, t("member.items.images") %>
+      <%= file_field_tag "images[]", multiple: true, accept: "image/*",
+            data: { image_compress_target: "input", action: "change->image-compress#compress" } %>
+      <p class="text-sm text-stone-500"><%= t("member.items.compress_hint") %></p>
+    </div>
+    <%= f.submit t("member.items.create") %>
+  <% end %>
+</section>

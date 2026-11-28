@@ -1,5 +1,125 @@
 en:
   hello: "Hello world"
+  member:
+    errors:
+      not_found: "Not found"
+      action_failed: "That action could not be completed."
+    notifications:
+      empty: "No notifications yet."
+      mark_read: "Mark read"
+      marked_read: "Marked as read."
+      prefs_heading: "Notification preferences"
+      prefs_save: "Save preferences"
+      prefs_saved: "Preferences saved."
+    settings:
+      delete_heading: "Delete account"
+      delete_help: "Soft-deletes your account. You may restore within 30 days."
+      delete_account: "Delete my account"
+      delete_confirm: "Delete your account?"
+      account_deleted: "Account deleted."
+    reservations:
+      heading: "Active reservations"
+      empty: "No active reservations."
+      created: "Reserved."
+      canceled: "Reservation canceled."
+      cancel: "Cancel"
+      reserve: "Reserve"
+      estimated_date: "Estimated date"
+      reserved_by_me: "Reserved by you."
+      unavailable: "Unavailable."
+    gifts:
+      heading: "Open gifts"
+      empty: "No open gifts."
+      mark_purchased: "Mark purchased"
+      mark_delivered: "Mark delivered"
+      mark_received: "I already received this"
+      confirm_received: "Confirm received"
+      thank_you_placeholder: "Optional thank-you note"
+      purchased: "Marked as purchased."
+      delivered: "Marked as delivered."
+      marked_received: "Marked as received."
+      confirmed: "Gift confirmed."
+    items:
+      heading: "Items"
+      new: "Add item"
+      edit: "Edit item"
+      create: "Save item"
+      save: "Save"
+      delete: "Delete item"
+      paste_url: "Paste product URL"
+      images: "Images"
+      links_label: "Purchase links (one per line)"
+      links_hint: "Saving replaces the full link list with what you enter here."
+      compress_hint: "Images are resized on your device toward 1600px / 2MB before upload."
+      created: "Item created."
+      updated: "Item updated."
+      deleted: "Item deleted."
+      invalid: "Unable to save item."
+    wishlists:
+      new: "New wishlist"
+      create: "Create"
+      edit: "Edit"
+      save: "Save"
+      delete: "Delete"
+      confirm_delete: "Delete this wishlist?"
+      empty: "No wishlists yet."
+      created: "Wishlist created."
+      updated: "Wishlist updated."
+      deleted: "Wishlist deleted."
+      privacy: "Privacy"
+      secret_link: "Secret Link"
+      rotate: "Rotate Secret Link"
+      token_rotated: "Secret Link rotated."
+      shares: "Shared with"
+      share_user_id: "Friend user id"
+      add_share: "Add share"
+      remove_share: "Remove"
+      share_added: "Share added."
+      share_removed: "Share removed."
+    shared:
+      empty: "Nothing shared with you yet."
+    friends:
+      incoming: "Incoming requests"
+      incoming_empty: "No pending requests."
+      accepted: "Friends"
+      empty: "No friends yet."
+      accept: "Accept"
+      decline: "Decline"
+      remove: "Remove"
+      accepted_notice: "Friend request accepted."
+      declined_notice: "Friend request declined."
+      removed_notice: "Friend removed."
+    shell:
+      app_name: "Wish List Community"
+      nav_label: "Member navigation"
+      empty_shell: "This section is ready — content arrives next."
+      nav:
+        wishlists: "My wishlists"
+        shared: "Shared"
+        friends: "Friends"
+        reservations: "Reservations"
+        notifications: "Notifications"
+        settings: "Settings"
+      sections:
+        wishlists: "My wishlists"
+        shared: "Shared"
+        friends: "Friends"
+        reservations: "Reservations"
+        notifications: "Notifications"
+        settings: "Settings"
+  legal:
+    placeholder_notice: "Placeholder text pending owner legal approval."
+    terms:
+      heading: "Terms of Use"
+      body_es: "Estos Términos de Uso son un marcador de posición. El texto legal definitivo se publicará cuando el propietario lo apruebe."
+      body_en: "These Terms of Use are a placeholder. Final legal copy will be published when the owner approves it."
+    privacy:
+      heading: "Privacy Policy"
+      body_es: "Esta Política de Privacidad es un marcador de posición. El texto legal definitivo se publicará cuando el propietario lo apruebe."
+      body_en: "This Privacy Policy is a placeholder. Final legal copy will be published when the owner approves it."
+    links:
+      terms: "Terms of Use"
+      privacy: "Privacy Policy"
   api:
     v1:
       errors:
@@ -18,7 +138,7 @@ en:
       passwords:
         reset_sent: "If that email address is in our system, we have sent password reset instructions."
   secret_links:
-    invitation_title: "Lista de deseos de @%{username}"
+    invitation_title: "Wishlist from @%{username}"
     og_description: "You've been invited to view a private wishlist. Sign in to continue."
     guest_body: "This is a private invitation. Log in or sign up to open the wishlist."
     login_cta: "Log in"
@@ -79,6 +199,13 @@ en:
       invalid_status: "is not included in the list"
       confirm_void_required: "confirm_void_gifts is required because you have an open gift with this user"
   notifications:
+    friend:
+      request_received:
+        title: "New friend request"
+        body: "@%{username} sent you a friend request."
+      request_accepted:
+        title: "Friend request accepted"
+        body: "@%{username} accepted your friend request."
     gift:
       delivered_pending_confirmation:
         title: "Someone marked an item as delivered"

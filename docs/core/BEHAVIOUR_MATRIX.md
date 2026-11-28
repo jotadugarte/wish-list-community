@@ -42,5 +42,15 @@
 | BM-RES-005 | Soft-delete reserved item | Soft-delete | Hold canceled; no ghost on restore | Domain | REQ-LIFE-001 | `spec/models/reservation_cleanup_spec.rb` | automated |
 | BM-RES-006 | Due estimated_date | Sweep job | → expired_grace + notify | Job | REQ-RES-006 | `spec/jobs/reservation_grace_sweep_job_spec.rb` | automated |
 | BM-RES-007 | Logged-in Secret Link sharee | Reserve/extend/cancel on `/s/:token` | Parity with API (O4B) | Web | REQ-RES-001 | `spec/requests/secret_link_reservations_spec.rb` | automated |
-| BM-NOTIF-001 | Dispatcher | dispatch S5 event | In-app + email enqueue; push no-op | Service | REQ-NOTIF-001 | `spec/services/notification_dispatcher_spec.rb` | automated |
+| BM-NOTIF-001 | Dispatcher | dispatch S5 event | In-app + email enqueue; push via adapter when tokens/keys present | Service | REQ-NOTIF-001 | `spec/services/notification_dispatcher_spec.rb`, `spec/services/notification_dispatcher_push_spec.rb` | automated |
+| BM-NOTIF-002 | Friendship request! / accept! | Dispatch | Recipient gets request_received; requester gets request_accepted; prefs honored | Domain | REQ-NOTIF-001, REQ-SOC-001 | `spec/models/friendship_notifications_spec.rb` | automated |
+| BM-NOTIF-003 | Prefs API | `GET/PATCH /notification_preferences` | O7A `defaults_events` includes friend + gift keys; channel toggles persist | API | REQ-NOTIF-001 | `spec/requests/api/v1/notifications_spec.rb` | automated |
+| BM-NOTIF-004 | Logout with FCM bound | `DELETE /session` | DeviceTokens for token destroyed | API | REQ-NOTIF-002 | session/device_token specs | automated |
+| BM-MOB-001 | Logged-in share text with https URL; last wishlist still owned | ShareIntentCoordinator | skipPicker → Add Item with payload | Flutter | REQ-MOB-001, REQ-MOB-002, REQ-ITEM-006 | `mobile/test/features/share/share_intent_coordinator_test.dart` | automated |
+| BM-MOB-002 | Logged-out share | ShareIntentCoordinator | requireLogin; payload retained for resume | Flutter | REQ-MOB-001 | `mobile/test/features/share/share_intent_coordinator_test.dart` | automated |
+| BM-MOB-003 | Deep link `/u/:user` or `/s/:token` | DeepLinkTarget/Router | Routes friendProfile or secretLink | Flutter | REQ-MOB-001 | `mobile/test/core/values/deep_link_target_test.dart`, `deep_link_router_test.dart` | automated |
+| BM-MOB-004 | Deep link `/activities/:id` or unknown | DeepLinkTarget | unsupported / safeFailure (O3A) | Flutter | REQ-MOB-001 | same | automated |
+| BM-MOB-005 | Client image before upload | ImageCompressor | Best-effort ≤2MB / ≤1600; max 3; server libvips still mandatory | Flutter | REQ-MOB-001, REQ-ITEM-002 | image compressor tests | automated |
+| BM-WEB-001 | Guest | `GET /terms`, `GET /privacy` | 200 public bilingual content | Web | REQ-AUTH-002, REQ-LIFE-002 | `spec/requests/legal_pages_spec.rb` | automated |
+| BM-WEB-002 | Logged-in member | `GET /app` shell | Nav sections lists/shared/friends/reservations/notifications/settings | Web | REQ-ARCH-001 | MemberWebShell request specs | automated |
 

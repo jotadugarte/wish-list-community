@@ -1,0 +1,72 @@
+<section class="space-y-4">
+  <h1 class="text-2xl font-semibold"><%= @wishlist.title %></h1>
+  <p><%= t("member.wishlists.privacy") %>: <%= @wishlist.privacy_mode %></p>
+  <% owner_view = @wishlist.owner_id == current_user.id %>
+  <% if owner_view && @wishlist.privacy_mode == "shared" && @wishlist.share_token.present? %>
+    <p><%= t("member.wishlists.secret_link") %>: <%= secret_link_url(share_token: @wishlist.share_token) %></p>
+    <%= button_to t("member.wishlists.rotate"), rotate_share_token_member_wishlist_path(@wishlist), method: :post %>
+  <% end %>
+  <% if owner_view %>
+    <p>
+      <%= link_to t("member.wishlists.edit"), edit_member_wishlist_path(@wishlist) %>
+      <%= button_to t("member.wishlists.delete"), member_wishlist_path(@wishlist), method: :delete, form: { data: { turbo_confirm: t("member.wishlists.confirm_delete") } } %>
+    </p>
+  <% end %>
+
+  <h2 class="text-xl font-semibold"><%= t("member.items.heading") %></h2>
+  <% if owner_view %>
+    <%= link_to t("member.items.new"), new_member_wishlist_item_path(@wishlist) %>
+  <% end %>
+  <ul class="space-y-2">
+    <% @items.each do |item| %>
+      <% next if !owner_view && @received_gift_ids.include?(item.id) %>
+      <li class="border-b border-stone-100 pb-2">
+        <% if owner_view %>
+          <%= link_to item.title, edit_member_item_path(item) %>
+          <%= button_to t("member.items.delete"), member_item_path(item), method: :delete %>
+          <% unless @received_gift_ids.include?(item.id) %>
+            <%= form_with url: mark_received_member_item_path(item), method: :post, class: "mt-1 space-y-1" do %>
+              <%= text_field_tag :thank_you_note, nil, placeholder: t("member.gifts.thank_you_placeholder") %>
+              <%= submit_tag t("member.gifts.mark_received") %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <strong><%= item.title %></strong>
+          <% availability = item.availability_for(
+               current_user,
+               holds_by_item_id: @holds_by_item_id,
+               open_gifts_by_item_id: @open_gifts_by_item_id
+             ) %>
+          <% if availability == "available" %>
+            <%= form_with url: member_item_reservations_path(item), method: :post, class: "mt-1 flex flex-wrap gap-2 items-end" do %>
+              <%= label_tag :estimated_date, t("member.reservations.estimated_date") %>
+              <%= date_field_tag :estimated_date, Date.current + 7, required: true %>
+              <%= submit_tag t("member.reservations.reserve") %>
+            <% end %>
+          <% elsif availability == "reserved_by_me" %>
+            <p class="text-sm text-stone-600"><%= t("member.reservations.reserved_by_me") %></p>
+          <% else %>
+            <p class="text-sm text-stone-600"><%= t("member.reservations.unavailable") %></p>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+
+  <% if owner_view %>
+    <h2 class="text-xl font-semibold"><%= t("member.wishlists.shares") %></h2>
+    <%= form_with url: member_wishlist_shares_path(@wishlist), method: :post do %>
+      <%= label_tag :user_id, t("member.wishlists.share_user_id") %>
+      <%= number_field_tag :user_id, nil, required: true %>
+      <%= submit_tag t("member.wishlists.add_share") %>
+    <% end %>
+    <ul>
+      <% @shares.each do |share| %>
+        <li>
+          @<%= share.user.username %>
+          <%= button_to t("member.wishlists.remove_share"), member_wishlist_share_path(@wishlist, share.user_id), method: :delete %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

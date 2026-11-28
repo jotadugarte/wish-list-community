@@ -10,6 +10,7 @@ class GiftStatus
     voided
   ].freeze
   OPEN = %w[purchased_secret delivered_pending_confirmation].freeze
+  DELIVERED_PENDING_CONFIRMATION = "delivered_pending_confirmation"
 
   attr_reader :value
 

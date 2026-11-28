@@ -5,6 +5,49 @@ Rails.application.routes.draw do
 
   resource :session, only: %i[new create destroy]
   resource :signup, only: %i[new create], controller: "web_signups"
+  get "terms", to: "legal_pages#terms", as: :terms
+  get "privacy", to: "legal_pages#privacy", as: :privacy
+
+  namespace :member, path: "app" do
+    root to: "home#show"
+    resources :wishlists, only: %i[index show new create edit update destroy] do
+      member do
+        post :rotate_share_token
+      end
+      resources :shares, only: %i[create destroy], controller: "wishlist_shares"
+      resources :items, only: %i[new create], controller: "items"
+    end
+    resources :items, only: %i[edit update destroy], controller: "items" do
+      resources :reservations, only: %i[create], controller: "reservations"
+      member do
+        post :mark_received, to: "gifts#mark_received"
+      end
+    end
+    resources :reservations, only: %i[index destroy], controller: "reservations" do
+      member do
+        post :mark_purchased
+      end
+    end
+    resources :gifts, only: [], controller: "gifts" do
+      member do
+        post :mark_delivered
+        post :confirm_received
+      end
+    end
+    get "shared", to: "shared#index", as: :shared
+    get "friends", to: "friends#index", as: :friends
+    resources :friendships, only: %i[update destroy], controller: "friendships"
+    resources :notifications, only: %i[index], controller: "notifications" do
+      member do
+        post :mark_read
+      end
+    end
+    get "settings", to: "settings#show", as: :settings
+    delete "settings/account", to: "settings#destroy_account", as: :settings_account
+    resource :notification_preferences, only: %i[show update],
+             controller: "notification_preferences",
+             path: "settings/notification_preferences"
+  end
 
   namespace :admin do
     root to: "reports#index"
@@ -45,7 +88,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resource :session, only: %i[create destroy]
+      resource :session, only: %i[create update destroy]
       resource :signup, only: %i[create]
       resource :passwords, only: %i[create]
       resource :account, only: %i[destroy] do

@@ -102,6 +102,42 @@ class UsernameVo {
   int get hashCode => value.hashCode;
 }
 
+// Opaque URL-safe Secret Link token VO (mirrors backend ShareToken).
+// Traceability: [REQ-WISH-002], [REQ-WISH-005], [REQ-WISH-006]
+class ShareTokenVo {
+  static const int minLength = 22;
+  static final RegExp _urlSafe = RegExp(r'^[A-Za-z0-9\-_]+$');
+
+  final String value;
+
+  // [REQ-WISH-006] Pre-condition: non-blank URL-safe token of sufficient length.
+  factory ShareTokenVo(String rawToken) {
+    final cleaned = rawToken.trim();
+    if (cleaned.isEmpty) {
+      throw ArgumentError('Invalid share_token: cannot be blank');
+    }
+    if (!_urlSafe.hasMatch(cleaned)) {
+      throw ArgumentError('Invalid share_token: must be URL-safe');
+    }
+    if (cleaned.length < minLength) {
+      throw ArgumentError('Invalid share_token: too short');
+    }
+    return ShareTokenVo._(cleaned);
+  }
+
+  const ShareTokenVo._(this.value);
+
+  @override
+  String toString() => value;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || (other is ShareTokenVo && other.value == value);
+
+  @override
+  int get hashCode => value.hashCode;
+}
+
 class SearchQueryVo {
   static const int minLength = 2;
   static const int maxLength = 30;

@@ -1,0 +1,15 @@
+<section class="space-y-4">
+  <h1 class="text-2xl font-semibold"><%= t("member.shell.sections.shared") %></h1>
+  <% if @wishlists.empty? %>
+    <p><%= t("member.shared.empty") %></p>
+  <% else %>
+    <ul class="space-y-2">
+      <% @wishlists.each do |wishlist| %>
+        <li>
+          <%= link_to wishlist.title, member_wishlist_path(wishlist) %>
+          <span class="text-sm text-stone-500">@<%= wishlist.owner.username %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

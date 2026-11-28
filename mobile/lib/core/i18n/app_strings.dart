@@ -105,6 +105,30 @@ class AppStrings {
   final String availabilityReservedByMe;
   final String availabilityUnavailable;
   final String openMyReservationsAction;
+  final String navInbox;
+  final String inboxTitle;
+  final String noNotificationsYet;
+  final String notificationPrefsTitle;
+  final String pushChannelLabel;
+  final String emailChannelLabel;
+  final String inAppChannelLabel;
+  final String termsLinkLabel;
+  final String privacyLinkLabel;
+  final String openLegalLinkAction;
+  final String addPhotosGalleryButton;
+  final String addPhotoCameraButton;
+  final String selectedPhotosLabel;
+  final String shareRequireLoginSnack;
+  final String shareCannotParseSnack;
+  final String shareSkipPickerSnack;
+  final String shareShowPickerSnack;
+  final String sharePickWishlistTitle;
+  final String deepLinkUnsupportedSnack;
+  final String deepLinkRequireLoginSnack;
+  final String shareNoWishlistsSnack;
+  final String legalOpenFailedSnack;
+  final String dialogCancelLabel;
+  final String dialogOkLabel;
 
   const AppStrings({
     required this.locale,
@@ -208,6 +232,30 @@ class AppStrings {
     required this.availabilityReservedByMe,
     required this.availabilityUnavailable,
     required this.openMyReservationsAction,
+    required this.navInbox,
+    required this.inboxTitle,
+    required this.noNotificationsYet,
+    required this.notificationPrefsTitle,
+    required this.pushChannelLabel,
+    required this.emailChannelLabel,
+    required this.inAppChannelLabel,
+    required this.termsLinkLabel,
+    required this.privacyLinkLabel,
+    required this.openLegalLinkAction,
+    required this.addPhotosGalleryButton,
+    required this.addPhotoCameraButton,
+    required this.selectedPhotosLabel,
+    required this.shareRequireLoginSnack,
+    required this.shareCannotParseSnack,
+    required this.shareSkipPickerSnack,
+    required this.shareShowPickerSnack,
+    required this.sharePickWishlistTitle,
+    required this.deepLinkUnsupportedSnack,
+    required this.deepLinkRequireLoginSnack,
+    required this.shareNoWishlistsSnack,
+    required this.legalOpenFailedSnack,
+    required this.dialogCancelLabel,
+    required this.dialogOkLabel,
   });
 
   // [REQ-USER-002] Resolves localized strings for 'es' (default) or 'en'.
@@ -362,6 +410,30 @@ class AppStrings {
     availabilityReservedByMe: 'Reservado por mí',
     availabilityUnavailable: 'No disponible',
     openMyReservationsAction: 'Mis reservaciones',
+    navInbox: 'Avisos',
+    inboxTitle: 'Avisos',
+    noNotificationsYet: 'Aún no tienes avisos',
+    notificationPrefsTitle: 'Preferencias de avisos',
+    pushChannelLabel: 'Teléfono',
+    emailChannelLabel: 'Correo',
+    inAppChannelLabel: 'Campanita',
+    termsLinkLabel: 'Términos de uso',
+    privacyLinkLabel: 'Privacidad',
+    openLegalLinkAction: 'Abrir',
+    addPhotosGalleryButton: 'Galería',
+    addPhotoCameraButton: 'Cámara',
+    selectedPhotosLabel: 'Fotos listas',
+    shareRequireLoginSnack: 'Inicia sesión para agregar el enlace compartido',
+    shareCannotParseSnack: 'No se encontró un enlace en el texto compartido',
+    shareSkipPickerSnack: 'Enlace listo para tu última lista',
+    shareShowPickerSnack: 'Enlace listo — elige una lista',
+    sharePickWishlistTitle: 'Elige una lista',
+    deepLinkUnsupportedSnack: 'Este enlace no está soportado en la app',
+    deepLinkRequireLoginSnack: 'Inicia sesión para ver el perfil del amigo',
+    shareNoWishlistsSnack: 'Crea una lista antes de agregar el enlace compartido',
+    legalOpenFailedSnack: 'No se pudo abrir el enlace',
+    dialogCancelLabel: 'Cancelar',
+    dialogOkLabel: 'OK',
   );
 
   static const AppStrings _en = AppStrings(
@@ -467,5 +539,29 @@ class AppStrings {
     availabilityReservedByMe: 'Reserved by me',
     availabilityUnavailable: 'Unavailable',
     openMyReservationsAction: 'My reservations',
+    navInbox: 'Inbox',
+    inboxTitle: 'Notifications',
+    noNotificationsYet: 'No notifications yet',
+    notificationPrefsTitle: 'Notification preferences',
+    pushChannelLabel: 'Push',
+    emailChannelLabel: 'Email',
+    inAppChannelLabel: 'In-app',
+    termsLinkLabel: 'Terms of Use',
+    privacyLinkLabel: 'Privacy Policy',
+    openLegalLinkAction: 'Open',
+    addPhotosGalleryButton: 'Gallery',
+    addPhotoCameraButton: 'Camera',
+    selectedPhotosLabel: 'Photos ready',
+    shareRequireLoginSnack: 'Sign in to add the shared link',
+    shareCannotParseSnack: 'No link found in shared text',
+    shareSkipPickerSnack: 'Shared link ready for your last list',
+    shareShowPickerSnack: 'Shared link ready — pick a wishlist',
+    sharePickWishlistTitle: 'Pick a wishlist',
+    deepLinkUnsupportedSnack: 'This link is not supported in the app',
+    deepLinkRequireLoginSnack: 'Sign in to open the friend profile',
+    shareNoWishlistsSnack: 'Create a wishlist before adding the shared link',
+    legalOpenFailedSnack: 'Could not open the link',
+    dialogCancelLabel: 'Cancel',
+    dialogOkLabel: 'OK',
   );
 }

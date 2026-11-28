@@ -34,10 +34,24 @@ class AuthRepository {
         'password': password,
         'device_name': ?deviceName,
         'device_token': ?fcmToken,
+        'fcm_token': ?fcmToken,
       },
     );
 
     return _persistSession(response);
+  }
+
+  // [REQ-NOTIF-002] Binds FCM device_token to the current authenticated API session.
+  Future<void> bindDeviceToken({String? fcmToken}) async {
+    if (fcmToken == null || fcmToken.isEmpty) return;
+    await apiClient.request(
+      method: 'PATCH',
+      path: '/api/v1/session',
+      body: {
+        'device_token': fcmToken,
+        'fcm_token': fcmToken,
+      },
+    );
   }
 
   // [REQ-AUTH-001] [REQ-AUTH-002] Registers via POST /api/v1/signup with mandatory terms acceptance.
@@ -75,6 +89,7 @@ class AuthRepository {
         'terms_accepted': true,
         'device_name': ?deviceName,
         'device_token': ?fcmToken,
+        'fcm_token': ?fcmToken,
       },
     );
 

@@ -14,6 +14,7 @@ class LoginScreen extends StatefulWidget {
   final AppStrings strings;
   final AuthRepository authRepository;
   final ValueChanged<UserProfile> onAuthenticated;
+  final Future<String?> Function()? resolveFcmToken;
 
   const LoginScreen({
     super.key,
@@ -21,6 +22,7 @@ class LoginScreen extends StatefulWidget {
     required this.strings,
     required this.authRepository,
     required this.onAuthenticated,
+    this.resolveFcmToken,
   });
 
   @override
@@ -47,9 +49,11 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorMessage = null;
     });
     try {
+      final fcmToken = await widget.resolveFcmToken?.call();
       final profile = await widget.authRepository.login(
         rawEmail: _emailController.text,
         password: _passwordController.text,
+        fcmToken: fcmToken,
       );
       if (mounted) {
         widget.onAuthenticated(profile);
@@ -73,6 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
           tokens: widget.tokens,
           strings: widget.strings,
           authRepository: widget.authRepository,
+          resolveFcmToken: widget.resolveFcmToken,
           onRegistered: (profile) {
             Navigator.of(context).pop();
             widget.onAuthenticated(profile);

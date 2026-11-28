@@ -27,7 +27,13 @@ module Api
           raw.each do |event_key, channel_hash|
             next unless channel_hash.is_a?(Hash)
 
-            channels[event_key.to_s] = channel_hash.stringify_keys.slice(*NotificationPreference::CHANNELS)
+            key = event_key.to_s
+            existing = channels[key].is_a?(Hash) ? channels[key].stringify_keys : {}
+            existing = existing.slice(*NotificationPreference::CHANNELS)
+            patch = channel_hash.stringify_keys.slice(*NotificationPreference::CHANNELS)
+            # Deep-merge per channel so single-channel PATCHes (Flutter toggles)
+            # do not wipe sibling opt-outs for the same event.
+            channels[key] = existing.merge(patch)
           end
         end
         pref.channels = channels
@@ -40,7 +46,7 @@ module Api
       def serialize_pref(pref)
         {
           channels: pref.channels || {},
-          defaults_events: NotificationPreference::S5_EVENTS
+          defaults_events: NotificationPreference::DEFAULT_EVENTS
         }
       end
     end

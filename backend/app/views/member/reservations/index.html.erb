@@ -1,0 +1,49 @@
+<section class="space-y-6">
+  <h1 class="text-2xl font-semibold"><%= t("member.shell.sections.reservations") %></h1>
+
+  <div class="space-y-2">
+    <h2 class="text-xl font-semibold"><%= t("member.reservations.heading") %></h2>
+    <% if @reservations.empty? %>
+      <p><%= t("member.reservations.empty") %></p>
+    <% else %>
+      <ul class="space-y-3">
+        <% @reservations.each do |reservation| %>
+          <li class="border-b border-stone-200 pb-2">
+            <strong><%= reservation.item.title %></strong>
+            <span class="text-sm text-stone-500"><%= reservation.status %></span>
+            <% if ReservationStatus::ACTIVE_HOLD.include?(reservation.status) %>
+              <%= button_to t("member.reservations.cancel"), member_reservation_path(reservation), method: :delete %>
+              <%= button_to t("member.gifts.mark_purchased"), mark_purchased_member_reservation_path(reservation), method: :post %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+
+  <div class="space-y-2">
+    <h2 class="text-xl font-semibold"><%= t("member.gifts.heading") %></h2>
+    <% gift_rows = (@open_gifts.to_a + @pending_confirm_gifts.to_a).uniq %>
+    <% if gift_rows.empty? %>
+      <p><%= t("member.gifts.empty") %></p>
+    <% else %>
+      <ul class="space-y-3">
+        <% gift_rows.each do |gift| %>
+          <li class="border-b border-stone-200 pb-2">
+            <strong><%= gift.item.title %></strong>
+            <span class="text-sm text-stone-500"><%= gift.status %></span>
+            <% if gift.status == "purchased_secret" && gift.gifter_id == current_user.id %>
+              <%= button_to t("member.gifts.mark_delivered"), mark_delivered_member_gift_path(gift), method: :post %>
+            <% end %>
+            <% if gift.status == "delivered_pending_confirmation" && gift.item.wishlist.owner_id == current_user.id %>
+              <%= form_with url: confirm_received_member_gift_path(gift), method: :post do %>
+                <%= text_field_tag :thank_you_note, nil, placeholder: t("member.gifts.thank_you_placeholder") %>
+                <%= submit_tag t("member.gifts.confirm_received") %>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</section>

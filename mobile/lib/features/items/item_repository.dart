@@ -1,4 +1,5 @@
 import 'package:wish_list_mobile/core/network/api_client.dart';
+import 'package:wish_list_mobile/features/items/image_compressor.dart';
 import 'package:wish_list_mobile/features/items/item_models.dart';
 
 // Repository for Item CRUD, link previews, and reorder.
@@ -28,7 +29,7 @@ class ItemRepository {
         .toList(growable: false);
   }
 
-  // [REQ-ITEM-001] [REQ-ITEM-003] Creates an item (JSON; images via later multipart attach).
+  // [REQ-ITEM-001] [REQ-ITEM-002] [REQ-ITEM-003] Creates an item; images via multipart when present.
   Future<WishlistItem> createItem({
     required int wishlistId,
     required String title,
@@ -38,6 +39,7 @@ class ItemRepository {
     String? currency,
     List<String> linkUrls = const [],
     LinkPreview? confirmedPreview,
+    List<CompressedImageBlob> images = const [],
   }) async {
     _validatePriority(priority);
     final cleaned = title.trim();
@@ -45,9 +47,24 @@ class ItemRepository {
     if (cleaned.isEmpty && previewTitle.isEmpty) {
       throw ArgumentError('Pre-condition failed: title cannot be blank');
     }
+    if (images.length > CompressedImageBlob.maxImages) {
+      throw ArgumentError('Pre-condition failed: at most ${CompressedImageBlob.maxImages} images');
+    }
+    final useMultipart = images.isNotEmpty;
+    final files = [
+      for (final img in images.take(CompressedImageBlob.maxImages))
+        MultipartFilePart(
+          fieldName: 'images[]',
+          filename: img.filename,
+          contentType: img.contentType,
+          bytes: img.bytes,
+        ),
+    ];
     final response = await apiClient.request(
       method: 'POST',
       path: '/api/v1/wishlists/$wishlistId/items',
+      multipart: useMultipart,
+      files: useMultipart ? files : null,
       body: {
         'item': {
           'title': cleaned.isEmpty ? previewTitle : cleaned,
@@ -72,7 +89,7 @@ class ItemRepository {
     );
   }
 
-  // [REQ-ITEM-001] Updates an item.
+  // [REQ-ITEM-001] [REQ-ITEM-002] Updates an item; images via multipart when present.
   Future<WishlistItem> updateItem({
     required int itemId,
     String? title,
@@ -81,14 +98,30 @@ class ItemRepository {
     int? priceCents,
     String? currency,
     List<String>? linkUrls,
+    List<CompressedImageBlob> images = const [],
   }) async {
     if (itemId <= 0) {
       throw ArgumentError('Pre-condition failed: itemId must be > 0');
     }
     if (priority != null) _validatePriority(priority);
+    if (images.length > CompressedImageBlob.maxImages) {
+      throw ArgumentError('Pre-condition failed: at most ${CompressedImageBlob.maxImages} images');
+    }
+    final useMultipart = images.isNotEmpty;
+    final files = [
+      for (final img in images.take(CompressedImageBlob.maxImages))
+        MultipartFilePart(
+          fieldName: 'images[]',
+          filename: img.filename,
+          contentType: img.contentType,
+          bytes: img.bytes,
+        ),
+    ];
     final response = await apiClient.request(
       method: 'PATCH',
       path: '/api/v1/items/$itemId',
+      multipart: useMultipart,
+      files: useMultipart ? files : null,
       body: {
         'item': {
           'title': ?title,

@@ -1,5 +1,125 @@
 es:
   hello: "Hola mundo"
+  member:
+    errors:
+      not_found: "No encontrado"
+      action_failed: "No se pudo completar esa acción."
+    notifications:
+      empty: "Aún no hay avisos."
+      mark_read: "Marcar leído"
+      marked_read: "Marcado como leído."
+      prefs_heading: "Preferencias de avisos"
+      prefs_save: "Guardar preferencias"
+      prefs_saved: "Preferencias guardadas."
+    settings:
+      delete_heading: "Eliminar cuenta"
+      delete_help: "Borra tu cuenta de forma suave. Puedes restaurarla en 30 días."
+      delete_account: "Eliminar mi cuenta"
+      delete_confirm: "¿Eliminar tu cuenta?"
+      account_deleted: "Cuenta eliminada."
+    reservations:
+      heading: "Reservaciones activas"
+      empty: "No hay reservaciones activas."
+      created: "Reservado."
+      canceled: "Reservación cancelada."
+      cancel: "Cancelar"
+      reserve: "Reservar"
+      estimated_date: "Fecha estimada"
+      reserved_by_me: "Reservado por ti."
+      unavailable: "No disponible."
+    gifts:
+      heading: "Regalos abiertos"
+      empty: "No hay regalos abiertos."
+      mark_purchased: "Marcar comprado"
+      mark_delivered: "Marcar entregado"
+      mark_received: "Ya recibí esto"
+      confirm_received: "Confirmar recibido"
+      thank_you_placeholder: "Nota de agradecimiento opcional"
+      purchased: "Marcado como comprado."
+      delivered: "Marcado como entregado."
+      marked_received: "Marcado como recibido."
+      confirmed: "Regalo confirmado."
+    items:
+      heading: "Ítems"
+      new: "Agregar ítem"
+      edit: "Editar ítem"
+      create: "Guardar ítem"
+      save: "Guardar"
+      delete: "Eliminar ítem"
+      paste_url: "Pegar URL del producto"
+      images: "Imágenes"
+      links_label: "Enlaces de compra (uno por línea)"
+      links_hint: "Al guardar se reemplaza la lista completa de enlaces con lo que escribas aquí."
+      compress_hint: "Las imágenes se redimensionan en tu dispositivo hacia 1600px / 2MB antes de subir."
+      created: "Ítem creado."
+      updated: "Ítem actualizado."
+      deleted: "Ítem eliminado."
+      invalid: "No se pudo guardar el ítem."
+    wishlists:
+      new: "Nueva lista"
+      create: "Crear"
+      edit: "Editar"
+      save: "Guardar"
+      delete: "Eliminar"
+      confirm_delete: "¿Eliminar esta lista?"
+      empty: "Aún no hay listas."
+      created: "Lista creada."
+      updated: "Lista actualizada."
+      deleted: "Lista eliminada."
+      privacy: "Privacidad"
+      secret_link: "Enlace secreto"
+      rotate: "Rotar enlace secreto"
+      token_rotated: "Enlace secreto rotado."
+      shares: "Compartida con"
+      share_user_id: "Id de amistad"
+      add_share: "Agregar"
+      remove_share: "Quitar"
+      share_added: "Compartido agregado."
+      share_removed: "Compartido quitado."
+    shared:
+      empty: "Aún no hay listas compartidas contigo."
+    friends:
+      incoming: "Solicitudes recibidas"
+      incoming_empty: "No hay solicitudes pendientes."
+      accepted: "Amigos"
+      empty: "Aún no tienes amigos."
+      accept: "Aceptar"
+      decline: "Rechazar"
+      remove: "Quitar"
+      accepted_notice: "Solicitud de amistad aceptada."
+      declined_notice: "Solicitud de amistad rechazada."
+      removed_notice: "Amistad eliminada."
+    shell:
+      app_name: "Wish List Community"
+      nav_label: "Navegación de miembro"
+      empty_shell: "Esta sección está lista — el contenido llega después."
+      nav:
+        wishlists: "Mis listas"
+        shared: "Compartidas"
+        friends: "Amigos"
+        reservations: "Reservaciones"
+        notifications: "Avisos"
+        settings: "Ajustes"
+      sections:
+        wishlists: "Mis listas"
+        shared: "Compartidas"
+        friends: "Amigos"
+        reservations: "Reservaciones"
+        notifications: "Avisos"
+        settings: "Ajustes"
+  legal:
+    placeholder_notice: "Texto provisional pendiente de aprobación legal del propietario."
+    terms:
+      heading: "Términos de Uso"
+      body_es: "Estos Términos de Uso son un marcador de posición. El texto legal definitivo se publicará cuando el propietario lo apruebe."
+      body_en: "These Terms of Use are a placeholder. Final legal copy will be published when the owner approves it."
+    privacy:
+      heading: "Política de Privacidad"
+      body_es: "Esta Política de Privacidad es un marcador de posición. El texto legal definitivo se publicará cuando el propietario lo apruebe."
+      body_en: "This Privacy Policy is a placeholder. Final legal copy will be published when the owner approves it."
+    links:
+      terms: "Términos de Uso"
+      privacy: "Privacidad"
   api:
     v1:
       errors:
@@ -79,6 +199,13 @@ es:
       invalid_status: "no está incluido en la lista"
       confirm_void_required: "se requiere confirm_void_gifts porque tienes un regalo abierto con este usuario"
   notifications:
+    friend:
+      request_received:
+        title: "Nueva solicitud de amistad"
+        body: "@%{username} te envió una solicitud de amistad."
+      request_accepted:
+        title: "Solicitud de amistad aceptada"
+        body: "@%{username} aceptó tu solicitud de amistad."
     gift:
       delivered_pending_confirmation:
         title: "Alguien marcó un ítem como entregado"

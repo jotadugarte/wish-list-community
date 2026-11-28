@@ -68,6 +68,8 @@ class Friendship < ApplicationRecord
 
     raise "Post-condition failed: friendship must be pending" unless record.persisted? && record.status == "pending"
 
+    # [REQ-NOTIF-001] Notify addressee of incoming friend request.
+    record.notify_request_received!
     record
   end
 
@@ -87,6 +89,8 @@ class Friendship < ApplicationRecord
 
     raise "Post-condition failed: friendship must be accepted" unless status == "accepted"
 
+    # [REQ-NOTIF-001] Notify requester that their request was accepted.
+    notify_request_accepted!
     self
   end
 
@@ -152,7 +156,38 @@ class Friendship < ApplicationRecord
   end
   private_class_method :validate_request_preconditions!
 
+  # [REQ-NOTIF-001] Dispatches friend.request_received to the addressee.
+  def notify_request_received!
+    I18n.with_locale(recipient_locale(addressee)) do
+      NotificationDispatcher.dispatch!(
+        user: addressee,
+        event_key: "friend.request_received",
+        title: I18n.t("notifications.friend.request_received.title"),
+        body: I18n.t("notifications.friend.request_received.body", username: requester.username),
+        payload: { friendship_id: id, requester_id: requester_id }
+      )
+    end
+  end
+
+  # [REQ-NOTIF-001] Dispatches friend.request_accepted to the requester.
+  def notify_request_accepted!
+    I18n.with_locale(recipient_locale(requester)) do
+      NotificationDispatcher.dispatch!(
+        user: requester,
+        event_key: "friend.request_accepted",
+        title: I18n.t("notifications.friend.request_accepted.title"),
+        body: I18n.t("notifications.friend.request_accepted.body", username: addressee.username),
+        payload: { friendship_id: id, addressee_id: addressee_id }
+      )
+    end
+  end
+
   private
+
+  def recipient_locale(user)
+    locale = user&.locale&.to_sym
+    I18n.available_locales.include?(locale) ? locale : I18n.default_locale
+  end
 
   def validate_accept_preconditions!(actor)
     raise ArgumentError, "Pre-condition failed: friendship must be pending" unless persisted? && status == "pending"

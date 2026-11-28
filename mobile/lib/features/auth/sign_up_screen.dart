@@ -11,6 +11,7 @@ class SignUpScreen extends StatefulWidget {
   final AppStrings strings;
   final AuthRepository authRepository;
   final ValueChanged<UserProfile> onRegistered;
+  final Future<String?> Function()? resolveFcmToken;
 
   const SignUpScreen({
     super.key,
@@ -18,6 +19,7 @@ class SignUpScreen extends StatefulWidget {
     required this.strings,
     required this.authRepository,
     required this.onRegistered,
+    this.resolveFcmToken,
   });
 
   @override
@@ -47,6 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _errorMessage = null;
     });
     try {
+      final fcmToken = await widget.resolveFcmToken?.call();
       final profile = await widget.authRepository.signUp(
         rawEmail: _emailController.text,
         rawUsername: _usernameController.text,
@@ -54,6 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         locale: widget.strings.locale,
         timeZone: 'UTC',
         termsAccepted: _termsAccepted,
+        fcmToken: fcmToken,
       );
       if (mounted) {
         widget.onRegistered(profile);

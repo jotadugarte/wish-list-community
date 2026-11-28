@@ -417,7 +417,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(widget.strings.dialogCancelLabel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, controller.text),

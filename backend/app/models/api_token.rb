@@ -55,6 +55,18 @@ class ApiToken < ApplicationRecord
     token_record
   end
 
+  # [REQ-NOTIF-002] Binds (or replaces) the FCM device_token for this API session.
+  def bind_device_token!(fcm_token)
+    raise ArgumentError, "Pre-condition failed: token must be persisted" unless persisted?
+    return if fcm_token.blank?
+
+    transaction do
+      DeviceToken.where(token: fcm_token).delete_all
+      device_tokens.destroy_all
+      device_tokens.create!(user: user, token: fcm_token)
+    end
+  end
+
   # [REQ-AUTH-001] [REQ-NOTIF-002] Revokes this token and destroys all bound FCM DeviceTokens.
   def revoke!
     raise ArgumentError, "Pre-condition failed: token must be persisted" unless persisted?

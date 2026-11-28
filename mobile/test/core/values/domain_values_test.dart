@@ -40,6 +40,21 @@ void main() {
     );
   });
 
+  group('ShareTokenVo [REQ-WISH-002] [REQ-WISH-005] [REQ-WISH-006]', () {
+    test('accepts URL-safe opaque tokens of sufficient length', () {
+      const raw = 'tok_AbCdEfGhIjKlMnOpQrStUv';
+      final token = ShareTokenVo(raw);
+      expect(token.value, raw);
+      expect(token, equals(ShareTokenVo(raw)));
+    });
+
+    test('rejects blank, unsafe, or short tokens', () {
+      expect(() => ShareTokenVo(''), throwsArgumentError);
+      expect(() => ShareTokenVo('bad token!'), throwsArgumentError);
+      expect(() => ShareTokenVo('too_short'), throwsArgumentError);
+    });
+  });
+
   group('SearchQueryVo [REQ-SOC-001] [REQ-WISH-001]', () {
     test('normalizes valid search query prefix [REQ-SOC-001]', () {
       final query = SearchQueryVo('  @Nata_24  ');
