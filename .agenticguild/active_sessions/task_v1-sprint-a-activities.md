@@ -195,7 +195,7 @@ REQ tags: `REQ-ACT-001`..`005`, `REQ-ARCH-001`/`002`, `REQ-BLOCK-001`, `REQ-NOTI
   <step id="25" status="complete">Write failing Flutter DeepLinkTarget tests: activity share token opens board/preview; unknown safe failure; keep friend + secret link. Trace [REQ-MOB-001], [REQ-ACT-001].</step>
   <step id="26" status="complete">Implement activity App/Universal Links + routing until step 25 green.</step>
   <step id="27" status="complete">Update living docs only as needed for start-task truth: API_CONTRACT new activity surfaces, SYSTEM_ARCHITECTURE activity services, BEHAVIOUR_MATRIX planned rows for ACT flows, ROADMAP Sprint A checkboxes stay unchecked in this plan (Done marking is outside start-task). Trace REQ-IDs in new tests.</step>
-  <step id="28" status="pending">Run full backend RSpec + `flutter analyze` / `flutter test`; fix until green. End of start-task implementation scope.</step>
+  <step id="28" status="complete">Run full backend RSpec + `flutter analyze` / `flutter test`; fix until green. End of start-task implementation scope.</step>
 </implementation_plan>
 
 **PLAN CONFIRMED** by owner 2026-11-27 (America/Costa_Rica). Spec locked for `start-task` handoff. This explore writes no application code.
