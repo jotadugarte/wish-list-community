@@ -18,6 +18,9 @@ class ActivityWishlistEnsureService
     existing = Wishlist.find_by(activity_id: activity.id, owner_id: user.id)
     if existing
       existing.restore!(actor: user) if existing.discarded?
+      if existing.max_reservations_per_user.nil?
+        existing.update!(max_reservations_per_user: ActivityReservationLimitService.default_max_for(activity))
+      end
       raise "Post-condition failed: activity wishlist must stay activity-scoped" unless existing.activity_id == activity.id
       return existing
     end
@@ -27,7 +30,8 @@ class ActivityWishlistEnsureService
       activity_id: activity.id,
       title: activity.name,
       privacy_mode: PrivacyMode.new("friends").value,
-      share_token: nil
+      share_token: nil,
+      max_reservations_per_user: ActivityReservationLimitService.default_max_for(activity)
     )
     raise "Post-condition failed: activity_id must match" unless wishlist.activity_id == activity.id
     raise "Post-condition failed: owner must match participant" unless wishlist.owner_id == user.id

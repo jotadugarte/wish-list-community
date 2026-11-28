@@ -105,12 +105,13 @@ class ReservationService
   end
   private_class_method :enforce_per_wishlist_limit!
 
-  # [REQ-ACT-001] O3A: activity-scoped holds require visibility/seal gate.
+  # [REQ-ACT-001] [REQ-ACT-005] O3A/O4A: activity gate + budget re-check on reserve.
   def self.assert_activity_reserve_allowed!(item:, user:)
     wishlist = item.wishlist
     return unless wishlist&.activity_scoped?
 
     ActivityVisibilityGate.assert_may_reserve!(viewer: user, item: item)
+    BudgetEnforcement.assert_item!(item: item)
   rescue ActivityVisibilityGate::Error => e
     raise Error, e.message
   end
