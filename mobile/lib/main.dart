@@ -35,6 +35,8 @@ import 'package:wish_list_mobile/features/wishlists/shared_wishlists_screen.dart
 import 'package:wish_list_mobile/features/wishlists/wishlist_repository.dart';
 import 'package:wish_list_mobile/features/gifts/gift_repository.dart';
 import 'package:wish_list_mobile/features/reservations/reservation_repository.dart';
+import 'package:wish_list_mobile/features/activities/activity_repository.dart';
+import 'package:wish_list_mobile/features/activities/activities_list_screen.dart';
 
 // Entry point for Wish List Community mobile app (iOS & Android).
 // Run with: flutter run --dart-define=API_BASE_URL=https://your-server
@@ -57,6 +59,7 @@ Future<void> main() async {
   );
   final socialRepo = SocialRepository(apiClient: apiClient);
   final wishlistRepo = WishlistRepository(apiClient: apiClient);
+  final activityRepo = ActivityRepository(apiClient: apiClient);
   final reservationRepo = ReservationRepository(apiClient: apiClient);
   final giftRepo = GiftRepository(apiClient: apiClient);
   final notificationRepo = NotificationRepository(apiClient: apiClient);
@@ -80,6 +83,7 @@ Future<void> main() async {
       authRepository: authRepo,
       socialRepository: socialRepo,
       wishlistRepository: wishlistRepo,
+      activityRepository: activityRepo,
       reservationRepository: reservationRepo,
       giftRepository: giftRepo,
       notificationRepository: notificationRepo,
@@ -97,6 +101,7 @@ class WishListApp extends StatefulWidget {
   final AuthRepository authRepository;
   final SocialRepository socialRepository;
   final WishlistRepository wishlistRepository;
+  final ActivityRepository activityRepository;
   final ReservationRepository reservationRepository;
   final GiftRepository giftRepository;
   final NotificationRepository notificationRepository;
@@ -112,6 +117,7 @@ class WishListApp extends StatefulWidget {
     required this.authRepository,
     required this.socialRepository,
     required this.wishlistRepository,
+    required this.activityRepository,
     required this.reservationRepository,
     required this.giftRepository,
     required this.notificationRepository,
@@ -333,6 +339,19 @@ class _WishListAppState extends State<WishListApp> {
         final host = widget.deepLinkRouter.allowedHosts.first;
         final uri = Uri.https(host, '/s/${token.value}');
         await _openLegalUri(uri);
+      case DeepLinkRoute.activityLink:
+        final token = decision.activityToken;
+        if (token == null) return;
+        if (_restoring || _currentUser == null) {
+          if (!_restoring) {
+            _snack(_strings.deepLinkRequireLoginSnack);
+          }
+          return;
+        }
+        setState(() => _selectedIndex = 5);
+        final host = widget.deepLinkRouter.allowedHosts.first;
+        final uri = Uri.https(host, '/a/${token.value}');
+        await _openLegalUri(uri);
       case DeepLinkRoute.safeFailure:
         _snack(_strings.deepLinkUnsupportedSnack);
     }
@@ -429,6 +448,7 @@ class _WishListAppState extends State<WishListApp> {
         AppNavDestination(icon: Icons.people_outline, label: s.navFriends),
         AppNavDestination(icon: Icons.search, label: s.navSearch),
         AppNavDestination(icon: Icons.person_outline, label: s.navProfile),
+        AppNavDestination(icon: Icons.celebration_outlined, label: s.navActivities),
       ],
       body: _buildActiveScreen(s),
     );
@@ -468,7 +488,6 @@ class _WishListAppState extends State<WishListApp> {
           socialRepository: widget.socialRepository,
         );
       case 4:
-      default:
         return ProfileSettingsScreen(
           tokens: widget.tokens,
           strings: s,
@@ -485,6 +504,13 @@ class _WishListAppState extends State<WishListApp> {
             });
             _navKey.currentState?.popUntil((route) => route.isFirst);
           },
+        );
+      case 5:
+      default:
+        return ActivitiesListScreen(
+          activityRepository: widget.activityRepository,
+          strings: s,
+          tokens: widget.tokens,
         );
     }
   }

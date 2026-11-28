@@ -127,6 +127,23 @@ class AppStrings {
   final String deepLinkRequireLoginSnack;
   final String shareNoWishlistsSnack;
   final String legalOpenFailedSnack;
+  final String navActivities;
+  final String activitiesTitle;
+  final String activityBoardTitle;
+  final String createActivityButton;
+  final String noActivitiesYet;
+  final String activityInviteAction;
+  final String activityAcceptAction;
+  final String activityDrawAction;
+  final String activityArrancarAction;
+  final String activityLeaveAction;
+  final String activityCancelAction;
+  final String activityTransferAction;
+  final String activityYourRecipientLabel;
+  final String activityNeedsCureLabel;
+  final String activityBlindBridgeAction;
+  final String activityFullRedrawAction;
+  final String activityPersonalWishlistsHeading;
   final String dialogCancelLabel;
   final String dialogOkLabel;
 
@@ -254,6 +271,23 @@ class AppStrings {
     required this.deepLinkRequireLoginSnack,
     required this.shareNoWishlistsSnack,
     required this.legalOpenFailedSnack,
+    required this.navActivities,
+    required this.activitiesTitle,
+    required this.activityBoardTitle,
+    required this.createActivityButton,
+    required this.noActivitiesYet,
+    required this.activityInviteAction,
+    required this.activityAcceptAction,
+    required this.activityDrawAction,
+    required this.activityArrancarAction,
+    required this.activityLeaveAction,
+    required this.activityCancelAction,
+    required this.activityTransferAction,
+    required this.activityYourRecipientLabel,
+    required this.activityNeedsCureLabel,
+    required this.activityBlindBridgeAction,
+    required this.activityFullRedrawAction,
+    required this.activityPersonalWishlistsHeading,
     required this.dialogCancelLabel,
     required this.dialogOkLabel,
   });
@@ -431,6 +465,23 @@ class AppStrings {
     deepLinkUnsupportedSnack: 'Este enlace no está soportado en la app',
     deepLinkRequireLoginSnack: 'Inicia sesión para ver el perfil del amigo',
     shareNoWishlistsSnack: 'Crea una lista antes de agregar el enlace compartido',
+    navActivities: 'Actividades',
+    activitiesTitle: 'Mis actividades',
+    activityBoardTitle: 'Tablero de actividad',
+    createActivityButton: 'Crear actividad',
+    noActivitiesYet: 'Aún no tienes actividades',
+    activityInviteAction: 'Invitar',
+    activityAcceptAction: 'Aceptar invitación',
+    activityDrawAction: 'Sortear',
+    activityArrancarAction: 'Arrancar',
+    activityLeaveAction: 'Salirme',
+    activityCancelAction: 'Cancelar actividad',
+    activityTransferAction: 'Transferir dueño',
+    activityYourRecipientLabel: 'Le regalas a',
+    activityNeedsCureLabel: 'Hay que reparar el sorteo',
+    activityBlindBridgeAction: 'Puente ciego',
+    activityFullRedrawAction: 'Volver a sortear',
+    activityPersonalWishlistsHeading: 'Listas personales',
     legalOpenFailedSnack: 'No se pudo abrir el enlace',
     dialogCancelLabel: 'Cancelar',
     dialogOkLabel: 'OK',
@@ -560,6 +611,23 @@ class AppStrings {
     deepLinkUnsupportedSnack: 'This link is not supported in the app',
     deepLinkRequireLoginSnack: 'Sign in to open the friend profile',
     shareNoWishlistsSnack: 'Create a wishlist before adding the shared link',
+    navActivities: 'Activities',
+    activitiesTitle: 'My activities',
+    activityBoardTitle: 'Activity board',
+    createActivityButton: 'Create activity',
+    noActivitiesYet: 'No activities yet',
+    activityInviteAction: 'Invite',
+    activityAcceptAction: 'Accept invite',
+    activityDrawAction: 'Draw',
+    activityArrancarAction: 'Start activity',
+    activityLeaveAction: 'Leave',
+    activityCancelAction: 'Cancel activity',
+    activityTransferAction: 'Transfer ownership',
+    activityYourRecipientLabel: 'You give to',
+    activityNeedsCureLabel: 'Draw needs repair',
+    activityBlindBridgeAction: 'Blind bridge',
+    activityFullRedrawAction: 'Full redraw',
+    activityPersonalWishlistsHeading: 'Personal wishlists',
     legalOpenFailedSnack: 'Could not open the link',
     dialogCancelLabel: 'Cancel',
     dialogOkLabel: 'OK',

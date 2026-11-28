@@ -3,7 +3,7 @@ import 'package:wish_list_mobile/core/values/deep_link_target.dart';
 import 'package:wish_list_mobile/core/values/domain_values.dart';
 
 void main() {
-  group('DeepLinkTarget [REQ-MOB-001] [REQ-WISH-005] O3A', () {
+  group('DeepLinkTarget [REQ-MOB-001] [REQ-WISH-005] [REQ-ACT-001]', () {
     const longToken = 'AbCdefghijklmnopqrstuv-1';
 
     test('parses friend profile path', () {
@@ -18,6 +18,12 @@ void main() {
       expect(target.shareToken, ShareTokenVo(longToken));
     });
 
+    test('parses activity share token [REQ-ACT-001]', () {
+      final target = DeepLinkTarget.parse(Uri.parse('https://staging.example/a/$longToken'));
+      expect(target.kind, DeepLinkKind.activityLink);
+      expect(target.activityToken, ShareTokenVo(longToken));
+    });
+
     test('rejects short secret tokens as unsupported', () {
       expect(
         DeepLinkTarget.parse(Uri.parse('https://staging.example/s/short')).isSupported,
@@ -25,7 +31,7 @@ void main() {
       );
     });
 
-    test('activity and unknown paths are unsupported', () {
+    test('unknown paths are unsupported', () {
       expect(
         DeepLinkTarget.parse(Uri.parse('https://staging.example/activities/9')).isSupported,
         isFalse,

@@ -2,22 +2,24 @@ import 'package:wish_list_mobile/core/config/public_host_config.dart';
 import 'package:wish_list_mobile/core/values/deep_link_target.dart';
 import 'package:wish_list_mobile/core/values/domain_values.dart';
 
-enum DeepLinkRoute { friendProfile, secretLink, safeFailure }
+enum DeepLinkRoute { friendProfile, secretLink, activityLink, safeFailure }
 
 class DeepLinkRouteDecision {
   final DeepLinkRoute route;
   final UsernameVo? username;
   final ShareTokenVo? shareToken;
+  final ShareTokenVo? activityToken;
 
   const DeepLinkRouteDecision({
     required this.route,
     this.username,
     this.shareToken,
+    this.activityToken,
   });
 }
 
 // Maps DeepLinkTarget to in-app route decisions (staging host configurable O9B).
-// Traceability: [REQ-MOB-001], [REQ-WISH-005], [REQ-SOC-001]
+// Traceability: [REQ-MOB-001], [REQ-WISH-005], [REQ-SOC-001], [REQ-ACT-001]
 class DeepLinkRouter {
   final Set<String> allowedHosts;
 
@@ -44,17 +46,22 @@ class DeepLinkRouter {
           route: DeepLinkRoute.secretLink,
           shareToken: target.shareToken,
         );
+      case DeepLinkKind.activityLink:
+        return DeepLinkRouteDecision(
+          route: DeepLinkRoute.activityLink,
+          activityToken: target.activityToken,
+        );
       case DeepLinkKind.unsupported:
         return const DeepLinkRouteDecision(route: DeepLinkRoute.safeFailure);
     }
   }
 
-  /// Maps `wishlist://u/alice` / `wishlist://s/tok` into path-style URIs
-  /// (`/u/alice`, `/s/tok`) so host allowlisting does not treat `u`/`s` as hosts.
+  /// Maps `wishlist://u/alice` / `wishlist://s/tok` / `wishlist://a/tok`
+  /// into path-style URIs so host allowlisting does not treat path heads as hosts.
   static Uri normalizeCustomScheme(Uri uri) {
     if (uri.scheme.toLowerCase() != 'wishlist') return uri;
     final host = uri.host.toLowerCase();
-    if (host != 'u' && host != 's') return uri;
+    if (host != 'u' && host != 's' && host != 'a') return uri;
     final tail = uri.pathSegments.where((s) => s.isNotEmpty).join('/');
     final path = tail.isEmpty ? '/$host' : '/$host/$tail';
     return Uri(scheme: 'wishlist', path: path);

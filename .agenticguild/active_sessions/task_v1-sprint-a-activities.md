@@ -190,10 +190,10 @@ REQ tags: `REQ-ACT-001`..`005`, `REQ-ARCH-001`/`002`, `REQ-BLOCK-001`, `REQ-NOTI
   <step id="20" status="complete">Implement Hotwire activity surfaces until step 19 green.</step>
   <step id="21" status="complete">Write failing specs for NotificationDispatcher catalog keys (O8A): invite, accept/decline, co-org, draw (private), Arrancar, leave, dropout-needs-cure, Blind Bridge, Full Redraw, cancel, transfer — prefs toggles. Trace [REQ-NOTIF-001], [REQ-NOTIF-002].</step>
   <step id="22" status="complete">Implement notification events + prefs until step 21 green.</step>
-  <step id="23" status="pending">Write failing Flutter tests for activity feature: board, invite/accept, exclusions UI for co-org/creator, draw/Arrancar, private recipient, leave/cure prompts, cancel/transfer; personal wishlist bridge. Trace [REQ-ACT-001]..[005], [REQ-MOB-001].</step>
-  <step id="24" status="pending">Implement Flutter activities feature until step 23 green (headless/fakes; DesignTokens defaults — no retokenize).</step>
-  <step id="25" status="pending">Write failing Flutter DeepLinkTarget tests: activity share token opens board/preview; unknown safe failure; keep friend + secret link. Trace [REQ-MOB-001], [REQ-ACT-001].</step>
-  <step id="26" status="pending">Implement activity App/Universal Links + routing until step 25 green.</step>
+  <step id="23" status="complete">Write failing Flutter tests for activity feature: board, invite/accept, exclusions UI for co-org/creator, draw/Arrancar, private recipient, leave/cure prompts, cancel/transfer; personal wishlist bridge. Trace [REQ-ACT-001]..[005], [REQ-MOB-001].</step>
+  <step id="24" status="complete">Implement Flutter activities feature until step 23 green (headless/fakes; DesignTokens defaults — no retokenize).</step>
+  <step id="25" status="complete">Write failing Flutter DeepLinkTarget tests: activity share token opens board/preview; unknown safe failure; keep friend + secret link. Trace [REQ-MOB-001], [REQ-ACT-001].</step>
+  <step id="26" status="complete">Implement activity App/Universal Links + routing until step 25 green.</step>
   <step id="27" status="pending">Update living docs only as needed for start-task truth: API_CONTRACT new activity surfaces, SYSTEM_ARCHITECTURE activity services, BEHAVIOUR_MATRIX planned rows for ACT flows, ROADMAP Sprint A checkboxes stay unchecked in this plan (Done marking is outside start-task). Trace REQ-IDs in new tests.</step>
   <step id="28" status="pending">Run full backend RSpec + `flutter analyze` / `flutter test`; fix until green. End of start-task implementation scope.</step>
 </implementation_plan>

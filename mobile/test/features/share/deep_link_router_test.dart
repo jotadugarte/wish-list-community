@@ -41,6 +41,18 @@ void main() {
       expect(d.shareToken, ShareTokenVo(longToken));
     });
 
+    test('routes activity share token [REQ-ACT-001]', () {
+      final d = router.resolve(Uri.parse('https://staging.example/a/$longToken'));
+      expect(d.route, DeepLinkRoute.activityLink);
+      expect(d.activityToken, ShareTokenVo(longToken));
+    });
+
+    test('routes wishlist://a/token custom scheme [REQ-ACT-001]', () {
+      final d = router.resolve(Uri.parse('wishlist://a/$longToken'));
+      expect(d.route, DeepLinkRoute.activityLink);
+      expect(d.activityToken, ShareTokenVo(longToken));
+    });
+
     test('normalizeCustomScheme rewrites host-style wishlist URIs', () {
       final normalized = DeepLinkRouter.normalizeCustomScheme(
         Uri.parse('wishlist://u/bob_user'),
