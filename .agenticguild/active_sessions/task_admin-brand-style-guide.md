@@ -28,5 +28,7 @@
   Sprint 9 branch cursor/sprint-9-mobile-wrap-up-5dfd does not currently change design_tokens.dart. It does change main.dart, pubspec.yaml, routes.rb, locales, ROADMAP, API_CONTRACT, and SYSTEM_ARCHITECTURE. This task stays additive and does not merge that branch.
   Suites 2026-11-27: RSpec 388 examples, 0 failures. RuboCop 213 files, no offenses. flutter analyze clean. flutter test all passed (theme folder includes the shared catalog reader).
   Paused before QA, finish-branch, and any PR.
+  Rebase 2026-11-27: onto origin/main 707475e (Sprint 9 PR #16). Conflicts resolved in current_state.md (keep this task) and SYSTEM_ARCHITECTURE.md (keep Sprint 9 surfaces plus the shared tokens bullet). ROADMAP, locales, and routes merged and were checked. Published with lease to cursor/admin-brand-style-guide-ea18 at 34efec0.
+  QA pause at step 3.2: smoke QA-01..03 pass. QA-04..07 and QA-09..14 pass. QA-08 failed as a test mistake (expected raw "Do and don't"; the page renders "Do and don&#39;t"). Flutter shared catalog test passed. Full RSpec 435/0 and Flutter suite green on this commit. Temporary spec left at backend/tmp/qa-specs/admin_brand_style_guide_qa_spec.rb until FIX or CONTINUE. No reviewer record yet. No finish-branch and no PR.
   </working_notes>
 </task_session>
