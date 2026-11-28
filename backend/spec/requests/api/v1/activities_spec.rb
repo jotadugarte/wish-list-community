@@ -113,6 +113,7 @@ RSpec.describe "Api::V1::Activities", type: :request do
     end
 
     it "bridges after leave and supports cancel/transfer [REQ-ACT-003] [REQ-ACT-001]" do
+      fourth = create(:user, username: "act_fourth")
       activity = Activity.create!(
         creator: creator,
         name: "Sorteo",
@@ -124,6 +125,7 @@ RSpec.describe "Api::V1::Activities", type: :request do
       )
       ActivityParticipant.invite!(activity: activity, user: friend, actor: creator).accept!
       ActivityParticipant.invite!(activity: activity, user: other, actor: creator).accept!
+      ActivityParticipant.invite!(activity: activity, user: fourth, actor: creator).accept!
       ActivityDrawService.draw!(activity: activity, actor: creator, seed: 8)
 
       delete "/api/v1/activities/#{activity.id}/participants/me", headers: friend_headers

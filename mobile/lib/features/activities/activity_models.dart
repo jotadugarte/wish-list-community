@@ -15,6 +15,7 @@ class ActivityShell {
   final bool needsDropoutRecovery;
   final String? creatorUsername;
   final String? viewerStatus;
+  final bool viewerCanManage;
 
   const ActivityShell({
     required this.id,
@@ -31,6 +32,7 @@ class ActivityShell {
     this.shareToken,
     this.creatorUsername,
     this.viewerStatus,
+    this.viewerCanManage = false,
   });
 
   factory ActivityShell.fromJson(Map<String, dynamic> json) {
@@ -52,6 +54,7 @@ class ActivityShell {
           ? creator['username'] as String?
           : null,
       viewerStatus: json['viewer_status'] as String?,
+      viewerCanManage: json['viewer_can_manage'] == true,
     );
   }
 

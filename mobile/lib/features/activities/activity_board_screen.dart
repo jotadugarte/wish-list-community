@@ -129,7 +129,9 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
                             child: Text(s.activityDeclineAction),
                           ),
                         ],
-                        if (!activity.isSealed && activity.isSecretSanta)
+                        if (activity.viewerCanManage &&
+                            !activity.isSealed &&
+                            activity.isSecretSanta)
                           ElevatedButton(
                             onPressed: () => _run(
                               () => widget.activityRepository
@@ -137,7 +139,9 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
                             ),
                             child: Text(s.activityDrawAction),
                           ),
-                        if (!activity.isSealed && activity.isOpenGifting)
+                        if (activity.viewerCanManage &&
+                            !activity.isSealed &&
+                            activity.isOpenGifting)
                           ElevatedButton(
                             onPressed: () => _run(
                               () => widget.activityRepository
@@ -145,7 +149,8 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
                             ),
                             child: Text(s.activityArrancarAction),
                           ),
-                        if (activity.needsDropoutRecovery) ...[
+                        if (activity.viewerCanManage &&
+                            activity.needsDropoutRecovery) ...[
                           ElevatedButton(
                             onPressed: () => _run(
                               () => widget.activityRepository
@@ -161,20 +166,22 @@ class _ActivityBoardScreenState extends State<ActivityBoardScreen> {
                             child: Text(s.activityFullRedrawAction),
                           ),
                         ],
-                        OutlinedButton(
-                          onPressed: () => _run(
-                            () => widget.activityRepository
-                                .leave(activityId: activity.id),
+                        if (!activity.isInvited)
+                          OutlinedButton(
+                            onPressed: () => _run(
+                              () => widget.activityRepository
+                                  .leave(activityId: activity.id),
+                            ),
+                            child: Text(s.activityLeaveAction),
                           ),
-                          child: Text(s.activityLeaveAction),
-                        ),
-                        OutlinedButton(
-                          onPressed: () => _run(
-                            () => widget.activityRepository
-                                .cancel(activityId: activity.id),
+                        if (activity.viewerCanManage)
+                          OutlinedButton(
+                            onPressed: () => _run(
+                              () => widget.activityRepository
+                                  .cancel(activityId: activity.id),
+                            ),
+                            child: Text(s.activityCancelAction),
                           ),
-                          child: Text(s.activityCancelAction),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 16),

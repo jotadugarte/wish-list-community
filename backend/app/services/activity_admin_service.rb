@@ -36,6 +36,11 @@ class ActivityAdminService
       assert_admin!(activity, actor)
       raise ArgumentError, "Pre-condition failed: blocked users cannot be invited" if UserBlock.blocked_between?(actor, user)
       raise ArgumentError, "Pre-condition failed: blocked with creator" if UserBlock.blocked_between?(activity.creator, user)
+      peer_ids = activity.participants.where(status: %w[invited accepted]).limit(500).pluck(:user_id)
+      peer_ids << activity.creator_id
+      if peer_ids.any? { |uid| uid != user.id && UserBlock.blocked_between?(user, User.new(id: uid)) }
+        raise ArgumentError, "Pre-condition failed: blocked with a participant"
+      end
 
       participant = ActivityParticipant.invite!(activity: activity, user: user, actor: actor)
       ActivityNotifier.invite!(activity: activity, recipient: user, actor: actor)

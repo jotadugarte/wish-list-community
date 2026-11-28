@@ -21,12 +21,12 @@ class ActivityLinksController < ApplicationController
   private
 
   def render_logged_in_activity_link!(activity)
+    policy = ActivityPolicy.new(current_user, activity)
     # [REQ-BLOCK-001] Blocked viewers must not learn the activity identity via the token.
-    if UserBlock.blocked_between?(current_user, activity.creator)
+    if policy.send(:blocked_from_activity?)
       raise ActiveRecord::RecordNotFound
     end
 
-    policy = ActivityPolicy.new(current_user, activity)
     if policy.show? && accepted_participant?(activity)
       redirect_to member_activity_path(activity)
       return

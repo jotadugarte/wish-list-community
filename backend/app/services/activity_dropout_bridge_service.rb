@@ -33,6 +33,11 @@ class ActivityDropoutBridgeService
       leavers = left_user_ids(activity)
       raise ArgumentError, "Pre-condition failed: no leavers to bridge" if leavers.empty?
 
+      remaining = activity.accepted_participants.limit(ActivityExclusionService::MAX_PARTICIPANTS).count
+      if remaining < 3
+        raise ArgumentError, "Pre-condition failed: minimum 3 accepted participants required to bridge; cancel or Full Redraw"
+      end
+
       bridged_pairs = []
 
       activity.transaction do

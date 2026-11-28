@@ -35,6 +35,8 @@ void main() {
         'budget_mode': 'none',
         'status': status,
         'needs_dropout_recovery': needsCure,
+        'viewer_status': 'accepted',
+        'viewer_can_manage': true,
         'creator': {'id': 1, 'username': 'host'},
       };
     }

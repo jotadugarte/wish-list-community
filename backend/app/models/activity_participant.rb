@@ -110,7 +110,10 @@ UserBlock.register_cleanup_hook(:activity_block_wins) do |blocker, blocked|
     affected = ActivityParticipant.where(activity_id: activity_id, user_id: [ blocker.id, blocked.id ])
                                   .where(status: %w[invited accepted])
                                   .limit(max_rows)
-    require_cure = activity.sealed? && activity.secret_santa?
-    affected.each { |participant| participant.force_leave!(require_cure: require_cure) }
+    affected.each do |participant|
+      # [REQ-ACT-003] Cure only when an accepted sealed Secret Santa participant is removed.
+      require_cure = participant.status == "accepted" && activity.sealed? && activity.secret_santa?
+      participant.force_leave!(require_cure: require_cure)
+    end
   end
 end

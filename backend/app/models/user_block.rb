@@ -70,6 +70,7 @@ class UserBlock < ApplicationRecord
       Friendship
       WishlistShare
       Reservation
+      ActivityParticipant
       hooks = cleanup_hooks.values.first(MAX_CLEANUP_HOOKS)
       hooks.each do |hook|
         hook.call(blocker, blocked)

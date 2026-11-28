@@ -167,6 +167,7 @@ class Activity < ApplicationRecord
         else
           participants.find_by(user_id: viewer.id)&.status
         end
+      payload[:viewer_can_manage] = ActivityPolicy.new(viewer, self).manage?
     end
     payload
   end

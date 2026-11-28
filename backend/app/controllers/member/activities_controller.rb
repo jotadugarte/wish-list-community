@@ -51,7 +51,7 @@ module Member
       participant.accept!
       redirect_to member_activity_path(@activity), status: :see_other
     rescue ActiveRecord::RecordNotFound, ArgumentError
-      redirect_to activity_link_path(share_token: @activity.share_token),
+      redirect_to member_activities_path,
                   alert: I18n.t("activities.errors.invite_unavailable"),
                   status: :see_other
     end
@@ -64,7 +64,7 @@ module Member
       participant.decline!
       redirect_to member_activities_path, status: :see_other
     rescue ActiveRecord::RecordNotFound, ArgumentError
-      redirect_to activity_link_path(share_token: @activity.share_token),
+      redirect_to member_activities_path,
                   alert: I18n.t("activities.errors.invite_unavailable"),
                   status: :see_other
     end

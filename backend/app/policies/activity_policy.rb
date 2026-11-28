@@ -22,12 +22,12 @@ class ActivityPolicy < ApplicationPolicy
     false
   end
 
-  # [REQ-ACT-001] [REQ-BLOCK-001] Join/accept only when not blocked with creator or participants.
+  # [REQ-ACT-001] [REQ-BLOCK-001] Accept/decline only for the invited user when not blocked.
   def join?
     return false if user.nil? || user.discarded? || record.nil? || record.cancelled? || record.sealed?
     return false if blocked_from_activity?
 
-    true
+    record.participants.where(user_id: user.id, status: "invited").exists?
   end
 
   # [REQ-ACT-001] Creator or co-organizer may manage invites/exclusions/draw.
