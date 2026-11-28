@@ -49,7 +49,12 @@
 | BM-MOB-001 | Logged-in share text with https URL; last wishlist still owned | ShareIntentCoordinator | skipPicker → Add Item with payload | Flutter | REQ-MOB-001, REQ-MOB-002, REQ-ITEM-006 | `mobile/test/features/share/share_intent_coordinator_test.dart` | automated |
 | BM-MOB-002 | Logged-out share | ShareIntentCoordinator | requireLogin; payload retained for resume | Flutter | REQ-MOB-001 | `mobile/test/features/share/share_intent_coordinator_test.dart` | automated |
 | BM-MOB-003 | Deep link `/u/:user` or `/s/:token` | DeepLinkTarget/Router | Routes friendProfile or secretLink | Flutter | REQ-MOB-001 | `mobile/test/core/values/deep_link_target_test.dart`, `deep_link_router_test.dart` | automated |
-| BM-MOB-004 | Deep link `/activities/:id` or unknown | DeepLinkTarget | unsupported / safeFailure (O3A) | Flutter | REQ-MOB-001 | same | automated |
+| BM-MOB-004 | Deep link `/a/:token` | DeepLinkTarget/Router | Routes activityLink; unknown paths safeFailure | Flutter | REQ-MOB-001, REQ-ACT-001 | same | automated |
+| BM-ACT-001 | Creator creates activity | `POST /api/v1/activities` | Opaque share_token; creator accepted co-org | API | REQ-ACT-001 | `spec/requests/api/v1/activities_spec.rb` | automated |
+| BM-ACT-002 | First invitee accepts | Accept invite | Money/visibility settings freeze (O2B) | Domain | REQ-ACT-001 | `spec/models/activity_freeze_spec.rb` | automated |
+| BM-ACT-003 | ≥3 accepted; secret_santa | Draw | Single Hamiltonian cycle; assignment private to giver | Service / API | REQ-ACT-001, REQ-ACT-004 | `spec/services/activity_draw_service_spec.rb` | automated |
+| BM-ACT-004 | Sealed secret_santa leave/block | Leave or Block Wins | `needs_dropout_recovery`; Blind Bridge or Full Redraw | Service | REQ-ACT-003, REQ-BLOCK-001 | `spec/services/activity_dropout_bridge_service_spec.rb`, `spec/policies/activity_policy_spec.rb` | automated |
+| BM-ACT-005 | Guest opens `/a/:token` | Hotwire preview | Safe invite; no roster leak | Web | REQ-ACT-001 | `spec/requests/activity_links_spec.rb` | automated |
 | BM-MOB-005 | Client image before upload | ImageCompressor | Best-effort ≤2MB / ≤1600; max 3; server libvips still mandatory | Flutter | REQ-MOB-001, REQ-ITEM-002 | image compressor tests | automated |
 | BM-WEB-001 | Guest | `GET /terms`, `GET /privacy` | 200 public bilingual content | Web | REQ-AUTH-002, REQ-LIFE-002 | `spec/requests/legal_pages_spec.rb` | automated |
 | BM-WEB-002 | Logged-in member | `GET /app` shell | Nav sections lists/shared/friends/reservations/notifications/settings | Web | REQ-ARCH-001 | MemberWebShell request specs | automated |

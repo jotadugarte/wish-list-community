@@ -377,6 +377,31 @@ Body: `{ "url": "https://..." }` → `{ "title", "image_url", "source_url" }` (b
 - Public `GET /terms` · `GET /privacy` (bilingual es+en placeholders)
 - Logged-in ` /app/*` MemberWebShell: wishlists, items, reservations/gifts, notifications inbox + prefs, account soft-delete
 
+## 5b. Activities (v1 Sprint A shell) `[REQ-ACT-001]`…`[REQ-ACT-005]`
+
+Group gift exchange shell (no activity-scoped items/reservations yet — those are Sprint B). Modes: `secret_santa` | `open_gifting`. Budget modes stored: `none` | `fixed` | `min_only` | `max_only` | `range` (enforcement in Sprint B). Assignment map is never returned wholesale to creator/co-org.
+
+### Activity API
+- `GET /api/v1/activities` — activities where the viewer is creator or accepted participant
+- `POST /api/v1/activities` — create shell; mints opaque `share_token`; creator auto-accepted as co-org
+- `GET /api/v1/activities/:id` — board payload; `share_token` only for creator
+- `POST /api/v1/activities/:id/participants` — invite (`user_id`); creator/co-org
+- `POST /api/v1/activities/:id/participants/accept` — invitee accepts (O2B money freeze on first invitee accept)
+- `DELETE /api/v1/activities/:id/participants/me` — leave (free pre-seal; post-draw forces cure; post-Arrancar no bridge)
+- `POST /api/v1/activities/:id/exclusions` — pair exclusion (`giver_id`, `forbidden_recipient_id`)
+- `POST /api/v1/activities/:id/draw` — secret_santa Hamiltonian draw (≥3 accepted); optional `seed`
+- `POST /api/v1/activities/:id/arrancar` — open_gifting seal (≥2 accepted); no assignments
+- `GET /api/v1/activities/:id/my_assignment` — giver-only recipient (private)
+- `POST /api/v1/activities/:id/blind_bridge` — Blind Auto-Bridge when `needs_dropout_recovery`
+- `POST /api/v1/activities/:id/full_redraw` — Full Redraw (≥3 remaining) or error directing cancel
+- `POST /api/v1/activities/:id/co_organizers` — creator-only appoint (`user_id`)
+- `POST /api/v1/activities/:id/transfer` — creator-only transfer (`new_creator_id` must be co-org)
+- `POST /api/v1/activities/:id/cancel` — creator/co-org cancel
+
+### Activity Hotwire surfaces
+- Public `GET /a/:share_token` — safe invite preview (no roster); logged-in accepted participants redirect to `/app/activities/:id`
+- Member `GET|POST /app/activities` · `GET /app/activities/:id` — create + board with personal wishlist bridges
+
 ## 6. Gifts (Sprint 6)
 
 Dual-path fulfillment via `GiftRecord` (`purchased_secret` → `delivered_pending_confirmation` → `received_confirmed`; `voided` for O8D). Optional `purchase_link_ref` and gifter identity (`@username` + email) are Hotwire Admin-only (`/admin/gifts/:id`, audit gift detail) and **never** returned in `/api/v1` JSON (including when the bearer user has `role=admin`). Optional anonymous thank-you on confirm ([REQ-GIFT-001], [REQ-GIFT-004], [REQ-ADM-001]).
