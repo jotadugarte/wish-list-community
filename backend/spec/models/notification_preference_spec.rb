@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe NotificationPreference, type: :model do
-  # Sprint 9 O7A catalog: friendship + reservation S5 + gift events.
+  # Sprint 9 O7A + Sprint A activity events.
   # Traceability: [REQ-NOTIF-001]
   let(:expected_catalog) do
     %w[
@@ -17,18 +17,30 @@ RSpec.describe NotificationPreference, type: :model do
       gift.received_confirmed_to_gifter
       gift.thank_you
       gift.voided_by_owner_delete
+      activity.invite
+      activity.accepted
+      activity.declined
+      activity.co_organizer_appointed
+      activity.drawn
+      activity.arrancar
+      activity.left
+      activity.dropout_needs_cure
+      activity.blind_bridged
+      activity.full_redraw
+      activity.cancelled
+      activity.ownership_transferred
     ]
   end
 
   describe "event catalog [REQ-NOTIF-001]" do
-    it "exposes the full O7A defaults_events catalog including friend + gift keys" do
+    it "exposes the full defaults_events catalog including friend, gift, and activity keys [REQ-NOTIF-001]" do
       expect(described_class::DEFAULT_EVENTS).to match_array(expected_catalog)
       expected_catalog.each do |key|
         expect(described_class::DEFAULT_EVENTS).to include(key)
       end
     end
 
-    it "defaults every catalog event to in_app/email/push enabled when channels blank" do
+    it "defaults every catalog event to in_app/email/push enabled when channels blank [REQ-NOTIF-001]" do
       pref = described_class.new(user: build(:user), channels: {})
       expected_catalog.each do |event_key|
         channels = pref.enabled_channels_for(event_key)
@@ -37,7 +49,7 @@ RSpec.describe NotificationPreference, type: :model do
       end
     end
 
-    it "honors per-channel toggles for friend and gift events" do
+    it "honors per-channel toggles for friend and gift events [REQ-NOTIF-001]" do
       pref = described_class.new(
         user: build(:user),
         channels: {

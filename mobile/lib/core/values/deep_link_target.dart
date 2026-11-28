@@ -1,22 +1,36 @@
 import 'package:wish_list_mobile/core/values/domain_values.dart';
 
-// DeepLinkTarget VO: friend profile + secret link only in Sprint 9 (O3A).
-// Traceability: [REQ-WISH-005], [REQ-SOC-001]
-enum DeepLinkKind { friendProfile, secretLink, unsupported }
+// DeepLinkTarget VO: friend profile + secret link + activity link.
+// Traceability: [REQ-WISH-005], [REQ-SOC-001], [REQ-MOB-001], [REQ-ACT-001]
+enum DeepLinkKind { friendProfile, secretLink, activityLink, unsupported }
 
 class DeepLinkTarget {
   final DeepLinkKind kind;
   final UsernameVo? username;
   final ShareTokenVo? shareToken;
+  final ShareTokenVo? activityToken;
 
   const DeepLinkTarget._({
     required this.kind,
     this.username,
     this.shareToken,
+    this.activityToken,
   });
 
   factory DeepLinkTarget.parse(Uri uri) {
     final path = uri.path;
+
+    final activity = RegExp(r'^/a/([A-Za-z0-9\-_]+)/?$').firstMatch(path);
+    if (activity != null) {
+      try {
+        return DeepLinkTarget._(
+          kind: DeepLinkKind.activityLink,
+          activityToken: ShareTokenVo(activity.group(1)!),
+        );
+      } on ArgumentError {
+        return const DeepLinkTarget._(kind: DeepLinkKind.unsupported);
+      }
+    }
 
     final secret = RegExp(r'^/s/([A-Za-z0-9\-_]+)/?$').firstMatch(path);
     if (secret != null) {
@@ -44,7 +58,6 @@ class DeepLinkTarget {
       }
     }
 
-    // Activity and unknown paths are unsupported in S9.
     return const DeepLinkTarget._(kind: DeepLinkKind.unsupported);
   }
 

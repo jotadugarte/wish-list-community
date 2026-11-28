@@ -135,8 +135,40 @@ es:
         wishlist_invalid: "No se pudo guardar la lista de deseos"
         wishlist_share_invalid: "No se pudo compartir la lista de deseos"
         signup_invalid: "No se pudo crear la cuenta con los datos proporcionados"
+        unprocessable: "No se pudo procesar la solicitud"
+        activity_invalid: "No se pudo guardar la actividad"
       passwords:
         reset_sent: "Si ese correo electrónico está en nuestro sistema, hemos enviado las instrucciones para restablecer la contraseña."
+  activities:
+    invitation_title: "Invitación a actividad: %{name}"
+    og_description: "Te invitaron a una actividad de regalos. Inicia sesión para continuar."
+    guest_body: "Esta es una invitación privada a una actividad. Inicia sesión o regístrate para abrir el tablero."
+    invitee_body: "Tienes una invitación pendiente. Acepta para abrir el tablero, o recházala."
+    login_cta: "Iniciar sesión"
+    signup_cta: "Crear cuenta"
+    accept_cta: "Aceptar invitación"
+    decline_cta: "Rechazar"
+    co_organizer_badge: "co-org"
+    modes:
+      secret_santa: "Amigo secreto"
+      open_gifting: "Regalos abiertos"
+    statuses:
+      open: "Abierta"
+      sealed: "Sellada"
+      cancelled: "Cancelada"
+    index_heading: "Actividades"
+    new_heading: "Nueva actividad"
+    new_cta: "Crear actividad"
+    create_cta: "Crear"
+    board_heading: "Tablero de actividad"
+    share_label: "Enlace de invitación"
+    participants_heading: "Participantes"
+    your_recipient_heading: "Le regalas a"
+    wishlist_bridge_heading: "Listas personales"
+    wishlist_bridge_empty: "Aún no hay listas personales visibles."
+    errors:
+      invalid: "No se pudo guardar la actividad"
+      invite_unavailable: "Esa invitación ya no está disponible"
   secret_links:
     invitation_title: "Lista de deseos de @%{username}"
     og_description: "Te invitaron a ver una lista de deseos privada. Inicia sesión para continuar."
@@ -199,6 +231,43 @@ es:
       invalid_status: "no está incluido en la lista"
       confirm_void_required: "se requiere confirm_void_gifts porque tienes un regalo abierto con este usuario"
   notifications:
+    activity:
+      invite:
+        title: "Invitación a actividad: %{name}"
+        body: "@%{actor} te invitó a unirte."
+      accepted:
+        title: "Invitación aceptada: %{name}"
+        body: "@%{actor} aceptó la invitación."
+      declined:
+        title: "Invitación rechazada: %{name}"
+        body: "@%{actor} rechazó la invitación."
+      co_organizer_appointed:
+        title: "Eres co-organizador: %{name}"
+        body: "Puedes gestionar invitaciones, exclusiones y el sorteo."
+      drawn:
+        title: "Sorteo listo: %{name}"
+        body: "Le regalas a @%{recipient}."
+      arrancar:
+        title: "Actividad iniciada: %{name}"
+        body: "La participación quedó sellada."
+      left:
+        title: "Alguien se salió: %{name}"
+        body: "@%{actor} dejó la actividad."
+      dropout_needs_cure:
+        title: "Acción necesaria: %{name}"
+        body: "Elige Puente ciego o Nuevo sorteo completo."
+      blind_bridged:
+        title: "Cambió tu destinatario: %{name}"
+        body: "El intercambio se reparó en silencio."
+      full_redraw:
+        title: "Nuevo sorteo: %{name}"
+        body: "Se volvieron a asignar los regalos."
+      cancelled:
+        title: "Actividad cancelada: %{name}"
+        body: "@%{actor} canceló la actividad."
+      ownership_transferred:
+        title: "Ahora eres dueño: %{name}"
+        body: "@%{actor} te transfirió la propiedad."
     friend:
       request_received:
         title: "Nueva solicitud de amistad"

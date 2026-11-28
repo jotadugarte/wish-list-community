@@ -1,0 +1,46 @@
+<section class="space-y-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold"><%= @activity.name %></h1>
+    <p class="text-sm opacity-70"><%= t("activities.board_heading") %> · <%= t("activities.modes.#{@activity.assignment_mode}") %> · <%= t("activities.statuses.#{@activity.status}") %></p>
+    <% if current_user.id == @activity.creator_id %>
+      <p class="text-sm"><%= t("activities.share_label") %>: <code><%= activity_link_url(share_token: @activity.share_token) %></code></p>
+    <% end %>
+    <% if @viewer_status == "invited" %>
+      <div class="flex gap-4 pt-2">
+        <%= button_to t("activities.accept_cta"), accept_member_activity_path(@activity), method: :post, class: "underline" %>
+        <%= button_to t("activities.decline_cta"), decline_member_activity_path(@activity), method: :post, class: "underline" %>
+      </div>
+    <% end %>
+  </header>
+
+  <section>
+    <h2 class="text-lg font-medium"><%= t("activities.participants_heading") %></h2>
+    <ul class="space-y-1">
+      <% @participants.each do |participant| %>
+        <li>@<%= participant.user.username %> · <%= participant.status %><%= " · #{t('activities.co_organizer_badge')}" if participant.co_organizer? %></li>
+      <% end %>
+    </ul>
+  </section>
+
+  <% if @my_assignment %>
+    <section>
+      <h2 class="text-lg font-medium"><%= t("activities.your_recipient_heading") %></h2>
+      <p>@<%= @my_assignment.recipient.username %></p>
+    </section>
+  <% end %>
+
+  <section>
+    <h2 class="text-lg font-medium"><%= t("activities.wishlist_bridge_heading") %></h2>
+    <% if @wishlist_bridges.empty? %>
+      <p class="text-sm opacity-70"><%= t("activities.wishlist_bridge_empty") %></p>
+    <% else %>
+      <ul class="space-y-1">
+        <% @wishlist_bridges.each do |wishlist| %>
+          <li>
+            <%= link_to "#{wishlist.title} (@#{wishlist.owner.username})", member_wishlist_path(wishlist), class: "underline" %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+</section>
