@@ -42,7 +42,7 @@ RSpec.describe ActivityPolicy do
       a = create(:user)
       b = create(:user)
       c = create(:user)
-      [a, b, c].each { |u| ActivityParticipant.invite!(activity: activity, user: u, actor: creator).accept! }
+      [ a, b, c ].each { |u| ActivityParticipant.invite!(activity: activity, user: u, actor: creator).accept! }
 
       activity.update!(status: "sealed", sealed_at: Time.current, assignment_mode: "secret_santa")
 
@@ -65,7 +65,7 @@ RSpec.describe ActivityPolicy do
       )
       a = create(:user)
       b = create(:user)
-      [a, b].each { |u| ActivityParticipant.invite!(activity: open_activity, user: u, actor: creator).accept! }
+      [ a, b ].each { |u| ActivityParticipant.invite!(activity: open_activity, user: u, actor: creator).accept! }
       open_activity.update!(status: "sealed", sealed_at: Time.current)
 
       UserBlock.block!(blocker: a, blocked: b)
