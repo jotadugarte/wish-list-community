@@ -24,6 +24,29 @@ RSpec.describe "Api::V1::Wishlists", type: :request do
     end
   end
 
+  describe "GET /api/v1/wishlists excludes activity lists [REQ-ARCH-002] [REQ-ACT-001]" do
+    it "omits activity-scoped wishlists from My Wishlists index [REQ-ARCH-002] [REQ-ACT-001]" do
+      personal = create(:wishlist, owner: owner, title: "Personal")
+      activity = Activity.create!(
+        creator: owner,
+        name: "Actividad",
+        currency: "CRC",
+        assignment_mode: "secret_santa",
+        visibility_mode: "recipient_only",
+        reservation_visibility: "hidden_from_recipient",
+        budget_mode: "none"
+      )
+      activity_list = ActivityWishlistEnsureService.ensure_for_participant!(
+        participant: activity.participants.find_by!(user: owner)
+      )
+
+      get "/api/v1/wishlists", headers: headers
+      ids = response.parsed_body["wishlists"].map { |w| w["id"] }
+      expect(ids).to include(personal.id)
+      expect(ids).not_to include(activity_list.id)
+    end
+  end
+
   describe "GET /api/v1/wishlists and show/update/delete [REQ-WISH-001] [REQ-LIFE-001]" do
     it "lists, shows, updates privacy, soft-deletes, and restores [REQ-WISH-001] [REQ-WISH-002] [REQ-LIFE-001]" do
       post "/api/v1/wishlists", params: { wishlist: { title: "Navidad" } }, headers: headers
